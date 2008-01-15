@@ -34,6 +34,14 @@ public class EDSMessage
 	  return message; 
   }
   
+  public int getRecipient() {
+	  return Destinatario;
+  }
+  
+  public int getSender() {
+	  return Mittente;
+  }
+  
   public byte[] getBytesMessage() {
 	  byte message[] = new byte[8];
 	  message[0] = (new Integer(Stx)).byteValue();

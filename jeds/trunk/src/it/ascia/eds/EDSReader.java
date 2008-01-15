@@ -36,7 +36,7 @@ public class EDSReader
      * @see
      */
     public static void main(String[] args) {
-	    String		      defaultPort = "COM2";
+	    String		      defaultPort = "/dev/ttyUSB0";
 	
 	 	if (args.length > 0) {
 		    defaultPort = args[0];

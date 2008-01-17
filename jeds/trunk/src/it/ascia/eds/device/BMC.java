@@ -4,7 +4,7 @@
 package it.ascia.eds.device;
 
 import it.ascia.eds.*;
-import it.ascia.eds.msg.EDSMessage;
+import it.ascia.eds.msg.Message;
 
 /**
  * Un BMC
@@ -24,6 +24,13 @@ public class BMC implements Device {
 		this.address = address;
 	}
 	
+	/**
+	 * Ritorna l'indirizzo di questo BMC
+	 */
+	public int getAddress() {
+		return this.address;
+	}
+	
 	/** 
 	 * Il BMC ha ricevuto un messaggio.
 	 * 
@@ -31,7 +38,7 @@ public class BMC implements Device {
 	 * 
 	 * @param m il messaggio ricevuto
 	 */
-	public void receiveMessage(EDSMessage m) {
+	public void receiveMessage(Message m) {
 	 // TODO
 	}
 }

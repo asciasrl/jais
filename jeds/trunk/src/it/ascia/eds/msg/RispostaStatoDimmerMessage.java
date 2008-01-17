@@ -1,6 +1,6 @@
 package it.ascia.eds.msg;
 
-public class RispostaStatoDimmerMessage extends EDSMessage {
+public class RispostaStatoDimmerMessage extends Message {
 
 	public RispostaStatoDimmerMessage(int d, int m, int Modello, int Versione) {
 		Destinatario = d & 0xFF;

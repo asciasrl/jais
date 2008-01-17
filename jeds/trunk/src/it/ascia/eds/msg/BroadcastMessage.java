@@ -7,15 +7,15 @@ import java.util.Random;
  * @author sergio
  */
 public class BroadcastMessage
-	extends EDSMessage
-	implements EDSMessageInterface
+	extends Message
+	implements MessageInterface
 	{
 
 	/**
 	 * 
 	 * @param Numero Numero comando broadcast
 	 * @param Attivazione Attivare o disattivare
-	 * @param Modalita Modalità di funzionamento (1=MODALITA’ RISPARMIO DIMMER)
+	 * @param Modalita Modalitï¿½ di funzionamento (1=MODALITAï¿½ RISPARMIO DIMMER)
 	 * @throws Exception
 	 */
 	public BroadcastMessage(int Numero, boolean Attivazione, int Modalita)

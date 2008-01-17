@@ -7,8 +7,8 @@ import java.util.Random;
  * @author sergio
  */
 public class CambioVelocitaMessage
-	extends EDSMessage
-	implements EDSMessageInterface
+	extends Message
+	implements MessageInterface
 	{
 
 	/**

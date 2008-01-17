@@ -1,8 +1,8 @@
 package it.ascia.eds.msg;
 
 public class ImpostaParametroDimmerMessage 
-	extends EDSMessage
-	implements EDSMessageInterface {
+	extends Message
+	implements MessageInterface {
 	
 	/**
 	 * 54

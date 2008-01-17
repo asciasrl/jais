@@ -1,6 +1,6 @@
 package it.ascia.eds.device;
 
-import it.ascia.eds.msg.EDSMessage;
+import it.ascia.eds.msg.Message;
 
 /**
  * Generic device connected to the bus
@@ -16,5 +16,10 @@ public interface Device {
 	 * 
 	 * @param m il messaggio ricevuto
 	 */
-	public void receiveMessage(EDSMessage m);
+	public void receiveMessage(Message m);
+	
+	/**
+	 * Ritorna l'indirizzo del device sul bus.
+	 */
+	public int getAddress();
 }

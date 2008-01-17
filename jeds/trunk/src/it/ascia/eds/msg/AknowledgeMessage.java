@@ -1,6 +1,6 @@
 package it.ascia.eds.msg;
 
-public class AknowledgeMessage extends EDSMessage {
+public class AknowledgeMessage extends Message {
 
 	public AknowledgeMessage(byte d, byte m, byte b1, byte b2) {
 		Destinatario = d;

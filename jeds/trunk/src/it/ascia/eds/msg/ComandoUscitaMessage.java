@@ -1,8 +1,8 @@
 package it.ascia.eds.msg;
 
 public class ComandoUscitaMessage 
-	extends EDSMessage
-	implements EDSMessageInterface {
+	extends Message
+	implements MessageInterface {
 
 	public ComandoUscitaMessage(int d, int m, int Tempo, int Uscita, int Percentuale, int Attivazione) {
 		Destinatario = d & 0xFF;

@@ -8,7 +8,7 @@ import java.util.Date;
  * (C) 2007 Ascia S.r.l.
  * @author Sergio Strampelli
  */
-public class EDSMessageParser {
+public class MessageParser {
 	
   protected static int Stx = 2;
   
@@ -20,9 +20,9 @@ public class EDSMessageParser {
   
   private boolean valid = false;
   
-  private EDSMessage message;
+  private Message message;
   
-  public EDSMessageParser() {
+  public MessageParser() {
 	  clear();
   }
   
@@ -89,7 +89,7 @@ public class EDSMessageParser {
    * @param message sequenza di byte che compone il messaggio
    * @return messaggio decodificato
    */
-  private EDSMessage createMessage(int[] message) {
+  private Message createMessage(int[] message) {
 	  switch (message[3]) {
 	  	case 0: return new RichiestaModelloMessage(message);
 	  	case 1: return new RispostaModelloMessage(message);
@@ -107,11 +107,11 @@ public class EDSMessageParser {
 	  	case ImpostaParametroDimmerMessage.TIPO: return new ImpostaParametroDimmerMessage(message);	  	
 	  	case 201: return new TemperatureMessage(message);
 	  	case 205: return new CronotermMessage(message);
-	  	default: return new EDSMessage(message);
+	  	default: return new Message(message);
 	  }
   }
   
-  public EDSMessage getMessage()
+  public Message getMessage()
   {
 	  return message;
   }
@@ -124,7 +124,7 @@ public class EDSMessageParser {
 	  ibuff = 0;
 	  buff = new int[8];
 	  valid = false;
-	  message = new EDSMessage();
+	  message = new Message();
   }
     
 }

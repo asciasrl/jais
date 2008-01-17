@@ -3,6 +3,7 @@
  */
 package it.ascia.eds;
 
+import it.ascia.eds.device.BMCComputer;
 import it.ascia.eds.msg.*;
 
 /**
@@ -19,10 +20,15 @@ public interface Bus {
      * 
      * @param m the message to send
      */
-    public void write(EDSMessage m);
+    public void write(Message m);
     
     /**
      * Chiude la connessione al bus.
      */
     public void close();
+    
+    /**
+     * Imposta il BMCComputer del bus.
+     */
+    public void setBMCComputer(BMCComputer bmcComputer);
 }

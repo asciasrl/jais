@@ -3,8 +3,7 @@
  */
 package it.ascia.eds.device;
 
-import java.util.Vector;
-
+import it.ascia.eds.Bus;
 import it.ascia.eds.msg.Message;
 
 /**
@@ -26,8 +25,8 @@ public class BMCIntIR extends BMC {
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
 	 */
-	public BMCIntIR(int address, int model) {
-		super(address, model);
+	public BMCIntIR(int address, int model, Bus bus) {
+		super(address, model, bus);
 		if (model != 131) {
 			System.err.println("Errore: modello di BMC Int IR sconosciuto:" + 
 					model);

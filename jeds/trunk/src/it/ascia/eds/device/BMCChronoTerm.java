@@ -5,6 +5,7 @@ package it.ascia.eds.device;
 
 import java.util.Vector;
 
+import it.ascia.eds.Bus;
 import it.ascia.eds.msg.Message;
 
 /**
@@ -25,8 +26,8 @@ public class BMCChronoTerm extends BMC {
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
 	 */
-	public BMCChronoTerm(int address, int model) {
-		super(address, model);
+	public BMCChronoTerm(int address, int model, Bus bus) {
+		super(address, model, bus);
 		switch(model) {
 		case 127:
 			break;

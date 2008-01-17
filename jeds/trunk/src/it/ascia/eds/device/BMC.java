@@ -15,7 +15,7 @@ public abstract class BMC implements Device {
 	/**
 	 * Il bus a cui il BMC e' collegato
 	 */
-	protected Bus myBus;
+	protected Bus bus;
 	/**
 	 * L'indirizzo sul bus
 	 */
@@ -30,7 +30,8 @@ public abstract class BMC implements Device {
 	 * @param address l'indirizzo di questo BMC
 	 * @param model il modello di questo BMC
 	 */
-	public BMC(int address, int model) {
+	public BMC(int address, int model, Bus bus) {
+		this.bus = bus;
 		this.address = address;
 		this.model = model;
 	}

@@ -26,5 +26,8 @@ public class RispostaStatoDimmerMessage extends Message {
 		s.append("Uscita 2: "+(Byte2 & 0x7F) +"%\r\n");
 		return s.toString();
 	}
-	
+
+	public boolean isBroadcast() {
+		return false;
+	}
 }

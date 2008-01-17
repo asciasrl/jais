@@ -50,5 +50,9 @@ public class CambioVelocitaMessage
 		}
 		s.append(" bit/sec \r\n");
 		return s.toString();
-	}		
+	}
+	
+	public boolean isBroadcast() {
+		return true;
+	}
 }

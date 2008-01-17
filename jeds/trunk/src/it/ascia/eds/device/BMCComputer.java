@@ -11,7 +11,6 @@ import it.ascia.eds.Bus;
 /**
  * Il rappresentante di questo computer sul bus EDS.
  * 
- * Questo è l'unico device che può anche scrivere messaggi sul bus.
  * Le sue funzioni sono:
  *   * tenere un log di tutti i messaggi ricevuti
  *   * spedire messaggi sul bus
@@ -80,5 +79,4 @@ public class BMCComputer implements Device {
 		}
 		return retval;
 	}
-
 }

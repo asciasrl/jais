@@ -41,5 +41,8 @@ public class CronotermMessage
 		return s.toString();
 	}
 	
+	public boolean isBroadcast() {
+		return false;
+	}
 	
 }

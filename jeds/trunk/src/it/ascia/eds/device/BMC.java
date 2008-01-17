@@ -11,17 +11,28 @@ import it.ascia.eds.msg.Message;
  * 
  * @author arrigo
  */
-public class BMC implements Device {
-	/// Il bus a cui il BMC è collegato
-	private Bus myBus;
-	/// L'indirizzo sul bus
-	private int address;
+public abstract class BMC implements Device {
+	/**
+	 * Il bus a cui il BMC e' collegato
+	 */
+	protected Bus myBus;
+	/**
+	 * L'indirizzo sul bus
+	 */
+	protected int address;
+	/**
+	 * Il modello di questo BMC
+	 */
+	protected int model;
+		
 	
 	/**
 	 * @param address l'indirizzo di questo BMC
+	 * @param model il modello di questo BMC
 	 */
-	public BMC(int address) {
+	public BMC(int address, int model) {
 		this.address = address;
+		this.model = model;
 	}
 	
 	/**
@@ -34,11 +45,17 @@ public class BMC implements Device {
 	/** 
 	 * Il BMC ha ricevuto un messaggio.
 	 * 
-	 * Questo metodo dovrebbe essere chiamato solo dal bus
+	 * Questo metodo deve leggere il contenuto del messaggio e aggiornare lo 
+	 * stato interno.
+	 * 
+	 * Dovrebbe essere chiamato solo dal bus.
 	 * 
 	 * @param m il messaggio ricevuto
 	 */
-	public void receiveMessage(Message m) {
-	 // TODO
-	}
+	public abstract void receiveMessage(Message m);
+	
+	/**
+	 * Ritorna una descrizione del BMC.
+	 */
+	public abstract String getInfo();
 }

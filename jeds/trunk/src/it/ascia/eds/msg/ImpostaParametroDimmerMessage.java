@@ -51,6 +51,8 @@ public class ImpostaParametroDimmerMessage
 		return s.toString();
 	}
 	
-
+	public boolean isBroadcast() {
+		return false;
+	}
 	
 }

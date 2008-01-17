@@ -28,5 +28,7 @@ public class RichiestaIngressoIRMessage
 		return s.toString();
 	}
 
-	
+	public boolean isBroadcast() {
+		return false;
+	}
 }

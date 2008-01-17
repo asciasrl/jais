@@ -41,5 +41,7 @@ public class TemperatureMessage
 		return s.toString();
 	}
 	
-	
+	public boolean isBroadcast() {
+		return false;
+	}
 }

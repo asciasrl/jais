@@ -40,5 +40,7 @@ public class VariazioneIngressoMessage
 		return s.toString();
 	}
 	
-	
+	public boolean isBroadcast() {
+		return false;
+	}
 }

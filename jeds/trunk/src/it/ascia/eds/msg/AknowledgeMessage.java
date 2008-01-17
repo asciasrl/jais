@@ -17,5 +17,8 @@ public class AknowledgeMessage extends Message {
 	public String getTipoMessaggio() {
 		return "Aknowledge";
 	}
-	
+
+	public boolean isBroadcast() {
+		return false;
+	}
 }

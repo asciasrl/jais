@@ -33,7 +33,21 @@ public class SerialBusTest {
 	 		System.err.println(e.getMessage());
 	 		System.exit(-1);
 	 	}
-	 	bus.setBMCComputer(new BMCComputer(bus, 0));
+	 	bus.setBMCComputer(new BMCComputer(0, bus));
+	 	// Discovery
+	 	System.out.println("Discovery:");
+	 	for (int i = 0; i < 11; i++) {
+	 		System.out.print(i + ":");
+	 		try {
+	 			BMC bmc = bus.discoverBMC(i); 
+	 			if (bmc != null) {
+	 				System.out.println(bmc.getInfo());
+	 			} else {
+	 				System.out.println();
+	 			}
+	 		} catch (Exception e) {
+	 		}
+	 	}
 	 	try {
 	 		BufferedReader stdin = 
 	 				new BufferedReader(new InputStreamReader(System.in));

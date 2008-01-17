@@ -5,6 +5,7 @@ package it.ascia.eds.device;
 
 import java.util.Vector;
 
+import it.ascia.eds.Bus;
 import it.ascia.eds.msg.Message;
 
 /**
@@ -38,8 +39,8 @@ public class BMCStandardIO extends BMC {
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
 	 */
-	public BMCStandardIO(int address, int model) {
-		super(address, model);
+	public BMCStandardIO(int address, int model, Bus bus) {
+		super(address, model, bus);
 		switch(model) {
 		case 88:
 			inPortsNum = outPortsNum = 8;
@@ -83,5 +84,12 @@ public class BMCStandardIO extends BMC {
 	public String getInfo() {
 		return "BMC Standard I/O (modello " + model + ") con " + inPortsNum + 
 			" porte di input e " + outPortsNum + " porte di output";
+	}
+	
+	/**
+	 * Aggiorna la rappresentazione interna delle porte.
+	 */
+	public void updateStatus() {
+		//TODO
 	}
 }

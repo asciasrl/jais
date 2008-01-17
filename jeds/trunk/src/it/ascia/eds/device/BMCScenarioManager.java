@@ -5,6 +5,7 @@ package it.ascia.eds.device;
 
 import java.util.Vector;
 
+import it.ascia.eds.Bus;
 import it.ascia.eds.msg.Message;
 
 /**
@@ -30,8 +31,8 @@ public class BMCScenarioManager extends BMC {
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
 	 */
-	public BMCScenarioManager(int address, int model) {
-		super(address, model);
+	public BMCScenarioManager(int address, int model, Bus bus) {
+		super(address, model, bus);
 		switch(model) {
 		case 152:
 			inPortsNum = 2;

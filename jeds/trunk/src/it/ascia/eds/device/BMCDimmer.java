@@ -5,6 +5,7 @@ package it.ascia.eds.device;
 
 import java.util.Vector;
 
+import it.ascia.eds.Bus;
 import it.ascia.eds.msg.Message;
 
 /**
@@ -38,8 +39,8 @@ public class BMCDimmer extends BMC {
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
 	 */
-	public BMCDimmer(int address, int model) {
-		super(address, model);
+	public BMCDimmer(int address, int model, Bus bus) {
+		super(address, model, bus);
 		switch(model) {
 		case 101:
 			outPortsNum = 2;

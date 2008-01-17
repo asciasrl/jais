@@ -44,7 +44,7 @@ public class BMCComputer implements Device {
 	 * @param bus il bus a cui siamo collegati
 	 * @param address l'indirizzo di questo device sul bus
 	 */
-	public BMCComputer(Bus bus, int address) {
+	public BMCComputer(int address, Bus bus) {
 		this.address = address;
 		this.bus = bus;
 		inbox = new LinkedList();

@@ -19,6 +19,10 @@ public class RispostaModelloMessage extends Message {
 	public String getTipoMessaggio() {
 		return "Risposta a richiesta Modello e Revisione";
 	}
+	
+	public int getModello() {
+		return Byte1;
+	}
 
 	public String getInformazioni()	{
 		StringBuffer s = new StringBuffer();
@@ -77,5 +81,7 @@ public class RispostaModelloMessage extends Message {
 		return s.toString();
 	}
 
-	
+	public boolean isBroadcast() {
+		return false;
+	}
 }

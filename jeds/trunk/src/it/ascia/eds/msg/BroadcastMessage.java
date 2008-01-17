@@ -49,5 +49,7 @@ public class BroadcastMessage
 		return s.toString();
 	}
 	
-	
+	public boolean isBroadcast() {
+		return true;
+	}
 }

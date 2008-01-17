@@ -20,5 +20,8 @@ public class RichiestaStatoMessage
 		return "Richiesta Stato";
 	}
 
+	public boolean isBroadcast() {
+		return false;
+	}
 	
 }

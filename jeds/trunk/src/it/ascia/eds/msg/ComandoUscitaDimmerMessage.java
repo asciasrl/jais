@@ -33,4 +33,8 @@ public class ComandoUscitaDimmerMessage
 		return s.toString();
 	}
 	
+	public boolean isBroadcast() {
+		return false;
+	}
+
 }

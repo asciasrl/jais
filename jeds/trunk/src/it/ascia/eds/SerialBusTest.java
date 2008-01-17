@@ -5,6 +5,7 @@
 package it.ascia.eds;
 
 import it.ascia.eds.msg.Message;
+import it.ascia.eds.device.BMC;
 import it.ascia.eds.device.BMCComputer;
 
 import java.io.*;
@@ -39,14 +40,24 @@ public class SerialBusTest {
 			System.out.println("Running ...");
 			int dest = 1;
 			while (dest > 0) {
-				System.out.print("Indirizzo da contattare:");
-				dest = Integer.parseInt(stdin.readLine());
-				if (dest > 0) {
-					bus.write(new Message());
-					System.out.println("Contattato!");
+				System.out.print("Indirizzo da pingare:");
+				try {
+					dest = Integer.parseInt(stdin.readLine());
+					if (dest > 0) {
+						BMC bmc = bus.discoverBMC(dest); 
+						if ( bmc != null) {
+							System.out.println(bmc.getInfo());
+						} else {
+							System.out.println("Non trovato!");
+						}
+					}
+				} catch (NumberFormatException e) {
+			 		// Inserito un input invalido. Lo ignoriamo.
 				}
 			}
 		} catch (IOException e) {
+			System.err.println(e.getMessage());
+		}  catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
 		bus.close();

@@ -32,5 +32,7 @@ public class RispostaIngressoIRMessage
 		return s.toString();
 	}
 
-	
+	public boolean isBroadcast() {
+		return false;
+	}
 }

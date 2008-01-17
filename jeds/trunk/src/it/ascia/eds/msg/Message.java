@@ -1,8 +1,16 @@
+/**
+ * Copyright (C) 2007 ASCIA S.R.L.
+ */
 package it.ascia.eds.msg;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
+/**
+ * Messaggio EDS generico.
+ * 
+ * @author sergio, arrigo
+ */
 public class Message
   	implements MessageInterface {
 	
@@ -127,6 +135,15 @@ public class Message
 	  Byte1 = message[4];
 	  Byte2 = message[5];
   }
-    
+  
+  /**
+   * Is this message for everybody?
+   * 
+   * @return true if this message is broadcast
+   */
+  public boolean isBroadcast() {
+	  System.err.println("Calling isBroadcast() on a generic message!");
+	  return false;
+  }
   
 }

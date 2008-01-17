@@ -57,6 +57,8 @@ public class ComandoUscitaMessage
 		return s.toString();
 	}
 	
-
+	public boolean isBroadcast() {
+		return false;
+	}
 	
 }

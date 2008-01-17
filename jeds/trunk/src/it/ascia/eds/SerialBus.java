@@ -3,12 +3,13 @@ package it.ascia.eds;
 // Messaggi
 import it.ascia.eds.msg.ComandoUscitaDimmerMessage;
 import it.ascia.eds.msg.ComandoUscitaMessage;
-import it.ascia.eds.msg.EDSMessage;
-import it.ascia.eds.msg.EDSMessageParser;
+import it.ascia.eds.msg.Message;
+import it.ascia.eds.msg.MessageParser;
 import it.ascia.eds.msg.RichiestaModelloMessage;
 import it.ascia.eds.msg.RichiestaStatoMessage;
 import it.ascia.eds.msg.VariazioneIngressoMessage;
 
+import it.ascia.eds.device.BMCComputer;
 import it.ascia.eds.device.Device;
 
 import java.io.IOException;
@@ -25,6 +26,9 @@ import gnu.io.*;
 /**
  * Gestisce la comunicazione con il bs EDS attraverso un convertitore seriale
  * 
+ * Tutti i messaggi che passano vengono smistati all'oggetto BMCComputer 
+ * passato al costruttore.
+ * 
  * @author sergio, arrigo
  */
 public class SerialBus implements Bus, SerialPortEventListener {
@@ -35,10 +39,19 @@ public class SerialBus implements Bus, SerialPortEventListener {
     OutputStream       outputStream;
     static boolean	      outputBufferEmptyFlag = false;
     SerialPort		      serialPort;
-    EDSMessageParser mp;
-	EDSMessage m;
+    MessageParser mp;
+	Message m;
 	
+	/**
+	 * I device presenti nel bus
+	 */
     Map devices;
+    
+    /**
+     * Il BMC "finto" che corrisponde a questo computer
+     */
+    Device bmcComputer;
+    
     /**
      * Costruttore
      *
@@ -49,6 +62,7 @@ public class SerialBus implements Bus, SerialPortEventListener {
     public SerialBus(String portName) throws Exception {
         boolean portFound = false;
         devices = new HashMap();
+        bmcComputer = null;
         
     	portList = CommPortIdentifier.getPortIdentifiers();
 
@@ -80,7 +94,7 @@ public class SerialBus implements Bus, SerialPortEventListener {
 					e.getMessage());
 		}
 
-		mp = new EDSMessageParser();
+		mp = new MessageParser();
 		
 		try {
 		    serialPort.addEventListener(this);
@@ -99,6 +113,7 @@ public class SerialBus implements Bus, SerialPortEventListener {
 			throw new Exception("Errore durante l'impostazione dei parametri:" +
 					e.getMessage());
 		}
+		
 
 		// Questo blocco blocca (!) la ricezione
 //	    try {
@@ -111,6 +126,9 @@ public class SerialBus implements Bus, SerialPortEventListener {
 //		scrivi();
     }
 
+    public void setBMCComputer(BMCComputer bmcComputer) {
+    	this.bmcComputer = bmcComputer;
+    }
     
 //    public void scrivi() {
 //    	try {
@@ -200,7 +218,7 @@ public class SerialBus implements Bus, SerialPortEventListener {
      * 
      * @param m the message to send
      */
-    public void write(EDSMessage m) {
+    public void write(Message m) {
     	try {
 			outputBufferEmptyFlag = false;
 			m.write(outputStream);
@@ -277,20 +295,24 @@ public class SerialBus implements Bus, SerialPortEventListener {
      * Invia un messaggio a tutti i BMC destinatari
      * 
      * Stampa un messaggio su stderr se il messaggio è per un BMC che non è in 
-     * lista
+     * lista. 
+     * 
+     * Il BMCComputer riceve tutti i messaggi.
      * 
      * @param m il messaggio da inviare
      */
-    protected void dispatchMessage(EDSMessage m) {
-    	int rcpt;
-    	Device bmc = (Device)devices.get(new Integer(m.getRecipient()));
+    protected void dispatchMessage(Message m) {
+    	int rcpt = m.getRecipient();
+    	Device bmc = (Device)devices.get(new Integer(rcpt));
     	if (bmc != null) {
     		bmc.receiveMessage(m);
-    	} else {
+    	} else if ((bmcComputer != null) && (rcpt != bmcComputer.getAddress())) {
     		System.err.println("Ricevuto un messaggio per il BMC " + 
-    				m.getRecipient() + " che non conosco:");
+    				rcpt + " che non conosco:");
     		System.err.println((new Date()).toString() + "\r\n" + m);
     	}
+    	if (bmcComputer != null) 
+    			bmcComputer.receiveMessage(m);
     }
     
     /**

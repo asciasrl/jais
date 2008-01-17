@@ -3,8 +3,8 @@ package it.ascia.eds.msg;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class EDSMessage
-  	implements EDSMessageInterface {
+public class Message
+  	implements MessageInterface {
 	
   protected int[] rawmessage;
   
@@ -112,10 +112,10 @@ public class EDSMessage
 	  return s.toString();
   }
   
-  public EDSMessage() {  
+  public Message() {  
   }
 
-  public EDSMessage(int[] message) {
+  public Message(int[] message) {
 	  parseMessage(message);
   }
   

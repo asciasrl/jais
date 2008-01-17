@@ -1,7 +1,7 @@
 package it.ascia.eds;
 
-import it.ascia.eds.msg.EDSMessage;
-import it.ascia.eds.msg.EDSMessageParser;
+import it.ascia.eds.msg.Message;
+import it.ascia.eds.msg.MessageParser;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,8 +25,8 @@ public class EDSReader
     InputStream		      inputStream;
     SerialPort		      serialPort;
     Thread		      readThread;
-    EDSMessageParser mp;
-	EDSMessage m;
+    MessageParser mp;
+	Message m;
 	
     /**
      * Method declaration
@@ -82,7 +82,7 @@ public class EDSReader
 			// TODO
 		}
 
-		mp = new EDSMessageParser();
+		mp = new MessageParser();
 		
 		try {
 		    serialPort.addEventListener(this);

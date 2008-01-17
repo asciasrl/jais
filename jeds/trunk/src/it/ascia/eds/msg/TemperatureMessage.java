@@ -6,8 +6,8 @@ package it.ascia.eds.msg;
  * TODO Distinguere fra dispositivi di input e termostato
  */
 public class TemperatureMessage
-	extends EDSMessage
-	implements EDSMessageInterface
+	extends Message
+	implements MessageInterface
 	{
 
 	public TemperatureMessage(int d, int m, int Attivazione, int Uscita, int Variazione)

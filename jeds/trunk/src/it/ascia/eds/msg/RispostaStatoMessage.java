@@ -1,6 +1,6 @@
 package it.ascia.eds.msg;
 
-public class RispostaStatoMessage extends EDSMessage {
+public class RispostaStatoMessage extends Message {
 
 	public RispostaStatoMessage(int d, int m, int Uscite, int Entrate) {
 		Destinatario = d & 0xFF;

@@ -4,7 +4,8 @@
  */
 package it.ascia.eds;
 
-import it.ascia.eds.msg.EDSMessage;
+import it.ascia.eds.msg.Message;
+import it.ascia.eds.device.BMCComputer;
 
 import java.io.*;
 
@@ -31,6 +32,7 @@ public class SerialBusTest {
 	 		System.err.println(e.getMessage());
 	 		System.exit(-1);
 	 	}
+	 	bus.setBMCComputer(new BMCComputer(bus, 0));
 	 	try {
 	 		BufferedReader stdin = 
 	 				new BufferedReader(new InputStreamReader(System.in));
@@ -40,7 +42,7 @@ public class SerialBusTest {
 				System.out.print("Indirizzo da contattare:");
 				dest = Integer.parseInt(stdin.readLine());
 				if (dest > 0) {
-					bus.write(new EDSMessage());
+					bus.write(new Message());
 					System.out.println("Contattato!");
 				}
 			}

@@ -1,8 +1,8 @@
 package it.ascia.eds.msg;
 
 public class ComandoUscitaDimmerMessage 
-	extends EDSMessage
-	implements EDSMessageInterface {
+	extends Message
+	implements MessageInterface {
 
 	/**
 	 * 51

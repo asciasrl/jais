@@ -1,8 +1,8 @@
 package it.ascia.eds.msg;
 
 public class RichiestaIngressoIRMessage 
-	extends EDSMessage
-	implements EDSMessageInterface {
+	extends Message
+	implements MessageInterface {
 
 	public RichiestaIngressoIRMessage(int d, int m, int Uscita) {
 		Destinatario = d & 0xFF;

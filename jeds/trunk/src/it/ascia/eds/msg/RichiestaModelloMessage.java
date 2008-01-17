@@ -1,8 +1,8 @@
 package it.ascia.eds.msg;
 
 public class RichiestaModelloMessage 
-	extends EDSMessage
-	implements EDSMessageInterface {
+	extends Message
+	implements MessageInterface {
 
 	public RichiestaModelloMessage(int d, int m) {
 		Destinatario = d & 0xFF;

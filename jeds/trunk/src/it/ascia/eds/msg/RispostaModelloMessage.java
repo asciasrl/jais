@@ -2,7 +2,7 @@ package it.ascia.eds.msg;
 
 import gnu.io.SerialPortEvent;
 
-public class RispostaModelloMessage extends EDSMessage {
+public class RispostaModelloMessage extends Message {
 
 	public RispostaModelloMessage(int d, int m, int Modello, int Versione) {
 		Destinatario = d & 0xFF;
@@ -39,7 +39,7 @@ public class RispostaModelloMessage extends EDSMessage {
 				s.append("BMC Standard I/O, 6 IN - 0 OUT");
 				break;
 			case 88:			
-				s.append("BMC Standard I/O, 8 IN – 8 OUT");
+				s.append("BMC Standard I/O, 8 IN ï¿½ 8 OUT");
 				break;
 			case 102:			
 				s.append("DIMMER Evolution low power (800W, 2 canali)");

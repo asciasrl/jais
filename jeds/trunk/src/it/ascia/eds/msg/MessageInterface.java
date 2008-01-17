@@ -1,6 +1,6 @@
 package it.ascia.eds.msg;
 
-public interface EDSMessageInterface {
+public interface MessageInterface {
 
 	public String getTipoMessaggio();
 	

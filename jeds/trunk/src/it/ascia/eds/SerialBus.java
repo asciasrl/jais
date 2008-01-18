@@ -5,14 +5,13 @@ import it.ascia.eds.msg.Message;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.TooManyListenersException;
 
 import gnu.io.*;
 
 /**
- * Gestisce la comunicazione con il bs EDS attraverso un convertitore seriale
+ * Gestisce la comunicazione con il bs EDS attraverso un convertitore seriale.
  * 
  * Tutti i messaggi che passano vengono smistati all'oggetto BMCComputer 
  * passato al costruttore.
@@ -21,12 +20,14 @@ import gnu.io.*;
  */
 public class SerialBus extends Bus implements SerialPortEventListener {
 
-    static CommPortIdentifier portId;
-    static Enumeration	      portList;
-    InputStream		      inputStream;
-    OutputStream       outputStream;
-    static boolean	      outputBufferEmptyFlag = false;
-    SerialPort		      serialPort;	
+    private static CommPortIdentifier portId;
+    private static Enumeration	      portList;
+    /**
+     * Dove scrivere i messaggi.
+     */
+    private OutputStream       outputStream;
+    private static boolean	      outputBufferEmptyFlag = false;
+    private SerialPort		      serialPort;	
     
     /**
      * Costruttore
@@ -35,7 +36,7 @@ public class SerialBus extends Bus implements SerialPortEventListener {
      * 
      * @throws un'Exception se incontra un errore
      */
-    public SerialBus(String portName) throws Exception {
+    public SerialBus(String portName) throws EDSException {
         boolean portFound = false;
         
     	portList = CommPortIdentifier.getPortIdentifiers();
@@ -51,27 +52,27 @@ public class SerialBus extends Bus implements SerialPortEventListener {
     	    }
     	} 
     	if (!portFound) {
-    	    throw new Exception("port " + portName + " not found.");
+    	    throw new EDSException("port " + portName + " not found.");
     	} 
 
     	try {
     		serialPort = (SerialPort) portId.open("SerialBus", 2000);
     	} catch (PortInUseException e) {
-	    	throw new Exception("Porta in uso: " + e.toString());
+	    	throw new EDSException("Porta in uso: " + e.toString());
     	}
 
 		try {
-		    inputStream = serialPort.getInputStream();
+		    setInputStream(serialPort.getInputStream());
 		    outputStream = serialPort.getOutputStream();
 		} catch (IOException e) {
-			throw new Exception("Impossibile ottenere gli stream: " + 
+			throw new EDSException("Impossibile ottenere gli stream: " + 
 					e.getMessage());
 		}
 		
 		try {
 		    serialPort.addEventListener(this);
 		} catch (TooManyListenersException e) {
-			throw new Exception("Troppi listeners sulla porta:" + 
+			throw new EDSException("Troppi listeners sulla porta:" + 
 					e.getMessage());
 		}
 
@@ -82,7 +83,7 @@ public class SerialBus extends Bus implements SerialPortEventListener {
 						   SerialPort.STOPBITS_1, 
 						   SerialPort.PARITY_NONE);
 		} catch (UnsupportedCommOperationException e) {
-			throw new Exception("Errore durante l'impostazione dei parametri:" +
+			throw new EDSException("Errore durante l'impostazione dei parametri:" +
 					e.getMessage());
 		}
 		
@@ -231,29 +232,8 @@ public class SerialBus extends Bus implements SerialPortEventListener {
 		    break;
 	
 		case SerialPortEvent.DATA_AVAILABLE:
-		    byte[] readBuffer = new byte[8];
-	
-		    try {
-				while (inputStream.available() > 0) {
-				    int numBytes = inputStream.read(readBuffer);
-				    if (numBytes > 0) {
-				    	for (int i = 0; i < numBytes; i++) {
-							byte b = readBuffer[i];
-					    	mp.push(b);
-					    	if (mp.isValid()) {
-					    		Message m = mp.getMessage();
-//					    		if (!m.getTipoMessaggio().equals("Aknowledge")) {
-//					    			System.out.println((new Date()).toString() + "\r\n" + m);
-//					    		}
-					    		dispatchMessage(m);
-
-					    		//mp.clear();
-					    	}
-						}
-				    }
-				}			
-		    } catch (IOException e) {}
-	
+			// La superclasse sa che cosa fare
+		    readData();	
 		    break;
 		}
     }

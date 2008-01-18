@@ -14,32 +14,33 @@ import java.io.*;
  * @author arrigo
  * 
  */
-public class SerialBusTest {
+public class BusTest {
 
 	/**
 	 * @param args
 	 *            porta seriale
 	 */
 	public static void main(String[] args) {
-	    String defaultPort = "/dev/ttyUSB0";
+	    String defaultPort = "ascia.homeip.net";
 		Bus bus = null;
-		
+		BMCComputer bmcComputer;
 	 	if (args.length > 0) {
 		    defaultPort = args[0];
 		}
 	 	try {
-	 		bus = new SerialBus(defaultPort);
-	 	} catch (Exception e) {
+	 		bus = new TCPSerialBus(defaultPort);
+	 	} catch (EDSException e) {
 	 		System.err.println(e.getMessage());
 	 		System.exit(-1);
 	 	}
-	 	bus.setBMCComputer(new BMCComputer(0, bus));
+	 	bmcComputer = new BMCComputer(0, bus);
+	 	bus.setBMCComputer(bmcComputer);
 	 	// Discovery
 	 	System.out.println("Discovery:");
 	 	for (int i = 0; i < 11; i++) {
 	 		System.out.print(i + ":");
 	 		try {
-	 			BMC bmc = bus.discoverBMC(i); 
+	 			BMC bmc = bmcComputer.discoverBMC(i); 
 	 			if (bmc != null) {
 	 				System.out.println(bmc.getInfo());
 	 			} else {
@@ -58,7 +59,7 @@ public class SerialBusTest {
 				try {
 					dest = Integer.parseInt(stdin.readLine());
 					if (dest > 0) {
-						BMC bmc = bus.discoverBMC(dest); 
+						BMC bmc = bmcComputer.discoverBMC(dest); 
 						if ( bmc != null) {
 							System.out.println(bmc.getInfo());
 						} else {
@@ -76,5 +77,4 @@ public class SerialBusTest {
 		}
 		bus.close();
 	}
-
 }

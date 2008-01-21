@@ -43,4 +43,8 @@ public class BMCIntIR extends BMC {
 	public String getInfo() {
 		return "BMC Int IR (modello " + model + ")";
 	}
+
+	public void updateStatus() {
+		System.err.println("updateStatus non implementato su BMCIntIR");
+	}
 }

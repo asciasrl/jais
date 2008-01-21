@@ -151,4 +151,8 @@ public class BMCComputer extends BMC {
     	}
     	return retval;
     }
+
+	public void updateStatus() {
+		System.err.println("updateStatus non implementato su BMCComputer.");
+	}
 }

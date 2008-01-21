@@ -32,7 +32,7 @@ public class BMCScenarioManager extends BMC {
 	 * @param model numero del modello
 	 */
 	public BMCScenarioManager(int address, int model, Bus bus) {
-		super(address, model, bus);
+		super(address, model, bus, "BMCScenarioManager");
 		switch(model) {
 		case 152:
 			inPortsNum = 2;
@@ -70,5 +70,10 @@ public class BMCScenarioManager extends BMC {
 
 	public void updateStatus() {
 		System.err.println("updateStatus non implementato su BMCScenarioManager");
+	}
+
+	public String getStatus() {
+		// TODO
+		return name;
 	}
 }

@@ -40,7 +40,7 @@ public class BMCIR extends BMC {
 	 * @param model numero del modello
 	 */
 	public BMCIR(int address, int model, Bus bus) {
-		super(address, model, bus);
+		super(address, model, bus, "BMCIR");
 		switch(model) {
 		case 41:
 			inPortsNum = 4;
@@ -74,5 +74,10 @@ public class BMCIR extends BMC {
 	
 	public void updateStatus() {
 		System.err.println("updateStatus non implementato su BMCIR");
+	}
+
+	public String getStatus() {
+		// TODO
+		return name;
 	}
 }

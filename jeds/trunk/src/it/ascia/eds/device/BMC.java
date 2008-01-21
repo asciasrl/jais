@@ -27,16 +27,20 @@ public abstract class BMC implements Device {
 	 * Il modello di questo BMC
 	 */
 	protected int model;
-		
+	/**
+	 * Il nome che AUI da' a questo BMC
+	 */
+	protected String name;		
 	
 	/**
 	 * @param address l'indirizzo di questo BMC
 	 * @param model il modello di questo BMC
 	 */
-	public BMC(int address, int model, Bus bus) {
+	public BMC(int address, int model, Bus bus, String name) {
 		this.bus = bus;
 		this.address = address;
 		this.model = model;
+		this.name = name;
 	}
 	
 	/**
@@ -63,6 +67,11 @@ public abstract class BMC implements Device {
 	 * Ritorna una descrizione del BMC.
 	 */
 	public abstract String getInfo();
+	
+	/**
+	 * Ritorna lo stato del BMC in formato utile per AUI.
+	 */
+	public abstract String getStatus();
 	
 	/**
 	 * Aggiorna la rappresentazione interna delle porte.

@@ -38,7 +38,7 @@ public class BMCComputer extends BMC {
 	 * @param address l'indirizzo di questo device sul bus
 	 */
 	public BMCComputer(int address, Bus bus) {
-		super(address, -1, bus);
+		super(address, -1, bus, "Computer");
 		inbox = new LinkedList();
 		outbox = new LinkedList();
 	}
@@ -154,5 +154,9 @@ public class BMCComputer extends BMC {
 
 	public void updateStatus() {
 		System.err.println("updateStatus non implementato su BMCComputer.");
+	}
+
+	public String getStatus() {
+		return null;
 	}
 }

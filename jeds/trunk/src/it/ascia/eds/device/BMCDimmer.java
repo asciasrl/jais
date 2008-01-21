@@ -45,7 +45,7 @@ public class BMCDimmer extends BMC {
 	 * @param model numero del modello
 	 */
 	public BMCDimmer(int address, int model, Bus bus) {
-		super(address, model, bus);
+		super(address, model, bus, "DimmerFico");
 		switch(model) {
 		case 101:
 			outPortsNum = 2;
@@ -93,7 +93,7 @@ public class BMCDimmer extends BMC {
 	 * @see it.ascia.eds.device.BMC#receiveMessage(it.ascia.eds.msg.Message)
 	 */
 	public void receiveMessage(Message m) {
-		System.out.println("Ricevuto un messaggio di tipo " + m.getTipoMessaggio());
+//		System.out.println("Ricevuto un messaggio di tipo " + m.getTipoMessaggio());
 		if (RispostaStatoDimmerMessage.class.isInstance(m)) {
 			RispostaStatoDimmerMessage r = (RispostaStatoDimmerMessage)m;
 			if (m.getSender() == getAddress()) {
@@ -134,6 +134,15 @@ public class BMCDimmer extends BMC {
 			}
 		}
 		System.out.println();
+	}
+	
+	public String getStatus() {
+		int i;
+		String retval = "";
+		for (i = 0; i < outPortsNum; i++) {
+			retval += name + "." + i + "=" + outPorts[i] + "\n";
+		}
+		return retval;
 	}
 	
 	public void updateStatus() {

@@ -3,12 +3,10 @@
  */
 package it.ascia.eds.device;
 
-import java.util.Vector;
-
 import it.ascia.eds.Bus;
+import it.ascia.eds.msg.ComandoUscitaMessage;
 import it.ascia.eds.msg.Message;
 import it.ascia.eds.msg.RichiestaStatoMessage;
-import it.ascia.eds.msg.RispostaModelloMessage;
 import it.ascia.eds.msg.RispostaStatoMessage;
 
 /**
@@ -36,6 +34,10 @@ public class BMCStandardIO extends BMC {
 	 * Uscite
 	 */
 	private boolean [] outPorts;
+	/**
+	 * I valori di outPorts non sono aggiornati.
+	 */
+	private boolean dirtyOutPorts;
 	
 	/**
 	 * Costruttore
@@ -43,7 +45,7 @@ public class BMCStandardIO extends BMC {
 	 * @param model numero del modello
 	 */
 	public BMCStandardIO(int address, int model, Bus bus) {
-		super(address, model, bus);
+		super(address, model, bus, "StandardIO");
 		switch(model) {
 		case 88:
 			inPortsNum = outPortsNum = 8;
@@ -75,6 +77,7 @@ public class BMCStandardIO extends BMC {
 		if (outPortsNum > 0) {
 			outPorts = new boolean[outPortsNum];
 		}
+		dirtyOutPorts = true;
 	}
 	
 	/* (non-Javadoc)
@@ -92,12 +95,18 @@ public class BMCStandardIO extends BMC {
 				for (i = 0; i < outPortsNum; i++) {
 					outPorts[i] = temp[i];
 				}
+				dirtyOutPorts = false;
 				temp = r.getInputs();
 				for (i = 0; i < inPortsNum; i++) {
 					inPorts[i] = temp[i];
 				}
 			} // if il sender sono io
-		} // if RispostaStatoMessage
+		} else if (ComandoUscitaMessage.class.isInstance(m)) {
+			if (m.getRecipient() == getAddress()) {
+				// Ci chiedono di cambiare le porte in uscita.
+				dirtyOutPorts = true;
+			}
+		}
 	}
 	
 	/**
@@ -116,6 +125,29 @@ public class BMCStandardIO extends BMC {
 	 */
 	public boolean[] getOutputs() {
 		return outPorts;
+	}
+	
+	/**
+	 * Imposta il valore di un'uscita.
+	 * 
+	 * Manda un messaggio con mittente il BMCComputer.
+	 *
+	 * @param port numero della porta
+	 * @param value valore (true: acceso)
+	 * @returns true se l'oggetto ha risposto (ACK)
+	 */
+	public boolean setOutPort(int port, boolean value) {
+		boolean retval = false;
+		int intValue = (value)? 1 : 0;
+		if ((port >= 0) && (port < outPortsNum)) {
+			ComandoUscitaMessage m;
+			m = new ComandoUscitaMessage(getAddress(),
+					bus.getBMCComputerAddress(), 0, port, 0, intValue);
+			retval = bus.sendPTPMessage(m);
+		} else {
+			System.err.println("Numero porta non valido: " + port);
+		}
+		return retval;
 	}
 	
 	public String getInfo() {
@@ -150,6 +182,19 @@ public class BMCStandardIO extends BMC {
 	 	for (i = 0; i < outPortsNum; i++) {
 			System.out.print(outPorts[i]? 1 : 0);
 		}
+	 	if (dirtyOutPorts) System.out.print("?");
 	 	System.out.println();
+	}
+
+	public String getStatus() {
+		String retval = "";
+		int i;
+		for (i = 0; i < inPortsNum; i++) {
+			retval += name + "." + i + "=" + (inPorts[i]? "ON" : "OFF") + "\n";
+		}
+	 	for (i = 0; i < outPortsNum; i++) {
+	 		retval += name + "." + i + "=" + (outPorts[i]? "ON" : "OFF") + "\n";
+		}
+	 	return retval;
 	}
 }

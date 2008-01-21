@@ -46,10 +46,6 @@ public abstract class Bus {
 	protected static final int SEND_RETRIES = 3;
 
 	/**
-	 * L'InputStream da cui leggere i dati ricevuti. Deve essere impostato dalle sottoclassi.
-	 */
-	private InputStream inputStream;
-	/**
 	 * MessageParser per la lettura dei messaggi in ingresso.
 	 */
 	protected MessageParser mp;
@@ -86,6 +82,21 @@ public abstract class Bus {
 		mp = new MessageParser();
     }
     
+    /**
+     * Verifica se ci sono dati pronti da leggere.
+     * 
+     * @returns true se ci sono dati leggibili da readByte()
+     */
+    protected abstract boolean hasData();
+    
+    /**
+     * Ritorna il prossimo byte ricevuto.
+     * @throws IOException 
+     * 
+     * @returns il dato ricevuto.
+     */
+    protected abstract byte readByte() throws IOException;
+    
 	/**
      * Invia un messaggio sul bus.
      * 
@@ -101,13 +112,6 @@ public abstract class Bus {
     public abstract void close();
     
     /**
-     * Imposta inputStream.
-     */
-    protected void setInputStream(InputStream is) {
-    	inputStream = is;
-    }
-    
-    /**
      * Imposta il BMCComputer del bus.
      */
     public void setBMCComputer(BMCComputer bmcComputer) {
@@ -116,38 +120,45 @@ public abstract class Bus {
     }
     
     /**
+     * Ritorna l'indirizzo del BMCComputer del bus.
+     * 
+     * Questo metodo è utile per i BMC, quando devono richiedere informazioni sul
+     * proprio stato. I messaggi che inviano devono partire "a nome" del
+     * BMCComputer.
+     */
+    public int getBMCComputerAddress() {
+    	return bmcComputer.getAddress();
+    }
+    
+    /**
      * Legge e interpreta i dati in arrivo.
      * 
-     * Questa funzione deve essere chiamata dalla sottoclasse, quando inputStream
-     * contiene dati da leggere.
+     * Questa funzione deve essere chiamata dalla sottoclasse, quando ci
+     * sono dati pronti da leggere con readByte().
      * 
      * I messaggi decodificati vengono passati a dispatchMessage().
      */
     protected void readData() {
-    	byte[] readBuffer = new byte[8];
-	    try {
-			while (inputStream.available() > 0) {
-			    int numBytes = inputStream.read(readBuffer);
-			    if (numBytes > 0) {
-			    	for (int i = 0; i < numBytes; i++) {
-						byte b = readBuffer[i];
-				    	mp.push(b);
-				    	if (mp.isValid()) {
-				    		Message m = mp.getMessage();
-//				    		if (!m.getTipoMessaggio().equals("Aknowledge")) {
-//				    			System.out.println((new Date()).toString() + "\r\n" + m);
-//				    		}
-				    		dispatchMessage(m);
-				    		//mp.clear();
-				    	}
-					}
-			    }
-			}			
-	    } catch (IOException e) {}
+    	while (hasData()) {
+    		try {
+    			byte b = readByte();
+    			mp.push(b);
+    			if (mp.isValid()) {
+    				Message m = mp.getMessage();
+//  				if (!m.getTipoMessaggio().equals("Aknowledge")) {
+//  				System.out.println((new Date()).toString() + "\r\n" + m);
+//  				}
+    				dispatchMessage(m);
+    				//mp.clear();
+    			}
+    		} catch (IOException e) {
+    			System.err.println("Errore di lettura: " + e.getMessage());
+    		}
+    	} // while hasData()
     }
 
     /**
-     * Invia un messaggio a tutti i BMC destinatari.
+     * Invia un messaggio a tutti i BMC destinatari e al mittente.
      * 
      * Questo metodo deve essere chiamato dalla sottoclasse, per ogni messaggio 
      * che viene ricevuto.
@@ -162,31 +173,42 @@ public abstract class Bus {
     private void dispatchMessage(Message m) {
     	int rcpt = m.getRecipient();
     	int sender = m.getSender();
+    	// System.out.println("Messaggio da " + sender + " per " + rcpt);
     	if ((sender == pingedDevice) && (rcpt == pingerDevice)) {
-    		// È un pong.
+    		// E' un pong.
     		pongMessage = m;
-    	} else {
-    		if (m.isBroadcast()) { // Mandiamo il messaggio a tutti
-    			Iterator it = devices.values().iterator();
-    			while (it.hasNext()) {
-    				Device bmc = (Device)it.next();
-    				bmc.receiveMessage(m);
-    			}
-    		} else { // Non e' un messaggio broadcast
-    			Device bmc = (Device)devices.get(new Integer(rcpt));
-    			if (bmc != null) {
-    				bmc.receiveMessage(m);
-    			} else {
-    				/*System.err.println("Ricevuto un messaggio per il BMC " + 
-    						rcpt + " che non conosco:");
-    				System.err.println((new Date()).toString() + "\r\n" + m);*/
-    			}
-    			// Lo mandiamo anche al BMCComputer
-    			if ((bmcComputer != null) && (rcpt != bmcComputer.getAddress())) { 
-    	    		bmcComputer.receiveMessage(m);
-    			}
+    	}
+    	if (m.isBroadcast()) { // Mandiamo il messaggio a tutti
+    		Iterator it = devices.values().iterator();
+    		while (it.hasNext()) {
+    			Device bmc = (Device)it.next();
+    			bmc.receiveMessage(m);
     		}
-    	} // If non è un pong
+    	} else { 
+    		// Non e' un messaggio broadcast: va mandato al destinatario...
+    		Device bmc = (Device)devices.get(new Integer(rcpt));
+    		if (bmc != null) {
+    			bmc.receiveMessage(m);
+    		} else {
+    			/*System.err.println("Ricevuto un messaggio per il BMC " + 
+    					rcpt + " che non conosco:");
+    			System.err.println((new Date()).toString() + "\r\n" + m);*/
+    		}
+    		// ...e al mittente
+    		bmc = (Device)devices.get(new Integer(sender));
+    		if (bmc != null) {
+    			bmc.receiveMessage(m);
+    		} else {
+    			/*System.err.println("Ricevuto un messaggio inviato dal BMC " + 
+    					rcpt + " che non conosco:");
+    			System.err.println((new Date()).toString() + "\r\n" + m);*/
+    		}
+    		// Lo mandiamo anche al BMCComputer, se non gliel'abbiamo gia' dato
+    		if ((bmcComputer != null) && (rcpt != bmcComputer.getAddress()) &&
+    				(sender != bmcComputer.getAddress())) { 
+    	   		bmcComputer.receiveMessage(m);
+    		}
+    	}
     }
 
     /**

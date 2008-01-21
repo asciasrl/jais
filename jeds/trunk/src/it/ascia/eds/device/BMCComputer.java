@@ -22,15 +22,6 @@ import it.ascia.eds.Bus;
  * @author arrigo
  */
 public class BMCComputer extends BMC {
-	
-	/**
-	 * Il nostro indirizzo sul bus.
-	 */
-	private int address;
-	/**
-	 * Il nostro bus.
-	 */
-	private Bus bus;
 	/**
 	 * Queue dei messaggi ricevuti.
 	 */
@@ -65,21 +56,22 @@ public class BMCComputer extends BMC {
 	public void receiveMessage(Message m) {
 		if (RispostaModelloMessage.class.isInstance(m)) {
 			BMC bmc;
-			int model;
+			int model, bmcAddress;
 			RispostaModelloMessage risposta = (RispostaModelloMessage) m;
 			model = risposta.getModello();
+			bmcAddress = risposta.getSender();
 			switch(model) {
 			case 88:
 			case 8:
 			case 40:
 			case 60:
 			case 44:
-				bmc = new BMCStandardIO(address, model, bus);
+				bmc = new BMCStandardIO(bmcAddress, model, bus);
 				break;
 			case 41:
 			case 61:
 			case 81:
-				bmc = new BMCIR(address, model, bus);
+				bmc = new BMCIR(bmcAddress, model, bus);
 				break;
 			case 101:
 			case 102:
@@ -87,24 +79,24 @@ public class BMCComputer extends BMC {
 			case 104:
 			case 106:
 			case 111:
-				bmc = new BMCDimmer(address, model, bus);
+				bmc = new BMCDimmer(bmcAddress, model, bus);
 				break;
 			case 131:
-				bmc = new BMCIntIR(address, model, bus);
+				bmc = new BMCIntIR(bmcAddress, model, bus);
 				break;
 			case 152:
 			case 154:
 			case 156:
 			case 158:
-				bmc = new BMCScenarioManager(address, model, bus);
+				bmc = new BMCScenarioManager(bmcAddress, model, bus);
 				break;
 			case 127:
-				bmc = new BMCChronoTerm(address, model, bus);
+				bmc = new BMCChronoTerm(bmcAddress, model, bus);
 				break;
 			default:
 				System.err.println("Modello di BMC sconosciuto: " + 
 						model);
-			bmc = null;
+				bmc = null;
 			}
 			if (bmc != null) {
 				bus.addDevice(bmc);

@@ -25,7 +25,11 @@ public class SerialBus extends Bus implements SerialPortEventListener {
     /**
      * Dove scrivere i messaggi.
      */
-    private OutputStream       outputStream;
+    private OutputStream outputStream;
+    /**
+     * Da dove leggere i messaggi.
+     */
+    private InputStream inputStream;
     private static boolean	      outputBufferEmptyFlag = false;
     private SerialPort		      serialPort;	
     
@@ -62,7 +66,7 @@ public class SerialBus extends Bus implements SerialPortEventListener {
     	}
 
 		try {
-		    setInputStream(serialPort.getInputStream());
+		    inputStream = serialPort.getInputStream();
 		    outputStream = serialPort.getOutputStream();
 		} catch (IOException e) {
 			throw new EDSException("Impossibile ottenere gli stream: " + 
@@ -244,4 +248,18 @@ public class SerialBus extends Bus implements SerialPortEventListener {
     public void close() {
     	serialPort.close();
     }
+
+	protected boolean hasData() {
+		try {
+			return (inputStream.available() > 0);
+		} catch (IOException e) {
+			System.err.println("Impossibile verificare la presenza di dati:" +
+					e.getMessage());
+			return false;
+		}
+	}
+
+	protected byte readByte() throws IOException {
+		return (byte)inputStream.read();
+	}
 }

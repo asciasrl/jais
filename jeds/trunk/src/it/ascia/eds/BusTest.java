@@ -39,14 +39,11 @@ public class BusTest {
 	 	System.out.println("Discovery:");
 	 	for (int i = 0; i < 11; i++) {
 	 		System.out.print(i + ":");
-	 		try {
-	 			BMC bmc = bmcComputer.discoverBMC(i); 
-	 			if (bmc != null) {
-	 				System.out.println(bmc.getInfo());
-	 			} else {
-	 				System.out.println();
-	 			}
-	 		} catch (Exception e) {
+	 		BMC bmc = bmcComputer.discoverBMC(i); 
+	 		if (bmc != null) {
+	 			System.out.println(bmc.getInfo());
+	 		} else {
+	 			System.out.println();
 	 		}
 	 	}
 	 	try {
@@ -72,9 +69,8 @@ public class BusTest {
 			}
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
-		}  catch (Exception e) {
-			System.err.println(e.getMessage());
 		}
+		System.out.println("Chiusura bus...");
 		bus.close();
 	}
 }

@@ -7,7 +7,10 @@ import it.ascia.eds.*;
 import it.ascia.eds.msg.Message;
 
 /**
- * Un BMC
+ * Un BMC.
+ * 
+ * I BMC devono poter aggiornare il proprio stato. Questo deve avvenire inviando
+ * messaggi sul bus che abbiano come mittente il BMCComputer.
  * 
  * @author arrigo
  */
@@ -44,12 +47,13 @@ public abstract class BMC implements Device {
 	}
 	
 	/** 
-	 * Il BMC ha ricevuto un messaggio.
+	 * Il BMC ha inviato o ricevuto un messaggio.
 	 * 
 	 * Questo metodo deve leggere il contenuto del messaggio e aggiornare lo 
 	 * stato interno.
 	 * 
-	 * Dovrebbe essere chiamato solo dal bus.
+	 * Dovrebbe essere chiamato solo dal bus. Deve essere chiamato sia per i
+	 * messaggi inviati, sia per quelli ricevuti.
 	 * 
 	 * @param m il messaggio ricevuto
 	 */

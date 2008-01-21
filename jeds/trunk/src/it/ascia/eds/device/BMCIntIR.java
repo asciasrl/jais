@@ -26,7 +26,7 @@ public class BMCIntIR extends BMC {
 	 * @param model numero del modello
 	 */
 	public BMCIntIR(int address, int model, Bus bus) {
-		super(address, model, bus);
+		super(address, model, bus, "BMCIntIR");
 		if (model != 131) {
 			System.err.println("Errore: modello di BMC Int IR sconosciuto:" + 
 					model);
@@ -46,5 +46,9 @@ public class BMCIntIR extends BMC {
 
 	public void updateStatus() {
 		System.err.println("updateStatus non implementato su BMCIntIR");
+	}
+
+	public String getStatus() { // TODO
+		return name;
 	}
 }

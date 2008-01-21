@@ -27,7 +27,7 @@ public class BMCChronoTerm extends BMC {
 	 * @param model numero del modello
 	 */
 	public BMCChronoTerm(int address, int model, Bus bus) {
-		super(address, model, bus);
+		super(address, model, bus, "Cronotermostato");
 		switch(model) {
 		case 127:
 			break;
@@ -50,5 +50,10 @@ public class BMCChronoTerm extends BMC {
 
 	public void updateStatus() {
 		System.err.println("updateStatus() non implementato");
+	}
+
+	// TODO
+	public String getStatus() {
+		return name;
 	}
 }

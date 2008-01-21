@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import it.ascia.eds.Bus;
 import it.ascia.eds.msg.Message;
+import it.ascia.eds.msg.RichiestaStatoMessage;
 
 /**
  * Un BMC con porte di input e output.
@@ -88,8 +89,13 @@ public class BMCStandardIO extends BMC {
 	
 	/**
 	 * Aggiorna la rappresentazione interna delle porte.
+	 * 
+	 * Manda un messaggio al BMC mettendo come mittente il bmcComputer.
 	 */
 	public void updateStatus() {
-		//TODO
+		Message m;
+		m = new RichiestaStatoMessage(getAddress(), bus.getBMCComputerAddress(),
+				0);
+		bus.sendPTPMessage(m);
 	}
 }

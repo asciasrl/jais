@@ -63,4 +63,21 @@ public abstract class BMC implements Device {
 	 * Ritorna una descrizione del BMC.
 	 */
 	public abstract String getInfo();
+	
+	/**
+	 * Aggiorna la rappresentazione interna delle porte.
+	 * 
+	 * Manda un messaggio al BMC mettendo come mittente il bmcComputer. Quando 
+	 * arrivera' la risposta, receiveMessage() aggiornera' le informazioni.
+	 */
+	public abstract void updateStatus();
+	
+	/**
+	 * Stampa una descrizione dello stato del BMC (facoltativa).
+	 * 
+	 * Questa funzione ha senso solo se implementata dalle sottoclassi.
+	 */
+	public void printStatus() {
+		System.out.println("printStatus() non implementata");
+	}
 }

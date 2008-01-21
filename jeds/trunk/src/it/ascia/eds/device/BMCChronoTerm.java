@@ -47,4 +47,8 @@ public class BMCChronoTerm extends BMC {
 	public String getInfo() {
 		return "BMC cronotermostato (modello " + model + ")";
 	}
+
+	public void updateStatus() {
+		System.err.println("updateStatus() non implementato");
+	}
 }

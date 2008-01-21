@@ -1,5 +1,7 @@
 package it.ascia.eds.msg;
 
+import java.util.Vector;
+
 public class RispostaStatoMessage extends Message {
 
 	public RispostaStatoMessage(int d, int m, int Uscite, int Entrate) {
@@ -33,6 +35,38 @@ public class RispostaStatoMessage extends Message {
 		} 
 		s.append("\r\n");
 		return s.toString();
+	}
+	
+	/**
+	 * Ritorna lo stato degli ingressi.
+	 * 
+	 * @returns un'array di 8 booleani, anche se il BMC ha meno porte. Gli elementi true sono attivi. 
+	 */
+	public boolean[] getInputs() {
+		boolean retval[];
+		int i;
+		retval = new boolean[8];
+		for (i = 0; i < 8; i++) {
+			int set = Byte2 & (1 << i);
+			retval[i] = (set != 0);
+		}
+		return retval;
+	}
+	
+	/**
+	 * Ritorna lo stato delle uscite.
+	 * 
+	 * @returns un'array di 8 booleani, anche se il BMC ha meno porte. Gli elementi true sono attivi. 
+	 */
+	public boolean[] getOutputs() {
+		boolean retval[];
+		int i;
+		retval = new boolean[8];
+		for (i = 0; i < 8; i++) {
+			int set = Byte1 & (1 << i);
+			retval[i] = (set != 0);
+		}
+		return retval;
 	}
 
 	public boolean isBroadcast() {

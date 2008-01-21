@@ -4,9 +4,10 @@
  */
 package it.ascia.eds;
 
-import it.ascia.eds.msg.Message;
 import it.ascia.eds.device.BMC;
 import it.ascia.eds.device.BMCComputer;
+import it.ascia.eds.device.BMCDimmer;
+import it.ascia.eds.device.BMCStandardIO;
 
 import java.io.*;
 
@@ -15,14 +16,44 @@ import java.io.*;
  * 
  */
 public class BusTest {
-
+	static Bus bus;
+	
+	static void testBMCStandardIO() {
+		int address = 3;
+ 		// Prova su BMC modello 88, indirizzo 3
+ 		BMCStandardIO bmc = (BMCStandardIO)bus.getDevice(address);
+ 		System.out.println("Stato del BMC prima della richiesta: ");
+ 		bmc.printStatus();
+ 		bmc.updateStatus();
+ 		System.out.println("Stato del BMC dopo la richiesta: ");
+ 		bmc.printStatus();	
+	}
+	
+	static void testBMCDimmer() {
+		int address = 5;
+		int output = 0, value = 0;
+ 		// Prova su BMC modello 88, indirizzo 3
+ 		BMCDimmer bmc = (BMCDimmer)bus.getDevice(address);
+ 		System.out.println("Stato del BMC prima della richiesta: ");
+ 		bmc.printStatus();
+ 		bmc.updateStatus();
+ 		System.out.println("Stato del BMC dopo la richiesta: ");
+ 		bmc.printStatus();	
+ 		System.out.println("Imposto l'uscita " + output + " a " + value + ":");
+ 		bmc.setOutput(output, value);
+ 		System.out.print("Premi RETURN per continuare");
+ 		try {
+ 			new BufferedReader(new InputStreamReader(System.in)).readLine();
+ 		} catch (IOException e) {
+ 		}
+	}
+	
 	/**
 	 * @param args
 	 *            porta seriale
 	 */
 	public static void main(String[] args) {
 	    String defaultPort = "ascia.homeip.net";
-		Bus bus = null;
 		BMCComputer bmcComputer;
 	 	if (args.length > 0) {
 		    defaultPort = args[0];
@@ -37,15 +68,21 @@ public class BusTest {
 	 	bus.setBMCComputer(bmcComputer);
 	 	// Discovery
 	 	System.out.println("Discovery:");
-	 	for (int i = 0; i < 11; i++) {
-	 		System.out.print(i + ":");
-	 		BMC bmc = bmcComputer.discoverBMC(i); 
-	 		if (bmc != null) {
-	 			System.out.println(bmc.getInfo());
-	 		} else {
-	 			System.out.println();
+	 	for (int i = 0; i < 8; i++) {
+	 		if ((i != 1) && (i != 4)) {
+	 			// Evitiamo gli indirizzi non assegnati
+	 			System.out.print(i + ":");
+	 			BMC bmc = bmcComputer.discoverBMC(i); 
+	 			if (bmc != null) {
+	 				System.out.println(bmc.getInfo());
+	 			} else {
+	 				System.out.println();
+	 			}
 	 		}
 	 	}
+	 	testBMCStandardIO();
+	 	testBMCDimmer();
+	 	// La palla all'utente
 	 	try {
 	 		BufferedReader stdin = 
 	 				new BufferedReader(new InputStreamReader(System.in));

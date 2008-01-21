@@ -67,4 +67,8 @@ public class BMCScenarioManager extends BMC {
 		return "BMC centralina scenari (modello " + model + ") con " + 
 			inPortsNum + " porte di input";
 	}
+
+	public void updateStatus() {
+		System.err.println("updateStatus non implementato su BMCScenarioManager");
+	}
 }

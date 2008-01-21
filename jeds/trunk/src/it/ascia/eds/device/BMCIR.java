@@ -71,4 +71,8 @@ public class BMCIR extends BMC {
 		return "BMC IR (modello " + model + ") con " + inPortsNum + 
 			" porte di input";
 	}
+	
+	public void updateStatus() {
+		System.err.println("updateStatus non implementato su BMCIR");
+	}
 }

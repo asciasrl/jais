@@ -8,6 +8,8 @@ import java.util.Vector;
 import it.ascia.eds.Bus;
 import it.ascia.eds.msg.Message;
 import it.ascia.eds.msg.RichiestaStatoMessage;
+import it.ascia.eds.msg.RispostaModelloMessage;
+import it.ascia.eds.msg.RispostaStatoMessage;
 
 /**
  * Un BMC con porte di input e output.
@@ -29,11 +31,11 @@ public class BMCStandardIO extends BMC {
 	/**
 	 * Ingressi
 	 */
-	Vector inPorts;
+	private boolean [] inPorts;
 	/**
 	 * Uscite
 	 */
-	Vector outPorts;
+	private boolean [] outPorts;
 	
 	/**
 	 * Costruttore
@@ -68,10 +70,10 @@ public class BMCStandardIO extends BMC {
 			inPortsNum = outPortsNum = 0;
 		}
 		if (inPortsNum > 0) {
-			inPorts = new Vector(inPortsNum);
+			inPorts = new boolean[inPortsNum];
 		}
 		if (outPortsNum > 0) {
-			outPorts = new Vector(outPortsNum);
+			outPorts = new boolean[outPortsNum];
 		}
 	}
 	
@@ -79,7 +81,41 @@ public class BMCStandardIO extends BMC {
 	 * @see it.ascia.eds.device.BMC#receiveMessage(it.ascia.eds.msg.Message)
 	 */
 	public void receiveMessage(Message m) {
-		// TODO
+		if (RispostaStatoMessage.class.isInstance(m)) {
+			RispostaStatoMessage r = (RispostaStatoMessage)m;
+			if (m.getSender() == getAddress()) {
+				// Il RispostaStatoMessage da' sempre 8 valori. Dobbiamo
+				// prendere solo quelli effettivamente presenti sul BMC
+				boolean temp[];
+				int i;
+				temp = r.getOutputs();
+				for (i = 0; i < outPortsNum; i++) {
+					outPorts[i] = temp[i];
+				}
+				temp = r.getInputs();
+				for (i = 0; i < inPortsNum; i++) {
+					inPorts[i] = temp[i];
+				}
+			} // if il sender sono io
+		} // if RispostaStatoMessage
+	}
+	
+	/**
+	 * Ritorna lo stato degli ingressi.
+	 * 
+	 * @returns un'array di booleani: true vuol dire acceso.
+	 */
+	public boolean[] getInputs() {
+		return inPorts;
+	}
+	
+	/**
+	 * Ritorna lo stato delle uscite.
+	 * 
+	 * @returns un'array di booleani: true vuol dire acceso.
+	 */
+	public boolean[] getOutputs() {
+		return outPorts;
 	}
 	
 	public String getInfo() {
@@ -90,12 +126,30 @@ public class BMCStandardIO extends BMC {
 	/**
 	 * Aggiorna la rappresentazione interna delle porte.
 	 * 
-	 * Manda un messaggio al BMC mettendo come mittente il bmcComputer.
+	 * Manda un messaggio al BMC mettendo come mittente il bmcComputer. Quando 
+	 * arrivera' la risposta, receiveMessage() aggiornera' le informazioni.
 	 */
 	public void updateStatus() {
 		Message m;
 		m = new RichiestaStatoMessage(getAddress(), bus.getBMCComputerAddress(),
 				0);
 		bus.sendPTPMessage(m);
+	}
+	
+	/**
+	 * Stampa una descrizione dello stato del BMC.
+	 */
+	public void printStatus() {
+		int i;
+		System.out.print("Ingressi: ");
+		for (i = 0; i < inPortsNum; i++) {
+			System.out.print(inPorts[i]? 1 : 0);
+		}
+		System.out.println();
+	 	System.out.print("Uscite:   ");
+	 	for (i = 0; i < outPortsNum; i++) {
+			System.out.print(outPorts[i]? 1 : 0);
+		}
+	 	System.out.println();
 	}
 }

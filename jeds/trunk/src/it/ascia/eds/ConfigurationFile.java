@@ -3,6 +3,8 @@
  */
 package it.ascia.eds;
 
+import it.ascia.eds.device.BMC;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -31,6 +33,12 @@ public class ConfigurationFile {
 	 */
 	private Document document;
 	/**
+	 * La lista degli elementi <dispositivo>.
+	 * 
+	 * Gli elementi sono di tipo Element.
+	 */
+	private NodeList dispositivoElements;
+	/**
 	 * Il nome del sistema domotico.
 	 */
 	private String systemName;
@@ -41,10 +49,12 @@ public class ConfigurationFile {
 		return systemName;
 	}
 	/**
-	 * Estrae le informazioni di configurazione dal Document interpretato.
+	 * Effettua una prima verifica del documento interpretato.
+	 * 
+	 * Questo metodo viene chiamato solo dal costruttore.
 	 */
 	private void parseDocument() throws EDSException {
-		Element element, elem2;
+		Element element;
 		NodeList list;
 		int i;
 		element = document.getDocumentElement();
@@ -61,21 +71,13 @@ public class ConfigurationFile {
 		element = (Element)list.item(0);
 		systemName = element.getAttribute("nome");
 		// Tag <dispositivo> (sono tanti!)
-		list = element.getElementsByTagName("dispositivo");
-		for (i = 0; i < list.getLength(); i++) {
-			element = (Element)list.item(i);
-			// TODO:
-			// - crea oggetti per ciascun elemento del file di cfg
-			// - implementa un metodo di controllo se due oggetti BMC sono
-			//   operativamente uguali (indirizzo, modello)
-			// - gestisci la possibilità di aggiungere device al bus sia da cfg,
-			//   sia da discovery
-		}
+		dispositivoElements = element.getElementsByTagName("dispositivo");
 	}
 	/**
 	 * Effettua il parsing XML del file di configurazione.
 	 * 
-	 * L'operazione di lettura dei dati e' affidata a parseDocument().
+	 * L'operazione di lettura dei dati e' affidata a parseDocument() e a
+	 * createBMCs().
 	 */
 	private void parse() throws EDSException {
 		try {
@@ -106,5 +108,73 @@ public class ConfigurationFile {
 	public ConfigurationFile(String fileName) throws EDSException {
 		this.fileName = fileName;
 		parse();
+	}
+	
+	/**
+	 * Legge il contenuto numerico (intero) di un tag XML.
+	 * 
+	 * In pratica, legge "10" da "<tag>10</tag>".
+	 * 
+	 * @param element l'elemento XML "padre" del tag.
+	 * @param tag il tag che contiene il dato da leggere.
+	 */
+	private static int getIntegerTagContent(Element element, String tag) {
+		Element tagElement = (Element) 
+			element.getElementsByTagName(tag).item(0);
+		return Integer.parseInt(tagElement.getFirstChild().getNodeValue());
+	}
+	
+	/**
+	 * Inserisce nel bus i BMC elencati nel file di configurazione.
+	 * 
+	 * Le informazioni inserite sono: nome, modello, indirizzo e nomi delle
+	 * porte di input/output.
+	 * 
+	 * @param bus il bus a cui collegare i BMC.
+	 */
+	public void createBMCs(Bus bus) {
+		int i;
+		for (i = 0; i < dispositivoElements.getLength(); i++) {
+			Element dispositivoElement = (Element)dispositivoElements.item(i);
+			try {
+				BMC bmc;
+				String name = dispositivoElement.getAttribute("nome");
+				int address = getIntegerTagContent(dispositivoElement, 
+						"indirizzo"); 
+				int model = getIntegerTagContent(dispositivoElement, "modello");
+				bmc = BMC.createBMC(address, model, name, bus);
+				if (bmc != null) {
+					int j;
+					NodeList lista;
+					// Ingressi
+					lista =	dispositivoElement.getElementsByTagName("ingresso");
+					for (j = 0; j < lista.getLength(); j++) {
+						Element ingressoElement = (Element) lista.item(j);
+						String portName = ingressoElement.getAttribute("nome");
+						int number = getIntegerTagContent(ingressoElement, 
+								"indirizzo");
+						bmc.setInputName(number, portName);
+					}
+					// Uscite
+					lista =	dispositivoElement.getElementsByTagName("uscita");
+					for (j = 0; j < lista.getLength(); j++) {
+						Element uscitaElement = (Element) lista.item(j);
+						String portName = uscitaElement.getAttribute("nome");
+						int number = getIntegerTagContent(uscitaElement, 
+								"indirizzo");
+						bmc.setOutputName(number, portName);
+					}
+				} // if bmc != null
+			} catch (EDSException e) {
+				System.err.println("Durante la lettura del file di config.: " +
+						e.getMessage());
+			}
+		} // for su tutti i dispositivi
+			// TODO:
+			// - crea oggetti per ciascun elemento del file di cfg
+			// - implementa un metodo di controllo se due oggetti BMC sono
+			//   operativamente uguali (indirizzo, modello)
+			// - gestisci la possibilità di aggiungere device al bus sia da cfg,
+			//   sia da discovery
 	}
 }

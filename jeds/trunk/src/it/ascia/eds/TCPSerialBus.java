@@ -114,7 +114,7 @@ public class TCPSerialBus extends Bus {
     /**
      * Costruttore
      *
-     * @param portName nome della porta (ad es. "COM1" o "/dev/ttyUSB0")
+     * @param hostName nome dell'host (ad es. "1.2.3.4" o "www.pippo.com")
      * 
      * @throws un'Exception se incontra un errore
      */

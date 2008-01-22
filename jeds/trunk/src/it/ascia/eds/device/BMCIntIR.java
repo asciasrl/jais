@@ -25,8 +25,8 @@ public class BMCIntIR extends BMC {
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
 	 */
-	public BMCIntIR(int address, int model, Bus bus) {
-		super(address, model, bus, "BMCIntIR");
+	public BMCIntIR(int address, int model, Bus bus, String name) {
+		super(address, model, bus, name);
 		if (model != 131) {
 			System.err.println("Errore: modello di BMC Int IR sconosciuto:" + 
 					model);
@@ -41,7 +41,7 @@ public class BMCIntIR extends BMC {
 	}
 	
 	public String getInfo() {
-		return "BMC Int IR (modello " + model + ")";
+		return getName() + ": BMC Int IR (modello " + model + ")";
 	}
 
 	public void updateStatus() {

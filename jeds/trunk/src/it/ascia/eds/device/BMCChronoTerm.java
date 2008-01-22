@@ -26,8 +26,8 @@ public class BMCChronoTerm extends BMC {
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
 	 */
-	public BMCChronoTerm(int address, int model, Bus bus) {
-		super(address, model, bus, "Cronotermostato");
+	public BMCChronoTerm(int address, int model, Bus bus, String name) {
+		super(address, model, bus, name);
 		switch(model) {
 		case 127:
 			break;
@@ -45,7 +45,7 @@ public class BMCChronoTerm extends BMC {
 	}
 	
 	public String getInfo() {
-		return "BMC cronotermostato (modello " + model + ")";
+		return getName() + ": BMC cronotermostato (modello " + model + ")";
 	}
 
 	public void updateStatus() {

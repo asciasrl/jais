@@ -9,6 +9,7 @@ import it.ascia.eds.msg.Message;
 import it.ascia.eds.msg.RichiestaModelloMessage;
 import it.ascia.eds.msg.RispostaModelloMessage;
 import it.ascia.eds.Bus;
+import it.ascia.eds.EDSException;
 
 /**
  * Il rappresentante di questo computer sul bus EDS.
@@ -55,51 +56,12 @@ public class BMCComputer extends BMC {
 	 */
 	public void receiveMessage(Message m) {
 		if (RispostaModelloMessage.class.isInstance(m)) {
-			BMC bmc;
-			int model, bmcAddress;
 			RispostaModelloMessage risposta = (RispostaModelloMessage) m;
-			model = risposta.getModello();
-			bmcAddress = risposta.getSender();
-			switch(model) {
-			case 88:
-			case 8:
-			case 40:
-			case 60:
-			case 44:
-				bmc = new BMCStandardIO(bmcAddress, model, bus);
-				break;
-			case 41:
-			case 61:
-			case 81:
-				bmc = new BMCIR(bmcAddress, model, bus);
-				break;
-			case 101:
-			case 102:
-			case 103:
-			case 104:
-			case 106:
-			case 111:
-				bmc = new BMCDimmer(bmcAddress, model, bus);
-				break;
-			case 131:
-				bmc = new BMCIntIR(bmcAddress, model, bus);
-				break;
-			case 152:
-			case 154:
-			case 156:
-			case 158:
-				bmc = new BMCScenarioManager(bmcAddress, model, bus);
-				break;
-			case 127:
-				bmc = new BMCChronoTerm(bmcAddress, model, bus);
-				break;
-			default:
-				System.err.println("Modello di BMC sconosciuto: " + 
-						model);
-				bmc = null;
-			}
-			if (bmc != null) {
-				bus.addDevice(bmc);
+			try {
+				BMC.createBMC(risposta.getSender(), risposta.getModello(), null,
+						bus);
+			} catch (EDSException e) {
+				// Se il device e' gia' sul bus, non e' un errore.
 			}
 		}
 		// Tutti i messaggi ricevuti devono finire nella inbox

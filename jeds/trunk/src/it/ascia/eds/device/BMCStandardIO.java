@@ -44,8 +44,8 @@ public class BMCStandardIO extends BMC {
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
 	 */
-	public BMCStandardIO(int address, int model, Bus bus) {
-		super(address, model, bus, "StandardIO");
+	public BMCStandardIO(int address, int model, Bus bus, String name) {
+		super(address, model, bus, name);
 		switch(model) {
 		case 88:
 			inPortsNum = outPortsNum = 8;
@@ -151,8 +151,9 @@ public class BMCStandardIO extends BMC {
 	}
 	
 	public String getInfo() {
-		return "BMC Standard I/O (modello " + model + ") con " + inPortsNum + 
-			" porte di input e " + outPortsNum + " porte di output";
+		return getName() + ": BMC Standard I/O (modello " + model + ") con " + 
+			inPortsNum + " porte di input e " + outPortsNum + " porte di " +
+			"output";
 	}
 	
 	/**
@@ -190,10 +191,12 @@ public class BMCStandardIO extends BMC {
 		String retval = "";
 		int i;
 		for (i = 0; i < inPortsNum; i++) {
-			retval += name + "." + i + "=" + (inPorts[i]? "ON" : "OFF") + "\n";
+			retval += name + "." + getInputName(i) + "=" + 
+				(inPorts[i]? "ON" : "OFF") + "\n";
 		}
 	 	for (i = 0; i < outPortsNum; i++) {
-	 		retval += name + "." + i + "=" + (outPorts[i]? "ON" : "OFF") + "\n";
+	 		retval += name + "." + getOutputName(i) + "=" + 
+	 			(outPorts[i]? "ON" : "OFF") + "\n";
 		}
 	 	return retval;
 	}

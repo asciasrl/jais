@@ -39,8 +39,8 @@ public class BMCIR extends BMC {
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
 	 */
-	public BMCIR(int address, int model, Bus bus) {
-		super(address, model, bus, "BMCIR");
+	public BMCIR(int address, int model, Bus bus, String name) {
+		super(address, model, bus, name);
 		switch(model) {
 		case 41:
 			inPortsNum = 4;
@@ -68,8 +68,8 @@ public class BMCIR extends BMC {
 	}
 	
 	public String getInfo() {
-		return "BMC IR (modello " + model + ") con " + inPortsNum + 
-			" porte di input";
+		return getName() + ": BMC IR (modello " + model + ") con " + 
+			inPortsNum + " porte di input";
 	}
 	
 	public void updateStatus() {

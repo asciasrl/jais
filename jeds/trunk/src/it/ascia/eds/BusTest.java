@@ -43,6 +43,7 @@ public class BusTest {
 		int porta, valore;
  		// Prova su BMC modello 88, indirizzo 3
  		BMCStandardIO bmc = (BMCStandardIO)bus.getDevice(address);
+ 		System.out.println();
  		System.out.println("Prova BMC Standard I/O");
  		porta = 0;
  		while ((porta >= 0) && (porta < 8)) {
@@ -67,6 +68,7 @@ public class BusTest {
 		int output = 0, value = 0;
  		// Prova su BMC modello 88, indirizzo 3
 		BMCDimmer bmc = (BMCDimmer)bus.getDevice(address);
+		System.out.println();
 		System.out.println("Prova Dimmer");
 		while ((output >= 0) && (output < 2)) {
  			output = inputInteger("output (<0 esce): ");
@@ -92,6 +94,7 @@ public class BusTest {
 	    String defaultPort = "ascia.homeip.net";
  		stdin = new BufferedReader(new InputStreamReader(System.in));
 		BMCComputer bmcComputer;
+		ConfigurationFile cfgFile = null;
 	 	if (args.length > 0) {
 		    defaultPort = args[0];
 		}
@@ -103,6 +106,14 @@ public class BusTest {
 	 	}
 	 	bmcComputer = new BMCComputer(0, bus);
 	 	bus.setBMCComputer(bmcComputer);
+	 	// File di configurazione
+	 	try {
+			cfgFile = new ConfigurationFile("conf/tavola20071207.xml");
+		} catch (EDSException e) {
+			System.err.println(e.getMessage());
+			System.exit(-1);
+		}
+		System.out.println(cfgFile.getSystemName());
 	 	// Discovery
 	 	System.out.println("Discovery:");
 	 	for (int i = 0; i < 8; i++) {

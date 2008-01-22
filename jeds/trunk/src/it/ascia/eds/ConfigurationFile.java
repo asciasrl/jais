@@ -151,6 +151,8 @@ public class ConfigurationFile {
 					for (j = 0; j < lista.getLength(); j++) {
 						Element ingressoElement = (Element) lista.item(j);
 						String portName = ingressoElement.getAttribute("nome");
+						// FIXME: sembra che gli ingressi partano da 1 
+						// e non da 0 per _alcuni_ tipi di BMC!!
 						int number = getIntegerTagContent(ingressoElement, 
 								"indirizzo");
 						bmc.setInputName(number, portName);

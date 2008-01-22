@@ -235,6 +235,9 @@ public abstract class BMC implements Device {
 		try {
 			retval = (String) inPortsNames.get(number);
 		} catch (ArrayIndexOutOfBoundsException e) {
+			retval = null;
+		}
+		if (retval == null) {
 			retval = "Ingresso" + number;
 			setInputName(number, retval);
 		}
@@ -251,6 +254,9 @@ public abstract class BMC implements Device {
 		try {
 			retval = (String) outPortsNames.get(number);
 		} catch (ArrayIndexOutOfBoundsException e) {
+			retval = null;
+		}
+		if (retval == null) {
 			retval = "Uscita" + number;
 			setOutputName(number, retval);
 		}

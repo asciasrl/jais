@@ -118,12 +118,11 @@ public class EDSReader
     } 
 
     /**
-     * Method declaration
+     * Risponde a eventi ricevuti dalla porta seriale.
+     * 
+     * Legge i dati e chiama i metodi della superclasse che li interpretano.
      *
-     *
-     * @param event
-     *
-     * @see
+     * @param event L'evento ricevuto dalla seriale
      */
     public void serialEvent(SerialPortEvent event) {
     	switch (event.getEventType()) {

@@ -106,14 +106,6 @@ public class BusTest {
 	 	}
 	 	bmcComputer = new BMCComputer(0, bus);
 	 	bus.setBMCComputer(bmcComputer);
-	 	// File di configurazione
-	 	try {
-			cfgFile = new ConfigurationFile("conf/tavola20071207.xml");
-		} catch (EDSException e) {
-			System.err.println(e.getMessage());
-			System.exit(-1);
-		}
-		System.out.println(cfgFile.getSystemName());
 	 	// Discovery
 	 	System.out.println("Discovery:");
 	 	for (int i = 0; i < 8; i++) {
@@ -128,6 +120,15 @@ public class BusTest {
 	 			}
 	 		}
 	 	}
+	 	//	  File di configurazione
+	 	try {
+			cfgFile = new ConfigurationFile("conf/tavola20071207.xml");
+		} catch (EDSException e) {
+			System.err.println(e.getMessage());
+			System.exit(-1);
+		}
+		cfgFile.createBMCs(bus);
+		System.out.println(cfgFile.getSystemName());
 	 	testBMCStandardIO();
 	 	testBMCDimmer();
 	 	// La palla all'utente

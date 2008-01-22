@@ -14,6 +14,8 @@ import it.ascia.eds.msg.RispostaStatoDimmerMessage;
  * 
  * Modelli: 101, 102, 103, 104, 106, 111
  * 
+ * TODO: distinguere tra canale a 0% e OFF.
+ * 
  * @author arrigo
  */
 public class BMCDimmer extends BMC {
@@ -44,8 +46,8 @@ public class BMCDimmer extends BMC {
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
 	 */
-	public BMCDimmer(int address, int model, Bus bus) {
-		super(address, model, bus, "DimmerFico");
+	public BMCDimmer(int address, int model, Bus bus, String name) {
+		super(address, model, bus, name);
 		switch(model) {
 		case 101:
 			outPortsNum = 2;
@@ -118,8 +120,8 @@ public class BMCDimmer extends BMC {
 	
 	public String getInfo() {
 		String retval;
-		retval = "Dimmer (modello " + model + ", \"" + modelName + "\") con " + 
-			outPortsNum + " uscite"; 
+		retval = getName() + ": Dimmer (modello " + model + ", \"" + modelName +
+			"\") con " + outPortsNum + " uscite"; 
 		if (power >= 0) retval += " a " + power + " Watt";
 		return retval;
 	}
@@ -140,7 +142,7 @@ public class BMCDimmer extends BMC {
 		int i;
 		String retval = "";
 		for (i = 0; i < outPortsNum; i++) {
-			retval += name + "." + i + "=" + outPorts[i] + "\n";
+			retval += name + "." + getOutputName(i) + "=" + outPorts[i] + "\n";
 		}
 		return retval;
 	}

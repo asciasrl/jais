@@ -261,8 +261,15 @@ public abstract class Bus {
      * Aggiunge un Device collegato al bus.
      * 
      * @param Device il Device da aggiungere.
+     * 
+     * @throws un'EDSException se esiste gia' un device con lo stesso indirizzo.
      */
-    public void addDevice(Device device) {
-    	devices.put(new Integer(device.getAddress()), device);
+    public void addDevice(Device device) throws EDSException {
+    	int deviceAddress = device.getAddress();
+    	if (getDevice(deviceAddress) != null) {
+    		throw new EDSException("Un BMC con indirizzo " + deviceAddress +
+    				" esiste gia'.");
+    	}
+    	devices.put(new Integer(deviceAddress), device);
     }
 }

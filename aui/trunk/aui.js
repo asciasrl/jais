@@ -5,15 +5,15 @@
 
 // http://www.webreference.com/programming/javascript/mk/column2/
 
-document.onmousemove = mouseMove;
-document.onmouseup   = mouseUp;
-
 var dragObject  = null;
 var mouseOffset = null;
 var objectOffset = null;
 
 dragging = false;
 
+/**
+ * Posizione del mouse relativa al documento
+ */
 function mouseCoords(ev){
 	ev = ev || window.event;
 	if(ev.pageX || ev.pageY){
@@ -53,10 +53,38 @@ function getOffset(e) {
 	return {x:e.offsetLeft, y:e.offsetTop};
 }
 
+
+document.onmousemove = mouseMove;
+
+/**
+ * Funzione collegata al movimento del mouse
+ */
 function mouseMove(ev){
 	ev = ev || window.event;
 	var mousePos = mouseCoords(ev);
+	if (dragObject) {
+		switch (dragObject.id) {
+			case 'piano-01A-big':
+				dragMap(mousePos);
+				break;
+			case 'funzioni':
+				dragFunzioni(mousePos);
+				break;
+		}
+	}
+}
 
+function dragFunzioni(mousePos) {
+  new_left = mousePos.x - mouseOffset.x + objectOffset.x;
+  setHeader(new_left);
+  dragObject.style.left =  new_left + 'px';
+}
+
+function dragFunzioniStop() {
+  dragObject.style.left =  '0px';
+}
+
+function dragMap(mousePos) {
 	//statusObject.innerHTML = mousePos.x + ',' + mousePos.y;
 
 	el = document.getElementById('piano-01A-big');
@@ -93,10 +121,27 @@ function mouseMove(ev){
 		return false;
 	}
 }
+
+document.onmouseup   = mouseUp;
+
+/**
+ * Quando viene rilasciato il bottone del mouse
+ */
 function mouseUp(){
-	dragObject = null;
+	// TODO: riposizionare icona delle funzioni in posizione centrale
+	if (dragObject) {
+		switch (dragObject.id) {
+			case 'funzioni':
+				dragFunzioniStop();
+				break;
+		}
+	}	
+	dragObject = null;	
 }
 
+/**
+ * Associa all'oggetto la funzione che gestisce la pressione del mouse
+ */
 function makeDraggable(item){
 	if(!item) return;
 	item.onmousedown = function(ev){
@@ -246,3 +291,4 @@ function ingrandisci1(X,Y,da,a) {
 }
 
 makeDraggable(document.getElementById('piano-01A-big'));
+makeDraggable(document.getElementById('funzioni'));

@@ -1,8 +1,6 @@
 package it.ascia.eds.msg;
 
-import java.util.Vector;
-
-public class RispostaStatoMessage extends Message {
+public class RispostaStatoMessage extends PTPMessage {
 
 	public RispostaStatoMessage(int d, int m, int Uscite, int Entrate) {
 		Destinatario = d & 0xFF;
@@ -67,9 +65,5 @@ public class RispostaStatoMessage extends Message {
 			retval[i] = (set != 0);
 		}
 		return retval;
-	}
-
-	public boolean isBroadcast() {
-		return false;
 	}
 }

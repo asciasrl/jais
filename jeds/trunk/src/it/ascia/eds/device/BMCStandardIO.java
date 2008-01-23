@@ -6,6 +6,7 @@ package it.ascia.eds.device;
 import it.ascia.eds.Bus;
 import it.ascia.eds.msg.ComandoUscitaMessage;
 import it.ascia.eds.msg.Message;
+import it.ascia.eds.msg.PTPRequest;
 import it.ascia.eds.msg.RichiestaStatoMessage;
 import it.ascia.eds.msg.RispostaStatoMessage;
 
@@ -140,7 +141,7 @@ public class BMCStandardIO extends BMC {
 			ComandoUscitaMessage m;
 			m = new ComandoUscitaMessage(getAddress(),
 					bus.getBMCComputerAddress(), 0, port, 0, intValue);
-			retval = bus.sendPTPMessage(m);
+			retval = bus.sendPTPRequest(m);
 		} else {
 			System.err.println("Numero porta non valido: " + port);
 		}
@@ -160,10 +161,10 @@ public class BMCStandardIO extends BMC {
 	 * arrivera' la risposta, receiveMessage() aggiornera' le informazioni.
 	 */
 	public void updateStatus() {
-		Message m;
+		PTPRequest m;
 		m = new RichiestaStatoMessage(getAddress(), bus.getBMCComputerAddress(),
 				0);
-		bus.sendPTPMessage(m);
+		bus.sendPTPRequest(m);
 	}
 	
 	/**

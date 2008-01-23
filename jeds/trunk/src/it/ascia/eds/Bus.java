@@ -4,8 +4,6 @@
 package it.ascia.eds;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -21,29 +19,44 @@ import it.ascia.eds.msg.*;
  */
 public abstract class Bus {
 	/**
-	 * Quanto tempo aspettare dopo un ping.
+	 * Quanto tempo aspettare la risposta dopo l'invio di un messaggio.
 	 * 
 	 * Nel caso peggiore (1200 bps), la trasmissione di un messaggio richiede 
 	 * 8 / 120 = 660 msec. In quello migliore (9600 bps), la trasmissione 
 	 * richiede 82 msec. Questa costante deve tener conto del caso migliore.
 	 */
-	protected static final int PING_WAIT = 200;
+	public static final int PING_WAIT = 200;
 	/**
 	 * Quante volte aspettare PING_WAIT prima di ritrasmettere.
 	 * 
 	 * Questo indica quante volte si attende PING_WAIT millisecondi, prima di
 	 * riprovare a inviare un messaggio. Condizione da rispettare è che 
 	 * PING_WAIT * WAIT_RETRIES sia maggiore del tempo più lungo previsto per 
-	 * il round-trip di un messaggio. 
+	 * il round-trip di un messaggio.
+	 * 
+	 * All'attesa deve essere aggiunto un ritardo casuale.
 	 */
-	protected static final int WAIT_RETRIES = 6;
+	public static final int WAIT_RETRIES = 6;
 	/**
-	 * Quante volte provare a reinviare un messaggio senza risposta.
+	 * Quante volte provare a reinviare un messaggio che richiede una risposta.
 	 * 
 	 * Quando l'attesa supera PING_WAIT * WAIT_RETRIES, questa costante decide
 	 * quanti tentativi di ri-invio effettuare.
 	 */
-	protected static final int SEND_RETRIES = 3;
+	public static final int ACKMESSAGE_SEND_RETRIES = 2;
+	/**
+	 * Quante volte provare a reinviare un messaggio di richiesta stato 
+	 * senza risposta.
+	 * 
+	 * Quando l'attesa supera PING_WAIT * WAIT_RETRIES, questa costante decide
+	 * quanti tentativi di ri-invio effettuare.
+	 */
+	protected static final int STATUSREQ_SEND_RETRIES = 3;
+	/**
+	 * Quante volte reinviare un messaggio broadcast
+	 */
+	public static final int BROADCAST_RESENDS = 7;
+	
 
 	/**
 	 * MessageParser per la lettura dei messaggi in ingresso.
@@ -56,29 +69,11 @@ public abstract class Bus {
     /**
      * Il BMC "finto" che corrisponde a questo computer.
      */
-    private Device bmcComputer;
+    private BMCComputer bmcComputer;
     
-    /**
-     * Indirizzo di un device che stiamo contattando.
-     * 
-     * Questo indirizzo può non appartenere a nessun elemento di devices.
-     */
-    private int pingedDevice;
-    /**
-     * Indirizzo del device che sta contattando pingedDevice.
-     * 
-     * Questo indirizzo deve appartenere a un elemento di devices.
-     */
-    private int pingerDevice;
-    /**
-     * Il messaggio di risposta che abbiamo ricevuto da pingedDevice
-     */
-    private Message pongMessage;
-
     public Bus() {
         devices = new HashMap();
         bmcComputer = null;
-        pingedDevice = -1; // Il minimo è 0
 		mp = new MessageParser();
     }
     
@@ -174,11 +169,8 @@ public abstract class Bus {
     	int rcpt = m.getRecipient();
     	int sender = m.getSender();
     	// System.out.println("Messaggio da " + sender + " per " + rcpt);
-    	if ((sender == pingedDevice) && (rcpt == pingerDevice)) {
-    		// E' un pong.
-    		pongMessage = m;
-    	}
-    	if (m.isBroadcast()) { // Mandiamo il messaggio a tutti
+    	if (BroadcastMessage.class.isInstance(m)) { 
+    		// Mandiamo il messaggio a tutti
     		Iterator it = devices.values().iterator();
     		while (it.hasNext()) {
     			Device bmc = (Device)it.next();
@@ -213,36 +205,15 @@ public abstract class Bus {
     /**
      * Invia un messaggio e attende una risposta dal destinatario.
      * 
-     * Se la risposta non arriva dopo un certo tempo, essa viene ri-inviata un
-     * tot di volte.
-     * 
-     * Il messaggio di risposta viene riconosciuto da dispatchMessage
-     * in base a mittente e destinatario.
-     * 
      * @returns true se il messaggio di risposta è arrivato.
      */
-    public boolean sendPTPMessage(Message m) {
-    	int waitings, tries;
-    	boolean received;
-    	pingedDevice = m.getRecipient();
-    	pingerDevice = m.getSender();
-    	pongMessage = null;
-    	received = false;
-    	try {
-    		for (tries = 0;
-    			(tries <= SEND_RETRIES) && (!received); 
-    			tries++) {
-    			write(m);
-    			for (waitings = 0; 
-    				(waitings < WAIT_RETRIES) && (!received); 
-    				waitings++) {
-    					Thread.sleep(PING_WAIT);
-    					received = (pongMessage != null);
-    			}
-    		}
-    	} catch (InterruptedException e) {
+    public boolean sendPTPRequest(PTPRequest m) {
+    	if (bmcComputer != null) {
+    		return bmcComputer.sendPTPRequest(m);
+    	} else {
+    		System.err.println("Il bus non ha un BMCComputer!");
+    		return false;
     	}
-		return received;
     }
 
     /**

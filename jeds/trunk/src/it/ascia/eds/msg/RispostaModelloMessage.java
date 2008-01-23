@@ -1,8 +1,6 @@
 package it.ascia.eds.msg;
 
-import gnu.io.SerialPortEvent;
-
-public class RispostaModelloMessage extends Message {
+public class RispostaModelloMessage extends PTPMessage {
 
 	public RispostaModelloMessage(int d, int m, int Modello, int Versione) {
 		Destinatario = d & 0xFF;
@@ -79,9 +77,5 @@ public class RispostaModelloMessage extends Message {
 		s.append("\r\n");		
 		s.append("Versione: "+Byte2+"\r\n");		
 		return s.toString();
-	}
-
-	public boolean isBroadcast() {
-		return false;
 	}
 }

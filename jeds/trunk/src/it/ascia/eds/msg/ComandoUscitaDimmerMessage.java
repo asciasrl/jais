@@ -1,7 +1,7 @@
 package it.ascia.eds.msg;
 
 public class ComandoUscitaDimmerMessage 
-	extends Message
+	extends PTPMessage
 	implements MessageInterface {
 
 	/**
@@ -32,9 +32,4 @@ public class ComandoUscitaDimmerMessage
 		s.append("Uscita "+(Byte2 + 1)+": "+Byte1+"%\r\n");
 		return s.toString();
 	}
-	
-	public boolean isBroadcast() {
-		return false;
-	}
-
 }

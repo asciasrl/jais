@@ -5,8 +5,7 @@ package it.ascia.eds.msg;
  * @author sergio
  * TODO Distinguere fra dispositivi di input e termostato
  */
-public class TemperatureMessage
-	extends Message
+public class TemperatureMessage	extends PTPMessage
 	implements MessageInterface
 	{
 
@@ -39,9 +38,5 @@ public class TemperatureMessage
 		s.append("Temperatura: "+(Byte1 & 0xFF) +","+((Byte2 & 0xF0) >> 4) +"\r\n");
 		s.append("Altro:"+(Byte2 & 0x0F)+"\r\n");
 		return s.toString();
-	}
-	
-	public boolean isBroadcast() {
-		return false;
 	}
 }

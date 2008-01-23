@@ -5,8 +5,7 @@ package it.ascia.eds.msg;
  * 
  * @author sergio
  */
-public class RichiestaModelloMessage 
-	extends Message
+public class RichiestaModelloMessage extends PTPRequest
 	implements MessageInterface {
 
 	/**
@@ -29,8 +28,15 @@ public class RichiestaModelloMessage
 	public String getTipoMessaggio() {
 		return "Richiesta Modello e Revisione";
 	}
-	
-	public boolean isBroadcast() {
-		return false;
+
+	public boolean isAnsweredBy(PTPMessage m) {
+		boolean retval = false;
+		if (RispostaModelloMessage.class.isInstance(m)) {
+			if ((getSender() == m.getRecipient()) &&
+					(getRecipient() == m.getSender())) {
+				retval = true;
+			}
+		}
+		return retval;
 	}
 }

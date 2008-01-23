@@ -1,7 +1,6 @@
 package it.ascia.eds.msg;
 
-public class RichiestaStatoMessage 
-	extends Message
+public class RichiestaStatoMessage extends PTPRequest
 	implements MessageInterface {
 
 	public RichiestaStatoMessage(int d, int m, int Uscite) {
@@ -19,9 +18,16 @@ public class RichiestaStatoMessage
 	public String getTipoMessaggio() {
 		return "Richiesta Stato";
 	}
-
-	public boolean isBroadcast() {
-		return false;
-	}
 	
+	public boolean isAnsweredBy(PTPMessage m) {
+		boolean retval = false;
+		if ((RispostaStatoMessage.class.isInstance(m)) ||
+				(RispostaStatoDimmerMessage.class.isInstance(m))) {
+			if ((getSender() == m.getRecipient()) &&
+					(getRecipient() == m.getSender())) {
+				retval = true;
+			}
+		}
+		return retval;
+	}
 }

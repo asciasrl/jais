@@ -5,8 +5,7 @@ package it.ascia.eds.msg;
  * @author sergio
  * TODO Distinguere fra dispositivi di input e termostato
  */
-public class VariazioneIngressoMessage
-	extends Message
+public class VariazioneIngressoMessage extends PTPMessage
 	implements MessageInterface
 	{
 
@@ -38,9 +37,5 @@ public class VariazioneIngressoMessage
 		s.append("Numero uscita: "+((Byte1 & 0x07) + 1)+"\r\n");
 		s.append("Variazione: "+(Byte2 & 0x01)+"\r\n");
 		return s.toString();
-	}
-	
-	public boolean isBroadcast() {
-		return false;
 	}
 }

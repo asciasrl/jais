@@ -7,7 +7,7 @@ import java.util.Random;
  * @author sergio
  */
 public class CambioVelocitaMessage
-	extends Message
+	extends BroadcastMessage
 	implements MessageInterface
 	{
 
@@ -50,9 +50,5 @@ public class CambioVelocitaMessage
 		}
 		s.append(" bit/sec \r\n");
 		return s.toString();
-	}
-	
-	public boolean isBroadcast() {
-		return true;
 	}
 }

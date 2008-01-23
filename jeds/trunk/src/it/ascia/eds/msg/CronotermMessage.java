@@ -6,7 +6,7 @@ package it.ascia.eds.msg;
  * TODO Distinguere fra dispositivi di input e termostato
  */
 public class CronotermMessage
-	extends Message
+	extends PTPMessage
 	implements MessageInterface
 	{
 
@@ -40,9 +40,4 @@ public class CronotermMessage
 		s.append("Altro:"+(Byte2 & 0x70)+"\r\n");
 		return s.toString();
 	}
-	
-	public boolean isBroadcast() {
-		return false;
-	}
-	
 }

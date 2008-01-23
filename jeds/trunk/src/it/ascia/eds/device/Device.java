@@ -16,7 +16,16 @@ public interface Device {
 	 * 
 	 * @param m il messaggio ricevuto
 	 */
-	public void receiveMessage(Message m);
+	public void messageReceived(Message m);
+	
+	/** 
+	 * Il device ha inviato un messaggio.
+	 * 
+	 * Questo metodo dovrebbe essere chiamato solo dal bus
+	 * 
+	 * @param m il messaggio ricevuto
+	 */
+	public void messageSent(Message m);
 	
 	/**
 	 * Ritorna l'indirizzo del device sul bus.

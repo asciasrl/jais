@@ -63,7 +63,11 @@ public class BMCIR extends BMC {
 	/* (non-Javadoc)
 	 * @see it.ascia.eds.device.BMC#receiveMessage(it.ascia.eds.msg.Message)
 	 */
-	public void receiveMessage(Message m) {
+	public void messageReceived(Message m) {
+		// TODO
+	}
+	
+	public void messageSent(Message m) {
 		// TODO
 	}
 	
@@ -79,5 +83,13 @@ public class BMCIR extends BMC {
 	public String getStatus() {
 		// TODO
 		return name;
+	}
+	
+	/**
+	 * Questo e' uno dei pochi BMC con gli ingressi che possono avere
+	 * indirizzo 0.
+	 */
+	protected int getFirstInputPortNumber() {
+		return 0;
 	}
 }

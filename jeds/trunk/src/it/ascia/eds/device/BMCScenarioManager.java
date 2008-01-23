@@ -56,10 +56,11 @@ public class BMCScenarioManager extends BMC {
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see it.ascia.eds.device.BMC#receiveMessage(it.ascia.eds.msg.Message)
-	 */
-	public void receiveMessage(Message m) {
+	public void messageReceived(Message m) {
+		// TODO
+	}
+	
+	public void messageSent(Message m) {
 		// TODO
 	}
 	
@@ -77,4 +78,9 @@ public class BMCScenarioManager extends BMC {
 		// TODO
 		return name;
 	}
+	
+	protected int getFirstInputPortNumber() {
+		return 1;
+	}
+
 }

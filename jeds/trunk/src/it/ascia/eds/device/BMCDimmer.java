@@ -94,28 +94,28 @@ public class BMCDimmer extends BMC {
 	/* (non-Javadoc)
 	 * @see it.ascia.eds.device.BMC#receiveMessage(it.ascia.eds.msg.Message)
 	 */
-	public void receiveMessage(Message m) {
+	public void messageReceived(Message m) {
 //		System.out.println("Ricevuto un messaggio di tipo " + m.getTipoMessaggio());
+		if (ComandoUscitaMessage.class.isInstance(m)) {
+			// Qualcuno ha chiesto la modifica, non sappiamo se sara'
+			// effettuata.
+			dirty = true;			
+		}	
+	}
+	
+	public void messageSent(Message m) {
 		if (RispostaStatoDimmerMessage.class.isInstance(m)) {
 			RispostaStatoDimmerMessage r = (RispostaStatoDimmerMessage)m;
-			if (m.getSender() == getAddress()) {
-				// Il RispostaStatoMessage da' sempre 8 valori. Dobbiamo
-				// prendere solo quelli effettivamente presenti sul BMC
-				int temp[];
-				int i;
-				temp = r.getOutputs();
-				for (i = 0; i < outPortsNum; i++) {
-					outPorts[i] = temp[i];
-				}
-				dirty = false;
-			} // if il sender sono io
-		} else if (ComandoUscitaMessage.class.isInstance(m)) {
-			if (m.getRecipient() == getAddress()) {
-				// Qualcuno ha chiesto la modifica, non sappiamo se sara'
-				// effettuata.
-				dirty = true;
+			// Il RispostaStatoMessage da' sempre 8 valori. Dobbiamo
+			// prendere solo quelli effettivamente presenti sul BMC
+			int temp[];
+			int i;
+			temp = r.getOutputs();
+			for (i = 0; i < outPortsNum; i++) {
+				outPorts[i] = temp[i];
 			}
-		}	
+			dirty = false;
+		}
 	}
 	
 	public String getInfo() {
@@ -184,4 +184,12 @@ public class BMCDimmer extends BMC {
 		}
 		return retval;
 	}
+
+	/**
+	 * Questo BMC non ha ingressi.
+	 */
+	protected int getFirstInputPortNumber() {
+		return 0;
+	}
+	
 }

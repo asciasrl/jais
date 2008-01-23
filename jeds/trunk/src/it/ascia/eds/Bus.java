@@ -182,13 +182,13 @@ public abstract class Bus {
     		Iterator it = devices.values().iterator();
     		while (it.hasNext()) {
     			Device bmc = (Device)it.next();
-    			bmc.receiveMessage(m);
+    			bmc.messageReceived(m);
     		}
     	} else { 
     		// Non e' un messaggio broadcast: va mandato al destinatario...
     		Device bmc = (Device)devices.get(new Integer(rcpt));
     		if (bmc != null) {
-    			bmc.receiveMessage(m);
+    			bmc.messageReceived(m);
     		} else {
     			/*System.err.println("Ricevuto un messaggio per il BMC " + 
     					rcpt + " che non conosco:");
@@ -197,16 +197,15 @@ public abstract class Bus {
     		// ...e al mittente
     		bmc = (Device)devices.get(new Integer(sender));
     		if (bmc != null) {
-    			bmc.receiveMessage(m);
+    			bmc.messageSent(m);
     		} else {
     			/*System.err.println("Ricevuto un messaggio inviato dal BMC " + 
     					rcpt + " che non conosco:");
     			System.err.println((new Date()).toString() + "\r\n" + m);*/
     		}
-    		// Lo mandiamo anche al BMCComputer, se non gliel'abbiamo gia' dato
-    		if ((bmcComputer != null) && (rcpt != bmcComputer.getAddress()) &&
-    				(sender != bmcComputer.getAddress())) { 
-    	   		bmcComputer.receiveMessage(m);
+    		// Lo mandiamo anche al BMCComputer, se non era per lui
+    		if ((bmcComputer != null) && (rcpt != bmcComputer.getAddress())) { 
+    	   		bmcComputer.messageReceived(m);
     		}
     	}
     }

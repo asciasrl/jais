@@ -54,7 +54,7 @@ public class BMCComputer extends BMC {
 	/* (non-Javadoc)
 	 * @see it.ascia.eds.device.Device#receiveMessage(it.ascia.eds.msg.Message)
 	 */
-	public void receiveMessage(Message m) {
+	public void messageReceived(Message m) {
 		if (RispostaModelloMessage.class.isInstance(m)) {
 			RispostaModelloMessage risposta = (RispostaModelloMessage) m;
 			try {
@@ -66,6 +66,10 @@ public class BMCComputer extends BMC {
 		}
 		// Tutti i messaggi ricevuti devono finire nella inbox
 		inbox.addLast(m);
+	}
+	
+	public void messageSent(Message m) {
+		// Sappiamo quello che abbiamo inviato.
 	}
 	
 	/**
@@ -120,5 +124,12 @@ public class BMCComputer extends BMC {
 
 	public String getStatus() {
 		return null;
+	}
+
+	/**
+	 * Necessario per compilare.
+	 */
+	protected int getFirstInputPortNumber() {
+		return 0;
 	}
 }

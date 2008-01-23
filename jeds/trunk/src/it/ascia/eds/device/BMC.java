@@ -3,11 +3,12 @@
  */
 package it.ascia.eds.device;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import it.ascia.eds.*;
 import it.ascia.eds.msg.Message;
-import it.ascia.eds.msg.RispostaModelloMessage;
 
 /**
  * Un BMC.
@@ -43,8 +44,15 @@ public abstract class BMC implements Device {
 	protected String name;
 	/**
 	 * I nomi delle porte di ingresso.
+	 * 
+	 * Nel file di configurazione, gli ingressi partono da 1 per quasi
+	 * tutti i tipi di dispositivi. Per gli altri, la numerazione degli ingressi
+	 * puo' seguire logiche diverse (ad es. dando significato ai singoli bit).
+	 * 
+	 * Da un punto di vista di occupazione di memoria, un Vector sarebbe
+	 * piu' svantaggioso nel caso peggiore.
 	 */
-	Vector inPortsNames;
+	Map inPortsNames;
 	/**
 	 * I nomi delle porte di uscita.
 	 */
@@ -62,7 +70,7 @@ public abstract class BMC implements Device {
 		this.address = address;
 		this.model = model;
 		this.name = name;
-		inPortsNames = new Vector();
+		inPortsNames = new HashMap();
 		outPortsNames = new Vector();
 	}
 	
@@ -160,17 +168,28 @@ public abstract class BMC implements Device {
 		
 	
 	/** 
-	 * Il BMC ha inviato o ricevuto un messaggio.
+	 * Il bus ha ricevuto un messaggio per questo BMC.
 	 * 
 	 * Questo metodo deve leggere il contenuto del messaggio e aggiornare lo 
 	 * stato interno.
 	 * 
-	 * Dovrebbe essere chiamato solo dal bus. Deve essere chiamato sia per i
-	 * messaggi inviati, sia per quelli ricevuti.
+	 * Dovrebbe essere chiamato solo dal bus.
 	 * 
-	 * @param m il messaggio ricevuto
+	 * @param m il messaggio ricevuto.
 	 */
-	public abstract void receiveMessage(Message m);
+	public abstract void messageReceived(Message m);
+	
+	/** 
+	 * Il BMC (fisico) ha inviato un messaggio sul bus.
+	 * 
+	 * Questo metodo deve leggere il contenuto del messaggio e aggiornare lo 
+	 * stato interno.
+	 * 
+	 * Dovrebbe essere chiamato solo dal bus.
+	 * 
+	 * @param m il messaggio inviato.
+	 */
+	public abstract void messageSent(Message m);
 	
 	/**
 	 * Ritorna una descrizione del BMC.
@@ -191,6 +210,15 @@ public abstract class BMC implements Device {
 	public abstract void updateStatus();
 	
 	/**
+	 * Ritorna il numero del primo ingresso.
+	 * 
+	 * Questo metodo e' necessario perche' quasi tutti i modelli di BMC hanno
+	 * gli ingressi numerati a partire da 1. Gli ingressi delle porte a
+	 * infrarossi, invece, possono valere anche 0.
+	 */
+	protected abstract int getFirstInputPortNumber();
+	
+	/**
 	 * Stampa una descrizione dello stato del BMC (facoltativa).
 	 * 
 	 * Questa funzione ha senso solo se implementata dalle sottoclassi.
@@ -200,16 +228,16 @@ public abstract class BMC implements Device {
 	}
 	
 	/**
-	 * Sets the name of an input port.
+	 * Imposta il nome assegnato a una  porta di ingresso.
 	 * 
-	 * @param number the port number.
-	 * @param name the name to assign.
+	 * @param number il numero della porta; verra' compensato se il file di
+	 * configurazione inizia a contare da 1.
+	 * @param name il nome da assegnare.
 	 */
 	public void setInputName(int number, String name) {
-		if (inPortsNames.size() < number + 1) {
-			inPortsNames.setSize(number + 1);
-		}
-		inPortsNames.set(number, name);
+		// Compensiamo per i BMC che numerano a partire da 1
+		number -= getFirstInputPortNumber();
+		inPortsNames.put(new Integer(number), name);
 	}
 	
 	/**
@@ -229,17 +257,16 @@ public abstract class BMC implements Device {
 	 * Ritorna il nome di una porta di uscita.
 	 * 
 	 * Se il nome non esiste, viene impostato automaticamente.
+	 * 
+	 * @param number il numero della porta di ingresso (a partire da 0).
 	 */
 	public String getInputName(int number) {
 		String retval;
-		try {
-			retval = (String) inPortsNames.get(number);
-		} catch (ArrayIndexOutOfBoundsException e) {
-			retval = null;
-		}
+		retval = (String) inPortsNames.get(new Integer(number));
 		if (retval == null) {
 			retval = "Ingresso" + number;
-			setInputName(number, retval);
+			// setInputName compensa se iniziamo da 1 -- dobbiamo prevenirlo
+			setInputName(number + getFirstInputPortNumber(), retval);
 		}
 		return retval;
 	}

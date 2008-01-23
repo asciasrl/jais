@@ -80,33 +80,30 @@ public class BMCStandardIO extends BMC {
 		dirtyOutPorts = true;
 	}
 	
-	/* (non-Javadoc)
-	 * @see it.ascia.eds.device.BMC#receiveMessage(it.ascia.eds.msg.Message)
-	 */
-	public void receiveMessage(Message m) {
+	public void messageReceived(Message m) {
+		if (ComandoUscitaMessage.class.isInstance(m)) {
+			// Ci chiedono di cambiare le porte in uscita.
+			dirtyOutPorts = true;
+		}
+	}
+	
+	public void messageSent(Message m) {
 		if (RispostaStatoMessage.class.isInstance(m)) {
 			RispostaStatoMessage r = (RispostaStatoMessage)m;
-			if (m.getSender() == getAddress()) {
-				// Il RispostaStatoMessage da' sempre 8 valori. Dobbiamo
-				// prendere solo quelli effettivamente presenti sul BMC
-				boolean temp[];
-				int i;
-				temp = r.getOutputs();
-				for (i = 0; i < outPortsNum; i++) {
-					outPorts[i] = temp[i];
-				}
-				dirtyOutPorts = false;
-				temp = r.getInputs();
-				for (i = 0; i < inPortsNum; i++) {
-					inPorts[i] = temp[i];
-				}
-			} // if il sender sono io
-		} else if (ComandoUscitaMessage.class.isInstance(m)) {
-			if (m.getRecipient() == getAddress()) {
-				// Ci chiedono di cambiare le porte in uscita.
-				dirtyOutPorts = true;
+			// Il RispostaStatoMessage da' sempre 8 valori. Dobbiamo
+			// prendere solo quelli effettivamente presenti sul BMC
+			boolean temp[];
+			int i;
+			temp = r.getOutputs();
+			for (i = 0; i < outPortsNum; i++) {
+				outPorts[i] = temp[i];
 			}
-		}
+			dirtyOutPorts = false;
+			temp = r.getInputs();
+			for (i = 0; i < inPortsNum; i++) {
+				inPorts[i] = temp[i];
+			}
+		} 
 	}
 	
 	/**
@@ -199,5 +196,9 @@ public class BMCStandardIO extends BMC {
 	 			(outPorts[i]? "ON" : "OFF") + "\n";
 		}
 	 	return retval;
+	}
+	
+	protected int getFirstInputPortNumber() {
+		return 1;
 	}
 }

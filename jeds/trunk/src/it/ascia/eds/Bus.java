@@ -143,7 +143,9 @@ public abstract class Bus {
 //  				if (!m.getTipoMessaggio().equals("Aknowledge")) {
 //  				System.out.println((new Date()).toString() + "\r\n" + m);
 //  				}
-    				dispatchMessage(m);
+    				if (m != null) {
+    					dispatchMessage(m);
+    				}
     				//mp.clear();
     			}
     		} catch (IOException e) {

@@ -27,6 +27,7 @@ public class BMCChronoTerm extends BMC {
 	 * @param model numero del modello
 	 */
 	public BMCChronoTerm(int address, int model, Bus bus, String name) {
+		// FIXME: quante uscite ha un BMCChronoTerm?
 		super(address, model, bus, name);
 		switch(model) {
 		case 127:
@@ -41,7 +42,8 @@ public class BMCChronoTerm extends BMC {
 	 * @see it.ascia.eds.device.BMC#receiveMessage(it.ascia.eds.msg.Message)
 	 */
 	public void messageReceived(Message m) {
-		// TODO
+		System.out.println("ChronoTerm: ho ricevuto un messaggio di tipo " +
+				m.getTipoMessaggio() + " a " + m.getRecipient());
 	}
 	
 	public void messageSent(Message m) {
@@ -64,5 +66,10 @@ public class BMCChronoTerm extends BMC {
 
 	protected int getFirstInputPortNumber() {
 		return 1;
+	}
+
+	public int getOutPortsNumber() {
+		// FIXME: e' vero?
+		return 11;
 	}
 }

@@ -8,6 +8,7 @@ import it.ascia.eds.msg.ComandoUscitaMessage;
 import it.ascia.eds.msg.Message;
 import it.ascia.eds.msg.PTPRequest;
 import it.ascia.eds.msg.RichiestaStatoMessage;
+import it.ascia.eds.msg.RispostaAssociazioneUscitaMessage;
 import it.ascia.eds.msg.RispostaStatoMessage;
 
 /**
@@ -18,7 +19,6 @@ import it.ascia.eds.msg.RispostaStatoMessage;
  * @author arrigo
  */
 public class BMCStandardIO extends BMC {
-
 	/**
 	 * Numero di porte in ingresso
 	 */
@@ -104,6 +104,17 @@ public class BMCStandardIO extends BMC {
 			for (i = 0; i < inPortsNum; i++) {
 				inPorts[i] = temp[i];
 			}
+		} else if (RispostaAssociazioneUscitaMessage.class.isInstance(m)) {
+			// Stiamo facendo un discovery delle associazioni.
+			RispostaAssociazioneUscitaMessage r = 
+				(RispostaAssociazioneUscitaMessage) m;
+			if (r.getComandoBroadcast() != 0) {
+				System.out.println("L'uscita " + r.getUscita() + 
+						" e' legata al comando broadcast " + 
+						r.getComandoBroadcast() + " " + 
+						(r.activatesBMC()? "(attiva)": "(disattiva)"));
+				bindOutput(r.getComandoBroadcast(), r.getUscita());
+			}
 		} 
 	}
 	
@@ -183,6 +194,18 @@ public class BMCStandardIO extends BMC {
 		}
 	 	if (dirtyOutPorts) System.out.print("?");
 	 	System.out.println();
+	 	// Stampiamo anche i binding, ordinati per segnale
+	 	for (i = 1; i < 32; i++) {
+	 		int outputs[] = getBoundOutputs(i);
+	 		if (outputs.length != 0) {
+	 			System.out.print("Il messaggio broadcast " + i +
+	 					" e' legato alle porte: ");
+	 			for (int j = 0; j < outputs.length; j++) {
+	 				System.out.print(outputs[j] + " ");
+	 			}
+	 			System.out.println();
+	 		} // Se ci sono messaggi legati
+	 	}
 	}
 
 	public String getStatus() {
@@ -201,5 +224,9 @@ public class BMCStandardIO extends BMC {
 	
 	protected int getFirstInputPortNumber() {
 		return 1;
+	}
+
+	public int getOutPortsNumber() {
+		return outPorts.length;
 	}
 }

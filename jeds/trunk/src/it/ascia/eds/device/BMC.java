@@ -4,11 +4,15 @@
 package it.ascia.eds.device;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import it.ascia.eds.*;
 import it.ascia.eds.msg.Message;
+import it.ascia.eds.msg.RichiestaAssociazioneUscitaMessage;
 
 /**
  * Un BMC.
@@ -57,6 +61,13 @@ public abstract class BMC implements Device {
 	 * I nomi delle porte di uscita.
 	 */
 	Vector outPortsNames;
+	/**
+	 * Binding tra messaggi broadcast e porte di output.
+	 * 
+	 * Questo e' un'array di Set di Integer, indicizzato per numero di
+	 * messaggio broadcast.
+	 */
+	Set broadcastBindings[];
 	
 	/**
 	 * Costruttore. Deve essere usato dalle sottoclassi.
@@ -64,6 +75,8 @@ public abstract class BMC implements Device {
 	 * @param address l'indirizzo di questo BMC
 	 * @param model il modello di questo BMC
 	 * @param name il nome di questo BMC (dal file di configurazione)
+	 * @param inputs numero di porte di ingresso
+	 * @param outputs numero di porte in uscita
 	 */
 	public BMC(int address, int model, Bus bus, String name) {
 		this.bus = bus;
@@ -72,6 +85,10 @@ public abstract class BMC implements Device {
 		this.name = name;
 		inPortsNames = new HashMap();
 		outPortsNames = new Vector();
+		broadcastBindings = new Set[32];
+		for (int i = 0; i < broadcastBindings.length; i++) {
+			broadcastBindings[i] = new HashSet();
+		}
 	}
 	
 	/**
@@ -219,6 +236,12 @@ public abstract class BMC implements Device {
 	protected abstract int getFirstInputPortNumber();
 	
 	/**
+	 * Ritorna il numero di uscite.
+	 */
+	public abstract int getOutPortsNumber();
+
+	
+	/**
 	 * Stampa una descrizione dello stato del BMC (facoltativa).
 	 * 
 	 * Questa funzione ha senso solo se implementata dalle sottoclassi.
@@ -288,5 +311,46 @@ public abstract class BMC implements Device {
 			setOutputName(number, retval);
 		}
 		return retval;
+	}
+	
+	/**
+	 * Ritorna il numero di "caselle" disponibili per ciascuna uscita.
+	 * 
+	 * Una casella serve a registrare l'associazione di un'uscita a un comando
+	 * broadcast.
+	 * 
+	 * Tutti i BMC hanno 4 caselle per uscita, tranne i Dimmer che ne hanno 8.
+	 * Questo metodo deve essere quindi sovrascritto da BMCDimmer.
+	 */
+	public int getCaselleNumber() {
+		return 4;
+	}
+	
+	/**
+	 * Registra il binding tra uscita e messaggio broadcast.
+	 *
+	 * @param message numero del messaggio broadcast (1-31).
+	 * @param outPortNumber numero della porta che risponde al messaggio.
+	 */
+	protected void bindOutput(int message, int outPortNumber) {
+		broadcastBindings[message].add(new Integer(outPortNumber));
+	}
+	
+	/**
+	 * Ritorna le porte di uscita che sono collegate a un messaggio broadcast.
+	 * 
+	 * @param message il numero del messaggio broadcast (1-31)
+	 * @returns un'array di interi: le porte
+	 */
+	protected int[] getBoundOutputs(int message) {
+		Set ports = broadcastBindings[message];
+		int retval[] = new int[ports.size()];
+		Iterator it = ports.iterator();
+		int i = 0;
+		while (it.hasNext()) {
+			retval[i] = (((Integer)it.next()).intValue());
+			i++;
+		}
+		return retval;;
 	}
 }

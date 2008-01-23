@@ -18,6 +18,7 @@ import java.io.*;
 public class BusTest {
 	static Bus bus;
 	static BufferedReader stdin;
+	static BMCComputer bmcComputer;
 	
 	/**
 	 * Java avra' tanti pregi, ma l'input da stdin e' difficile.
@@ -45,6 +46,8 @@ public class BusTest {
  		BMCStandardIO bmc = (BMCStandardIO)bus.getDevice(address);
  		System.out.println();
  		System.out.println("Prova BMC Standard I/O");
+ 		System.out.println("Discovery...");
+ 		bmcComputer.discoverBroadcastBindings(bmc);
  		porta = 0;
  		while ((porta >= 0) && (porta < 8)) {
  			porta = inputInteger("Porta (<0 esce): ");
@@ -70,6 +73,8 @@ public class BusTest {
 		BMCDimmer bmc = (BMCDimmer)bus.getDevice(address);
 		System.out.println();
 		System.out.println("Prova Dimmer");
+		System.out.println("Discovery...");
+ 		bmcComputer.discoverBroadcastBindings(bmc);
 		while ((output >= 0) && (output < 2)) {
  			output = inputInteger("output (<0 esce): ");
  			if (output >= 0) {
@@ -93,7 +98,6 @@ public class BusTest {
 	public static void main(String[] args) {
 	    String defaultPort = "ascia.homeip.net";
  		stdin = new BufferedReader(new InputStreamReader(System.in));
-		BMCComputer bmcComputer;
 		ConfigurationFile cfgFile = null;
 	 	if (args.length > 0) {
 		    defaultPort = args[0];

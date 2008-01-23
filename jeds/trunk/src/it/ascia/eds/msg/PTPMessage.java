@@ -14,6 +14,6 @@ public abstract class PTPMessage extends Message {
 	 * Il messaggio viene re-inviato se non arriva risposta.
 	 */
 	public int getMaxSendTries() {
-		return 8;
+		return 4;
 	}
 }

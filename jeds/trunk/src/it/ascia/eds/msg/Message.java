@@ -16,8 +16,13 @@ implements MessageInterface {
 
 	protected int[] rawmessage;
 
+	/**
+	 * Byte di partenza.
+	 */
 	protected static int Stx = 2;
-
+	/**
+	 * Byte di chiusura.
+	 */
 	protected static int Etx = 3;
 
 	protected int Destinatario;
@@ -29,6 +34,9 @@ implements MessageInterface {
 	protected int Byte1;
 	protected int Byte2;
 
+	/**
+	 * Ritorna il contenuto del messaggio sotto forma di array di interi.
+	 */
 	public int[] getRawMessage() {
 		int message[] = new int[8];
 		message[0] = Stx;
@@ -42,14 +50,22 @@ implements MessageInterface {
 		return message; 
 	}
 
+	/**
+	 * Ritorna l'indirizzo del destinatario del messaggio.
+	 */
 	public int getRecipient() {
 		return Destinatario;
 	}
-
+	/**
+	 * Ritorna l'indirizzo del mittente del messaggio.
+	 */
 	public int getSender() {
 		return Mittente;
 	}
 
+	/**
+	 * Ritorna il contenuto del messaggio sotto forma di array di byte.
+	 */
 	public byte[] getBytesMessage() {
 		byte message[] = new byte[8];
 		message[0] = (new Integer(Stx)).byteValue();
@@ -63,10 +79,17 @@ implements MessageInterface {
 		return message; 
 	}
 
+	/**
+	 * Invia se stesso.
+	 * @param out OutputStream su cui inviarsi.
+	 */
 	public void write(OutputStream out) throws IOException {
 		out.write(getBytesMessage());
 	}
 
+	/**
+	 * Calcola il checksum.
+	 */
 	public int checkSum() {
 		return (new Integer((Stx+Destinatario+Mittente+TipoMessaggio+Byte1+Byte2) & 0xff)).byteValue();
 	}
@@ -82,6 +105,9 @@ implements MessageInterface {
 		return s.toString();
 	}
 
+	/**
+	 * Ritorna il messaggio riportandone i campi in esadecimale.
+	 */
 	public String toHexString()
 	{
 		StringBuffer s = new StringBuffer();
@@ -96,7 +122,11 @@ implements MessageInterface {
 		return s.toString();
 	}
 
-	protected String b2h(int i)
+	/**
+	 * Funzione di utilita': restituisce la rappresentazione esadecimale
+	 * di un byte.
+	 */
+	protected static String b2h(int i)
 	{
 		String s = "0x";
 		if (i < 16) {
@@ -110,6 +140,9 @@ implements MessageInterface {
 		return "Unknown ("+TipoMessaggio+")";
 	}
 
+	/**
+	 * Ritorna una descrizione testuale che interpreta i campi del messaggio.
+	 */
 	public String getInformazioni()
 	{
 		StringBuffer s = new StringBuffer();
@@ -123,10 +156,16 @@ implements MessageInterface {
 	public Message() {  
 	}
 
+	/**
+	 * Costruisce il messaggio a partire da un'array di interi.
+	 */
 	public Message(int[] message) {
 		parseMessage(message);
 	}
 
+	/**
+	 * Carica i dati da un'array di interi.
+	 */
 	public void parseMessage(int[] message) {
 		rawmessage = message;
 		Destinatario = message[1];

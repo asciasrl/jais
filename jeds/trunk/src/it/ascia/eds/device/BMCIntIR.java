@@ -63,4 +63,8 @@ public class BMCIntIR extends BMC {
 	protected int getFirstInputPortNumber() {
 		return 0;
 	}
+
+	public int getOutPortsNumber() {
+		return 0;
+	}
 }

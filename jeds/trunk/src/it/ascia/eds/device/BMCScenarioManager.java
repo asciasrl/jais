@@ -83,4 +83,8 @@ public class BMCScenarioManager extends BMC {
 		return 1;
 	}
 
+	public int getOutPortsNumber() {
+		return 8;
+	}
+
 }

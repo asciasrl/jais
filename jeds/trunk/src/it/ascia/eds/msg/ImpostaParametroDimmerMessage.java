@@ -1,7 +1,6 @@
 package it.ascia.eds.msg;
 
-public class ImpostaParametroDimmerMessage 
-	extends Message
+public class ImpostaParametroDimmerMessage extends PTPRequest
 	implements MessageInterface {
 	
 	/**
@@ -50,9 +49,18 @@ public class ImpostaParametroDimmerMessage
 		}
 		return s.toString();
 	}
-	
-	public boolean isBroadcast() {
-		return false;
+
+	public boolean isAnsweredBy(PTPMessage m) {
+		boolean retval = false;
+		System.err.println("ImpostaParametroDimmerMessage.isAnsweredBy(): " +
+				"non implementato.");
+		if (AknowledgeMessage.class.isInstance(m)) {
+			if ((getSender() == m.getRecipient()) &&
+					(getRecipient() == m.getSender())) {
+				retval = true;
+			}
+		}
+		return retval;
 	}
 	
 }

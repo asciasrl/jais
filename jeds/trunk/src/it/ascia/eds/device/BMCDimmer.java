@@ -6,6 +6,7 @@ package it.ascia.eds.device;
 import it.ascia.eds.Bus;
 import it.ascia.eds.msg.ComandoUscitaMessage;
 import it.ascia.eds.msg.Message;
+import it.ascia.eds.msg.PTPRequest;
 import it.ascia.eds.msg.RichiestaStatoMessage;
 import it.ascia.eds.msg.RispostaStatoDimmerMessage;
 
@@ -148,12 +149,12 @@ public class BMCDimmer extends BMC {
 	}
 	
 	public void updateStatus() {
-		Message m;
+		PTPRequest m;
 		// Il protocollo permette di scegliere più uscite. Qui chiediamo solo le
 		// prime due.
 		m = new RichiestaStatoMessage(getAddress(), bus.getBMCComputerAddress(),
 				3);
-		bus.sendPTPMessage(m);
+		bus.sendPTPRequest(m);
 	}
 	
 	/**
@@ -174,7 +175,7 @@ public class BMCDimmer extends BMC {
 				m = new ComandoUscitaMessage(getAddress(), 
 						bus.getBMCComputerAddress(), 0, output, value, 
 						(value > 0)? 1 : 0);
-				retval = bus.sendPTPMessage(m);
+				retval = bus.sendPTPRequest(m);
 			} else {
 				System.err.println("Valore non valido per canale dimmer: " +
 						value);

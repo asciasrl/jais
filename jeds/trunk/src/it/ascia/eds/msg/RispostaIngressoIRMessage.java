@@ -1,7 +1,6 @@
 package it.ascia.eds.msg;
 
-public class RispostaIngressoIRMessage 
-	extends Message
+public class RispostaIngressoIRMessage extends PTPMessage
 	implements MessageInterface {
 
 	public RispostaIngressoIRMessage(int d, int m, int Address, int Command) {
@@ -30,9 +29,5 @@ public class RispostaIngressoIRMessage
 			s.append("Codice IR RC5: addr="+(Byte1 & 0xFF) + " command="+(Byte2 & 0xFF) + "\r\n");
 		}
 		return s.toString();
-	}
-
-	public boolean isBroadcast() {
-		return false;
 	}
 }

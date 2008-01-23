@@ -1,6 +1,6 @@
 package it.ascia.eds.msg;
 
-public class RispostaStatoDimmerMessage extends Message {
+public class RispostaStatoDimmerMessage extends PTPMessage {
 
 	public RispostaStatoDimmerMessage(int d, int m, int Modello, int Versione) {
 		Destinatario = d & 0xFF;
@@ -35,9 +35,5 @@ public class RispostaStatoDimmerMessage extends Message {
 	public int[] getOutputs() {
 		int retval[] = {(Byte1 & 0x7F), (Byte2 & 0x7F)};
 		return retval;
-	}
-
-	public boolean isBroadcast() {
-		return false;
 	}
 }

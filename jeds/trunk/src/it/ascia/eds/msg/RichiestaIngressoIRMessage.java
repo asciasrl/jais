@@ -1,7 +1,6 @@
 package it.ascia.eds.msg;
 
-public class RichiestaIngressoIRMessage 
-	extends Message
+public class RichiestaIngressoIRMessage extends PTPRequest
 	implements MessageInterface {
 
 	public RichiestaIngressoIRMessage(int d, int m, int Uscita) {
@@ -28,7 +27,15 @@ public class RichiestaIngressoIRMessage
 		return s.toString();
 	}
 
-	public boolean isBroadcast() {
-		return false;
+	public boolean isAnsweredBy(PTPMessage m) {
+		boolean retval = false;
+		if (RispostaIngressoIRMessage.class.isInstance(m)) {
+			if ((getSender() == m.getRecipient()) &&
+					(getRecipient() == m.getSender())) {
+				retval = true;
+			}
+		}
+		return retval;
 	}
+
 }

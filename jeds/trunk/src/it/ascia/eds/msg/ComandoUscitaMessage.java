@@ -1,7 +1,6 @@
 package it.ascia.eds.msg;
 
-public class ComandoUscitaMessage 
-	extends Message
+public class ComandoUscitaMessage extends PTPRequest
 	implements MessageInterface {
 
 	public ComandoUscitaMessage(int d, int m, int Tempo, int Uscita, int Percentuale, int Attivazione) {
@@ -56,9 +55,15 @@ public class ComandoUscitaMessage
 		s.append("\r\n");
 		return s.toString();
 	}
-	
-	public boolean isBroadcast() {
-		return false;
+
+	public boolean isAnsweredBy(PTPMessage m) {
+		boolean retval = false;
+		if (AknowledgeMessage.class.isInstance(m)) {
+			if ((getSender() == m.getRecipient()) &&
+					(getRecipient() == m.getSender())) {
+				retval = true;
+			}
+		}
+		return retval;
 	}
-	
 }

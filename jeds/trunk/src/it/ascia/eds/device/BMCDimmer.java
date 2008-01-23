@@ -8,6 +8,7 @@ import it.ascia.eds.msg.ComandoUscitaMessage;
 import it.ascia.eds.msg.Message;
 import it.ascia.eds.msg.PTPRequest;
 import it.ascia.eds.msg.RichiestaStatoMessage;
+import it.ascia.eds.msg.RispostaAssociazioneUscitaMessage;
 import it.ascia.eds.msg.RispostaStatoDimmerMessage;
 
 /**
@@ -116,6 +117,16 @@ public class BMCDimmer extends BMC {
 				outPorts[i] = temp[i];
 			}
 			dirty = false;
+		}  else if (RispostaAssociazioneUscitaMessage.class.isInstance(m)) {
+			RispostaAssociazioneUscitaMessage r = 
+				(RispostaAssociazioneUscitaMessage) m;
+			// Stiamo facendo un discovery delle associazioni.
+			if (r.getComandoBroadcast() != 0) {
+				System.out.println("L'uscita " + r.getUscita() + " " +
+						"e' legata al comando broadcast " + 
+						r.getComandoBroadcast());
+				bindOutput(r.getComandoBroadcast(), r.getUscita());
+			}
 		}
 	}
 	
@@ -137,6 +148,18 @@ public class BMCDimmer extends BMC {
 			}
 		}
 		System.out.println();
+		// Stampiamo anche i binding, ordinati per segnale
+	 	for (i = 1; i < 32; i++) {
+	 		int outputs[] = getBoundOutputs(i);
+	 		if (outputs.length != 0) {
+	 			System.out.print("Il messaggio broadcast " + i +
+	 					" e' legato alle porte: ");
+	 			for (int j = 0; j < outputs.length; j++) {
+	 				System.out.print(outputs[j] + " ");
+	 			}
+	 			System.out.println();
+	 		} // Se ci sono messaggi legati
+	 	}
 	}
 	
 	public String getStatus() {
@@ -193,4 +216,14 @@ public class BMCDimmer extends BMC {
 		return 0;
 	}
 	
+	/**
+	 * Tutti i BMC hanno 4 caselle per uscita, tranne i Dimmer che ne hanno 8.
+	 */
+	public int getCaselleNumber() {
+		return 8;
+	}
+
+	public int getOutPortsNumber() {
+		return outPortsNum;
+	}
 }

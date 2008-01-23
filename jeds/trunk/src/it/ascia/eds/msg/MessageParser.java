@@ -96,6 +96,8 @@ public class MessageParser {
 		case 1: return new RispostaModelloMessage(message);
 		case 4: return new VariazioneIngressoMessage(message);
 		case 6: return new AknowledgeMessage(message);
+		case 15: return new RichiestaAssociazioneUscitaMessage(message);
+		case 16: return new RispostaAssociazioneUscitaMessage(message);
 		case 17: return new ComandoBroadcastMessage(message);
 		case 21: return new ComandoUscitaMessage(message);
 		case 25: return new RichiestaStatoMessage(message);

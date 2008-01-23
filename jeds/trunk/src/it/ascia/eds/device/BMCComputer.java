@@ -8,7 +8,9 @@ import java.util.*;
 import it.ascia.eds.msg.Message;
 import it.ascia.eds.msg.PTPMessage;
 import it.ascia.eds.msg.PTPRequest;
+import it.ascia.eds.msg.RichiestaAssociazioneUscitaMessage;
 import it.ascia.eds.msg.RichiestaModelloMessage;
+import it.ascia.eds.msg.RispostaAssociazioneUscitaMessage;
 import it.ascia.eds.msg.RispostaModelloMessage;
 import it.ascia.eds.Bus;
 import it.ascia.eds.EDSException;
@@ -77,8 +79,8 @@ public class BMCComputer extends BMC {
 				answerMessage = ptpm;
 			}
 			// Aggiungiamo i BMC che si presentano
-			if (RispostaModelloMessage.class.isInstance(m)) {
-				RispostaModelloMessage risposta = (RispostaModelloMessage) m;
+			if (RispostaModelloMessage.class.isInstance(ptpm)) {
+				RispostaModelloMessage risposta = (RispostaModelloMessage) ptpm;
 				try {
 					BMC.createBMC(risposta.getSender(), risposta.getModello(),
 							null, bus);
@@ -126,6 +128,7 @@ public class BMCComputer extends BMC {
     	int waitings, tries;
     	boolean received = false;
     	messageToBeAnswered = m;
+    	answerMessage = null;
     	try {
     		for (tries = 0;
     			(tries < m.getMaxSendTries()) && (!received); 
@@ -134,7 +137,9 @@ public class BMCComputer extends BMC {
     			for (waitings = 0; 
     				(waitings < bus.WAIT_RETRIES) && (!received); 
     				waitings++) {
-    					Thread.sleep(bus.PING_WAIT);
+    					int delay = (int)
+    						(bus.PING_WAIT * (1 + Math.random() * 0.2));
+    					Thread.sleep(delay);
     					received = (answerMessage != null);
     			}
     		}
@@ -172,7 +177,24 @@ public class BMCComputer extends BMC {
     	return retval;
     }
     
+    /**
+     * Rileva le associazioni delle uscite con comandi broadcast.
+     * 
+     * Questo metodo manda molti messaggi! Il metodo messageReceived() del BMC
+     * deve interpretare i messaggi di risposta 
+     * {@link RispostaAssociazioneUscitaMessage}.
+     */
     public void discoverBroadcastBindings(BMC bmc){
+    	int outPort;
+    	int casella;
+    	for (outPort = 0; outPort < bmc.getOutPortsNumber(); outPort++) {
+    		for (casella = 0; casella < bmc.getCaselleNumber(); casella++) {
+    			RichiestaAssociazioneUscitaMessage m;
+    			m = new RichiestaAssociazioneUscitaMessage(bmc.getAddress(),
+    					getAddress(), outPort, casella);
+    			sendPTPRequest(m);
+    		}
+    	}
     }
 
 	public void updateStatus() {
@@ -189,4 +211,9 @@ public class BMCComputer extends BMC {
 	protected int getFirstInputPortNumber() {
 		return 0;
 	}
+
+	public int getOutPortsNumber() {
+		return 0; // per ora...
+	}
+
 }

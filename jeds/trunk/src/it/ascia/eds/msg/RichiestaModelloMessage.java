@@ -39,4 +39,13 @@ public class RichiestaModelloMessage extends PTPRequest
 		}
 		return retval;
 	}
+	
+	/**
+	 * Ritorna il numero massimo di tentativi di invio da effettuare.
+	 * 
+	 * Per il discovery non bisogna insistere.
+	 */
+	public int getMaxSendTries() {
+		return 2;
+	}
 }

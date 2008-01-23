@@ -30,4 +30,13 @@ public class RichiestaStatoMessage extends PTPRequest
 		}
 		return retval;
 	}
+	
+	/**
+	 * Ritorna il numero massimo di tentativi di invio da effettuare.
+	 * 
+	 * Per richiedere uno stato non bisogna insistere.
+	 */
+	public int getMaxSendTries() {
+		return 2;
+	}
 }

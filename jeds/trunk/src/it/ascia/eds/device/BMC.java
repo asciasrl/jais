@@ -351,6 +351,6 @@ public abstract class BMC implements Device {
 			retval[i] = (((Integer)it.next()).intValue());
 			i++;
 		}
-		return retval;;
+		return retval;
 	}
 }

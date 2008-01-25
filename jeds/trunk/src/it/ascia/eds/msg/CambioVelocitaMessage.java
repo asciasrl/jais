@@ -3,8 +3,9 @@ package it.ascia.eds.msg;
 import java.util.Random;
 
 /**
+ * Il bus deve cambiare velocita'.
  * 
- * @author sergio
+ * @author sergio, arrigo
  */
 public class CambioVelocitaMessage extends BroadcastMessage
 	implements MessageInterface
@@ -49,5 +50,9 @@ public class CambioVelocitaMessage extends BroadcastMessage
 		}
 		s.append(" bit/sec \r\n");
 		return s.toString();
+	}
+
+	public int getMessageType() {
+		return MSG_CAMBIO_VELOCITA;
 	}
 }

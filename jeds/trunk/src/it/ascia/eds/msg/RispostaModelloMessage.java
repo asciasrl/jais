@@ -78,4 +78,8 @@ public class RispostaModelloMessage extends PTPMessage {
 		s.append("Versione: "+Byte2+"\r\n");		
 		return s.toString();
 	}
+
+	public int getMessageType() {
+		return MSG_RISPOSTA_MODELLO;
+	}
 }

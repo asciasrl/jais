@@ -92,24 +92,42 @@ public class MessageParser {
 	 */
 	private Message createMessage(int[] message) {
 		switch (message[3]) {
-		case 0: return new RichiestaModelloMessage(message);
-		case 1: return new RispostaModelloMessage(message);
-		case 4: return new VariazioneIngressoMessage(message);
-		case 6: return new AknowledgeMessage(message);
-		case 15: return new RichiestaAssociazioneUscitaMessage(message);
-		case 16: return new RispostaAssociazioneUscitaMessage(message);
-		case 17: return new ComandoBroadcastMessage(message);
-		case 21: return new ComandoUscitaMessage(message);
-		case 25: return new RichiestaStatoMessage(message);
-		case 26: return new RispostaStatoMessage(message);
-		case 27: return new CambioVelocitaMessage(message);
-		case 39: return new RichiestaIngressoIRMessage(message);
-		case 40: return new RispostaIngressoIRMessage(message);
-		case ComandoUscitaDimmerMessage.TIPO: return new ComandoUscitaDimmerMessage(message);
-		case 53: return new RispostaStatoDimmerMessage(message);
-		case ImpostaParametroDimmerMessage.TIPO: return new ImpostaParametroDimmerMessage(message);	  	
-		case 201: return new TemperatureMessage(message);
-		case 205: return new CronotermMessage(message);
+		case Message.MSG_RICHIESTA_MODELLO : 
+			return new RichiestaModelloMessage(message);
+		case Message.MSG_RISPOSTA_MODELLO: 
+			return new RispostaModelloMessage(message);
+		case Message.MSG_VARIAZIONE_INGRESSO: 
+			return new VariazioneIngressoMessage(message);
+		case Message.MSG_ACKNOWLEDGE: 
+			return new AcknowledgeMessage(message);
+		case Message.MSG_RICHIESTA_ASSOCIAZIONE_BROADCAST: 
+			return new RichiestaAssociazioneUscitaMessage(message);
+		case Message.MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST: 
+			return new RispostaAssociazioneUscitaMessage(message);
+		case Message.MSG_COMANDO_BROADCAST: 
+			return new ComandoBroadcastMessage(message);
+		case Message.MSG_COMANDO_USCITA: 
+			return new ComandoUscitaMessage(message);
+		case Message.MSG_RICHIESTA_STATO: 
+			return new RichiestaStatoMessage(message);
+		case Message.MSG_RISPOSTA_STATO: 
+			return new RispostaStatoMessage(message);
+		case Message.MSG_CAMBIO_VELOCITA: 
+			return new CambioVelocitaMessage(message);
+		case Message.MSG_RICHIESTA_INGRESSO_IR: 
+			return new RichiestaIngressoIRMessage(message);
+		case Message.MSG_RISPOSTA_INGRESSO_IR: 
+			return new RispostaIngressoIRMessage(message);
+		case Message.MSG_COMANDO_USCITA_DIMMER: 
+			return new ComandoUscitaDimmerMessage(message);
+		case Message.MSG_RISPOSTA_STATO_DIMMER: 
+			return new RispostaStatoDimmerMessage(message);
+		case Message.MSG_IMPOSTA_PARAMETRO_DIMMER: 
+			return new ImpostaParametroDimmerMessage(message);	  	
+		case Message.MSG_TEMPERATURA: 
+			return new TemperatureMessage(message);
+		case Message.MSG_CAMBIAMENTO_SET_POINT: 
+			return new CronotermMessage(message);
 		default: 
 			System.err.println("Messaggio di tipo sconosciuto: " + 
 				message[3]);

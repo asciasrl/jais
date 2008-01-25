@@ -28,12 +28,16 @@ public class RichiestaIngressoIRMessage extends PTPRequest
 	}
 
 	public boolean isAnsweredBy(PTPMessage m) {
-		if (RispostaIngressoIRMessage.class.isInstance(m)) {
+		if (m.getMessageType() == Message.MSG_RISPOSTA_INGRESSO_IR) {
 			if ((getSender() == m.getRecipient()) &&
 					(getRecipient() == m.getSender())) {
 				answered = true;
 			}
 		}
 		return wasAnswered();
+	}
+
+	public int getMessageType() {
+		return MSG_RICHIESTA_INGRESSO_IR;
 	}
 }

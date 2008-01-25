@@ -20,8 +20,8 @@ public class RichiestaStatoMessage extends PTPRequest
 	}
 	
 	public boolean isAnsweredBy(PTPMessage m) {
-		if ((RispostaStatoMessage.class.isInstance(m)) ||
-				(RispostaStatoDimmerMessage.class.isInstance(m))) {
+		if ((m.getMessageType() == Message.MSG_RISPOSTA_STATO) ||
+				(m.getMessageType() == Message.MSG_RISPOSTA_STATO_DIMMER)) {
 			if ((getSender() == m.getRecipient()) &&
 					(getRecipient() == m.getSender())) {
 				answered = true;
@@ -37,5 +37,9 @@ public class RichiestaStatoMessage extends PTPRequest
 	 */
 	public int getMaxSendTries() {
 		return 2;
+	}
+
+	public int getMessageType() {
+		return MSG_RICHIESTA_STATO;
 	}
 }

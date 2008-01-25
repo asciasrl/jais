@@ -39,4 +39,8 @@ public class TemperatureMessage	extends PTPMessage
 		s.append("Altro:"+(Byte2 & 0x0F)+"\r\n");
 		return s.toString();
 	}
+
+	public int getMessageType() {
+		return MSG_TEMPERATURA;
+	}
 }

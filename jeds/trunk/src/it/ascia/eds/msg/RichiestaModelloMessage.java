@@ -30,7 +30,7 @@ public class RichiestaModelloMessage extends PTPRequest
 	}
 
 	public boolean isAnsweredBy(PTPMessage m) {
-		if (RispostaModelloMessage.class.isInstance(m)) {
+		if (m.getMessageType() == Message.MSG_RISPOSTA_MODELLO) {
 			if ((getSender() == m.getRecipient()) &&
 					(getRecipient() == m.getSender())) {
 				answered = true;
@@ -46,5 +46,9 @@ public class RichiestaModelloMessage extends PTPRequest
 	 */
 	public int getMaxSendTries() {
 		return 2;
+	}
+
+	public int getMessageType() {
+		return MSG_RICHIESTA_MODELLO;
 	}
 }

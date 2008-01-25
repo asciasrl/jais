@@ -102,6 +102,10 @@ public class RispostaAssociazioneUscitaMessage extends PTPMessage {
 	public int getComandoBroadcast() {
 		return (Byte2 & 0x1f);
 	}
+
+	public int getMessageType() {
+		return MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST;
+	}
 	
 }
 

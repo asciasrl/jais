@@ -13,9 +13,83 @@ import java.io.OutputStream;
  */
 public abstract class Message
 implements MessageInterface {
-
+	/**
+	 * Richiesta modello e revisione.
+	 */
+	public final static int MSG_RICHIESTA_MODELLO = 0;
+	/**
+	 * Risposta a richiesta modello e revisione.
+	 */
+	public final static int MSG_RISPOSTA_MODELLO = 1;
+	/**
+	 * Variazione di un ingresso.
+	 */
+	public final static int MSG_VARIAZIONE_INGRESSO = 4;
+	/**
+	 * Acknowledge.
+	 */
+	public final static int MSG_ACKNOWLEDGE = 6;
+	/**
+	 * Richiesta lettura associazione di un'uscita a un comando broadcast.
+	 */
+	public final static int MSG_RICHIESTA_ASSOCIAZIONE_BROADCAST = 15;
+	/**
+	 * Risposta a richiesta lettura associazione di un'uscita a un comando 
+	 * broadcast.
+	 */
+	public final static int MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST = 16;
+	/**
+	 * Messaggio broadcast di attivazione/disattivazione (attuazione multipla).
+	 */
+	public final static int MSG_COMANDO_BROADCAST = 17;
+	/**
+	 * Attivazione/disattivazione di un'uscita.
+	 */
+	public final static int MSG_COMANDO_USCITA = 21;
+	/**
+	 * Richiesta lettura stato dispositivo.
+	 */
+	public final static int MSG_RICHIESTA_STATO = 25;
+	/**
+	 * Risposta lettura stato dispositivo.
+	 */
+	public final static int MSG_RISPOSTA_STATO = 26;
+	/**
+	 * Cambio velocita' di comunicazione.
+	 */
+	public final static int MSG_CAMBIO_VELOCITA = 27;
+	/**
+	 * Richiesta ingresso IR. (?)
+	 */
+	public final static int MSG_RICHIESTA_INGRESSO_IR = 39;
+	/**
+	 * Risposta ingresso IR. (?)
+	 */
+	public final static int MSG_RISPOSTA_INGRESSO_IR = 40;
+	/**
+	 * Accensione uscita real time.
+	 */
+	public final static int MSG_COMANDO_USCITA_DIMMER = 51;
+	/**
+	 * Risposta lettura stato uscite dimmer.
+	 */
+	public final static int MSG_RISPOSTA_STATO_DIMMER = 53;
+	/**
+	 * Settaggio parametri di configurazione dimmer.
+	 */
+	public final static int MSG_IMPOSTA_PARAMETRO_DIMMER = 54;
+	/**
+	 * Lettura dello stato del cronotermostato (monitoraggio).
+	 */
+	public final static int MSG_TEMPERATURA = 201;
+	/**
+	 * Lettura del set point del cronotermostato (monitoraggio).
+	 */
+	public final static int MSG_CAMBIAMENTO_SET_POINT = 205;
+	/**
+	 * Rappresentazione 'raw' del messaggio.
+	 */
 	protected int[] rawmessage;
-
 	/**
 	 * Byte di partenza.
 	 */
@@ -165,6 +239,8 @@ implements MessageInterface {
 
 	/**
 	 * Carica i dati da un'array di interi.
+	 * 
+	 * ATTENZIONE: non verifica che il tipo sia coerente!
 	 */
 	public void parseMessage(int[] message) {
 		rawmessage = message;
@@ -181,4 +257,9 @@ implements MessageInterface {
 	 * @return true se il messaggio e' broadcast.
 	 */
 	public abstract boolean isBroadcast();
+	
+	/**
+	 * Ritorna il tipo di messaggio.
+	 */
+	public abstract int getMessageType();
 }

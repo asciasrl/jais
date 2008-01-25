@@ -47,4 +47,8 @@ public class ComandoBroadcastMessage extends BroadcastMessage
 		s.append("Modalita: "+((Byte1 >> 1) & 0x7F)+"\r\n");
 		return s.toString();
 	}
+
+	public int getMessageType() {
+		return MSG_COMANDO_BROADCAST;
+	}
 }

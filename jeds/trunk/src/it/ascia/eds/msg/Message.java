@@ -173,5 +173,12 @@ implements MessageInterface {
 		TipoMessaggio = message[3];
 		Byte1 = message[4];
 		Byte2 = message[5];
-	}  
+	}
+
+	/**
+	 * Verifica se il messaggio e' di tipo broadcast.
+	 * 
+	 * @return true se il messaggio e' broadcast.
+	 */
+	public abstract boolean isBroadcast();
 }

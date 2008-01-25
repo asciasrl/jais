@@ -1,7 +1,6 @@
 package it.ascia.eds.msg;
 
-public class ComandoUscitaDimmerMessage 
-	extends PTPMessage
+public class ComandoUscitaDimmerMessage extends PTPMessage
 	implements MessageInterface {
 
 	/**

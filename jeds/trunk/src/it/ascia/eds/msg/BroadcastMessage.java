@@ -15,4 +15,8 @@ public abstract class BroadcastMessage extends Message
 	public int getSendTries() {
 		return 8;
 	}
+	
+	public boolean isBroadcast() {
+		return true;
+	}
 }

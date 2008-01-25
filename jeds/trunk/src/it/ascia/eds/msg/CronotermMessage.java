@@ -5,8 +5,7 @@ package it.ascia.eds.msg;
  * @author sergio
  * TODO Distinguere fra dispositivi di input e termostato
  */
-public class CronotermMessage
-	extends PTPMessage
+public class CronotermMessage extends PTPMessage
 	implements MessageInterface
 	{
 

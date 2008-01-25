@@ -27,9 +27,12 @@ import it.ascia.eds.EDSException;
  * @author arrigo
  */
 public class BMCComputer extends BMC {
-	
 	/**
-	 * Queue dei messaggi ricevuti.
+	 * Dimensione massima della inbox.
+	 */
+	private final int MAX_INBOX_SIZE = 100;
+	/**
+	 * Queue dei messaggi ricevuti. I piu' recenti sono all'inizio.
 	 */
 	private LinkedList inbox;
 	/**
@@ -41,11 +44,6 @@ public class BMCComputer extends BMC {
      * una risposta.
      */
     private PTPRequest messageToBeAnswered;
-    /**
-     * La risposta che abbiamo ricevuto per messageToBeAnswered.
-     */
-    private PTPMessage answerMessage;
-
 	
 	/**
 	 * Costruttore.
@@ -57,7 +55,7 @@ public class BMCComputer extends BMC {
 		super(address, -1, bus, "Computer");
 		inbox = new LinkedList();
 		outbox = new LinkedList();
-		answerMessage = messageToBeAnswered = null;
+		messageToBeAnswered = null;
 	}
 	
 	/* (non-Javadoc)
@@ -71,12 +69,11 @@ public class BMCComputer extends BMC {
 	 * @see it.ascia.eds.device.Device#receiveMessage(it.ascia.eds.msg.Message)
 	 */
 	public void messageReceived(Message m) {
-		if (PTPMessage.class.isInstance(m)) {
+		if (!m.isBroadcast()) {
 			PTPMessage ptpm = (PTPMessage) m;
 			// Attendiamo risposte?
-			if ((messageToBeAnswered != null) &&				
-					messageToBeAnswered.isAnsweredBy(ptpm)) {
-				answerMessage = ptpm;
+			if (messageToBeAnswered != null) {
+				messageToBeAnswered.isAnsweredBy(ptpm);
 			}
 			// Aggiungiamo i BMC che si presentano
 			if (RispostaModelloMessage.class.isInstance(ptpm)) {
@@ -89,8 +86,11 @@ public class BMCComputer extends BMC {
 				}
 			}
 		} // if m è un PTPMessage
-		// Tutti i messaggi ricevuti devono finire nella inbox
-		inbox.addLast(m);
+		// Tutti i messaggi ricevuti devono finire nella inbox. Ma non troppi.
+		inbox.addFirst(m);
+		while (inbox.size() > MAX_INBOX_SIZE) {
+			inbox.removeLast();
+		}
 	}
 	
 	public void messageSent(Message m) {
@@ -124,11 +124,10 @@ public class BMCComputer extends BMC {
      * 
      * Il messaggio di risposta viene riconosciuto da dispatchMessage().
 	 */
-	public boolean sendPTPRequest(PTPRequest m) {
+	private boolean sendPTPRequest(PTPRequest m) {
     	int waitings, tries;
     	boolean received = false;
     	messageToBeAnswered = m;
-    	answerMessage = null;
     	try {
     		for (tries = 0;
     			(tries < m.getMaxSendTries()) && (!received); 
@@ -140,7 +139,7 @@ public class BMCComputer extends BMC {
     					int delay = (int)
     						(bus.PING_WAIT * (1 + Math.random() * 0.2));
     					Thread.sleep(delay);
-    					received = (answerMessage != null);
+    					received = (messageToBeAnswered.wasAnswered());
     			}
     		}
     	} catch (InterruptedException e) {
@@ -148,6 +147,33 @@ public class BMCComputer extends BMC {
     	messageToBeAnswered = null;
 		return received;
     }
+	
+	/**
+	 * Invia un messaggio sul bus.
+	 * 
+	 * Se il messaggio richiede una risposta, questa viene attesa seguendo i
+	 * timeout stabiliti.
+	 * 
+	 * @return true se l'invio e' andato a buon fine; nel caso di richieste,
+	 * ritorna true se e' arrivata una risposta.
+	 */
+	public boolean sendMessage(Message m) {
+		if (m.isBroadcast()) {
+			System.err.println("Invio di messaggi broadcast non supportato.");
+			return false;
+		} else { 
+			// E' un PTPMessage
+			PTPMessage ptpm = (PTPMessage) m;
+			if (ptpm.wantsReply()) {
+				// E' un PTPRequest
+				return sendPTPRequest((PTPRequest) ptpm);
+			} else {
+				System.err.println("Invio di messaggi PTP senza risposta non " +
+						"supportato.");
+				return false;
+			}
+		} 
+	}
 
 	
 	/**
@@ -208,7 +234,7 @@ public class BMCComputer extends BMC {
 	/**
 	 * Necessario per compilare.
 	 */
-	protected int getFirstInputPortNumber() {
+	public int getFirstInputPortNumber() {
 		return 0;
 	}
 

@@ -205,13 +205,15 @@ public abstract class Bus {
     }
 
     /**
-     * Invia un messaggio e attende una risposta dal destinatario.
+     * Invia un messaggio e attende una risposta dal destinatario, se il
+     * messaggio lo richiede.
      * 
-     * @returns true se il messaggio di risposta è arrivato.
+     * @returns true se il messaggio di risposta e' arrivato, o se l'invio e'
+     * andato a buon fine.
      */
-    public boolean sendPTPRequest(PTPRequest m) {
+    public boolean sendMessage(Message m) {
     	if (bmcComputer != null) {
-    		return bmcComputer.sendPTPRequest(m);
+    		return bmcComputer.sendMessage(m);
     	} else {
     		System.err.println("Il bus non ha un BMCComputer!");
     		return false;

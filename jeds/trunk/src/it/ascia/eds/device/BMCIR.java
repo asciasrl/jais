@@ -89,7 +89,7 @@ public class BMCIR extends BMC {
 	 * Questo e' uno dei pochi BMC con gli ingressi che possono avere
 	 * indirizzo 0.
 	 */
-	protected int getFirstInputPortNumber() {
+	public int getFirstInputPortNumber() {
 		return 0;
 	}
 

@@ -21,8 +21,7 @@ package it.ascia.eds.msg;
  * Codice EDS: 15.
  */
 public class RichiestaAssociazioneUscitaMessage extends PTPRequest
-	implements MessageInterface {
-
+	implements MessageInterface {	
 	/**
 	 * Costruttore.
 	 * 
@@ -38,6 +37,7 @@ public class RichiestaAssociazioneUscitaMessage extends PTPRequest
 		TipoMessaggio = 15;
 		Byte1 = uscita & 7;
 		Byte2 = casella & 7;
+		answered = false;
 	}
 	
 	public RichiestaAssociazioneUscitaMessage(int[] message) {
@@ -67,17 +67,16 @@ public class RichiestaAssociazioneUscitaMessage extends PTPRequest
 	 * Per questo motivo, non viene considerato qui.
 	 */
 	public boolean isAnsweredBy(PTPMessage m) {
-		boolean retval = false;
 		if (RispostaAssociazioneUscitaMessage.class.isInstance(m)) {
 			RispostaAssociazioneUscitaMessage r = 
 				(RispostaAssociazioneUscitaMessage) m;
 			if ((getSender() == r.getRecipient()) &&
 					(getRecipient() == r.getSender()) &&
 					(getUscita() == r.getUscita())) {
-				retval = true;
+				answered = true;
 			}
 		}
-		return retval;
+		return answered;
 	}
 	
 	/**

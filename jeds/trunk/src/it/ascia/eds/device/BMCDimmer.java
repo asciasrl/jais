@@ -177,7 +177,7 @@ public class BMCDimmer extends BMC {
 		// prime due.
 		m = new RichiestaStatoMessage(getAddress(), bus.getBMCComputerAddress(),
 				3);
-		bus.sendPTPRequest(m);
+		bus.sendMessage(m);
 	}
 	
 	/**
@@ -198,7 +198,7 @@ public class BMCDimmer extends BMC {
 				m = new ComandoUscitaMessage(getAddress(), 
 						bus.getBMCComputerAddress(), 0, output, value, 
 						(value > 0)? 1 : 0);
-				retval = bus.sendPTPRequest(m);
+				retval = bus.sendMessage(m);
 			} else {
 				System.err.println("Valore non valido per canale dimmer: " +
 						value);
@@ -212,7 +212,7 @@ public class BMCDimmer extends BMC {
 	/**
 	 * Questo BMC non ha ingressi.
 	 */
-	protected int getFirstInputPortNumber() {
+	public int getFirstInputPortNumber() {
 		return 0;
 	}
 	

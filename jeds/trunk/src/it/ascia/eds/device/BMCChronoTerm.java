@@ -64,7 +64,7 @@ public class BMCChronoTerm extends BMC {
 		return name;
 	}
 
-	protected int getFirstInputPortNumber() {
+	public int getFirstInputPortNumber() {
 		return 1;
 	}
 

@@ -57,13 +57,12 @@ public class ComandoUscitaMessage extends PTPRequest
 	}
 
 	public boolean isAnsweredBy(PTPMessage m) {
-		boolean retval = false;
 		if (AknowledgeMessage.class.isInstance(m)) {
 			if ((getSender() == m.getRecipient()) &&
 					(getRecipient() == m.getSender())) {
-				retval = true;
+				answered = true;
 			}
 		}
-		return retval;
+		return answered;
 	}
 }

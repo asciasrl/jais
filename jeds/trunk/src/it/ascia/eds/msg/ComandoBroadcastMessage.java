@@ -6,8 +6,7 @@ import java.util.Random;
  * 
  * @author sergio
  */
-public class ComandoBroadcastMessage
-	extends BroadcastMessage
+public class ComandoBroadcastMessage extends BroadcastMessage
 	implements MessageInterface
 	{
 

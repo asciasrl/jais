@@ -16,4 +16,17 @@ public abstract class PTPMessage extends Message {
 	public int getMaxSendTries() {
 		return 4;
 	}
+	
+	public boolean isBroadcast() {
+		return false;
+	}
+	
+	/**
+	 * Ritorna true se questo messaggio si aspetta una risposta.
+	 * 
+	 * @return true se questo e' un PTPRequest.
+	 */
+	public boolean wantsReply() {
+		return false;
+	}
 }

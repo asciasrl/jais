@@ -6,8 +6,7 @@ import java.util.Random;
  * 
  * @author sergio
  */
-public class CambioVelocitaMessage
-	extends BroadcastMessage
+public class CambioVelocitaMessage extends BroadcastMessage
 	implements MessageInterface
 	{
 

@@ -30,4 +30,8 @@ public class RispostaIngressoIRMessage extends PTPMessage
 		}
 		return s.toString();
 	}
+
+	public int getMessageType() {
+		return MSG_RISPOSTA_INGRESSO_IR;
+	}
 }

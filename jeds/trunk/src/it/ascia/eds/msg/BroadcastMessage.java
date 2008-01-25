@@ -1,7 +1,5 @@
 package it.ascia.eds.msg;
 
-import java.util.Random;
-
 /**
  * 
  * @author sergio
@@ -16,7 +14,7 @@ public abstract class BroadcastMessage extends Message
 		return 8;
 	}
 	
-	public boolean isBroadcast() {
+	public final boolean isBroadcast() {
 		return true;
 	}
 }

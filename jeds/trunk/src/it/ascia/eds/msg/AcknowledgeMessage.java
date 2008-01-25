@@ -1,8 +1,8 @@
 package it.ascia.eds.msg;
 
-public class AknowledgeMessage extends PTPMessage {
+public class AcknowledgeMessage extends PTPMessage {
 
-	public AknowledgeMessage(byte d, byte m, byte b1, byte b2) {
+	public AcknowledgeMessage(byte d, byte m, byte b1, byte b2) {
 		Destinatario = d;
 		Mittente = m;
 		TipoMessaggio = 6;
@@ -10,12 +10,16 @@ public class AknowledgeMessage extends PTPMessage {
 		Byte2 = b2;
 	}
 
-	public AknowledgeMessage(int[] message) {
+	public AcknowledgeMessage(int[] message) {
 		parseMessage(message);
 	}
 
 	public String getTipoMessaggio() {
 		return "Aknowledge";
+	}
+
+	public int getMessageType() {
+		return MSG_ACKNOWLEDGE;
 	}
 
 }

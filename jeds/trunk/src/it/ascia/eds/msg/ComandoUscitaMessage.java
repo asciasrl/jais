@@ -57,12 +57,16 @@ public class ComandoUscitaMessage extends PTPRequest
 	}
 
 	public boolean isAnsweredBy(PTPMessage m) {
-		if (AknowledgeMessage.class.isInstance(m)) {
+		if (m.getMessageType() == MSG_ACKNOWLEDGE) {
 			if ((getSender() == m.getRecipient()) &&
 					(getRecipient() == m.getSender())) {
 				answered = true;
 			}
 		}
 		return answered;
+	}
+
+	public int getMessageType() {
+		return MSG_COMANDO_USCITA;
 	}
 }

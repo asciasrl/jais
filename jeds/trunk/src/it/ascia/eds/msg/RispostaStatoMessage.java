@@ -66,4 +66,8 @@ public class RispostaStatoMessage extends PTPMessage {
 		}
 		return retval;
 	}
+
+	public int getMessageType() {
+		return MSG_RISPOSTA_STATO;
+	}
 }

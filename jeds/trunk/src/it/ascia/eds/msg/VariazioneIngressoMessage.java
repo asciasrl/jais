@@ -38,4 +38,8 @@ public class VariazioneIngressoMessage extends PTPMessage
 		s.append("Variazione: "+(Byte2 & 0x01)+"\r\n");
 		return s.toString();
 	}
+
+	public int getMessageType() {
+		return MSG_VARIAZIONE_INGRESSO;
+	}
 }

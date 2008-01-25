@@ -39,4 +39,8 @@ public class CronotermMessage extends PTPMessage
 		s.append("Altro:"+(Byte2 & 0x70)+"\r\n");
 		return s.toString();
 	}
+
+	public int getMessageType() {
+		return MSG_CAMBIAMENTO_SET_POINT;
+	}
 }

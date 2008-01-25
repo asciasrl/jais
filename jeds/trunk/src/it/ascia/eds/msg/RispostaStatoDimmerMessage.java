@@ -36,4 +36,8 @@ public class RispostaStatoDimmerMessage extends PTPMessage {
 		int retval[] = {(Byte1 & 0x7F), (Byte2 & 0x7F)};
 		return retval;
 	}
+
+	public int getMessageType() {
+		return MSG_RISPOSTA_STATO_DIMMER;
+	}
 }

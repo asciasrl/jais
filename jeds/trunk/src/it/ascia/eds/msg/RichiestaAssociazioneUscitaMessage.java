@@ -67,7 +67,7 @@ public class RichiestaAssociazioneUscitaMessage extends PTPRequest
 	 * Per questo motivo, non viene considerato qui.
 	 */
 	public boolean isAnsweredBy(PTPMessage m) {
-		if (RispostaAssociazioneUscitaMessage.class.isInstance(m)) {
+		if (m.getMessageType() == Message.MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST) {
 			RispostaAssociazioneUscitaMessage r = 
 				(RispostaAssociazioneUscitaMessage) m;
 			if ((getSender() == r.getRecipient()) &&
@@ -86,5 +86,9 @@ public class RichiestaAssociazioneUscitaMessage extends PTPRequest
 	 */
 	public int getMaxSendTries() {
 		return 2;
+	}
+
+	public int getMessageType() {
+		return MSG_RICHIESTA_ASSOCIAZIONE_BROADCAST;
 	}
 }

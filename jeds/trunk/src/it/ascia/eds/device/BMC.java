@@ -12,7 +12,6 @@ import java.util.Vector;
 
 import it.ascia.eds.*;
 import it.ascia.eds.msg.Message;
-import it.ascia.eds.msg.RichiestaAssociazioneUscitaMessage;
 
 /**
  * Un BMC.
@@ -233,7 +232,7 @@ public abstract class BMC implements Device {
 	 * gli ingressi numerati a partire da 1. Gli ingressi delle porte a
 	 * infrarossi, invece, possono valere anche 0.
 	 */
-	protected abstract int getFirstInputPortNumber();
+	public abstract int getFirstInputPortNumber();
 	
 	/**
 	 * Ritorna il numero di uscite.
@@ -253,13 +252,10 @@ public abstract class BMC implements Device {
 	/**
 	 * Imposta il nome assegnato a una  porta di ingresso.
 	 * 
-	 * @param number il numero della porta; verra' compensato se il file di
-	 * configurazione inizia a contare da 1.
+	 * @param number il numero della porta (inizia da 0)
 	 * @param name il nome da assegnare.
 	 */
 	public void setInputName(int number, String name) {
-		// Compensiamo per i BMC che numerano a partire da 1
-		number -= getFirstInputPortNumber();
 		inPortsNames.put(new Integer(number), name);
 	}
 	
@@ -288,8 +284,7 @@ public abstract class BMC implements Device {
 		retval = (String) inPortsNames.get(new Integer(number));
 		if (retval == null) {
 			retval = "Ingresso" + number;
-			// setInputName compensa se iniziamo da 1 -- dobbiamo prevenirlo
-			setInputName(number + getFirstInputPortNumber(), retval);
+			setInputName(number, retval);
 		}
 		return retval;
 	}

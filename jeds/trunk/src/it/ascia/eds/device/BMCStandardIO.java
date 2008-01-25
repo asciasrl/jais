@@ -152,7 +152,7 @@ public class BMCStandardIO extends BMC {
 			ComandoUscitaMessage m;
 			m = new ComandoUscitaMessage(getAddress(),
 					bus.getBMCComputerAddress(), 0, port, 0, intValue);
-			retval = bus.sendPTPRequest(m);
+			retval = bus.sendMessage(m);
 		} else {
 			System.err.println("Numero porta non valido: " + port);
 		}
@@ -175,7 +175,7 @@ public class BMCStandardIO extends BMC {
 		PTPRequest m;
 		m = new RichiestaStatoMessage(getAddress(), bus.getBMCComputerAddress(),
 				0);
-		bus.sendPTPRequest(m);
+		bus.sendMessage(m);
 	}
 	
 	/**
@@ -222,7 +222,7 @@ public class BMCStandardIO extends BMC {
 	 	return retval;
 	}
 	
-	protected int getFirstInputPortNumber() {
+	public int getFirstInputPortNumber() {
 		return 1;
 	}
 

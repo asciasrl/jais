@@ -20,15 +20,14 @@ public class RichiestaStatoMessage extends PTPRequest
 	}
 	
 	public boolean isAnsweredBy(PTPMessage m) {
-		boolean retval = false;
 		if ((RispostaStatoMessage.class.isInstance(m)) ||
 				(RispostaStatoDimmerMessage.class.isInstance(m))) {
 			if ((getSender() == m.getRecipient()) &&
 					(getRecipient() == m.getSender())) {
-				retval = true;
+				answered = true;
 			}
 		}
-		return retval;
+		return answered;
 	}
 	
 	/**

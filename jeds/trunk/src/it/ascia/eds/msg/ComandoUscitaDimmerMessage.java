@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2008 ASCIA S.R.L.
+ */
 package it.ascia.eds.msg;
 
 /**
@@ -32,6 +35,20 @@ public class ComandoUscitaDimmerMessage extends PTPMessage
 		s.append("Destinatario: "+Destinatario+"\r\n");
 		s.append("Uscita "+(Byte2 + 1)+": "+Byte1+"%\r\n");
 		return s.toString();
+	}
+	
+	/**
+	 * Ritorna il numero dell'uscita interessata dal comando.
+	 */
+	public int getOutputPortNumber() {
+		return Byte2;
+	}
+	
+	/**
+	 * Ritorna il valore richiesto dal comando.
+	 */
+	public int getValue() {
+		return Byte1;
 	}
 
 	public int getMessageType() {

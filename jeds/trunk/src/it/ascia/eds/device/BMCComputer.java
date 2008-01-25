@@ -159,6 +159,7 @@ public class BMCComputer extends BMC {
 	 */
 	public boolean sendMessage(Message m) {
 		if (m.isBroadcast()) {
+			// TODO
 			System.err.println("Invio di messaggi broadcast non supportato.");
 			return false;
 		} else { 
@@ -168,9 +169,10 @@ public class BMCComputer extends BMC {
 				// E' un PTPRequest
 				return sendPTPRequest((PTPRequest) ptpm);
 			} else {
-				System.err.println("Invio di messaggi PTP senza risposta non " +
-						"supportato.");
-				return false;
+				// Invio nudo e crudo
+				bus.write(m);
+				// non c'e' modo di sapere se e' arrivato; siamo ottimisti.
+				return true;
 			}
 		} 
 	}

@@ -4,19 +4,25 @@
 package it.ascia.eds.device;
 
 import it.ascia.eds.Bus;
+import it.ascia.eds.msg.ComandoBroadcastMessage;
+import it.ascia.eds.msg.ComandoUscitaDimmerMessage;
 import it.ascia.eds.msg.ComandoUscitaMessage;
 import it.ascia.eds.msg.Message;
 import it.ascia.eds.msg.PTPRequest;
 import it.ascia.eds.msg.RichiestaStatoMessage;
 import it.ascia.eds.msg.RispostaAssociazioneUscitaMessage;
 import it.ascia.eds.msg.RispostaStatoDimmerMessage;
+import it.ascia.eds.msg.VariazioneIngressoMessage;
 
 /**
- * Un BMC con 1 o 2 porte di output.
+ * Un BMC dimmer con 1 o 2 porte di output.
  * 
- * Modelli: 101, 102, 103, 104, 106, 111
+ * Modelli: 101, 102, 103, 104, 106, 1110
  * 
- * TODO: distinguere tra canale a 0% e OFF.
+ * Tutti metodi di set assumono che un canale a 0% sia spento.
+ * 
+ * Questo BMC risponde ai comandi broadcast, ai comandi di impostazione uscita
+ * per dimmer e non.
  * 
  * @author arrigo
  */
@@ -27,13 +33,15 @@ public class BMCDimmer extends BMC {
 	 */
 	private int outPortsNum;
 	/**
-	 * Uscite
+	 * Uscite. Possono assumere un valore 0-100 oppure -1 (OFF).
 	 */
 	int[] outPorts;
 	/**
 	 * La conoscenza delle uscite puo' essere errata?
+	 * 
+	 * Questa array ha un elemento per ogni porta.
 	 */
-	boolean dirty;
+	boolean dirty[];
 	/**
 	 * Potenza in uscita [Watt] o -1 se l'uscita è 0-10 V
 	 */
@@ -89,25 +97,70 @@ public class BMCDimmer extends BMC {
 		}
 		if (outPortsNum > 0) {
 			outPorts = new int[outPortsNum];
+			dirty = new boolean[outPortsNum];
 		}
-		dirty = true;
+		for (int i = 0; i < outPortsNum; i++) {
+			dirty[i] = true;
+		}
 	}
 	
 	/* (non-Javadoc)
 	 * @see it.ascia.eds.device.BMC#receiveMessage(it.ascia.eds.msg.Message)
 	 */
 	public void messageReceived(Message m) {
+		int uscita, valore;
+		ComandoUscitaDimmerMessage cmdDimmer;
+		ComandoUscitaMessage cmd;
+		ComandoBroadcastMessage bmsg;
+		VariazioneIngressoMessage vmsg;
+		int[] ports;
 //		System.out.println("Ricevuto un messaggio di tipo " + m.getTipoMessaggio());
-		if (ComandoUscitaMessage.class.isInstance(m)) {
-			// Qualcuno ha chiesto la modifica, non sappiamo se sara'
+		switch (m.getMessageType()) {
+		case Message.MSG_COMANDO_USCITA_DIMMER:
+			// L'attuazione viene richiesta, non sappiamo se sara' 
+			// effettuata
+			cmdDimmer = (ComandoUscitaDimmerMessage) m;
+			uscita = cmdDimmer.getOutputPortNumber();
+			valore = cmdDimmer.getValue();
+			dirty[uscita] = true;
+			outPorts[uscita] = valore;
+			break;
+		case Message.MSG_COMANDO_USCITA:
+			// L'attuazione viene richiesta, non sappiamo se sara' 
 			// effettuata.
-			dirty = true;			
-		}	
+			cmd = (ComandoUscitaMessage) m;
+			uscita = cmd.getOutputPortNumber();
+			valore = cmd.getPercentage();
+			if (!cmd.isActivation()) {
+				valore = 0;
+			}
+			dirty[uscita] = true;
+			outPorts[uscita] = valore;
+			break;
+		case Message.MSG_COMANDO_BROADCAST:
+			// Messaggio broadcast: potrebbe interessare alcune porte.
+			bmsg = (ComandoBroadcastMessage) m;
+			ports = getBoundOutputs(bmsg.getCommandNumber());
+			if (ports.length > 0) {
+				for (int i = 0; i < ports.length; i++) {
+					dirty[ports[i]] = true;
+				}
+			}
+			break;
+		case Message.MSG_VARIAZIONE_INGRESSO:
+			// Qualcuno ha premuto un interruttore, e la cosa ci interessa.
+			vmsg = (VariazioneIngressoMessage) m;
+			dirty[vmsg.getOutputNumber()] = true;
+			break;
+		}
 	}
 	
 	public void messageSent(Message m) {
-		if (RispostaStatoDimmerMessage.class.isInstance(m)) {
-			RispostaStatoDimmerMessage r = (RispostaStatoDimmerMessage)m;
+		RispostaStatoDimmerMessage r;
+		RispostaAssociazioneUscitaMessage ra;
+		switch(m.getMessageType()) {
+		case Message.MSG_RISPOSTA_STATO_DIMMER:
+			r = (RispostaStatoDimmerMessage)m;
 			// Il RispostaStatoMessage da' sempre 8 valori. Dobbiamo
 			// prendere solo quelli effettivamente presenti sul BMC
 			int temp[];
@@ -115,19 +168,20 @@ public class BMCDimmer extends BMC {
 			temp = r.getOutputs();
 			for (i = 0; i < outPortsNum; i++) {
 				outPorts[i] = temp[i];
+				dirty[i] = false;
 			}
-			dirty = false;
-		}  else if (RispostaAssociazioneUscitaMessage.class.isInstance(m)) {
-			RispostaAssociazioneUscitaMessage r = 
-				(RispostaAssociazioneUscitaMessage) m;
+			break;
+		case Message.MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST: 
+			ra = (RispostaAssociazioneUscitaMessage) m;
 			// Stiamo facendo un discovery delle associazioni.
-			if (r.getComandoBroadcast() != 0) {
-				System.out.println("L'uscita " + r.getUscita() + " " +
-						"e' legata al comando broadcast " + 
-						r.getComandoBroadcast());
-				bindOutput(r.getComandoBroadcast(), r.getUscita());
+			if (ra.getComandoBroadcast() != 0) {
+				System.out.println("L'uscita " + ra.getUscita() + " " +
+					"e' legata al comando broadcast " + 
+					ra.getComandoBroadcast());
+				bindOutput(ra.getComandoBroadcast(), ra.getUscita());					
 			}
-		}
+			break;
+		} // switch(tipo del messaggio)
 	}
 	
 	public String getInfo() {
@@ -143,7 +197,7 @@ public class BMCDimmer extends BMC {
 		System.out.print("Uscite:");
 		for (i = 0; i < outPortsNum; i++) {
 			System.out.print(" " + outPorts[i]);
-			if (dirty) {
+			if (dirty[i]) {
 				System.out.print("?");
 			}
 		}
@@ -188,7 +242,7 @@ public class BMCDimmer extends BMC {
 	 * @return true se è arrivato un ACK del messaggio
 	 *
 	 * @param output il numero dell'uscita (di solito 0 o 1)
-	 * @param value il valore da impostare (da 0 a 100)
+	 * @param value il valore da impostare (da 0 a 100, dove 0 e' OFF)
 	 */
 	public boolean setOutput(int output, int value) {
 		boolean retval = false;
@@ -208,7 +262,32 @@ public class BMCDimmer extends BMC {
 		}
 		return retval;
 	}
-
+	
+	/**
+	 * Imposta istantaneamente il valore di un canale.
+	 * 
+	 * Rispetto a setOutput(), questo metodo invia un messaggio che non richiede
+	 * risposta, quindi e' piu' rapido.
+	 * 
+	 * @param output il numero dell'uscita (di solito 0 o 1)
+	 * @param value il valore da impostare (da 0 a 100, dove 0 e' OFF)
+	 */
+	public void setOutputRealTime(int output, int value) {
+		if ((output >= 0) && (output <= outPortsNum)) {
+			if ((value >= 0) && (value <= 100)) {
+				ComandoUscitaDimmerMessage m;
+				m = new ComandoUscitaDimmerMessage(getAddress(), 
+						bus.getBMCComputerAddress(), output, value);
+				bus.sendMessage(m);
+			} else {
+				System.err.println("Valore non valido per canale dimmer: " +
+						value);
+			}
+		} else {
+			System.err.println("Porta dimmer non valida: " + output);
+		}
+	}
+	
 	/**
 	 * Questo BMC non ha ingressi.
 	 */

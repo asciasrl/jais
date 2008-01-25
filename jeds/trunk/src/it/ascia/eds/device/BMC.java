@@ -55,18 +55,18 @@ public abstract class BMC implements Device {
 	 * Da un punto di vista di occupazione di memoria, un Vector sarebbe
 	 * piu' svantaggioso nel caso peggiore.
 	 */
-	Map inPortsNames;
+	private Map inPortsNames;
 	/**
 	 * I nomi delle porte di uscita.
 	 */
-	Vector outPortsNames;
+	private Vector outPortsNames;
 	/**
 	 * Binding tra messaggi broadcast e porte di output.
 	 * 
 	 * Questo e' un'array di Set di Integer, indicizzato per numero di
 	 * messaggio broadcast.
 	 */
-	Set broadcastBindings[];
+	private Set broadcastBindings[];
 	
 	/**
 	 * Costruttore. Deve essere usato dalle sottoclassi.

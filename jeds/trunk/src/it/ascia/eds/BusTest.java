@@ -57,10 +57,13 @@ public class BusTest {
  					valore = inputInteger("Valore (0 o 1): ");
  				}
  				bmc.setOutPort(porta, (valore == 1));
+ 				try {
+ 					Thread.sleep(500);
+ 				} catch (InterruptedException e) { }
+ 				bmc.printStatus();
  				bmc.updateStatus();
  				System.out.println("Stato del BMC aggiornato: ");
  				bmc.printStatus();
- 				System.out.println(bmc.getStatus());
  			} // if porta >= 0
  		}
  			
@@ -76,13 +79,15 @@ public class BusTest {
 		System.out.println("Discovery...");
  		bmcComputer.discoverBroadcastBindings(bmc);
 		while ((output >= 0) && (output < 2)) {
+			bmc.printStatus();
  			output = inputInteger("output (<0 esce): ");
  			if (output >= 0) {
- 				value = -1;
- 				while ((value < 0) || (value > 100)) {
+ 				value = -101;
+ 				while ((value < -100) || (value > 100)) {
  					value = inputInteger("Valore (0 - 100): ");
  				}
- 				bmc.setOutput(output, value);
+ 				bmc.setOutputRealTime(output, value);
+ 				bmc.printStatus();
  				bmc.updateStatus();
  		 		System.out.println("Stato del BMC dopo la richiesta: ");
  		 		bmc.printStatus();
@@ -133,8 +138,10 @@ public class BusTest {
 	 			}
 	 		}
 	 	}
+	 	// Dimmer avanzato
+	 	bmcComputer.discoverBMC(255);
 	 	testBMCStandardIO();
-	 	testBMCDimmer();
+	 	// testBMCDimmer();
 	 	// La palla all'utente
 	 	System.out.println("Running ...");
 		int dest = 1;

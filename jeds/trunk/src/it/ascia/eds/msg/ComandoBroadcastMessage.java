@@ -1,16 +1,23 @@
+/**
+ * Copyright (C) 2008 ASCIA S.R.L.
+ */
 package it.ascia.eds.msg;
 
 import java.util.Random;
 
 /**
+ * Comando broadcast.
  * 
- * @author sergio
+ * Questo messaggio attiva le uscite configurate per rispondere a comandi
+ * broadcast.
+ * 
+ * @author sergio, arrigo
  */
 public class ComandoBroadcastMessage extends BroadcastMessage
-	implements MessageInterface
-	{
+	implements MessageInterface {
 
 	/**
+	 * Costruttore
 	 * 
 	 * @param Numero Numero comando broadcast
 	 * @param Attivazione Attivare o disattivare
@@ -22,7 +29,7 @@ public class ComandoBroadcastMessage extends BroadcastMessage
 		Random r = new Random();
 		Destinatario = r.nextInt() & 0xFF;
 		Mittente = r.nextInt() & 0xFF;
-		TipoMessaggio = 17;
+		TipoMessaggio = Message.MSG_COMANDO_BROADCAST;
 		Byte1 = (Attivazione ? 0 : 1) & 0x01 + ((Modalita & 0x7F) << 1); 
 		Byte2 = Numero & 0x1F;
 	}
@@ -35,15 +42,29 @@ public class ComandoBroadcastMessage extends BroadcastMessage
 		return "Messaggio Broadcast";
 	}
 	
+	/**
+	 * Ritorna true se e' un comando di attivazione.
+	 */
+	public boolean isActivation() {
+		return ((Byte1 & 0x01) == 0);
+	}
+	
+	/**
+	 * Ritorna il numero del comando broadcast.
+	 */
+	public int getCommandNumber() {
+		return (Byte2 & 0x1F);
+	}
+	
 	public String getInformazioni()	{
 		StringBuffer s = new StringBuffer();
 		s.append("Timestamp: "+((Mittente & 0xFF) * 0x100 + (Destinatario & 0xFF)) +"\r\n");
-		if ((Byte1 & 0x01) == 0) {
+		if (isActivation()) {
 			s.append("Attivazione/Incremento\r\n");
 		} else {
 			s.append("Disattivazione/Decremento\r\n");
 		}
-		s.append("Numero comando: "+(Byte2 & 0x1F)+"\r\n");
+		s.append("Numero comando: "+ getCommandNumber() +"\r\n");
 		s.append("Modalita: "+((Byte1 >> 1) & 0x7F)+"\r\n");
 		return s.toString();
 	}

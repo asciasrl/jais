@@ -53,9 +53,6 @@ function getOffset(e) {
 	return {x:e.offsetLeft, y:e.offsetTop};
 }
 
-
-document.onmousemove = mouseMove;
-
 /**
  * Funzione collegata al movimento del mouse
  */
@@ -73,6 +70,8 @@ function mouseMove(ev){
 		}
 	}
 }
+
+document.onmousemove = mouseMove;
 
 function dragFunzioni(mousePos) {
   new_left = mousePos.x - mouseOffset.x + objectOffset.x;
@@ -122,8 +121,6 @@ function dragMap(mousePos) {
 	}
 }
 
-document.onmouseup   = mouseUp;
-
 /**
  * Quando viene rilasciato il bottone del mouse
  */
@@ -138,6 +135,8 @@ function mouseUp(){
 	}	
 	dragObject = null;	
 }
+
+document.onmouseup   = mouseUp;
 
 /**
  * Associa all'oggetto la funzione che gestisce la pressione del mouse

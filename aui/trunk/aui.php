@@ -153,30 +153,7 @@ foreach ($funzioni as $i => $f):
 </div>
 </div>
 
-<div style="width: 240px; height: 60px; overflow: hidden; position: absolute;">
-<div id="funzioni" style="background-color: black; position: absolute; width: 240px; height: 60px;">
-	
-  <div id="clima" style="float: left; background-color: black; opacity: 0.2; filter:alpha(opacity=20); width: 40px; height: 40px; margin-top: 10px;">
-    <img id="clima-img" alt="clima" width="40" height="40" border="0" src="images/clima.jpg" />
-  </div>
-	
-  <div id="serramenti" style="float: left; background-color: black; opacity: 0.45; filter:alpha(opacity=45); width: 50px; height: 50px; margin-top: 5px;">
-    <img id="serramenti-img" alt="serramenti" width="50" height="50" border="0" src="images/serramenti.jpg" />
-  </div>
-	
-  <div id="sicurezza" style="float: left; background-color: black; opacity: 1; filter:alpha(opacity=100); width: 60px; height: 60px;">
-    <img id="sicurezza-img" alt="sicurezza" width="60" height="60" border="0" src="images/sicurezza.png" />
-  </div>
-	
-  <div id="luci" style="float: left; background-color: black; opacity: 0.45; filter:alpha(opacity=45); width: 50px; height: 50px; margin-top: 5px;">
-    <img id="luci-img" alt="luci" width="50" height="50" border="0" src="images/luci.png" />
-  </div>
-	
-  <div id="energia" style="float: left; background-color: black; opacity: 0.2; filter:alpha(opacity=20); width: 40px; height: 40px; margin-top: 10px;">
-    <img id="energia-img" alt="energia" width="40" height="40" border="0" src="images/energia.png" />
-  </div>
+<?php include('appbar.php'); ?>	
 
-</div>
-</div>
 
 <script type="" language="javascript" src="aui.js"></script>

@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <mosinstall type="template" version="1.0.0">
-	<name>ascia200710</name>
-	<creationDate>5 ottobre 2007</creationDate>
+	<name>ascia2008</name>
+	<creationDate>28 genniaio 2008</creationDate>
 	<author>Balzarini - Strampelli</author>
 	<copyright>GNU/GPL</copyright>
     <authorEmail>info@ascia.it</authorEmail>
     <authorUrl>http://www.ascia.it</authorUrl>
-	<version>20071006</version>
+	<version>20080128</version>
 	<description>Template Ascia S.r.l.</description>
 	<files>
 		<filename>index.php</filename>
 		<filename>template_thumbnail.png</filename>
+		<filename>index2.php</filename>
 	</files>
 	<images>
 		<filename>images/bodycentral.gif</filename>

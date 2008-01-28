@@ -208,7 +208,7 @@ public abstract class Bus {
      * Invia un messaggio e attende una risposta dal destinatario, se il
      * messaggio lo richiede.
      * 
-     * @returns true se il messaggio di risposta e' arrivato, o se l'invio e'
+     * @return true se il messaggio di risposta e' arrivato, o se l'invio e'
      * andato a buon fine.
      */
     public boolean sendMessage(Message m) {
@@ -225,7 +225,7 @@ public abstract class Bus {
      * 
      * @param address l'indirizzo da cercare.
      * 
-     * @returns il Device oppure null se il Device non è nella lista.
+     * @return il Device oppure null se il Device non è nella lista.
      */
     public Device getDevice(int address) {
     	return (Device)devices.get(new Integer(address));
@@ -234,7 +234,7 @@ public abstract class Bus {
     /**
      * Aggiunge un Device collegato al bus.
      * 
-     * @param Device il Device da aggiungere.
+     * @param device il Device da aggiungere.
      * 
      * @throws un'EDSException se esiste gia' un device con lo stesso indirizzo.
      */

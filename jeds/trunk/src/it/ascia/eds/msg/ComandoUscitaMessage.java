@@ -3,6 +3,8 @@ package it.ascia.eds.msg;
 /**
  * Imposta l'uscita di un BMC Standard I/O oppure dimmer.
  * 
+ * Questo messaggio puo' essere inviato anche dal cronotermostato.
+ * 
  * Codice EDS: 21.
  * 
  * @author sergio, arrigo
@@ -85,16 +87,6 @@ public class ComandoUscitaMessage extends PTPRequest
 		}
 		s.append("\r\n");
 		return s.toString();
-	}
-
-	public boolean isAnsweredBy(PTPMessage m) {
-		if (m.getMessageType() == MSG_ACKNOWLEDGE) {
-			if ((getSender() == m.getRecipient()) &&
-					(getRecipient() == m.getSender())) {
-				answered = true;
-			}
-		}
-		return answered;
 	}
 
 	public int getMessageType() {

@@ -74,8 +74,6 @@ public abstract class BMC implements Device {
 	 * @param address l'indirizzo di questo BMC
 	 * @param model il modello di questo BMC
 	 * @param name il nome di questo BMC (dal file di configurazione)
-	 * @param inputs numero di porte di ingresso
-	 * @param outputs numero di porte in uscita
 	 */
 	public BMC(int address, int model, Bus bus, String name) {
 		this.bus = bus;
@@ -113,7 +111,7 @@ public abstract class BMC implements Device {
 	 * you want it to be auto-generated.
 	 * @param bus the bus the BMC is connected to.
 	 * 
-	 * @returns the newly created BMC or null if the model is unknown.
+	 * @return the newly created BMC or null if the model is unknown.
 	 * 
 	 * @throws an exception if the address is already in use by another BMC.
 	 */

@@ -1,42 +1,86 @@
+/**
+ * Copyright (C) 2008 ASCIA S.R.L.
+ */
 package it.ascia.eds.msg;
 
 /**
+ * Lettura dello stato del cronotermostato.
+ *
+ * Questo messaggio viene mandato dal cronotermostato quando cambia qualcosa,
+ * oppure quando viene richiesto un aggiornamento dello stato attraverso l'invio
+ * di un messaggio RichiestaStatoTermostatoMessage.
  * 
- * @author sergio
- * TODO Distinguere fra dispositivi di input e termostato
+ * Codice EDS: 201.
  */
-public class TemperatureMessage	extends PTPMessage
-	implements MessageInterface
-	{
-
-	public TemperatureMessage(int d, int m, int Attivazione, int Uscita, int Variazione)
-	  throws Exception {
-		Destinatario = d & 0xFF;
-		Mittente = m & 0xFF;
-		TipoMessaggio = 201;
-		Byte1 = Uscita & 0x07 + ((Attivazione & 0x01) << 3);
-		Byte2 = Variazione & 0x01;
-	}
+public class TemperatureMessage	extends PTPMessage implements MessageInterface {
+	/**
+	 * Modalita' antigelo.
+	 */
+	public static final int MODE_ANTI_FREEZE = 0;
+	/**
+	 * Modalita' crono.
+	 */
+	public static final int MODE_CHRONO = 1;
+	/**
+	 * Modalita' manuale.
+	 */
+	public static final int MODE_MANUAL = 2;
+	/**
+	 * Modalita' temporizzato.
+	 */
+	public static final int MODE_TIME = 3;
 
 	public TemperatureMessage(int[] message) {
 		parseMessage(message);
 	}
 
 	public String getTipoMessaggio() {
-		return "Temperatura";
+		return "Lettura dello stato del cronotermostato";
+	}
+	
+	/**
+	 * Ritorna la temperatura.
+	 */
+	public double getTemperature() {
+		return (Byte1 & 0xff) + ((Byte2 & 0xF0) >> 4) / 16.0;
+	}
+	
+	/**
+	 * Ritorna true se e' abilitato l'allarme minima temperatura.
+	 */
+	public boolean getAlarm() {
+		return ((Byte2 & 0x08) != 0); 
+	}
+	
+	/**
+	 * Ritorna true se la temperatura e' superiore al set-point.
+	 */
+	public boolean tempOverSetPoint() {
+		return ((Byte2 & 0x04) != 0); 
+	}
+	
+	/**
+	 * Ritorna la modalita' di funzionamento.
+	 * 
+	 * Questo numero deve essere confrontato con gli attributi statici MODE_*.
+	 */
+	public int getMode() {
+		return (Byte2 & 0x03);
 	}
 	
 	public String getInformazioni()	{
 		StringBuffer s = new StringBuffer();
 		s.append("Mittente: "+Mittente+"\r\n");
 		s.append("Destinatario: "+Destinatario+"\r\n");
-		if ((Byte2 & 0x80) > 0) {
-			s.append("Inverno\r\n");
+		s.append("Allarme minima temp.: " + getAlarm() + "\r\n");
+		s.append("Temperatura: "+ getTemperature());
+		if (tempOverSetPoint()) {
+			s.append(" sopra");
 		} else {
-			s.append("Estate\r\n");
+			s.append(" sotto");
 		}
-		s.append("Temperatura: "+(Byte1 & 0xFF) +","+((Byte2 & 0xF0) >> 4) +"\r\n");
-		s.append("Altro:"+(Byte2 & 0x0F)+"\r\n");
+		s.append(" al set point\r\n");
+		s.append("Modalita': " + getMode() + "\r\n");
 		return s.toString();
 	}
 

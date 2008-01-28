@@ -9,10 +9,13 @@ package it.ascia.eds.msg;
  * Questo messaggio viene generato, ad es., quando un interruttore viene 
  * premuto.
  * 
+ * Il cronotermostato rilegge questo messaggio dando ai campi del primo byte un
+ * valore diverso.
+ * 
  * @author sergio, arrigo
  * TODO Distinguere fra dispositivi di input e termostato
  */
-public class VariazioneIngressoMessage extends PTPMessage
+public class VariazioneIngressoMessage extends PTPRequest
 	implements MessageInterface
 	{
 
@@ -47,18 +50,31 @@ public class VariazioneIngressoMessage extends PTPMessage
 	public int getOutputNumber() {
 		return (Byte1 & 0x07);
 	}
+	
+	/**
+	 * Ritorna il numero dello stato indicato per il cronotermostato.
+	 * 
+	 * Questo metodo ha senso solo  se questo messaggio e' diretto a un 
+	 * cronotermostato.
+	 */
+	public int getChronoTermState() {
+		return Byte1 & 0x0f;
+	}
 		
 	public String getInformazioni()	{
 		StringBuffer s = new StringBuffer();
 		s.append("Mittente: "+ Mittente +"\r\n");
 		s.append("Destinatario: "+ Destinatario +"\r\n");
+		s.append("BMC:\r\n");
 		if (isActivation()) {
-			s.append("Attivazione/Incremento\r\n");
+			s.append(" Attivazione/Incremento\r\n");
 		} else {
-			s.append("Disattivazione/Decremento\r\n");
+			s.append(" Disattivazione/Decremento\r\n");
 		}
-		s.append("Numero uscita: "+ getOutputNumber() +"\r\n");
-		s.append("Variazione: "+ (Byte2 & 0x01) +"\r\n");
+		s.append(" Numero uscita: "+ getOutputNumber() +"\r\n");
+		s.append(" Variazione: "+ (Byte2 & 0x01) +"\r\n");
+		s.append("Cronotermostato:\r\n");
+		s.append(" Stato: " + getChronoTermState() + "\r\n");
 		return s.toString();
 	}
 

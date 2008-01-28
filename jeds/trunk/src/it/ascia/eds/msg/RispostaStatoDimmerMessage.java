@@ -30,7 +30,7 @@ public class RispostaStatoDimmerMessage extends PTPMessage {
 	/**
 	 * Ritorna lo stato delle uscite.
 	 * 
-	 * @returns un'array di 2 interi, anche se il BMC ha meno porte. I valori vanno da 0 a 100. 
+	 * @return un'array di 2 interi, anche se il BMC ha meno porte. I valori vanno da 0 a 100. 
 	 */
 	public int[] getOutputs() {
 		int retval[] = {(Byte1 & 0x7F), (Byte2 & 0x7F)};

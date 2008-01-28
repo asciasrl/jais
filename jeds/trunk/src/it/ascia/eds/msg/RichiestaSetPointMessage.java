@@ -1,0 +1,52 @@
+/**
+ * Copyright (C) 2008 ASCIA S.R.L.
+ */
+package it.ascia.eds.msg;
+
+/**
+ * Messaggio di richiesta set point del cronotermostato.
+ * 
+ * Codice EDS: 204.
+ */
+public class RichiestaSetPointMessage extends PTPRequest
+	implements MessageInterface {
+
+	public RichiestaSetPointMessage(int d, int m) {
+		Destinatario = d & 0xFF;
+		Mittente = m & 0xFF;
+		TipoMessaggio = getMessageType();
+		Byte1 = 0;
+		Byte2 = 0;
+	}
+	
+	public RichiestaSetPointMessage(int[] message) {
+		parseMessage(message);
+	}
+
+	public String getTipoMessaggio() {
+		return "Richiesta set point cronotermostato";
+	}
+	
+	public boolean isAnsweredBy(PTPMessage m) {
+		if (m.getMessageType() == Message.MSG_LETTURA_SET_POINT) {
+			if ((getSender() == m.getRecipient()) &&
+					(getRecipient() == m.getSender())) {
+				answered = true;
+			}
+		}
+		return answered;
+	}
+	
+	/**
+	 * Ritorna il numero massimo di tentativi di invio da effettuare.
+	 * 
+	 * Per richiedere uno stato non bisogna insistere.
+	 */
+	public int getMaxSendTries() {
+		return 20;
+	}
+
+	public int getMessageType() {
+		return MSG_RICHIESTA_SET_POINT;
+	}
+}

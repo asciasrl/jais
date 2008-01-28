@@ -152,7 +152,7 @@ public class BMCStandardIO extends BMC {
 	/**
 	 * Ritorna lo stato degli ingressi.
 	 * 
-	 * @returns un'array di booleani: true vuol dire acceso.
+	 * @return un'array di booleani: true vuol dire acceso.
 	 */
 	public boolean[] getInputs() {
 		return inPorts;
@@ -161,7 +161,7 @@ public class BMCStandardIO extends BMC {
 	/**
 	 * Ritorna lo stato delle uscite.
 	 * 
-	 * @returns un'array di booleani: true vuol dire acceso.
+	 * @return un'array di booleani: true vuol dire acceso.
 	 */
 	public boolean[] getOutputs() {
 		return outPorts;
@@ -174,7 +174,7 @@ public class BMCStandardIO extends BMC {
 	 *
 	 * @param port numero della porta
 	 * @param value valore (true: acceso)
-	 * @returns true se l'oggetto ha risposto (ACK)
+	 * @return true se l'oggetto ha risposto (ACK)
 	 */
 	public boolean setOutPort(int port, boolean value) {
 		boolean retval = false;

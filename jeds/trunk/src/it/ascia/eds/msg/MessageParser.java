@@ -96,7 +96,10 @@ public class MessageParser {
 			return new RichiestaModelloMessage(message);
 		case Message.MSG_RISPOSTA_MODELLO: 
 			return new RispostaModelloMessage(message);
-		case Message.MSG_VARIAZIONE_INGRESSO: 
+		case Message.MSG_VARIAZIONE_INGRESSO:
+			// Non consideriamo MSG_IMPOSTAZIONE_STATO_TERMOSTATO, che ha lo
+			// stesso valore, perche' non riceveremo mai messaggi di quel tipo,
+			// ma li genereremo soltanto.
 			return new VariazioneIngressoMessage(message);
 		case Message.MSG_ACKNOWLEDGE: 
 			return new AcknowledgeMessage(message);
@@ -123,10 +126,16 @@ public class MessageParser {
 		case Message.MSG_RISPOSTA_STATO_DIMMER: 
 			return new RispostaStatoDimmerMessage(message);
 		case Message.MSG_IMPOSTA_PARAMETRO_DIMMER: 
-			return new ImpostaParametroDimmerMessage(message);	  	
+			return new ImpostaParametroDimmerMessage(message);
+		case Message.MSG_RICHIESTA_STATO_TERMOSTATO:
+			return new RichiestaStatoTermostatoMessage(message);
 		case Message.MSG_TEMPERATURA: 
 			return new TemperatureMessage(message);
-		case Message.MSG_CAMBIAMENTO_SET_POINT: 
+		case Message.MSG_IMPOSTA_SET_POINT:
+			return new ImpostaSetPointMessage(message);
+		case Message.MSG_RICHIESTA_SET_POINT:
+			return new RichiestaSetPointMessage(message);
+		case Message.MSG_LETTURA_SET_POINT: 
 			return new CronotermMessage(message);
 		default: 
 			System.err.println("Messaggio di tipo sconosciuto: " + 

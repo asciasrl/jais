@@ -22,7 +22,10 @@ implements MessageInterface {
 	 */
 	public final static int MSG_RISPOSTA_MODELLO = 1;
 	/**
-	 * Variazione di un ingresso.
+	 * Variazione di un ingresso, oppure impostazione degli stati del 
+	 * termostato.
+	 * 
+	 * @see VariazioneIngressoMessage
 	 */
 	public final static int MSG_VARIAZIONE_INGRESSO = 4;
 	/**
@@ -79,13 +82,31 @@ implements MessageInterface {
 	 */
 	public final static int MSG_IMPOSTA_PARAMETRO_DIMMER = 54;
 	/**
+	 * Richiesta dello stato di un cronotermostato.
+	 *
+	 * @see RichiestaStatoTermostatoMessage
+	 */
+	public final static int MSG_RICHIESTA_STATO_TERMOSTATO = 200;
+	/**
 	 * Lettura dello stato del cronotermostato (monitoraggio).
 	 */
 	public final static int MSG_TEMPERATURA = 201;
 	/**
+	 * Impostazione valore del setpoint del cronotermostato.
+	 * 
+	 * @see ImpostaSetPointMessage
+	 */
+	public final static int MSG_IMPOSTA_SET_POINT = 202;
+	/**
+	 * Richiesta del set point (monitoraggio).
+	 * 
+	 * @see RichiestaSetPointMessage
+	 */
+	public final static int MSG_RICHIESTA_SET_POINT = 204;
+	/**
 	 * Lettura del set point del cronotermostato (monitoraggio).
 	 */
-	public final static int MSG_CAMBIAMENTO_SET_POINT = 205;
+	public final static int MSG_LETTURA_SET_POINT = 205;
 	/**
 	 * Rappresentazione 'raw' del messaggio.
 	 */

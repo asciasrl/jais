@@ -20,9 +20,23 @@ public abstract class PTPRequest extends PTPMessage {
 	 * Il risultato viene deve essere ritornato e impostato nell'attributo
 	 * answered, che viene letto da wasAnswered().
 	 * 
+	 * Questo metodo riconosce risposte di tipo "Acknowledge". Se le sottoclassi
+	 * richiedono messaggi di risposta diversi, devono riscrivere questo metodo.
+	 * 
 	 * @return true se m e' la risposta a questo messaggio.
 	 */
-	public abstract boolean isAnsweredBy(PTPMessage m);
+	public boolean isAnsweredBy(PTPMessage m) {
+		if (m.getMessageType() == Message.MSG_ACKNOWLEDGE) {
+			AcknowledgeMessage ack = (AcknowledgeMessage) m;
+			if ((getSender() == ack.getRecipient()) &&
+					(getRecipient() == ack.getSender()) &&
+					ack.hasBytes(Byte1, Byte2)) {
+				answered = true;
+			}
+		}
+		return answered;
+	}
+
 	
 	/**
 	 * Controlla se il messaggio ha ricevuto una risposta.

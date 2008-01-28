@@ -38,7 +38,7 @@ public class RispostaStatoMessage extends PTPMessage {
 	/**
 	 * Ritorna lo stato degli ingressi.
 	 * 
-	 * @returns un'array di 8 booleani, anche se il BMC ha meno porte. Gli elementi true sono attivi. 
+	 * @return un'array di 8 booleani, anche se il BMC ha meno porte. Gli elementi true sono attivi. 
 	 */
 	public boolean[] getInputs() {
 		boolean retval[];
@@ -54,7 +54,7 @@ public class RispostaStatoMessage extends PTPMessage {
 	/**
 	 * Ritorna lo stato delle uscite.
 	 * 
-	 * @returns un'array di 8 booleani, anche se il BMC ha meno porte. Gli elementi true sono attivi. 
+	 * @return un'array di 8 booleani, anche se il BMC ha meno porte. Gli elementi true sono attivi. 
 	 */
 	public boolean[] getOutputs() {
 		boolean retval[];

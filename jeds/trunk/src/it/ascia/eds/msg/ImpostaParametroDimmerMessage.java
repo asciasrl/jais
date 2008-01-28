@@ -50,18 +50,6 @@ public class ImpostaParametroDimmerMessage extends PTPRequest
 		return s.toString();
 	}
 
-	public boolean isAnsweredBy(PTPMessage m) {
-		System.err.println("ImpostaParametroDimmerMessage.isAnsweredBy(): " +
-				"non implementato.");
-		if (m.getMessageType() == Message.MSG_ACKNOWLEDGE) {
-			if ((getSender() == m.getRecipient()) &&
-					(getRecipient() == m.getSender())) {
-				answered = true;
-			}
-		}
-		return answered;
-	}
-
 	public int getMessageType() {
 		return MSG_IMPOSTA_PARAMETRO_DIMMER;
 	}

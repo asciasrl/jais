@@ -5,6 +5,7 @@
 package it.ascia.eds;
 
 import it.ascia.eds.device.BMC;
+import it.ascia.eds.device.BMCChronoTerm;
 import it.ascia.eds.device.BMCComputer;
 import it.ascia.eds.device.BMCDimmer;
 import it.ascia.eds.device.BMCStandardIO;
@@ -39,6 +40,24 @@ public class BusTest {
 		return retval;
 	}
 	
+	/**
+	 * Java avra' tanti pregi, ma l'input da stdin e' difficile.
+	 */
+	static double inputDouble(String message) {
+		double retval = 0;
+		boolean entered = false;
+		while (!entered) {
+			try {
+				System.out.print(message);
+				retval = Double.parseDouble(stdin.readLine());
+				entered = true;
+			} catch (NumberFormatException e) {
+				// Inserito un input invalido. Lo ignoriamo.
+			} catch (IOException e) {
+			}
+		}
+		return retval;
+	}
 	static void testBMCStandardIO() {
 		int address = 3;
 		int porta, valore;
@@ -96,6 +115,29 @@ public class BusTest {
 		}
 	}
 	
+	static void testBMCChronoTerm() {
+		int address = 7;
+		double setPoint = 0;
+ 		// Prova su BMC modello 127, indirizzo 7
+		BMCChronoTerm bmc = (BMCChronoTerm)bus.getDevice(address);
+		System.out.println();
+		System.out.println("Prova Cronotermostato");
+		while (setPoint >= 0.0) {
+			bmc.printStatus();
+ 			setPoint = inputDouble("set point (<0 esce): ");
+ 			if (setPoint >= 0.0) {
+ 				bmc.setSetPoint(setPoint);
+ 				bmc.printStatus();
+ 				bmc.updateStatus();
+ 		 		System.out.println("Stato del BMC dopo la richiesta: ");
+ 		 		bmc.printStatus();
+ 		 		System.out.println(bmc.getStatus());
+ 			} // if output >= 0
+		}
+		bmc.printStatus();
+		bmc.updateStatus();
+		bmc.printStatus();
+	}
 	/**
 	 * @param args
 	 *            porta seriale
@@ -140,8 +182,9 @@ public class BusTest {
 	 	}
 	 	// Dimmer avanzato
 	 	bmcComputer.discoverBMC(255);
-	 	testBMCStandardIO();
-	 	// testBMCDimmer();
+	 	/*testBMCStandardIO();
+	 	testBMCDimmer();*/
+	 	testBMCChronoTerm();
 	 	// La palla all'utente
 	 	System.out.println("Running ...");
 		int dest = 1;

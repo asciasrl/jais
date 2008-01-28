@@ -96,7 +96,7 @@ public class RispostaAssociazioneUscitaMessage extends PTPMessage {
 	/**
 	 * Ritorna il numero del comando broadcast associato.
 	 * 
-	 * @returns un numero da 1 a 31, oppure 0 se nessun comando broadcast e' 
+	 * @return un numero da 1 a 31, oppure 0 se nessun comando broadcast e' 
 	 * associato.
 	 */
 	public int getComandoBroadcast() {

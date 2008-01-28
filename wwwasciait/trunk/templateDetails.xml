@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<mosinstall type="template" version="1.0.0">
+	<name>ascia200710</name>
+	<creationDate>5 ottobre 2007</creationDate>
+	<author>Balzarini - Strampelli</author>
+	<copyright>GNU/GPL</copyright>
+    <authorEmail>info@ascia.it</authorEmail>
+    <authorUrl>http://www.ascia.it</authorUrl>
+	<version>20071006</version>
+	<description>Template Ascia S.r.l.</description>
+	<files>
+		<filename>index.php</filename>
+		<filename>template_thumbnail.png</filename>
+	</files>
+	<images>
+		<filename>images/bodycentral.gif</filename>
+		<filename>images/bordinoesterno_tasti_top.png</filename>
+		<filename>images/bordinoesterno_tasti_top75.png</filename>
+		<filename>images/footer.gif</filename>
+		<filename>images/header.gif</filename>
+		<filename>images/headercentral.gif</filename>
+		<filename>images/headerdx.gif</filename>
+		<filename>images/home_img.gif</filename>
+		<filename>images/home_img.png</filename>
+		<filename>images/logohomesx.gif</filename>
+		<filename>images/logo_top_sx.gif</filename>
+		<filename>images/logo_top_sx.png</filename>
+		<filename>images/news_central.gif</filename>
+		<filename>images/news_central.png</filename>
+		<filename>images/news_down.gif</filename>
+		<filename>images/news_down.png</filename>
+		<filename>images/news_up.gif</filename>
+		<filename>images/news_up.png</filename>
+		<filename>images/page_int_img.gif</filename>
+		<filename>images/tastomenu_central.gif</filename>
+		<filename>images/tastomenu_down.gif</filename>
+		<filename>images/tastomenu_up.gif</filename>
+		<filename>images/tastonormale_central.gif</filename>
+		<filename>images/tastonormale_central.png</filename>
+		<filename>images/tastonormale_dx.gif</filename>
+		<filename>images/tastonormale_dx.png</filename>
+		<filename>images/tastonormale_sx.gif</filename>
+		<filename>images/tastonormale_sx.png</filename>
+		<filename>images/tastopremuto_central.gif</filename>
+		<filename>images/tastopremuto_central.png</filename>
+		<filename>images/tastopremuto_dx.gif</filename>
+		<filename>images/tastopremuto_dx.png</filename>
+		<filename>images/tastopremuto_sx.gif</filename>
+		<filename>images/tastopremuto_sx.png</filename>
+	</images>
+	<css>
+		<filename>css/template_css.css</filename>
+	</css>
+</mosinstall>

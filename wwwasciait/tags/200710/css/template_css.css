@@ -1,0 +1,424 @@
+HTML {
+  height: 100%;
+  margin-bottom: 1px;
+}
+
+BODY {
+  margin: 0px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
+  height: 100%;
+  font-family: "Lucida Grande", Geneva, "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+  /* font-size: 11px; */
+  font-size: 13px;
+  color: black;
+  line-height: 19px;
+}
+
+P {
+	margin: 5px 0px;
+}
+
+span.article_seperator {
+	line-height: 1px;
+}	
+
+
+/* Struttura */
+
+H1 {
+  font-size: 14px;
+  font-weight: bold;
+  color: rgb(28,78,125);
+}
+
+H2 {
+  font-size: 13px;
+  font-weight: bold;
+  color: rgb(28,78,125);
+}
+
+H3 {
+  font-size: 12px;
+  font-style: italic;
+  color: rgb(28,78,125);
+}
+
+/* Link */
+
+a, a:visited {
+  text-decoration: none;
+  color: rgb(28,78,125);
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Impaginazione */
+
+#main {
+  width: 720px;
+  margin-right: auto;
+  margin-left: auto;
+  padding: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+#mainbox {
+  width: 720px;
+  float: left;
+  margin: 0px;
+  padding: 0px;
+}
+
+#top_row {
+  background-color: white;
+  background-image: url('../images/bordinoesterno_tasti_top75.gif');
+  background-repeat: repeat-x;
+  margin: 0px;
+  padding: 0px;
+  height: 75px;
+}
+
+.banner {
+  width: 720px;
+  height: 200px;
+  margin: 0px;
+  padding: 0px;
+  float: left;
+}
+
+table.body {
+  float: left;
+}
+
+div.left {
+  float:left;
+  width: 135px;
+  margin: 0px;
+  padding: 5px 0px 10px 0px;
+}
+
+.bodyfull {
+  float:left;
+  width:575px;
+  padding: 5px;
+  margin: 0px 0px 0px 0px;
+  overflow: hidden;
+}
+
+.bodysx {
+  float:left;
+  width:440px;
+  padding: 5px;
+  margin: 0px 0px 0px 0px;
+  overflow: auto;
+}
+
+.right {
+  width:135px;
+  padding: 0px;
+  margin: 0px;
+}
+
+div.footer {
+  float: left;
+  text-align: center;
+  font-size: 10px;
+  line-height: 25px;
+  width:720px;
+  height:50px;
+  margin: 0px 0px 0px 0px;
+  background-image: url('../images/footer.gif');
+  background-repeat: no-repeat;
+}
+
+
+/* Menu orizzontale Top */
+
+.hmenu {
+  height: 25px;
+  font-weight: bold;    
+  font-size: 10px;
+  line-height: 11px;
+}
+
+.hmenu_tastonormale_sx, .hmenu_tastopremuto_sx,  .hmenu_tastonormale_dx, .hmenu_tastopremuto_dx {
+  height: 25px;
+  width: 6px;
+  background-repeat: no-repeat;
+  font-size: 1px;
+}
+
+.hmenu_tastonormale_sx {
+  background-image: url('../images/tastonormale_sx.gif');
+}
+
+.hmenu_tastonormale_dx {
+  background-image: url('../images/tastonormale_dx.gif');
+}
+
+.hmenu_tastopremuto_sx {
+  background-image: url('../images/tastopremuto_sx.gif');
+}
+
+.hmenu_tastopremuto_dx {
+  background-image: url('../images/tastopremuto_dx.gif');
+}
+
+.hmenu_tastopremuto_central, .hmenu_tastonormale_central {
+  width: 60px;
+  text-align: center;
+  height: 25px;
+}
+
+.hmenu_tastopremuto_central {
+  background-image: url('../images/tastopremuto_central.gif');
+  background-repeat: repeat-x;
+}
+
+.hmenu_tastonormale_central {
+  background-image: url('../images/tastonormale_central.gif');
+  background-repeat: repeat-x;
+}
+
+
+/* Menu verticale */
+
+.vmenu {
+  font-weight: bold;    
+  font-size: small;
+  line-height: 15px;
+}
+
+.vmenubutton {
+  background-image: url('../images/tastomenu_central.gif');
+  background-repeat: repeat-y;
+  width: 135px;
+  min-height: 10px;
+  margin: 2px 0px;
+  display: block;
+}
+
+.vmenubutton_up, .vmenubutton_down {
+  font-size: 1px;
+}
+
+.vmenubutton_up {
+  background-image: url('../images/tastomenu_up.gif');
+  background-repeat: no-repeat;
+  width: 135px;
+  height: 5px;
+  padding: 0px;
+  margin: 2px 0px 0px 0px;
+}
+
+.vmenubutton_central {
+  background-image: url('../images/tastomenu_central.gif');
+  background-repeat: repeat-y;
+  padding: 0px 5px;
+}
+
+.vmenubutton_down {
+  background-image: url('../images/tastomenu_down.gif');
+  background-repeat: no-repeat;
+  width: 135px;
+  height: 5px;
+  padding: 0px;
+  margin: 0px 0px 2px 0px;
+}
+
+a.vmenuitem {
+}
+
+span.vmenuitem {
+  font-weight: bold;  
+  color: #888;
+}
+
+div.vmenuitem1 {
+  width: 125px;
+  margin-left: 5px;
+  padding-top: 3px;
+  font-weight: normal;  
+}
+
+span.vmenuitem1 {
+  color: #888;
+}
+
+a.mainlevel-leftmenu {
+  font-weight: bold;    
+  font-size: 12px;
+  line-height: 17px;
+}
+
+a.sublevel-leftmenu {
+  font-weight: normal;    
+  font-size: 11px;
+  line-height: 15px;
+}
+
+#active_menu-leftmenu {
+  text-decoration: underline;
+} 
+
+
+
+/* NEWS (blocchi a destra) */
+
+.news {
+  width: 135px;
+  margin: 2px 0px;
+  color: white;
+}
+
+.news {
+}
+
+.news * th, .news_central {
+  background-color: #646464;
+  background-image: url('../images/news_central.gif');
+  background-repeat: no-repeat;
+}
+
+.news_up, .news_down {
+  background-repeat: no-repeat;
+  width: 135px;
+  height: 5px;
+  margin: 0px;
+  padding: 0px;
+  font-size: 1px;
+}
+
+.news_up {
+  background-image: url('../images/news_up.gif');
+}
+
+.news_down {
+  background-image: url('../images/news_down.gif');
+}
+
+.news_central {
+  margin: 0px;
+  padding: 0px 5px;
+}
+
+.news * th {
+  color: white;
+}
+
+
+.news * ul {
+  padding: 0px;
+  list-style-type: none;
+  color: #ff8400;
+  margin: 0px;
+  padding: 0px;
+}
+
+.news_central * li {
+  padding: 3px 0px;  
+  line-height: 15px;
+  font-size: 11px;  
+}
+
+.news_central * a {
+  color: #c8e4f2;
+}
+
+
+/* ALTRO */
+
+
+ul#mainlevel-topmenu {
+  height: 25px;
+  margin: 0px;
+  padding: 0px;
+}
+
+ul#mainlevel-topmenu li {
+}
+
+
+div.headercentral {
+  width: 560px;
+  float: left;
+  height: 90px;
+  margin: 0px;
+  padding:0px;
+  background-image: url('../images/headercentral.gif');
+  background-repeat: no-repeat;  
+}
+
+div#topmenu {
+  width: 560px;
+  float: left;
+  height: 20px;
+  margin: 73px 0px 7px 0px;
+  padding: 0px;
+}
+
+div#pathway {
+  min-width: 400px;
+  margin: 0px 5px 3px 5px;
+  padding: 0px 0px 0px 0px;
+  border-bottom: 1px dotted black;
+}
+
+div.headerdx {
+  width: 120px;
+  float: left;
+  height: 90px;
+  margin: 0px;
+  padding:0px;
+  background-image: url('../images/headerdx.gif');
+  background-repeat: no-repeat;  
+}
+
+
+/* MODULI e stili standard di Joomla */
+
+.contentheading, .componentheading {
+  font-size: medium;
+  font-weight: bold;
+  color: rgb(28,78,125);
+}
+
+.componentheading {
+  text-transform: uppercase;
+}
+
+
+input#mod_search_searchword {
+  font-size: x-small;
+  border: 1px solid rgb(28,78,125);
+  max-width: 123px;
+  color: rgb(28,78,125);  
+}
+
+
+input.inputbox {
+  /* max-width: 100px; */
+}
+
+select.inputbox {
+  /* max-width: 100px; */
+}
+
+
+/* EVENTS */
+
+.mod_events_latest, .mod_events_latest_first {
+	font-size: 11px;
+	line-height: 15px;
+  padding: 3px 0px;  
+}
+
+.mosimage_caption {
+  font-weight: bold;
+}
+
+/* MENU DI SINISTRA */
+

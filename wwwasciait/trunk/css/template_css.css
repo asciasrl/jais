@@ -63,11 +63,11 @@ a:hover {
   padding: 0px;
   margin-top: 0px;
   margin-bottom: 0px;
+  position: relative;
 }
 
 #mainbox {
   width: 720px;
-  float: left;
   margin: 0px;
   padding: 0px;
 }
@@ -86,11 +86,9 @@ a:hover {
   height: 200px;
   margin: 0px;
   padding: 0px;
-  float: left;
 }
 
 table.body {
-  float: left;
 }
 
 div.left {

@@ -6,6 +6,7 @@ package it.ascia.eds.device;
 import java.util.Vector;
 
 import it.ascia.eds.Bus;
+import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.Message;
 
 /**
@@ -74,7 +75,7 @@ public class BMCScenarioManager extends BMC {
 				"BMCScenarioManager");
 	}
 
-	public String getStatus(String port) {
+	public String getStatus(String port, String busName) {
 		// TODO
 		return name;
 	}
@@ -85,6 +86,10 @@ public class BMCScenarioManager extends BMC {
 
 	public int getOutPortsNumber() {
 		return 8;
+	}
+
+	public void setPort(String port, String value) throws EDSException {
+		throw new EDSException("Not implemented.");
 	}
 
 }

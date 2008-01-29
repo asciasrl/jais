@@ -4,6 +4,7 @@
 package it.ascia.eds.device;
 
 import it.ascia.eds.Bus;
+import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.CronotermMessage;
 import it.ascia.eds.msg.ImpostaSetPointMessage;
 import it.ascia.eds.msg.Message;
@@ -207,7 +208,7 @@ public class BMCChronoTerm extends BMC {
 	}
 
 	// TODO
-	public String getStatus(String port) {
+	public String getStatus(String port, String busName) {
 		return name;
 	}
 
@@ -226,5 +227,9 @@ public class BMCChronoTerm extends BMC {
 				(dirtyTemperature? "?" : ""));
 		System.out.println("Set point: " + setPoint + 
 				(dirtySetPoint? "?" : ""));
+	}
+
+	public void setPort(String port, String value) throws EDSException {
+		throw new EDSException("Unimplemented.");
 	}
 }

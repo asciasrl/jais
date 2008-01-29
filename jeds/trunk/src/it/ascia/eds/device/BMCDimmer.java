@@ -4,6 +4,7 @@
 package it.ascia.eds.device;
 
 import it.ascia.eds.Bus;
+import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.ComandoBroadcastMessage;
 import it.ascia.eds.msg.ComandoUscitaDimmerMessage;
 import it.ascia.eds.msg.ComandoUscitaMessage;
@@ -216,13 +217,14 @@ public class BMCDimmer extends BMC {
 	 	}
 	}
 	
-	public String getStatus(String port) {
+	public String getStatus(String port, String busName) {
 		int i;
 		String retval = "";
+		String compactName = busName + "." + getAddress();
 		for (i = 0; i < outPortsNum; i++) {
-			if (port.equals("*") || port.equals(getOutputName(i))) {
-				retval += name + "." + getOutputName(i) + "=" + outPorts[i] + 
-					"\n";
+			if (port.equals("*") || port.equals(getOutputCompactName(i))) {
+				retval += compactName + ":" + getOutputCompactName(i) + "=" +
+					outPorts[i] + "\n";
 			}
 		}
 		return retval;
@@ -307,5 +309,33 @@ public class BMCDimmer extends BMC {
 
 	public int getOutPortsNumber() {
 		return outPortsNum;
+	}
+
+	/**
+	 * Imposta la porta di un dimmer.
+	 * 
+	 * @port il nome compatto della porta.
+	 * @value un numero, un valore percentuale o "OFF"
+	 */
+	public void setPort(String port, String value) throws EDSException {
+		int outPort, numericValue;
+		outPort = getOutputNumberFromCompactName(port);
+		if (outPort == -1) {
+			throw new EDSException("Porta non valida: " + port);
+		}
+		// Trattiamo percentuali e numeri
+		if (value.endsWith("%")) {
+			value = value.substring(0, value.length() - 1);
+		}
+		if (value.toUpperCase().equals("OFF")) {
+			numericValue = 0;
+		} else {
+			try {
+				numericValue = Integer.parseInt(value);
+			} catch (NumberFormatException e) {
+				throw new EDSException("Valore non valido: " + value);
+			}
+		}
+		setOutputRealTime(outPort, numericValue);
 	}
 }

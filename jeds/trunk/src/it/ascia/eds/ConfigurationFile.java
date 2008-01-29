@@ -56,7 +56,6 @@ public class ConfigurationFile {
 	private void parseDocument() throws EDSException {
 		Element element;
 		NodeList list;
-		int i;
 		element = document.getDocumentElement();
 		// Primo tag: <home>
 		if (!element.getTagName().equals("home")) {

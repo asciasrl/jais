@@ -229,7 +229,7 @@ public class BMCComputer extends BMC {
 		System.err.println("updateStatus non implementato su BMCComputer.");
 	}
 
-	public String getStatus(String port) {
+	public String getStatus(String port, String busName) {
 		return "All right.";
 	}
 
@@ -242,6 +242,10 @@ public class BMCComputer extends BMC {
 
 	public int getOutPortsNumber() {
 		return 0; // per ora...
+	}
+
+	public void setPort(String port, String value) throws EDSException {
+		throw new EDSException("Unimplemented.");
 	}
 
 }

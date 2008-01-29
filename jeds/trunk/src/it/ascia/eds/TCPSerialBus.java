@@ -90,7 +90,7 @@ public class TCPSerialBus extends Bus {
 	/**
 	 * La porta TCP a cui connettersi di default.
 	 */
-	private final int TCP_PORT = 2001;
+	private int tcpPort;
 	/**
 	 * Il nostro socket.
 	 */
@@ -110,17 +110,17 @@ public class TCPSerialBus extends Bus {
      * costa poco.
      */
     Lock writeLock;
-    
     /**
-     * Costruttore
+     * Costruttore.
      *
      * @param hostName nome dell'host (ad es. "1.2.3.4" o "www.pippo.com")
      * 
      * @throws un'Exception se incontra un errore
      */
-    public TCPSerialBus(String hostName) throws EDSException {    	
+    public TCPSerialBus(String hostName, int port) throws EDSException {    	
+    	this.tcpPort = port;
 		try {
-			sock = SocketChannel.open(new InetSocketAddress(hostName, TCP_PORT));
+			sock = SocketChannel.open(new InetSocketAddress(hostName, tcpPort));
 			sock.configureBlocking(false);
 		} catch (UnresolvedAddressException e) {
 			throw new EDSException("Indirizzo non trovato: " + hostName);

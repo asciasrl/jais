@@ -4,6 +4,7 @@
 package it.ascia.eds;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -57,7 +58,6 @@ public abstract class Bus {
 	 */
 	public static final int BROADCAST_RESENDS = 7;
 	
-
 	/**
 	 * MessageParser per la lettura dei messaggi in ingresso.
 	 */
@@ -245,5 +245,20 @@ public abstract class Bus {
     				" esiste gia'.");
     	}
     	devices.put(new Integer(deviceAddress), device);
+    }
+    
+    /**
+     * Ritorna tutti i Device collegati.
+     */
+    public Device[] getDevices() {
+    	Collection values = devices.values();
+    	Device retval[] = new Device[values.size()];
+    	Iterator it = values.iterator();
+    	int i = 0;
+    	while (it.hasNext()) {
+    		retval[i] = (Device)it.next();
+    		i++;
+    	}
+    	return retval;
     }
 }

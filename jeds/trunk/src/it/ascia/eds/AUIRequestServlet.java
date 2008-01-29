@@ -41,19 +41,18 @@ public class AUIRequestServlet extends HttpServlet {
 		response.setStatus(HttpServletResponse.SC_OK);
 		if (request.getMethod().toUpperCase() == "GET") {
 			String name = request.getParameter("name");
-			if (name != null) {
-				String uri = request.getRequestURI();
-				// Togliamo le directory fino all'ultimo slash
-				int index = uri.lastIndexOf("/");
-				if (index > 0) {
-					String action = uri.substring(index + 1);
-					String value = request.getParameter("value");
-					out.println(controller.receiveRequest(action, name, value));
-				} else {
-					out.println("ERROR: malformed action");
-				}
+			String uri = request.getRequestURI();
+			// Per sicurezza: non vogliamo null che girano
+			if (name == null) name = "";
+			if (uri == null) uri = "";
+			// Togliamo le directory fino all'ultimo slash
+			int index = uri.lastIndexOf("/");
+			if (index > 0) {
+				String action = uri.substring(index + 1);
+				String value = request.getParameter("value");
+				out.println(controller.receiveRequest(action, name, value));
 			} else {
-				out.println("ERROR: must specify name");
+				out.println("ERROR: malformed action");
 			}
 		} else {
 			out.println("ERROR: needs GET method");

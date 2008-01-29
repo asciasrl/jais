@@ -111,7 +111,7 @@ public class BusTest {
  				bmc.updateStatus();
  		 		System.out.println("Stato del BMC dopo la richiesta: ");
  		 		bmc.printStatus();
- 		 		System.out.println(bmc.getStatus());
+ 		 		System.out.println(bmc.getStatus("*"));
  			} // if output >= 0
 		}
 	}
@@ -132,7 +132,7 @@ public class BusTest {
  				bmc.updateStatus();
  		 		System.out.println("Stato del BMC dopo la richiesta: ");
  		 		bmc.printStatus();
- 		 		System.out.println(bmc.getStatus());
+ 		 		System.out.println(bmc.getStatus("*"));
  			} // if output >= 0
 		}
 		bmc.printStatus();
@@ -142,7 +142,7 @@ public class BusTest {
 	
 	static void testServer() {
 		try {
-			server = new HTTPServer(8080, new BusController(), 
+			server = new HTTPServer(8080, new BusController(bus), 
 					"/home/arrigo/public_html");
 		} catch (EDSException e) {
 			System.err.println(e.getMessage());
@@ -162,7 +162,7 @@ public class BusTest {
 		    defaultPort = args[0];
 		}
 	 	try {
-	 		bus = new TCPSerialBus(defaultPort);
+	 		bus = new TCPSerialBus(defaultPort, 2001);
 	 	} catch (EDSException e) {
 	 		System.err.println(e.getMessage());
 	 		System.exit(-1);

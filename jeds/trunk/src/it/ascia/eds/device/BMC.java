@@ -211,11 +211,6 @@ public abstract class BMC implements Device {
 	public abstract String getInfo();
 	
 	/**
-	 * Ritorna lo stato del BMC in formato utile per AUI.
-	 */
-	public abstract String getStatus();
-	
-	/**
 	 * Aggiorna la rappresentazione interna delle porte.
 	 * 
 	 * Manda un messaggio al BMC mettendo come mittente il bmcComputer. Quando 

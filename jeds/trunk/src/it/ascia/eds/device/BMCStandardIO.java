@@ -240,16 +240,20 @@ public class BMCStandardIO extends BMC {
 	 	}
 	}
 
-	public String getStatus() {
+	public String getStatus(String port) {
 		String retval = "";
 		int i;
 		for (i = 0; i < inPortsNum; i++) {
-			retval += name + "." + getInputName(i) + "=" + 
-				(inPorts[i]? "ON" : "OFF") + "\n";
+			if (port.equals("*") || port.equals(getInputName(i))) {
+				retval += name + "." + getInputName(i) + "=" + 
+					(inPorts[i]? "ON" : "OFF") + "\n";
+			}
 		}
 	 	for (i = 0; i < outPortsNum; i++) {
-	 		retval += name + "." + getOutputName(i) + "=" + 
-	 			(outPorts[i]? "ON" : "OFF") + "\n";
+	 		if (port.equals("*") || port.equals(getOutputName(i))) {
+	 			retval += name + "." + getOutputName(i) + "=" + 
+	 				(outPorts[i]? "ON" : "OFF") + "\n";
+	 		}
 		}
 	 	return retval;
 	}

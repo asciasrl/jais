@@ -80,7 +80,7 @@ public class BMCIR extends BMC {
 		System.err.println("updateStatus non implementato su BMCIR");
 	}
 
-	public String getStatus() {
+	public String getStatus(String port) {
 		// TODO
 		return name;
 	}

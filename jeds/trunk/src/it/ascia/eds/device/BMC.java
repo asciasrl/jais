@@ -237,6 +237,9 @@ public abstract class BMC implements Device {
 	 * Stampa una descrizione dello stato del BMC (facoltativa).
 	 * 
 	 * Questa funzione ha senso solo se implementata dalle sottoclassi.
+	 * 
+	 * NOTA: per le singole porte, il nome da visualizzare deve essere quello
+	 * generato da getInputCompactName() e getOutputCompactName().
 	 */
 	public void printStatus() {
 		System.out.println("printStatus() non implementata");
@@ -266,7 +269,14 @@ public abstract class BMC implements Device {
 	}
 	
 	/**
-	 * Ritorna il nome di una porta di uscita.
+	 * Genera un nome compatto per una porta di ingresso.
+	 */
+	protected static String getInputCompactName(int number) {
+		return "Inp" + (number + 1);
+	}
+	
+	/**
+	 * Ritorna il nome di una porta di ingresso.
 	 * 
 	 * Se il nome non esiste, viene impostato automaticamente.
 	 * 
@@ -276,14 +286,21 @@ public abstract class BMC implements Device {
 		String retval;
 		retval = (String) inPortsNames.get(new Integer(number));
 		if (retval == null) {
-			retval = "Ingresso" + number;
+			retval = getInputCompactName(number);
 			setInputName(number, retval);
 		}
 		return retval;
 	}
 	
 	/**
-	 * Ritorna il nome di una porta di ingresso.
+	 * Genera un nome compatto per una porta di uscita.
+	 */
+	protected static String getOutputCompactName(int number) {
+		return "Out" + (number + 1);
+	}
+	
+	/**
+	 * Ritorna il nome di una porta di uscita.
 	 * 
 	 * Se il nome non esiste, viene impostato automaticamente.
 	 */
@@ -295,12 +312,29 @@ public abstract class BMC implements Device {
 			retval = null;
 		}
 		if (retval == null) {
-			retval = "Uscita" + number;
+			retval = getOutputCompactName(number);
 			setOutputName(number, retval);
 		}
 		return retval;
 	}
-	
+
+	/**
+	 * Ritorna il numero di una porta di uscita a partire dal nome compatto.
+	 * 
+	 * @return il numero della porta, oppure -1 se non e' stata trovata.
+	 */
+	public int getOutputNumberFromCompactName(String name) {
+		int retval = -1;
+		int max = outPortsNames.size();
+		// Non e' il massimo dell'efficienza, ma funziona.
+		for (int i = 0; (i < max) && (retval == -1); i++) {
+			if (name.equals(getOutputCompactName(i))) {
+				retval = i;
+			}
+		}
+		return retval;
+	}
+
 	/**
 	 * Ritorna il numero di "caselle" disponibili per ciascuna uscita.
 	 * 

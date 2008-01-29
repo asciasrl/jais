@@ -4,6 +4,7 @@
 package it.ascia.eds.device;
 
 import it.ascia.eds.Bus;
+import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.ComandoBroadcastMessage;
 import it.ascia.eds.msg.ComandoUscitaMessage;
 import it.ascia.eds.msg.Message;
@@ -240,18 +241,19 @@ public class BMCStandardIO extends BMC {
 	 	}
 	}
 
-	public String getStatus(String port) {
+	public String getStatus(String port, String busName) {
 		String retval = "";
 		int i;
+		String compactName = busName + "." + getAddress();
 		for (i = 0; i < inPortsNum; i++) {
-			if (port.equals("*") || port.equals(getInputName(i))) {
-				retval += name + "." + getInputName(i) + "=" + 
+			if (port.equals("*") || port.equals(getInputCompactName(i))) {
+				retval += compactName + ":" + getInputCompactName(i) + "=" + 
 					(inPorts[i]? "ON" : "OFF") + "\n";
 			}
 		}
 	 	for (i = 0; i < outPortsNum; i++) {
-	 		if (port.equals("*") || port.equals(getOutputName(i))) {
-	 			retval += name + "." + getOutputName(i) + "=" + 
+	 		if (port.equals("*") || port.equals(getOutputCompactName(i))) {
+	 			retval += compactName + ":" + getOutputCompactName(i) + "=" + 
 	 				(outPorts[i]? "ON" : "OFF") + "\n";
 	 		}
 		}
@@ -264,5 +266,22 @@ public class BMCStandardIO extends BMC {
 
 	public int getOutPortsNumber() {
 		return outPorts.length;
+	}
+
+	public void setPort(String port, String value) throws EDSException {
+		int portNumber;
+		boolean boolValue;
+		if (value.equals("1") || value.toUpperCase().equals("ON")) {
+			boolValue = true;
+		} else if (value.equals("0") || value.toUpperCase().equals("OFF")) {
+			boolValue = false;
+		} else {
+			throw new EDSException("Valore non valido: " + value);
+		}
+		portNumber = getOutputNumberFromCompactName(port);
+		if (portNumber == -1) {
+			throw new EDSException("Porta non valida: " + port);
+		}
+		setOutPort(portNumber, boolValue);
 	}
 }

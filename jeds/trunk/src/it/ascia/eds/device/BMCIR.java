@@ -6,6 +6,7 @@ package it.ascia.eds.device;
 import java.util.Vector;
 
 import it.ascia.eds.Bus;
+import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.Message;
 
 /**
@@ -21,10 +22,6 @@ public class BMCIR extends BMC {
 	 * Numero di porte in ingresso
 	 */
 	private int inPortsNum;
-	/**
-	 * Numero di porte in uscita
-	 */
-	private int outPortsNum;
 	/**
 	 * Ingressi
 	 */
@@ -80,7 +77,7 @@ public class BMCIR extends BMC {
 		System.err.println("updateStatus non implementato su BMCIR");
 	}
 
-	public String getStatus(String port) {
+	public String getStatus(String port, String busName) {
 		// TODO
 		return name;
 	}
@@ -95,5 +92,9 @@ public class BMCIR extends BMC {
 
 	public int getOutPortsNumber() {
 		return 0;
+	}
+
+	public void setPort(String port, String value) throws EDSException {
+		throw new EDSException("Not implemented.");
 	}
 }

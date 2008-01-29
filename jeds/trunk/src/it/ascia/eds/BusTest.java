@@ -111,7 +111,7 @@ public class BusTest {
  				bmc.updateStatus();
  		 		System.out.println("Stato del BMC dopo la richiesta: ");
  		 		bmc.printStatus();
- 		 		System.out.println(bmc.getStatus("*"));
+ 		 		System.out.println(bmc.getStatus("*", null));
  			} // if output >= 0
 		}
 	}
@@ -132,7 +132,7 @@ public class BusTest {
  				bmc.updateStatus();
  		 		System.out.println("Stato del BMC dopo la richiesta: ");
  		 		bmc.printStatus();
- 		 		System.out.println(bmc.getStatus("*"));
+ 		 		System.out.println(bmc.getStatus("*", null));
  			} // if output >= 0
 		}
 		bmc.printStatus();

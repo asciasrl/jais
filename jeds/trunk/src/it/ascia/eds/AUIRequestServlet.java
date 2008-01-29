@@ -50,6 +50,9 @@ public class AUIRequestServlet extends HttpServlet {
 			if (index > 0) {
 				String action = uri.substring(index + 1);
 				String value = request.getParameter("value");
+				if (value == null) {
+					value = "";
+				}
 				out.println(controller.receiveRequest(action, name, value));
 			} else {
 				out.println("ERROR: malformed action");

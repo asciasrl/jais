@@ -1,5 +1,6 @@
 package it.ascia.eds.device;
 
+import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.Message;
 
 /**
@@ -37,6 +38,18 @@ public interface Device {
 	 * 
 	 * @param port il nome della porta da restituire, o "*" per indicarle
 	 * tutte.
+	 * @param busName il nome del bus, da visualizzare davanti al proprio
+	 * indirizzo.
 	 */
-	public abstract String getStatus(String port);
+	public String getStatus(String port, String busName);
+	
+	/**
+	 * Imposta il valore di una porta.
+	 * 
+	 * @param port il nome della porta
+	 * @param value il valore da impostare
+	 * 
+	 * @throws un'eccezione se qualcosa va male.
+	 */
+	public void setPort(String port, String value) throws EDSException;
 }

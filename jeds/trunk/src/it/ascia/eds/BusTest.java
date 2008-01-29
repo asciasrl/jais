@@ -20,6 +20,7 @@ public class BusTest {
 	static Bus bus;
 	static BufferedReader stdin;
 	static BMCComputer bmcComputer;
+	static HTTPServer server;
 	
 	/**
 	 * Java avra' tanti pregi, ma l'input da stdin e' difficile.
@@ -138,6 +139,17 @@ public class BusTest {
 		bmc.updateStatus();
 		bmc.printStatus();
 	}
+	
+	static void testServer() {
+		try {
+			server = new HTTPServer(8080, new BusController(), 
+					"/home/arrigo/public_html");
+		} catch (EDSException e) {
+			System.err.println(e.getMessage());
+			System.exit(-1);
+		}
+	}
+	
 	/**
 	 * @param args
 	 *            porta seriale
@@ -183,8 +195,9 @@ public class BusTest {
 	 	// Dimmer avanzato
 	 	bmcComputer.discoverBMC(255);
 	 	/*testBMCStandardIO();
-	 	testBMCDimmer();*/
-	 	testBMCChronoTerm();
+	 	testBMCDimmer();
+	 	testBMCChronoTerm(); */
+	 	testServer();
 	 	// La palla all'utente
 	 	System.out.println("Running ...");
 		int dest = 1;
@@ -199,6 +212,8 @@ public class BusTest {
 					}
 				}
 		}
+		System.out.println("Chiusura server...");
+		server.close();
 		System.out.println("Chiusura bus...");
 		bus.close();
 	}

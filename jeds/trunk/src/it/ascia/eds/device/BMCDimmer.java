@@ -216,11 +216,14 @@ public class BMCDimmer extends BMC {
 	 	}
 	}
 	
-	public String getStatus() {
+	public String getStatus(String port) {
 		int i;
 		String retval = "";
 		for (i = 0; i < outPortsNum; i++) {
-			retval += name + "." + getOutputName(i) + "=" + outPorts[i] + "\n";
+			if (port.equals("*") || port.equals(getOutputName(i))) {
+				retval += name + "." + getOutputName(i) + "=" + outPorts[i] + 
+					"\n";
+			}
 		}
 		return retval;
 	}

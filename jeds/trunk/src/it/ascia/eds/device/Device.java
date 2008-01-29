@@ -31,4 +31,12 @@ public interface Device {
 	 * Ritorna l'indirizzo del device sul bus.
 	 */
 	public int getAddress();
+	
+	/**
+	 * Ritorna lo stato del BMC in formato utile per AUI.
+	 * 
+	 * @param port il nome della porta da restituire, o "*" per indicarle
+	 * tutte.
+	 */
+	public abstract String getStatus(String port);
 }

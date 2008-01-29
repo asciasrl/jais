@@ -74,7 +74,7 @@ public class BMCScenarioManager extends BMC {
 				"BMCScenarioManager");
 	}
 
-	public String getStatus() {
+	public String getStatus(String port) {
 		// TODO
 		return name;
 	}

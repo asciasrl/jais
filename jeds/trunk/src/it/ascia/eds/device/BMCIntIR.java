@@ -52,7 +52,7 @@ public class BMCIntIR extends BMC {
 		System.err.println("updateStatus non implementato su BMCIntIR");
 	}
 
-	public String getStatus() { // TODO
+	public String getStatus(String port) { // TODO
 		return name;
 	}
 

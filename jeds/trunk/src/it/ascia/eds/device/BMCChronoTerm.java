@@ -207,7 +207,7 @@ public class BMCChronoTerm extends BMC {
 	}
 
 	// TODO
-	public String getStatus() {
+	public String getStatus(String port) {
 		return name;
 	}
 

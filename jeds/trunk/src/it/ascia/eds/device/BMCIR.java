@@ -12,6 +12,9 @@ import it.ascia.eds.msg.Message;
 /**
  * Un BMC con porte di input + 1 a infrarossi.
  * 
+ * Gli ingressi sono "mappati" su porte di ingresso. Quindi gli ingressi
+ * logici sono sempre 8. Alcuni possono essere _anche_ fili.
+ * 
  * Modelli: 41, 61, 81
  * 
  * @author arrigo
@@ -40,11 +43,7 @@ public class BMCIR extends BMC {
 		super(address, model, bus, name);
 		switch(model) {
 		case 41:
-			inPortsNum = 4;
-			break;
 		case 61:
-			inPortsNum = 6;
-			break;
 		case 81:
 			inPortsNum = 8;
 			break;

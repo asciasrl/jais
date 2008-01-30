@@ -6,6 +6,9 @@ package it.ascia.eds.device;
 import it.ascia.eds.Bus;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.Message;
+import it.ascia.eds.msg.PTPRequest;
+import it.ascia.eds.msg.RichiestaStatoMessage;
+import it.ascia.eds.msg.RispostaStatoMessage;
 
 /**
  * Un BMC con una porta a infrarossi.
@@ -15,14 +18,14 @@ import it.ascia.eds.msg.Message;
  * @author arrigo
  */
 public class BMCIntIR extends BMC {
-
 	/**
-	 * Ingresso IR
+	 * Ingresso IR.
 	 */
-	int irInput;
+	private boolean irInput;
 	
 	/**
-	 * Costruttore
+	 * Costruttore.
+	 * 
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
 	 */
@@ -42,7 +45,18 @@ public class BMCIntIR extends BMC {
 	}
 	
 	public void messageSent(Message m) {
-		// TODO
+		switch (m.getMessageType()) {
+		case Message.MSG_RISPOSTA_STATO: {
+			RispostaStatoMessage r;
+			r = (RispostaStatoMessage)m;
+			// Il RispostaStatoMessage da' sempre 8 valori. Dobbiamo
+			// prendere solo quelli effettivamente presenti sul BMC
+			boolean temp[];
+			temp = r.getInputs();
+			irInput = temp[0];
+		}
+		break;
+		}
 	}
 	
 	public String getInfo() {
@@ -50,11 +64,16 @@ public class BMCIntIR extends BMC {
 	}
 
 	public void updateStatus() {
-		System.err.println("updateStatus non implementato su BMCIntIR");
+		PTPRequest m;
+		m = new RichiestaStatoMessage(getAddress(), bus.getBMCComputerAddress(),
+				0);
+		bus.sendMessage(m);
 	}
 
 	public String getStatus(String port, String busName) { // TODO
-		return name;
+		String compactName = busName + "." + getAddress();
+		return compactName + ":" + getInputCompactName(0) +
+			"=" + (irInput? "ON" : "OFF") + "\r\n";
 	}
 
 	/**

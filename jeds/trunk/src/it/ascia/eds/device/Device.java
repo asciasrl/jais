@@ -36,6 +36,8 @@ public interface Device {
 	/**
 	 * Ritorna lo stato del BMC in formato utile per AUI.
 	 * 
+	 * Lo stato deve essere aggiornato.
+	 * 
 	 * @param port il nome della porta da restituire, o "*" per indicarle
 	 * tutte.
 	 * @param busName il nome del bus, da visualizzare davanti al proprio

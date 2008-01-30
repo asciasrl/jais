@@ -19,7 +19,7 @@ public class ImpostaSetPointMessage extends PTPRequest
 		Mittente = m & 0xFF;
 		TipoMessaggio = getMessageType();
 		Byte1 = (int)temperatura;
-		Byte2 = ((int)((temperatura - Byte1) * 16)) & 0x0f;
+		Byte2 = ((int)((temperatura - Byte1) * 10.0)) & 0x0f;
 	}
 	
 	public ImpostaSetPointMessage(int[] message) {
@@ -30,7 +30,7 @@ public class ImpostaSetPointMessage extends PTPRequest
 	 * Ritorna la temperatura di set point indicata nel messaggio.
 	 */
 	public double getSetPoint() {
-		return Byte1 + (Byte2 & 0x0f) / 16.0;
+		return Byte1 + (Byte2 & 0x0f) / 10.0;
 	}
 
 	public String getTipoMessaggio() {
@@ -41,7 +41,7 @@ public class ImpostaSetPointMessage extends PTPRequest
 		StringBuffer s = new StringBuffer();
 		s.append("Mittente: "+Mittente+"\r\n");
 		s.append("Destinatario: "+Destinatario+"\r\n");
-		s.append("Temperatura: " + (Byte2 / 16.0) + Byte1 + "\r\n");
+		s.append("Temperatura: " + (Byte2 / 10.0) + Byte1 + "\r\n");
 		return s.toString();
 	}
 

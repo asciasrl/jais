@@ -41,7 +41,7 @@ public class CronotermMessage extends PTPMessage implements MessageInterface {
 	 * Ritorna la temperatura di set point.
 	 */
 	public double getSetPoint() {
-		return (Byte1 & 0xFF) + (Byte2 & 0x0F) / 16.0;
+		return (Byte1 & 0xFF) + (Byte2 & 0x0F) / 10.0;
 	}
 	
 	/**

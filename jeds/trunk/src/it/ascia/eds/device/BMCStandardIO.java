@@ -26,19 +26,19 @@ import it.ascia.eds.msg.VariazioneIngressoMessage;
  */
 public class BMCStandardIO extends BMC {
 	/**
-	 * Numero di porte in ingresso
+	 * Numero di ingressi digitali.
 	 */
 	private int inPortsNum;
 	/**
-	 * Numero di porte in uscita
+	 * Numero di porte in uscita.
 	 */
 	private int outPortsNum;
 	/**
-	 * Ingressi
+	 * Ingressi.
 	 */
 	private boolean[] inPorts;
 	/**
-	 * Uscite
+	 * Uscite.
 	 */
 	private boolean[] outPorts;
 	/**
@@ -47,7 +47,7 @@ public class BMCStandardIO extends BMC {
 	private boolean[] dirty;
 	
 	/**
-	 * Costruttore
+	 * Costruttore.
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
 	 */
@@ -193,8 +193,7 @@ public class BMCStandardIO extends BMC {
 	
 	public String getInfo() {
 		return getName() + ": BMC Standard I/O (modello " + model + ") con " + 
-			inPortsNum + " porte di input e " + outPortsNum + " porte di " +
-			"output";
+			inPortsNum + " ingressi e " + outPortsNum + " uscite digitali";
 	}
 	
 	/**
@@ -241,10 +240,24 @@ public class BMCStandardIO extends BMC {
 	 	}
 	}
 
+	/**
+	 * Ritorna true se almeno un dato e' contrassegnato come "dirty".
+	 */
+	public boolean hasDirtyCache() {
+		boolean retval = false;
+		for (int i = 0; (i < outPortsNum) && !retval; i++) {
+			retval = retval || dirty[i];
+		}
+		return retval;
+	}
+	
 	public String getStatus(String port, String busName) {
 		String retval = "";
 		int i;
 		String compactName = busName + "." + getAddress();
+		if (hasDirtyCache()) {
+			updateStatus();
+		}
 		for (i = 0; i < inPortsNum; i++) {
 			if (port.equals("*") || port.equals(getInputCompactName(i))) {
 				retval += compactName + ":" + getInputCompactName(i) + "=" + 

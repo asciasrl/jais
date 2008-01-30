@@ -216,20 +216,7 @@ public class BMCDimmer extends BMC {
 	 		} // Se ci sono messaggi legati
 	 	}
 	}
-	
-	public String getStatus(String port, String busName) {
-		int i;
-		String retval = "";
-		String compactName = busName + "." + getAddress();
-		for (i = 0; i < outPortsNum; i++) {
-			if (port.equals("*") || port.equals(getOutputCompactName(i))) {
-				retval += compactName + ":" + getOutputCompactName(i) + "=" +
-					outPorts[i] + "\n";
-			}
-		}
-		return retval;
-	}
-	
+		
 	public void updateStatus() {
 		PTPRequest m;
 		// Il protocollo permette di scegliere più uscite. Qui chiediamo solo le
@@ -238,6 +225,34 @@ public class BMCDimmer extends BMC {
 				3);
 		bus.sendMessage(m);
 	}
+
+	/**
+	 * Ritorna true se almeno un dato e' contrassegnato come "dirty".
+	 */
+	public boolean hasDirtyCache() {
+		boolean retval = false;
+		for (int i = 0; (i < outPortsNum) && !retval; i++) {
+			retval = retval || dirty[i];
+		}
+		return retval;
+	}
+
+	public String getStatus(String port, String busName) {
+		int i;
+		String retval = "";
+		String compactName = busName + "." + getAddress();
+		if (hasDirtyCache()) {
+			updateStatus();
+		}
+		for (i = 0; i < outPortsNum; i++) {
+			if (port.equals("*") || port.equals(getOutputCompactName(i))) {
+				retval += compactName + ":" + getOutputCompactName(i) + "=" +
+					outPorts[i] + "\n";
+			}
+		}
+		return retval;
+	}
+
 	
 	/**
 	 * Manda un messaggio per impostare un canale del dimmer.
@@ -310,7 +325,7 @@ public class BMCDimmer extends BMC {
 	public int getOutPortsNumber() {
 		return outPortsNum;
 	}
-
+	
 	/**
 	 * Imposta la porta di un dimmer.
 	 * 

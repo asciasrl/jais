@@ -197,19 +197,6 @@ public class BMCStandardIO extends BMC {
 	}
 	
 	/**
-	 * Aggiorna la rappresentazione interna delle porte.
-	 * 
-	 * Manda un messaggio al BMC mettendo come mittente il bmcComputer. Quando 
-	 * arrivera' la risposta, receiveMessage() aggiornera' le informazioni.
-	 */
-	public void updateStatus() {
-		PTPRequest m;
-		m = new RichiestaStatoMessage(getAddress(), bus.getBMCComputerAddress(),
-				0);
-		bus.sendMessage(m);
-	}
-	
-	/**
 	 * Stampa una descrizione dello stato del BMC.
 	 */
 	public void printStatus() {

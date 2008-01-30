@@ -8,6 +8,7 @@ import java.util.Vector;
 import it.ascia.eds.Bus;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.Message;
+import it.ascia.eds.msg.RispostaStatoMessage;
 
 /**
  * Un BMC con porte di input + 1 a infrarossi.
@@ -24,11 +25,11 @@ public class BMCIR extends BMC {
 	/**
 	 * Numero di porte in ingresso
 	 */
-	private int inPortsNum;
+	private final int inPortsNum = 8;
 	/**
 	 * Ingressi
 	 */
-	Vector inPorts;
+	boolean inPorts[];
 	/**
 	 * Ingresso IR
 	 */
@@ -45,15 +46,11 @@ public class BMCIR extends BMC {
 		case 41:
 		case 61:
 		case 81:
-			inPortsNum = 8;
 			break;
 		default: // This should not happen(TM)
 			System.err.println("Errore: modello di BMCIR sconosciuto:" + model);
-			inPortsNum = 0;
 		}
-		if (inPortsNum > 0) {
-			inPorts = new Vector(inPortsNum);
-		}
+		inPorts = new boolean[inPortsNum];
 	}
 	
 	/* (non-Javadoc)
@@ -64,21 +61,41 @@ public class BMCIR extends BMC {
 	}
 	
 	public void messageSent(Message m) {
-		// TODO
+		switch (m.getMessageType()) {
+		case Message.MSG_RISPOSTA_STATO: {
+			RispostaStatoMessage r;
+			r = (RispostaStatoMessage)m;
+			// Di questo messaggio ci interessano solo gli ingressi.
+			boolean temp[];
+			int i;
+			temp = r.getInputs();
+			for (i = 0; i < inPortsNum; i++) {
+				inPorts[i] = temp[i];
+			}
+		}
+		break;
+		}
 	}
 	
 	public String getInfo() {
 		return getName() + ": BMC IR (modello " + model + ") con " + 
 			inPortsNum + " porte di input";
 	}
-	
-	public void updateStatus() {
-		System.err.println("updateStatus non implementato su BMCIR");
-	}
 
+	// Attenzione: chiama sempre updateStatus() !
 	public String getStatus(String port, String busName) {
-		// TODO
-		return name;
+		String retval = "";
+		int i;
+		String compactName = busName + "." + getAddress();
+		updateStatus();
+		for (i = 0; i < inPortsNum; i++) {
+			if (port.equals("*") || port.equals(getInputCompactName(i))) {
+				retval += compactName + ":" + getInputCompactName(i) + "=" + 
+					(inPorts[i]? "ON" : "OFF") + "\n";
+			}
+		}
+	 	return retval;
+	
 	}
 	
 	/**

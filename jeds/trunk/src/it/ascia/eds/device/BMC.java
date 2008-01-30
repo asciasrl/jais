@@ -12,6 +12,8 @@ import java.util.Vector;
 
 import it.ascia.eds.*;
 import it.ascia.eds.msg.Message;
+import it.ascia.eds.msg.PTPRequest;
+import it.ascia.eds.msg.RichiestaStatoMessage;
 
 /**
  * Un BMC.
@@ -215,8 +217,15 @@ public abstract class BMC implements Device {
 	 * 
 	 * Manda un messaggio al BMC mettendo come mittente il bmcComputer. Quando 
 	 * arrivera' la risposta, receiveMessage() aggiornera' le informazioni.
+	 * 
+	 * Il metodo di default manda un RichiestaStatoMessage per BMC.
 	 */
-	public abstract void updateStatus();
+	public void updateStatus() {
+		PTPRequest m;
+		m = new RichiestaStatoMessage(getAddress(), bus.getBMCComputerAddress(),
+				0);
+		bus.sendMessage(m);
+	}
 	
 	/**
 	 * Ritorna il numero del primo ingresso.

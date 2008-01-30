@@ -62,6 +62,12 @@ implements MessageInterface {
 	 */
 	public final static int MSG_CAMBIO_VELOCITA = 27;
 	/**
+	 * Apertura/chiusura programmazione.
+	 * 
+	 * @see ProgrammazioneMessage
+	 */
+	public final static int MSG_PROGRAMMAZIONE = 28;
+	/**
 	 * Richiesta ingresso IR. (?)
 	 */
 	public final static int MSG_RICHIESTA_INGRESSO_IR = 39;

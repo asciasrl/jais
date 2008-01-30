@@ -8,6 +8,9 @@ import java.util.Vector;
 import it.ascia.eds.Bus;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.Message;
+import it.ascia.eds.msg.PTPRequest;
+import it.ascia.eds.msg.RichiestaStatoMessage;
+import it.ascia.eds.msg.RispostaStatoMessage;
 
 /**
  * Una centralina scenari.
@@ -17,15 +20,22 @@ import it.ascia.eds.msg.Message;
  * @author arrigo
  */
 public class BMCScenarioManager extends BMC {
-
 	/**
-	 * Numero di porte in ingresso
+	 * Numero ingressi digitali.
 	 */
 	private int inPortsNum;
 	/**
-	 * Ingressi
+	 * Numero di porte in uscita (sempre 8).
 	 */
-	Vector inPorts;
+	private final int outPortsNum = 8;
+	/**
+	 * Ingressi.
+	 */
+	boolean inPorts[];
+	/**
+	 * Uscite.
+	 */
+	private boolean outPorts[];
 	
 	/**
 	 * Costruttore
@@ -53,8 +63,9 @@ public class BMCScenarioManager extends BMC {
 			inPortsNum = 0;
 		}
 		if (inPortsNum > 0) {
-			inPorts = new Vector(inPortsNum);
+			inPorts = new boolean[inPortsNum];
 		}
+		outPorts = new boolean[outPortsNum];
 	}
 	
 	public void messageReceived(Message m) {
@@ -62,22 +73,58 @@ public class BMCScenarioManager extends BMC {
 	}
 	
 	public void messageSent(Message m) {
-		// TODO
+		switch (m.getMessageType()) {
+		case Message.MSG_RISPOSTA_STATO: {
+			RispostaStatoMessage r;
+			r = (RispostaStatoMessage)m;
+			// Il RispostaStatoMessage da' sempre 8 valori. Dobbiamo
+			// prendere solo quelli effettivamente presenti sul BMC
+			boolean temp[];
+			int i;
+			temp = r.getOutputs();
+			for (i = 0; i < outPortsNum; i++) {
+				outPorts[i] = temp[i];
+			}
+			temp = r.getInputs();
+			for (i = 0; i < inPortsNum; i++) {
+				inPorts[i] = temp[i];
+			}
+		}
+		break;
+		}
 	}
 	
 	public String getInfo() {
 		return getName() + ": BMC centralina scenari (modello " + model + ")" +
-			" con " + inPortsNum + " porte di input";
+			" con " + inPortsNum + " ingressi digitali";
 	}
 
 	public void updateStatus() {
-		System.err.println("updateStatus non implementato su " +
-				"BMCScenarioManager");
+		PTPRequest m;
+		m = new RichiestaStatoMessage(getAddress(), bus.getBMCComputerAddress(),
+				0);
+		bus.sendMessage(m);
 	}
 
+	// Attenzione: chiama sempre updateStatus() !
 	public String getStatus(String port, String busName) {
-		// TODO
-		return name;
+		String retval = "";
+		int i;
+		String compactName = busName + "." + getAddress();
+		updateStatus();
+		for (i = 0; i < inPortsNum; i++) {
+			if (port.equals("*") || port.equals(getInputCompactName(i))) {
+				retval += compactName + ":" + getInputCompactName(i) + "=" + 
+					(inPorts[i]? "ON" : "OFF") + "\n";
+			}
+		}
+	 	for (i = 0; i < outPortsNum; i++) {
+	 		if (port.equals("*") || port.equals(getOutputCompactName(i))) {
+	 			retval += compactName + ":" + getOutputCompactName(i) + "=" + 
+	 				(outPorts[i]? "ON" : "OFF") + "\n";
+	 		}
+		}
+	 	return retval;
 	}
 	
 	public int getFirstInputPortNumber() {

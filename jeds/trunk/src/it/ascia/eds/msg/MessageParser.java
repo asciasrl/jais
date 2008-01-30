@@ -117,6 +117,8 @@ public class MessageParser {
 			return new RispostaStatoMessage(message);
 		case Message.MSG_CAMBIO_VELOCITA: 
 			return new CambioVelocitaMessage(message);
+		case Message.MSG_PROGRAMMAZIONE:
+			return new ProgrammazioneMessage(message);
 		case Message.MSG_RICHIESTA_INGRESSO_IR: 
 			return new RichiestaIngressoIRMessage(message);
 		case Message.MSG_RISPOSTA_INGRESSO_IR: 
@@ -140,6 +142,7 @@ public class MessageParser {
 		default: 
 			System.err.println("Messaggio di tipo sconosciuto: " + 
 				message[3]);
+			dumpBuffer();
 			return null;
 		}
 	}

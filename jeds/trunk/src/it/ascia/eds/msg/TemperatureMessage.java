@@ -42,7 +42,7 @@ public class TemperatureMessage	extends PTPMessage implements MessageInterface {
 	 * Ritorna la temperatura.
 	 */
 	public double getTemperature() {
-		return (Byte1 & 0xff) + ((Byte2 & 0xF0) >> 4) / 16.0;
+		return (Byte1 & 0xff) + ((Byte2 & 0xF0) >> 4) / 10.0;
 	}
 	
 	/**

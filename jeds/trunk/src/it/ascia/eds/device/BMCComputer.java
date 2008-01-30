@@ -229,8 +229,9 @@ public class BMCComputer extends BMC {
 		System.err.println("updateStatus non implementato su BMCComputer.");
 	}
 
+	// Niente da dichiarare.
 	public String getStatus(String port, String busName) {
-		return "All right.";
+		return "";
 	}
 
 	/**

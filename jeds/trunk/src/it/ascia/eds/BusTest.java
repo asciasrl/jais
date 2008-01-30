@@ -156,6 +156,7 @@ public class BusTest {
 	 */
 	public static void main(String[] args) {
 	    String defaultPort = "ascia.homeip.net";
+		// String defaultPort = "/dev/ttyUSB0";
  		stdin = new BufferedReader(new InputStreamReader(System.in));
 		ConfigurationFile cfgFile = null;
 	 	if (args.length > 0) {
@@ -163,6 +164,7 @@ public class BusTest {
 		}
 	 	try {
 	 		bus = new TCPSerialBus(defaultPort, 2001);
+	 		// bus = new SerialBus(defaultPort);
 	 	} catch (EDSException e) {
 	 		System.err.println(e.getMessage());
 	 		System.exit(-1);

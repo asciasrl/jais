@@ -99,13 +99,6 @@ public class BMCScenarioManager extends BMC {
 			" con " + inPortsNum + " ingressi digitali";
 	}
 
-	public void updateStatus() {
-		PTPRequest m;
-		m = new RichiestaStatoMessage(getAddress(), bus.getBMCComputerAddress(),
-				0);
-		bus.sendMessage(m);
-	}
-
 	// Attenzione: chiama sempre updateStatus() !
 	public String getStatus(String port, String busName) {
 		String retval = "";

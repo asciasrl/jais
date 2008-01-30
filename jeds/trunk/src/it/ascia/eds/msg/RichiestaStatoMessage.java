@@ -1,5 +1,11 @@
+/**
+ * Copyright (C) 2008 ASCIA S.R.L.
+ */
 package it.ascia.eds.msg;
 
+/**
+ * Messaggio di richiesta stato.
+ */
 public class RichiestaStatoMessage extends PTPRequest
 	implements MessageInterface {
 

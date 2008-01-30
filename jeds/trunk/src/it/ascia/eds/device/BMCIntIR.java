@@ -63,13 +63,6 @@ public class BMCIntIR extends BMC {
 		return getName() + ": BMC Int IR (modello " + model + ")";
 	}
 
-	public void updateStatus() {
-		PTPRequest m;
-		m = new RichiestaStatoMessage(getAddress(), bus.getBMCComputerAddress(),
-				0);
-		bus.sendMessage(m);
-	}
-
 	public String getStatus(String port, String busName) { // TODO
 		String compactName = busName + "." + getAddress();
 		return compactName + ":" + getInputCompactName(0) +

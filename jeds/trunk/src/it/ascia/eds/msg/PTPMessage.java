@@ -17,7 +17,7 @@ public abstract class PTPMessage extends Message {
 		return 4;
 	}
 	
-	public boolean isBroadcast() {
+	public final boolean isBroadcast() {
 		return false;
 	}
 	

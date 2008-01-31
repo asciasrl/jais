@@ -5,6 +5,7 @@ package it.ascia.eds.device;
 
 import java.util.*;
 
+import it.ascia.eds.msg.BroadcastMessage;
 import it.ascia.eds.msg.Message;
 import it.ascia.eds.msg.PTPMessage;
 import it.ascia.eds.msg.PTPRequest;
@@ -80,7 +81,7 @@ public class BMCComputer extends BMC {
 				RispostaModelloMessage risposta = (RispostaModelloMessage) ptpm;
 				try {
 					BMC.createBMC(risposta.getSender(), risposta.getModello(),
-							null, bus);
+							null, bus, true);
 				} catch (EDSException e) {
 				// Se il device e' gia' sul bus, non e' un errore.
 				}
@@ -149,6 +150,23 @@ public class BMCComputer extends BMC {
     }
 	
 	/**
+	 * Invia un messaggio broadcast.
+	 * 
+	 * <p>Gli header vengono ri-generati ad ogni invio.</p>
+	 */
+	private void sendBroadcastMessage(BroadcastMessage m) {
+		int tries = m.getSendTries();
+		for (int i = 0; i < tries; i++) {
+			m.randomizeHeaders();
+			try {
+				Thread.sleep(bus.WAIT_RETRIES * bus.PING_WAIT);
+			} catch (InterruptedException e) {
+			}
+			bus.write(m);
+		}
+	}
+	
+	/**
 	 * Invia un messaggio sul bus.
 	 * 
 	 * Se il messaggio richiede una risposta, questa viene attesa seguendo i
@@ -159,9 +177,8 @@ public class BMCComputer extends BMC {
 	 */
 	public boolean sendMessage(Message m) {
 		if (m.isBroadcast()) {
-			// TODO
-			System.err.println("Invio di messaggi broadcast non supportato.");
-			return false;
+			sendBroadcastMessage((BroadcastMessage) m);
+			return true;
 		} else { 
 			// E' un PTPMessage
 			PTPMessage ptpm = (PTPMessage) m;
@@ -226,7 +243,7 @@ public class BMCComputer extends BMC {
     }
 
 	public void updateStatus() {
-		System.err.println("updateStatus non implementato su BMCComputer.");
+		logger.error("updateStatus non implementato su BMCComputer.");
 	}
 
 	// Niente da dichiarare.

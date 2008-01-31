@@ -12,17 +12,42 @@ package it.ascia.eds.msg;
  */
 public class RispostaAssociazioneUscitaMessage extends PTPMessage {
 
-	/* Da scrivere se serve
-	public RispostaAssociazioneUscitaMessage(int d, int m, int Modello, int Versione) {
-		Destinatario = d & 0xFF;
-		Mittente = m & 0xFF;
-		TipoMessaggio = 1;
-		Byte1 = Modello & 0xFF;
-		Byte2 = Versione & 0xFF;
-	} */
-
+	/**
+	 * Costruisce il messaggio a partire dai dati ricevuti.
+	 */
 	public RispostaAssociazioneUscitaMessage(int[] message) {
 		parseMessage(message);
+	}
+	
+	/**
+	 * Costruisce il messaggio come risposta alla richiesta specificata.
+	 * 
+	 * @param m messaggio a cui rispondere.
+	 * @param velocita velocita' di risposta (0 - 15)
+	 * @param attivazione se non si parla di dimmer, indica se l'uscita viene
+	 * attivata o disattivata dal comando broadcast. Se si parla di dimmer,
+	 * questo parametro viene ignorato.
+	 * @param comandoBroadcast comando broadcast a cui l'uscita e' associata. Se
+	 * 0, indica che non c'e' associazione.
+	 */
+	public 
+		RispostaAssociazioneUscitaMessage(RichiestaAssociazioneUscitaMessage m,
+				int velocita, boolean attivazione, int comandoBroadcast) {
+		Destinatario = m.getSender();
+		Mittente = m.getRecipient();
+		TipoMessaggio = getMessageType();
+		Byte1 = (velocita & 0x0f) << 3 | m.getUscita();
+		// Il messaggio di richiesta puo' essere per un dimmer. In tal caso,
+		// ignoriamo il parametro "attivazione"
+		if (m.getCasella() > 3) { // E' un dimmer!
+			Byte2 = m.getCasella() << 5;
+		} else { // Non e' un dimmer
+			Byte2 = m.getCasella() << 6;
+			if (attivazione) {
+				Byte2 = Byte2 | 1 << 5;
+			}
+		}
+		Byte2 = Byte2 | (comandoBroadcast & 0x1f);
 	}
 
 	public String getTipoMessaggio() {

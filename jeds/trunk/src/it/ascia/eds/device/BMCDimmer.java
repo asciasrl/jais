@@ -28,11 +28,10 @@ import it.ascia.eds.msg.VariazioneIngressoMessage;
  * @author arrigo
  */
 public class BMCDimmer extends BMC {
-
 	/**
-	 * Numero di canali in uscita
+	 * Numero di uscite digitali.
 	 */
-	private int outPortsNum;
+	protected int outPortsNum;
 	/**
 	 * Uscite. Possono assumere un valore 0-100 oppure -1 (OFF).
 	 */
@@ -91,7 +90,7 @@ public class BMCDimmer extends BMC {
 			modelName = "0-10 V";
 		break;
 		default: // This should not happen(TM)
-			System.err.println("Errore: modello di BMCDimmer sconosciuto:" +
+			logger.error("Errore: modello di BMCDimmer sconosciuto:" +
 					model);
 			power = outPortsNum = 0;
 			modelName = "Dimmer sconosciuto";
@@ -115,7 +114,7 @@ public class BMCDimmer extends BMC {
 		ComandoBroadcastMessage bmsg;
 		VariazioneIngressoMessage vmsg;
 		int[] ports;
-//		System.out.println("Ricevuto un messaggio di tipo " + m.getTipoMessaggio());
+//		logger.debug("Ricevuto un messaggio di tipo " + m.getTipoMessaggio());
 		switch (m.getMessageType()) {
 		case Message.MSG_COMANDO_USCITA_DIMMER:
 			// L'attuazione viene richiesta, non sappiamo se sara' 
@@ -176,7 +175,7 @@ public class BMCDimmer extends BMC {
 			ra = (RispostaAssociazioneUscitaMessage) m;
 			// Stiamo facendo un discovery delle associazioni.
 			if (ra.getComandoBroadcast() != 0) {
-				System.out.println("L'uscita " + ra.getUscita() + " " +
+				logger.debug("L'uscita " + ra.getUscita() + " " +
 					"e' legata al comando broadcast " + 
 					ra.getComandoBroadcast());
 				bindOutput(ra.getComandoBroadcast(), ra.getUscita());					
@@ -274,11 +273,11 @@ public class BMCDimmer extends BMC {
 						(value > 0)? 1 : 0);
 				retval = bus.sendMessage(m);
 			} else {
-				System.err.println("Valore non valido per canale dimmer: " +
+				logger.error("Valore non valido per canale dimmer: " +
 						value);
 			}
 		} else {
-			System.err.println("Porta dimmer non valida: " + output);
+			logger.error("Porta dimmer non valida: " + output);
 		}
 		return retval;
 	}
@@ -300,11 +299,11 @@ public class BMCDimmer extends BMC {
 						bus.getBMCComputerAddress(), output, value);
 				bus.sendMessage(m);
 			} else {
-				System.err.println("Valore non valido per canale dimmer: " +
+				logger.error("Valore non valido per canale dimmer: " +
 						value);
 			}
 		} else {
-			System.err.println("Porta dimmer non valida: " + output);
+			logger.error("Porta dimmer non valida: " + output);
 		}
 	}
 	
@@ -329,7 +328,7 @@ public class BMCDimmer extends BMC {
 	/**
 	 * Imposta la porta di un dimmer.
 	 * 
-	 * @port il nome compatto della porta.
+	 * @param port il nome compatto della porta.
 	 * @value un numero, un valore percentuale o "OFF"
 	 */
 	public void setPort(String port, String value) throws EDSException {

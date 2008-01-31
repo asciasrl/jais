@@ -10,11 +10,12 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- * @author arrigo
  * L'indirizzo di una o piu' porte su un bus.
  * 
- * Lo scopo di questa classe e' di risalire ai Device e alle porte indicate 
- * attraverso il protocollo di comunicazione di AUI.
+ * <p>Lo scopo di questa classe e' di risalire ai Device e alle porte indicate 
+ * attraverso il protocollo di comunicazione di AUI.</p>
+ * 
+ * @author arrigo
  */
 public class BusAddress {
 	/**
@@ -43,7 +44,6 @@ public class BusAddress {
 	 * 
 	 * @param address l'indirizzo indicato dall'interfaccia.
 	 * @param busName il nome del bus estratto dall'indirizzo.
-	 * @param bus il bus identificato da busName.
 	 * @param deviceAddress l'indirizzo del device estratto dall'indirizzo.
 	 * @param ports le porte del device interessate.
 	 */

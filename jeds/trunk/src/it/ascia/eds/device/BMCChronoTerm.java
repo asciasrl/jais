@@ -66,6 +66,19 @@ public class BMCChronoTerm extends BMC {
 	 */
 	public static final int STATE_OFF = 15;
 	/**
+	 * Nome compatto della porta "temperatura"
+	 */
+	private static final String port_temperature = "temp";
+	/**
+	 * Nome compatto della porta "set point".
+	 */
+	private static final String port_setpoint = "setPoint";
+	/**
+	 * Nome compatto della porta "stato del termostato".
+	 */
+	private static final String port_state = "state";
+	
+	/**
 	 * Ingresso termometro.
 	 */
 	double temperature;
@@ -102,7 +115,7 @@ public class BMCChronoTerm extends BMC {
 		case 127:
 			break;
 		default: // This should not happen(TM)
-			System.err.println("Errore: modello di BMCChronoTerm sconosciuto:" +
+			logger.error("Errore: modello di BMCChronoTerm sconosciuto:" +
 					model);
 		}
 		state = STATE_OFF; // Un valore qualunque
@@ -217,9 +230,17 @@ public class BMCChronoTerm extends BMC {
 		if (dirtyState || dirtyTemperature) {
 			updateTermStatus();
 		}
-		retval += compactName + ":" + "temp=" + temperature + "\r\n";
-		retval += compactName + ":" + "setPoint=" + setPoint + "\r\n";
-		retval += compactName + ":" + "state=" + state + "\r\n";
+		if (port.equals("*") || port.equals(port_temperature)) {
+			retval += compactName + ":" + port_temperature + "=" + temperature + 
+				"\r\n";
+		}
+		if (port.equals("*") || port.equals(port_setpoint)) {
+			retval += compactName + ":" + port_setpoint + "=" + setPoint + 
+				"\r\n";
+		}
+		if (port.equals("*") || port.equals(port_state)) {
+			retval += compactName + ":" + port_state + "=" + state + "\r\n";
+		}
 		return retval;
 	}
 

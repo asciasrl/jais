@@ -5,34 +5,44 @@ package it.ascia.eds.device;
 
 import it.ascia.eds.Bus;
 import it.ascia.eds.EDSException;
+import it.ascia.eds.msg.AcknowledgeMessage;
 import it.ascia.eds.msg.ComandoBroadcastMessage;
 import it.ascia.eds.msg.ComandoUscitaMessage;
 import it.ascia.eds.msg.Message;
-import it.ascia.eds.msg.PTPRequest;
+import it.ascia.eds.msg.RichiestaAssociazioneUscitaMessage;
 import it.ascia.eds.msg.RichiestaStatoMessage;
 import it.ascia.eds.msg.RispostaAssociazioneUscitaMessage;
+import it.ascia.eds.msg.RispostaModelloMessage;
 import it.ascia.eds.msg.RispostaStatoMessage;
 import it.ascia.eds.msg.VariazioneIngressoMessage;
 
 /**
- * Un BMC con porte di input e output.
+ * Un BMC con ingressi e uscite digitali, simulato o reale.
  * 
- * Modelli: 88, 8, 40, 60, 44.
+ * <p>Modelli: 88, 8, 40, 60, 44.</p>
  * 
- * Risponde ai messaggi di comando uscita, discovery, variazione ingresso,
- * attuazione broadcast.
+ * <p>Reaisce ai messaggi di comando uscita, discovery, variazione ingresso,
+ * attuazione broadcast. Se il BMC e' simulato, risponde anche a questi 
+ * messaggi.</p> 
  * 
  * @author arrigo
  */
 public class BMCStandardIO extends BMC {
 	/**
+	 * Numero di uscite digitali.
+	 */
+	protected int outPortsNum;
+	/**
+	 * Questo BMC è fisicamente presente sul bus?
+	 * 
+	 * <p>Se questo attributo è false, allora bisogna simulare l'esistenza di
+	 * questo BMC.</p>
+	 */
+	private boolean isReal;
+	/**
 	 * Numero di ingressi digitali.
 	 */
 	private int inPortsNum;
-	/**
-	 * Numero di porte in uscita.
-	 */
-	private int outPortsNum;
 	/**
 	 * Ingressi.
 	 */
@@ -48,36 +58,19 @@ public class BMCStandardIO extends BMC {
 	
 	/**
 	 * Costruttore.
+	 * 
+	 * <p>Il BMC funzionera' come la controparte virtuale di un BMC reale.
+	 * Per renderlo un BMC simulato bisogna chiamare il metodo 
+	 * {@link makeSimulated}.</p>
+	 * 
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
 	 */
 	public BMCStandardIO(int address, int model, Bus bus, String name) {
 		super(address, model, bus, name);
-		switch(model) {
-		case 88:
-			inPortsNum = outPortsNum = 8;
-			break;
-		case 8:
-			inPortsNum = 0;
-			outPortsNum = 8;
-			break;
-		case 40:
-			inPortsNum = 4;
-			outPortsNum = 0;
-			break;
-		case 60:
-			inPortsNum = 6;
-			outPortsNum = 0;
-			break;
-		case 44:
-			inPortsNum = 4;
-			outPortsNum = 4;
-		break;
-		default: // This should not happen(TM)
-			System.err.println("Errore: modello di BMCStandardIO sconosciuto:" +
-					model);
-			inPortsNum = outPortsNum = 0;
-		}
+		this.isReal = true; // fino a prova contraria!
+		inPortsNum = getInPortsNumber();
+		outPortsNum = getOutPortsNumber();
 		if (inPortsNum > 0) {
 			inPorts = new boolean[inPortsNum];
 		}
@@ -85,17 +78,28 @@ public class BMCStandardIO extends BMC {
 			outPorts = new boolean[outPortsNum];
 			dirty = new boolean[outPortsNum];
 		}
+		for (int i = 0; i < outPortsNum; i++) {
+			dirty[i] = isReal;
+		}
 	}
 	
 	public void messageReceived(Message m) {
 		switch (m.getMessageType()) {
 		case Message.MSG_COMANDO_USCITA: {
-			// L'attuazione viene richiesta, non sappiamo se sara' 
-			// effettuata.
 			ComandoUscitaMessage cmd = (ComandoUscitaMessage) m;
 			int uscita = cmd.getOutputPortNumber();
 			outPorts[uscita] = cmd.isActivation();
-			dirty[uscita] = true;
+			if (isReal) {
+				// L'attuazione viene richiesta, non sappiamo se sara' 
+				// effettuata.
+				dirty[uscita] = true;
+			} else {
+				// Siamo noi che decidiamo: mandiamo l'ack.
+				logger.debug("Impostata la porta " + uscita + " a " +
+						cmd.isActivation());
+				AcknowledgeMessage ack = new AcknowledgeMessage(cmd);
+				bus.sendMessage(ack);
+			}
 		}
 		break;
 		case Message.MSG_COMANDO_BROADCAST: {
@@ -104,50 +108,117 @@ public class BMCStandardIO extends BMC {
 			int ports[] = getBoundOutputs(bmsg.getCommandNumber());
 			if (ports.length > 0) {
 				for (int i = 0; i < ports.length; i++) {
-					dirty[ports[i]] = true;
-				}
-			}
+					if (isReal) {
+						// Non sappiamo bene che succede
+						dirty[ports[i]] = true;
+					} else {
+						// Decidiamo noi che cosa succede
+						outPorts[ports[i]] ^= true;
+						logger.debug("La porta " + ports[i] +
+						" risponde a un comando broadcast e diventa: " + 
+							outPorts[ports[i]]);
+					}
+				} // cicla sulle porte interessate
+			} // if ports.length > 0
 		}
 		break;
 		case Message.MSG_VARIAZIONE_INGRESSO: {
 			// Qualcuno ha premuto un interruttore, e la cosa ci interessa.
 			VariazioneIngressoMessage vmsg = (VariazioneIngressoMessage) m;
-			dirty[vmsg.getOutputNumber()] = true;
+			int port = vmsg.getOutputNumber();
+			if (isReal) {
+				// Non sappiamo che succede
+				dirty[port] = true;
+			} else {
+				// Decidiamo noi cosa succede
+				outPorts[port] ^= true;
+				logger.debug("La porta " + port +
+					" risponde alla variazione di un ingresso e diventa: " +
+					outPorts[port]);
+			}
 		}
 		break;
+		case Message.MSG_RICHIESTA_MODELLO: {
+			// Ci chiedono chi siamo...
+			if (!isReal) {
+				// ...dobbiamo rispondere!
+				RispostaModelloMessage answer;
+				answer = new RispostaModelloMessage(m.getSender(), getAddress(),
+						model, 1);
+				bus.sendMessage(answer);
+			}
+		}
+		break;
+		case Message.MSG_RICHIESTA_ASSOCIAZIONE_BROADCAST: {
+			// Ci chiedono se abbiamo uscite associate a comandi broadcast...
+			if (!isReal) {
+				// ...dobbiamo rispondere!
+				RichiestaAssociazioneUscitaMessage question;
+				RispostaAssociazioneUscitaMessage answer;
+				int messages[], message, casella;
+				question = (RichiestaAssociazioneUscitaMessage) m;
+				messages = getBoundMessages(question.getUscita());
+				// Usiamo la casella come indice dell'array
+				casella = question.getCasella();
+				if (casella < messages.length) {
+					message = messages[casella];
+				} else { // Diciamo che non c'e' binding
+					message = 0;
+				}
+				// FIXME: diciamo sempre che sono attivazioni.
+				answer = new RispostaAssociazioneUscitaMessage(question,
+						0, true, message);
+				bus.sendMessage(answer);
+			}
+		}
+		break;
+		case Message.MSG_RICHIESTA_STATO:
+			// Ci chiedono il nostro stato...
+			if (!isReal) {
+				// ...dobbiamo rispondere!
+				RichiestaStatoMessage question =
+					(RichiestaStatoMessage) m;
+				RispostaStatoMessage answer;
+				answer = new RispostaStatoMessage(question, outPorts, inPorts);
+				bus.write(answer);
+			}
 		} // switch (m.getMessageType())
 	}
 	
 	public void messageSent(Message m) {
-		switch (m.getMessageType()) {
-		case Message.MSG_RISPOSTA_STATO: {
-			RispostaStatoMessage r;
-			r = (RispostaStatoMessage)m;
-			// Il RispostaStatoMessage da' sempre 8 valori. Dobbiamo
-			// prendere solo quelli effettivamente presenti sul BMC
-			boolean temp[];
-			int i;
-			temp = r.getOutputs();
-			for (i = 0; i < outPortsNum; i++) {
-				outPorts[i] = temp[i];
-				dirty[i] = false;
+		// Il messaggio inviato ci interessa solo se non siamo stati noi a 
+		// generarlo, cioe' se il BMC e' reale.
+		if (isReal) {
+			switch (m.getMessageType()) {
+			case Message.MSG_RISPOSTA_STATO: {
+				RispostaStatoMessage r;
+				r = (RispostaStatoMessage)m;
+				// Il RispostaStatoMessage da' sempre 8 valori. Dobbiamo
+				// prendere solo quelli effettivamente presenti sul BMC
+				boolean temp[];
+				int i;
+				temp = r.getOutputs();
+				for (i = 0; i < outPortsNum; i++) {
+					outPorts[i] = temp[i];
+					dirty[i] = false;
+				}
+				temp = r.getInputs();
+				for (i = 0; i < inPortsNum; i++) {
+					inPorts[i] = temp[i];
+				}
 			}
-			temp = r.getInputs();
-			for (i = 0; i < inPortsNum; i++) {
-				inPorts[i] = temp[i];
+			break;
+			case Message.MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST: {
+				// Stiamo facendo un discovery delle associazioni.
+				RispostaAssociazioneUscitaMessage r = 
+					(RispostaAssociazioneUscitaMessage) m;
+				if (r.getComandoBroadcast() != 0) {
+					bindOutput(r.getComandoBroadcast(), r.getUscita());
+				}
+			} 
+			break;
 			}
-		}
-		break;
-		case Message.MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST: {
-			// Stiamo facendo un discovery delle associazioni.
-			RispostaAssociazioneUscitaMessage r = 
-				(RispostaAssociazioneUscitaMessage) m;
-			if (r.getComandoBroadcast() != 0) {
-				bindOutput(r.getComandoBroadcast(), r.getUscita());
-			}
-		} 
-		break;
-		}
+		} // if isReal
 	}
 	
 	/**
@@ -171,7 +242,9 @@ public class BMCStandardIO extends BMC {
 	/**
 	 * Imposta il valore di un'uscita.
 	 * 
-	 * Manda un messaggio con mittente il BMCComputer.
+	 * <p>Se questo oggetto corrisponde a un BMC "vero", allora manda un 
+	 * messaggio con mittente il BMCComputer. Altrimenti, l'uscita viene
+	 * impostata direttamente.</p>
 	 *
 	 * @param port numero della porta
 	 * @param value valore (true: acceso)
@@ -181,12 +254,17 @@ public class BMCStandardIO extends BMC {
 		boolean retval = false;
 		int intValue = (value)? 1 : 0;
 		if ((port >= 0) && (port < outPortsNum)) {
-			ComandoUscitaMessage m;
-			m = new ComandoUscitaMessage(getAddress(),
-					bus.getBMCComputerAddress(), 0, port, 0, intValue);
-			retval = bus.sendMessage(m);
+			if (isReal) {
+				ComandoUscitaMessage m;
+				m = new ComandoUscitaMessage(getAddress(),
+						bus.getBMCComputerAddress(), 0, port, 0, intValue);
+				retval = bus.sendMessage(m);
+			} else { // The easy way
+				outPorts[port] = value;
+				retval = true;
+			}
 		} else {
-			System.err.println("Numero porta non valido: " + port);
+			logger.error("Numero porta non valido: " + port);
 		}
 		return retval;
 	}
@@ -263,9 +341,49 @@ public class BMCStandardIO extends BMC {
 	public int getFirstInputPortNumber() {
 		return 1;
 	}
+	
+	/**
+	 * Ritorna il numero di ingressi digitali, a partire dal modello.
+	 */
+	public int getInPortsNumber() {
+		switch(model) {
+		case 88:
+			return 8;
+		case 8:
+			return 0;
+		case 40:
+			return 4;
+		case 60:
+			return 6;
+		case 44:
+			return 4;
+		default: // This should not happen(TM)
+			logger.error("Errore: modello di BMCStandardIO sconosciuto:" +
+					model);
+			return 0;
+		}
+	}
 
+	/**
+	 * Ritorna il numero di uscite digitali a partire dal modello.
+	 */
 	public int getOutPortsNumber() {
-		return outPorts.length;
+		switch(model) {
+		case 88:
+			return 8;
+		case 8:
+			return 8;
+		case 40:
+			return 0;
+		case 60:
+			return 0;
+		case 44:
+			return 4;
+		default: // This should not happen(TM)
+			logger.error("Errore: modello di BMCStandardIO sconosciuto:" +
+					model);
+			return 0;
+		}
 	}
 
 	public void setPort(String port, String value) throws EDSException {
@@ -283,5 +401,20 @@ public class BMCStandardIO extends BMC {
 			throw new EDSException("Porta non valida: " + port);
 		}
 		setOutPort(portNumber, boolValue);
+	}
+	
+	/**
+	 * Cambia la modalita' di funzionamento del BMC in "simulazione".
+	 * 
+	 * <p>Dopo la chiamata di questo metodo, il BMC si comportera' come un BMC
+	 * simulato, cioe' rispondera' "di propria iniziativa" ai messaggi che
+	 * riceve.</p>
+	 */
+	public void makeSimulated() {
+		isReal = false;
+		// Togliamo tutti gli eventuali "dirty"
+		for (int i = 0; i < dirty.length; i++) {
+			dirty[i] = false;
+		}
 	}
 }

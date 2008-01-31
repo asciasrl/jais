@@ -3,37 +3,43 @@
  */
 package it.ascia.eds;
 
+import org.apache.log4j.Logger;
+
 import it.ascia.eds.device.Device;
 
 /**
- * @author arrigo
- *
  * Il controller di uno o piu' bus.
  * 
- * Il suo lavoro e' di rispondere ai comandi di AUI, attraverso il metodo
- * receiveRequest().
+ * <p>Il suo lavoro e' di rispondere ai comandi di AUI, attraverso il metodo
+ * receiveRequest().</p>
+ * 
+ * @author arrigo
  */
 public class BusController {
 	/**
 	 * Il nostro interprete di indirizzi.
 	 */
-	BusAddressParser addressParser;
+	private BusAddressParser addressParser;
 	/**
 	 * Il nostro bus.
 	 */
-	Bus bus;
+	private Bus bus;
 	/**
 	 * Il nome del nostro bus.
 	 */
-	String busName;
+	private String busName;
+	/**
+	 * Il nostro logger.
+	 */
+	private Logger logger;
 	
 	/**
 	 * Costruttore.
 	 * 
 	 * @param bus il bus che controlliamo.
-	 * @param busName il nome del bus che controlliamo.
 	 */
 	public BusController(Bus bus) {
+		this.logger = Logger.getLogger(getClass());
 		addressParser = new BusAddressParser();
 		addressParser.registerBus(bus, 0);
 		this.bus = bus;
@@ -45,7 +51,7 @@ public class BusController {
 	 */
 	public String receiveRequest(String command, String name, String value) {
 		String retval;
-		System.out.println("Comando: \"" + command + "\" \"" + name + "\" \"" +
+		logger.trace("Comando: \"" + command + "\" \"" + name + "\" \"" +
 				value + "\"");
 		if (command.equals("get")) {
 			// Comando "get"

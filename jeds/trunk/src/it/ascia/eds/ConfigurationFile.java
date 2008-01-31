@@ -12,6 +12,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -43,11 +44,27 @@ public class ConfigurationFile {
 	 */
 	private String systemName;
 	/**
+	 * Il nostro logger.
+	 */
+	private Logger logger;
+	
+	/**
+	 * Costruttore.
+	 * @param fileName the configuration file name.
+	 */
+	public ConfigurationFile(String fileName) throws EDSException {
+		this.fileName = fileName;
+		logger = Logger.getLogger(getClass());
+		parse();
+	}
+	
+	/**
 	 * Ritorna il nome del sistema domotico.
 	 */
 	public String getSystemName() {
 		return systemName;
 	}
+	
 	/**
 	 * Effettua una prima verifica del documento interpretato.
 	 * 
@@ -72,6 +89,7 @@ public class ConfigurationFile {
 		// Tag <dispositivo> (sono tanti!)
 		dispositivoElements = element.getElementsByTagName("dispositivo");
 	}
+	
 	/**
 	 * Effettua il parsing XML del file di configurazione.
 	 * 
@@ -100,13 +118,6 @@ public class ConfigurationFile {
 			throw new EDSException("Errore di I/O durante il parsing: " +
 					e.getMessage());
 		}
-	}
-	/**
-	 * @param fileName the configuration file name.
-	 */
-	public ConfigurationFile(String fileName) throws EDSException {
-		this.fileName = fileName;
-		parse();
 	}
 	
 	/**
@@ -141,7 +152,7 @@ public class ConfigurationFile {
 				int address = getIntegerTagContent(dispositivoElement, 
 						"indirizzo"); 
 				int model = getIntegerTagContent(dispositivoElement, "modello");
-				bmc = BMC.createBMC(address, model, name, bus);
+				bmc = BMC.createBMC(address, model, name, bus, true);
 				if (bmc != null) {
 					int j;
 					NodeList lista;
@@ -168,15 +179,9 @@ public class ConfigurationFile {
 					}
 				} // if bmc != null
 			} catch (EDSException e) {
-				System.err.println("Durante la lettura del file di config.: " +
+				logger.error("Durante la lettura del file di config.: " +
 						e.getMessage());
 			}
 		} // for su tutti i dispositivi
-			// TODO:
-			// - crea oggetti per ciascun elemento del file di cfg
-			// - implementa un metodo di controllo se due oggetti BMC sono
-			//   operativamente uguali (indirizzo, modello)
-			// - gestisci la possibilità di aggiungere device al bus sia da cfg,
-			//   sia da discovery
 	}
 }

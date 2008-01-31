@@ -2,6 +2,8 @@ package it.ascia.eds.msg;
 
 import java.util.Date;
 
+import org.apache.log4j.Logger;
+
 /**
  * Decodifica i messaggi del protocollo EDS
  *  
@@ -22,7 +24,13 @@ public class MessageParser {
 
 	private Message message;
 
+	/**
+	 * Il nostro logger.
+	 */
+	private Logger logger;
+	
 	public MessageParser() {
+		logger = Logger.getLogger(getClass());
 		clear();
 	}
 
@@ -36,7 +44,7 @@ public class MessageParser {
 		s.append("BY2:0x"+Integer.toHexString(buff[5])+" ");
 		s.append("CHK:0x"+Integer.toHexString(buff[6])+" ");
 		s.append("ETX:0x"+Integer.toHexString(buff[7])+" ");
-		System.out.println((new Date()).toString() + " : " + s);
+		logger.debug(s);
 	}
 
 	/**
@@ -49,13 +57,13 @@ public class MessageParser {
 		if (ibuff >= 8) {
 			clear();
 		}
-		//System.out.println((new Date()).toString() + " : " + " ibuff="+ibuff+ " b = "+b);
+		//logger.warn("ibuff="+ibuff+ " b = "+b);
 		buff[ibuff++] = b;
 		// verifica che il primo byte sia Stx, altrimenti lo scarta
 		if (ibuff == 1) {
 			if (b != Stx) {
 				ibuff = 0;
-				System.out.println((new Date()).toString() + " : " + "Non Stx:"+b);
+				logger.warn("Non Stx:" + b);
 			}
 			return;		 
 		}
@@ -66,7 +74,7 @@ public class MessageParser {
 				chk = (chk + buff[i] & 0xFF) & 0xFF;
 			}
 			if (chk != b) {
-				System.out.println((new Date()).toString() + " : " + "Errore checksum");
+				logger.warn("Errore checksum");
 				dumpBuffer();
 				clear();
 				return;
@@ -140,7 +148,7 @@ public class MessageParser {
 		case Message.MSG_LETTURA_SET_POINT: 
 			return new CronotermMessage(message);
 		default: 
-			System.err.println("Messaggio di tipo sconosciuto: " + 
+			logger.error("Messaggio di tipo sconosciuto: " + 
 				message[3]);
 			dumpBuffer();
 			return null;

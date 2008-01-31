@@ -6,8 +6,6 @@ package it.ascia.eds.device;
 import it.ascia.eds.Bus;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.Message;
-import it.ascia.eds.msg.PTPRequest;
-import it.ascia.eds.msg.RichiestaStatoMessage;
 import it.ascia.eds.msg.RispostaStatoMessage;
 
 /**
@@ -32,7 +30,7 @@ public class BMCIntIR extends BMC {
 	public BMCIntIR(int address, int model, Bus bus, String name) {
 		super(address, model, bus, name);
 		if (model != 131) {
-			System.err.println("Errore: modello di BMC Int IR sconosciuto:" + 
+			logger.error("Errore: modello di BMC Int IR sconosciuto:" + 
 					model);
 		}
 	}

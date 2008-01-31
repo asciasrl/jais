@@ -14,6 +14,8 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.log4j.Logger;
+
 /**
  * Gestisce la comunicazione con il bus EDS attraverso un convertitore seriale-ethernet.
  * 
@@ -44,7 +46,14 @@ public class TCPSerialBus extends Bus {
 		 */
 		private TCPSerialBus bus;
 		/**
-		 * @param selector un Selector pronto a leggere, su cui è registrato _un_ SocketChannel.
+		 * Il nostro logger.
+		 */
+		private Logger logger;
+		/**
+		 * Costruttore.
+		 * 
+		 * @param selector un Selector pronto a leggere, su cui è registrato 
+		 * _un_ SocketChannel.
 		 * @param bus il bus da avvisare quando arrivano dati.
 		 * @param sock il SocketChannel *gia' registrato* sul selector
 		 */
@@ -53,12 +62,14 @@ public class TCPSerialBus extends Bus {
 			this.selector = selector;
 			this.bus = bus;
 			this.sock = sock;
+			logger = Logger.getLogger(getClass());
 		}
+		
 		/**
 		 * Qui si fa il lavoro sporco.
 		 * 
-		 * I dati vengono ricevuti dal SocketChannel vengono estratti e passati
-		 * al bus sotto forma di array di byte. 
+		 * <p>I dati vengono ricevuti dal SocketChannel vengono estratti e 
+		 * passati al bus sotto forma di array di byte.</p> 
 		 */
 		public void run() {
 			try {
@@ -73,11 +84,11 @@ public class TCPSerialBus extends Bus {
 					keys.clear();
 				}
 			} catch (IOException e) {
-				System.err.println("Errore durante l'attesa di dati da rete: " +
+				logger.error("Errore durante l'attesa di dati da rete: " +
 						e.getMessage());
 			}
 		}
-	}
+	} // Classe TCPSerialBusReader
 	
 	/**
 	 * Il nostro thread che aspetta i dati e ce li passa.
@@ -106,8 +117,8 @@ public class TCPSerialBus extends Bus {
     /**
      * Lock per la scrittura.
      * 
-     * Non ci dovrebbero essere problemi di threading, ma questa precauzione
-     * costa poco.
+     * <p>Non ci dovrebbero essere problemi di threading, ma questa precauzione
+     * costa poco.</p>
      */
     Lock writeLock;
     /**
@@ -178,7 +189,7 @@ public class TCPSerialBus extends Bus {
     			}
     		}
     	} catch (IOException e) {
-    		System.err.println("Errore durante l'invio di dati via rete: " +
+    		logger.error("Errore durante l'invio di dati via rete: " +
 				e.getMessage());
     	} finally {
     		writeLock.unlock();
@@ -212,12 +223,13 @@ public class TCPSerialBus extends Bus {
      * Chiude la connessione.
      */
     public void close() {
+    	logger.info("Chiusura bus...");
     	try {
     		readSelector.close();
     		writeSelector.close();
     		sock.close();
     	} catch (IOException e) {
-    		System.err.println("Errore durante la chiusura della connessione: " +
+    		logger.error("Errore durante la chiusura della connessione: " +
     				e.getMessage());
     	}
     }

@@ -13,20 +13,31 @@ package it.ascia.eds.msg;
  */
 public class AcknowledgeMessage extends PTPMessage {
 
-	public AcknowledgeMessage(byte d, byte m, byte b1, byte b2) {
-		Destinatario = d;
-		Mittente = m;
-		TipoMessaggio = getMessageType();
-		Byte1 = b1;
-		Byte2 = b2;
-	}
-
+	/**
+	 * Costruttore a partire dai dati di un messaggio ACK ricevuto.
+	 */
 	public AcknowledgeMessage(int[] message) {
 		parseMessage(message);
 	}
+	
+	/**
+	 * Costruttore a partire dal messaggio a cui rispondere.
+	 * 
+	 * Questo costruttore crea un messaggio di risposta a m.
+	 * 
+	 * @param m il messaggio a cui rispondere.
+	 */
+	public AcknowledgeMessage(PTPMessage m) {
+		int rawMessage[] = m.getRawMessage();
+		Destinatario = m.getSender();
+		Mittente = m.getRecipient();
+		TipoMessaggio = getMessageType();
+		Byte1 = rawMessage[4];
+		Byte2 = rawMessage[5];
+	}
 
 	public String getTipoMessaggio() {
-		return "Aknowledge";
+		return "Acknowledge";
 	}
 
 	public int getMessageType() {

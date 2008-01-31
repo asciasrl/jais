@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import it.ascia.eds.device.*;
 import it.ascia.eds.msg.*;
 
@@ -70,11 +72,16 @@ public abstract class Bus {
      * Il BMC "finto" che corrisponde a questo computer.
      */
     private BMCComputer bmcComputer;
+    /**
+     * Il nostro logger.
+     */
+    protected Logger logger;
     
     public Bus() {
         devices = new HashMap();
         bmcComputer = null;
 		mp = new MessageParser();
+		logger = Logger.getLogger(getClass());
     }
     
     /**
@@ -149,7 +156,7 @@ public abstract class Bus {
     				//mp.clear();
     			}
     		} catch (IOException e) {
-    			System.err.println("Errore di lettura: " + e.getMessage());
+    			logger.error("Errore di lettura: " + e.getMessage());
     		}
     	} // while hasData()
     }
@@ -170,7 +177,7 @@ public abstract class Bus {
     private void dispatchMessage(Message m) {
     	int rcpt = m.getRecipient();
     	int sender = m.getSender();
-    	// System.out.println("Messaggio da " + sender + " per " + rcpt);
+    	// logger.trace("Messaggio da " + sender + " per " + rcpt);
     	if (BroadcastMessage.class.isInstance(m)) { 
     		// Mandiamo il messaggio a tutti
     		Iterator it = devices.values().iterator();
@@ -184,18 +191,15 @@ public abstract class Bus {
     		if (bmc != null) {
     			bmc.messageReceived(m);
     		} else {
-    			/*System.err.println("Ricevuto un messaggio per il BMC " + 
-    					rcpt + " che non conosco:");
-    			System.err.println((new Date()).toString() + "\r\n" + m);*/
-    		}
+    			/*logger.error("Ricevuto un messaggio per il BMC " + 
+    					rcpt + " che non conosco:");*/    		}
     		// ...e al mittente
     		bmc = (Device)devices.get(new Integer(sender));
     		if (bmc != null) {
     			bmc.messageSent(m);
     		} else {
-    			/*System.err.println("Ricevuto un messaggio inviato dal BMC " + 
-    					rcpt + " che non conosco:");
-    			System.err.println((new Date()).toString() + "\r\n" + m);*/
+    			/*logger.error("Ricevuto un messaggio inviato dal BMC " + 
+    					rcpt + " che non conosco:");*/
     		}
     		// Lo mandiamo anche al BMCComputer, se non era per lui
     		if ((bmcComputer != null) && (rcpt != bmcComputer.getAddress())) { 
@@ -215,7 +219,7 @@ public abstract class Bus {
     	if (bmcComputer != null) {
     		return bmcComputer.sendMessage(m);
     	} else {
-    		System.err.println("Il bus non ha un BMCComputer!");
+    		logger.error("Il bus non ha un BMCComputer!");
     		return false;
     	}
     }

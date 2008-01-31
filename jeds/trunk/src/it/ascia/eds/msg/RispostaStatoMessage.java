@@ -1,13 +1,36 @@
+/**
+ * Copyright (C) 2008 ASCIA S.R.L.
+ */
 package it.ascia.eds.msg;
 
+/**
+ * Risposta lettura stato dispositivo.
+ */
 public class RispostaStatoMessage extends PTPMessage {
 
-	public RispostaStatoMessage(int d, int m, int Uscite, int Entrate) {
-		Destinatario = d & 0xFF;
-		Mittente = m & 0xFF;
-		TipoMessaggio = 26;
-		Byte1 = Uscite & 0xFF;
-		Byte2 = Entrate & 0xFF;
+	/**
+	 * Costruttore.
+	 * 
+	 * @param m messaggio a cui si risponde.
+	 * @param Uscite stato delle uscite.
+	 * @param Entrate stato degli ingressi.
+	 */
+	public RispostaStatoMessage(RichiestaStatoMessage m, boolean[] Uscite, 
+			boolean[] Entrate) {
+		Destinatario = m.getSender();
+		Mittente = m.getRecipient();
+		TipoMessaggio = getMessageType();
+		Byte1 = Byte2 = 0;
+		for (int i = 0; i < 8; i++) {
+			if ((i < Uscite.length) && Uscite[i]) {
+				Byte2 |= 1 << i;
+			}
+		}
+		for (int i = 0; i < 8; i++) {
+			if ((i < Entrate.length) && Entrate[i]) {
+				Byte2 |= 1 << i;
+			}
+		}
 	}
 
 	public RispostaStatoMessage(int[] message) {
@@ -38,7 +61,8 @@ public class RispostaStatoMessage extends PTPMessage {
 	/**
 	 * Ritorna lo stato degli ingressi.
 	 * 
-	 * @return un'array di 8 booleani, anche se il BMC ha meno porte. Gli elementi true sono attivi. 
+	 * @return un'array di 8 booleani, anche se il BMC ha meno porte. Gli 
+	 * elementi true sono attivi. 
 	 */
 	public boolean[] getInputs() {
 		boolean retval[];
@@ -54,7 +78,8 @@ public class RispostaStatoMessage extends PTPMessage {
 	/**
 	 * Ritorna lo stato delle uscite.
 	 * 
-	 * @return un'array di 8 booleani, anche se il BMC ha meno porte. Gli elementi true sono attivi. 
+	 * @return un'array di 8 booleani, anche se il BMC ha meno porte. Gli 
+	 * elementi true sono attivi. 
 	 */
 	public boolean[] getOutputs() {
 		boolean retval[];

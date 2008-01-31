@@ -12,14 +12,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @author arrigo
- *
  * Riceve le richieste di AUI e le manda al controller.
  * 
- * Le richieste vengono onorate solo se presentano i parametri "name" e "value". Altrimenti
- * vengono ignorate.
+ * <p>Le richieste vengono onorate solo se presentano i parametri "name" e "value". Altrimenti
+ * vengono ignorate.</p>
+ * 
+ * @author arrigo
  */
 public class AUIRequestServlet extends HttpServlet {
+	/**
+	 * Il nostro controller.
+	 */
 	private BusController controller;
 	/**
 	 * Costruttore.

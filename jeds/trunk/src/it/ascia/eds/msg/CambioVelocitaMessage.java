@@ -1,4 +1,9 @@
+/**
+ * Copyright (C) 2008 ASCIA S.R.L.
+ */
 package it.ascia.eds.msg;
+
+import it.ascia.eds.EDSException;
 
 import java.util.Random;
 
@@ -13,13 +18,11 @@ public class CambioVelocitaMessage extends BroadcastMessage
 
 	/**
 	 * 
-	 * @throws Exception
+	 * @throws EDSException
 	 */
 	public CambioVelocitaMessage(int Velocita)
-	  throws Exception {
-		Random r = new Random();
-		Destinatario = r.nextInt() & 0xFF;
-		Mittente = r.nextInt() & 0xFF;
+	  throws EDSException {
+		randomizeHeaders();
 		TipoMessaggio = 27;
 		Byte1 = (Velocita & 0x03); 
 		Byte2 = 0;

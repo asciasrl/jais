@@ -3,13 +3,9 @@
  */
 package it.ascia.eds.device;
 
-import java.util.Vector;
-
 import it.ascia.eds.Bus;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.Message;
-import it.ascia.eds.msg.PTPRequest;
-import it.ascia.eds.msg.RichiestaStatoMessage;
 import it.ascia.eds.msg.RispostaStatoMessage;
 
 /**
@@ -21,13 +17,13 @@ import it.ascia.eds.msg.RispostaStatoMessage;
  */
 public class BMCScenarioManager extends BMC {
 	/**
+	 * Numero di uscite digitali.
+	 */
+	protected int outPortsNum;
+	/**
 	 * Numero ingressi digitali.
 	 */
 	private int inPortsNum;
-	/**
-	 * Numero di porte in uscita (sempre 8).
-	 */
-	private final int outPortsNum = 8;
 	/**
 	 * Ingressi.
 	 */
@@ -58,13 +54,14 @@ public class BMCScenarioManager extends BMC {
 			inPortsNum = 8;
 			break;
 		default: // This should not happen(TM)
-			System.err.println("Errore: modello di centralina scenari " + 
+			logger.error("Errore: modello di centralina scenari " + 
 					"sconosciuto: " + model);
 			inPortsNum = 0;
 		}
 		if (inPortsNum > 0) {
 			inPorts = new boolean[inPortsNum];
 		}
+		outPortsNum = 8;
 		outPorts = new boolean[outPortsNum];
 	}
 	

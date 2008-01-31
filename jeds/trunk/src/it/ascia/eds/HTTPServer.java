@@ -3,6 +3,7 @@
  */
 package it.ascia.eds;
 
+import org.apache.log4j.Logger;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.servlet.Context;
@@ -10,14 +11,16 @@ import org.mortbay.jetty.servlet.DefaultServlet;
 import org.mortbay.jetty.servlet.ServletHolder;
 
 /**
- * @author arrigo
  *
  * Server HTTP che comunica con AUI.
  * 
- * I suoi compiti sono:
- * 
- *   * servire i file richiesti da AUI;
- *   * rispondere alle richieste di AUI.
+ * <p>I suoi compiti sono:</p>
+ * <ul>
+ *   <li>servire i file richiesti da AUI;</li>
+ *   <li>rispondere alle richieste di AUI.</li>
+ * </ul>
+ *   
+ * @author arrigo
  */
 public class HTTPServer {
 	/**
@@ -33,18 +36,24 @@ public class HTTPServer {
 	 */
 	private Server server;
 	/**
+	 * Il nostro logger.
+	 */
+	private Logger logger;
+	
+	/**
 	 * Costruttore.
 	 * 
 	 * @param port porta TCP su cui ascoltare.
 	 * @param auiDirectory directory contenente i file richiesti da AUI
 	 * 
-	 * @throws un'EDSException se qualcosa va storto.
+	 * @throws EDSException se qualcosa va storto.
 	 */
 	public HTTPServer(int port, BusController controller, String auiDirectory) 
 		throws EDSException {
 		ContextHandlerCollection contexts = new ContextHandlerCollection();
 		Context filesContext, requestsContext;
 		ServletHolder holder;
+		logger = Logger.getLogger(getClass());
 		server = new Server(port);
 		// La nostra AUIRequestServlet e il suo contesto.
 		auiRequestServlet = new AUIRequestServlet(controller);
@@ -69,10 +78,11 @@ public class HTTPServer {
 	 * Ferma il server.
 	 */
 	public void close() {
+		logger.info("Arresto server...");
 		try {
 			server.stop();
 		} catch (Exception e) {
-			System.err.println("Errore durante l'arresto del server: " +
+			logger.error("Errore durante l'arresto del server: " +
 					e.getMessage());
 		}
 	}

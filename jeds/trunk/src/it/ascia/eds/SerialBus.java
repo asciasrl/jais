@@ -40,8 +40,7 @@ public class SerialBus extends Bus implements SerialPortEventListener {
      * Non ci dovrebbero essere problemi di threading, ma questa precauzione
      * costa poco.
      */
-    Lock writeLock;
-
+    private Lock writeLock;
     
     /**
      * Costruttore
@@ -57,10 +56,10 @@ public class SerialBus extends Bus implements SerialPortEventListener {
 
     	while (!portFound && portList.hasMoreElements()) {
     	    portId = (CommPortIdentifier) portList.nextElement();
-    	    System.out.println(portId.getName());
+    	    logger.debug("Detected port: " + portId.getName());
     	    if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
 	    		if (portId.getName().equals(portName)) {
-	    		    System.out.println("Found port: "+portName);
+	    		    logger.info("Found port: "+portName);
 	    		    portFound = true;
 	    	    }
     	    }
@@ -266,7 +265,7 @@ public class SerialBus extends Bus implements SerialPortEventListener {
 		try {
 			return (inputStream.available() > 0);
 		} catch (IOException e) {
-			System.err.println("Impossibile verificare la presenza di dati:" +
+			logger.error("Impossibile verificare la presenza di dati:" +
 					e.getMessage());
 			return false;
 		}

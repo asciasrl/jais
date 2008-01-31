@@ -12,6 +12,9 @@ import it.ascia.eds.device.BMCStandardIO;
 
 import java.io.*;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.PropertyConfigurator;
+
 /**
  * @author arrigo
  * 
@@ -60,8 +63,17 @@ public class BusTest {
 		return retval;
 	}
 	static void testBMCStandardIO() {
-		int address = 3;
+		int address = 1;
 		int porta, valore;
+		// Lo creiamo noi il BMC!
+		try {
+			BMCStandardIO bmc = new BMCStandardIO(address, 88, bus, "BMCFinto"); 
+			bus.addDevice(bmc);
+			bmc.makeSimulated();
+		} catch (EDSException e) {
+			System.err.println(e.getMessage());
+			System.exit(-1);
+		}
  		// Prova su BMC modello 88, indirizzo 3
  		BMCStandardIO bmc = (BMCStandardIO)bus.getDevice(address);
  		System.out.println();
@@ -157,6 +169,8 @@ public class BusTest {
 	public static void main(String[] args) {
 	    String defaultPort = "ascia.homeip.net";
 		// String defaultPort = "/dev/ttyUSB0";
+	    // Inizializzazione logger
+	    PropertyConfigurator.configure("conf/log4j.conf");
  		stdin = new BufferedReader(new InputStreamReader(System.in));
 		ConfigurationFile cfgFile = null;
 	 	if (args.length > 0) {
@@ -196,8 +210,8 @@ public class BusTest {
 	 	}
 	 	// Dimmer avanzato
 	 	bmcComputer.discoverBMC(255);
-	 	/*testBMCStandardIO();
-	 	testBMCDimmer();
+	 	testBMCStandardIO();
+	 	/*testBMCDimmer();
 	 	testBMCChronoTerm(); */
 	 	testServer();
 	 	// La palla all'utente
@@ -214,9 +228,7 @@ public class BusTest {
 					}
 				}
 		}
-		System.out.println("Chiusura server...");
 		server.close();
-		System.out.println("Chiusura bus...");
 		bus.close();
 	}
 }

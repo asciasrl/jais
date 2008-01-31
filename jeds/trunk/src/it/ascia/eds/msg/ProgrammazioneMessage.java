@@ -3,6 +3,8 @@
  */
 package it.ascia.eds.msg;
 
+import it.ascia.eds.EDSException;
+
 import java.util.Random;
 
 /**
@@ -32,10 +34,8 @@ public class ProgrammazioneMessage extends BroadcastMessage
 	 * @param protocollo (vedi le costanti statiche di questa classe)
 	 */
 	public ProgrammazioneMessage(boolean apertura, int protocollo)
-	  throws Exception {
-		Random r = new Random();
-		Destinatario = r.nextInt() & 0xFF;
-		Mittente = r.nextInt() & 0xFF;
+	  throws EDSException {
+		randomizeHeaders();
 		TipoMessaggio = getMessageType();
 		Byte1 = (apertura ? 1 : 0); 
 		Byte2 = protocollo;

@@ -26,9 +26,7 @@ public class ComandoBroadcastMessage extends BroadcastMessage
 	 */
 	public ComandoBroadcastMessage(int Numero, boolean Attivazione, int Modalita)
 	  throws Exception {
-		Random r = new Random();
-		Destinatario = r.nextInt() & 0xFF;
-		Mittente = r.nextInt() & 0xFF;
+		randomizeHeaders();
 		TipoMessaggio = Message.MSG_COMANDO_BROADCAST;
 		Byte1 = (Attivazione ? 0 : 1) & 0x01 + ((Modalita & 0x7F) << 1); 
 		Byte2 = Numero & 0x1F;

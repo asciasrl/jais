@@ -6,14 +6,13 @@ package it.ascia.eds.msg;
 /**
  * Un ingresso e' cambiato, deve cambiare un'uscita.
  * 
- * Questo messaggio viene generato, ad es., quando un interruttore viene 
- * premuto.
+ * <p>Questo messaggio viene generato, ad es., quando un interruttore viene 
+ * premuto.</p>
  * 
- * Il cronotermostato rilegge questo messaggio dando ai campi del primo byte un
- * valore diverso.
+ * <p>Il cronotermostato rilegge questo messaggio dando ai campi del primo byte 
+ * un valore diverso.</p>
  * 
  * @author sergio, arrigo
- * TODO Distinguere fra dispositivi di input e termostato
  */
 public class VariazioneIngressoMessage extends PTPRequest
 	implements MessageInterface
@@ -54,8 +53,8 @@ public class VariazioneIngressoMessage extends PTPRequest
 	/**
 	 * Ritorna il numero dello stato indicato per il cronotermostato.
 	 * 
-	 * Questo metodo ha senso solo  se questo messaggio e' diretto a un 
-	 * cronotermostato.
+	 * <p>Questo metodo ha senso solo  se questo messaggio e' diretto a un 
+	 * cronotermostato.</p>
 	 */
 	public int getChronoTermState() {
 		return Byte1 & 0x0f;

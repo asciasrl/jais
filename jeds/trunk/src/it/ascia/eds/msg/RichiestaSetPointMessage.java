@@ -6,7 +6,7 @@ package it.ascia.eds.msg;
 /**
  * Messaggio di richiesta set point del cronotermostato.
  * 
- * Codice EDS: 204.
+ * <p>Codice EDS: 204.</p>
  */
 public class RichiestaSetPointMessage extends PTPRequest
 	implements MessageInterface {
@@ -40,7 +40,7 @@ public class RichiestaSetPointMessage extends PTPRequest
 	/**
 	 * Ritorna il numero massimo di tentativi di invio da effettuare.
 	 * 
-	 * Per richiedere uno stato non bisogna insistere.
+	 * <p>Per richiedere uno stato non bisogna insistere.</p>
 	 */
 	public int getMaxSendTries() {
 		return 20;

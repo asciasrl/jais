@@ -48,7 +48,7 @@ public class BMCIR extends BMC {
 		case 81:
 			break;
 		default: // This should not happen(TM)
-			System.err.println("Errore: modello di BMCIR sconosciuto:" + model);
+			logger.error("Errore: modello di BMCIR sconosciuto:" + model);
 		}
 		inPorts = new boolean[inPortsNum];
 	}

@@ -3,6 +3,8 @@
  */
 package it.ascia.eds.device;
 
+import java.util.Arrays;
+
 import it.ascia.eds.Bus;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.CronotermMessage;
@@ -65,6 +67,27 @@ public class BMCChronoTerm extends BMC {
 	 * Spento.
 	 */
 	public static final int STATE_OFF = 15;
+	/**
+	 * Array per ottenere una rappresentazione testuale dello stato.
+	 */
+	private static final String stateStrings[] = {
+		"antifreeze", // 0
+		"temp_t1", // 1
+		"temp_t2", // 2
+		"temp_t3", // 3
+		"setpoint_plus_half", // 4
+		"setpoint_minus_half", // 5
+		"unknown", // 6
+		"unknown", // 7
+		"summer", // 8
+		"winter", // 9
+		"unknown", // 10
+		"unknown", // 11
+		"chrono", // 12
+		"manual", // 13
+		"unknown", // 14
+		"off"}; // 15 
+	
 	/**
 	 * Nome compatto della porta "temperatura"
 	 */
@@ -219,6 +242,34 @@ public class BMCChronoTerm extends BMC {
 				bus.getBMCComputerAddress(), temperature);
 		bus.sendMessage(m);
 	}
+	
+	/**
+	 * Imposta lo stato del cronotermostato.
+	 * 
+	 * <p>Invia un messaggio mettendo il BMCComputer come mittente.</p>
+	 * 
+	 * @param state una delle costanti statiche di questa classe.
+	 */
+	public void setState(int state) {
+		VariazioneIngressoMessage m;
+		m = new VariazioneIngressoMessage(getAddress(), 
+				bus.getBMCComputerAddress(),
+				state);
+		bus.sendMessage(m);
+	}
+	
+	/**
+	 * Ritorna lo stato del cronotermostato sotto forma di stringa.
+	 */
+	public String getStateAsString() {
+		// Sanity check
+		if ((state >= 0) && (state < stateStrings.length)) {
+			return stateStrings[state];
+		} else {
+			logger.error("Internal state is invalid: " + state);
+			return "ERROR";
+		}
+	}
 
 	// Attenzione:
 	public String getStatus(String port, String busName) {
@@ -239,7 +290,8 @@ public class BMCChronoTerm extends BMC {
 				"\r\n";
 		}
 		if (port.equals("*") || port.equals(port_state)) {
-			retval += compactName + ":" + port_state + "=" + state + "\r\n";
+			retval += compactName + ":" + port_state + "=" + 
+				getStateAsString() + "\r\n";
 		}
 		return retval;
 	}
@@ -254,14 +306,57 @@ public class BMCChronoTerm extends BMC {
 	}
 	
 	public void printStatus() {
-		System.out.println("Stato: " + state + (dirtyState? "?" : ""));
+		System.out.println("Stato: " + getStateAsString() + " (" + state + ")" + 
+				(dirtyState? "?" : ""));
 		System.out.println("Temperatura: " + temperature + 
 				(dirtyTemperature? "?" : ""));
 		System.out.println("Set point: " + setPoint + 
 				(dirtySetPoint? "?" : ""));
 	}
 
+	/**
+	 * Permette l'impostazione di temperatura o stato.
+	 * 
+	 * <p>Il valore di temperatura non viene verificato.</p>
+	 * 
+	 * <p>Lo stato puo' essere indicato come valore testuale o numerico.</p>
+	 * 
+	 * @param port nome della porta.
+	 * @param value valore da impostare.
+	 */
 	public void setPort(String port, String value) throws EDSException {
-		throw new EDSException("Unimplemented.");
+		if (port.equals(port_setpoint)) {
+			// Impostiamo il setpoint
+			double setPoint;
+			try {
+				setPoint = Double.parseDouble(value);
+			} catch (NumberFormatException e) {
+				throw new EDSException("Invalid temperature: " + value);
+			}
+			setSetPoint(setPoint);
+		} else if (port.equals(port_state)) {
+			// Impostiamo lo stato
+			int requiredState = -1;
+			try {
+				requiredState = Integer.parseInt(value);
+			} catch (NumberFormatException e) {
+				// Non e' un intero, proviamo la stringa.
+				for (int i = 0; 
+					(i < stateStrings.length) && (requiredState == -1); 
+					i++) {
+					if (stateStrings[i].equals(value)) {
+						requiredState = i;
+					}
+				}
+			} // catch
+			if (requiredState != -1) {
+				setState(requiredState);
+			} else {
+				throw new EDSException("Invalid state: " + value);
+			}
+		} else {
+			// Non impostiamo niente: la richiesta e' errata.
+			throw new EDSException("Invalid port: " + port);
+		}
 	}
 }

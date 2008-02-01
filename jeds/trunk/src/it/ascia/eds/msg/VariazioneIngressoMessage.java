@@ -3,6 +3,8 @@
  */
 package it.ascia.eds.msg;
 
+import it.ascia.eds.device.BMCChronoTerm;
+
 /**
  * Un ingresso e' cambiato, deve cambiare un'uscita.
  * 
@@ -18,12 +20,42 @@ public class VariazioneIngressoMessage extends PTPRequest
 	implements MessageInterface
 	{
 
-	public VariazioneIngressoMessage(int d, int m, int Attivazione, int Uscita, int Variazione) {
+	/**
+	 * Costruttore per messaggio diretto a BMC.
+	 * 
+	 * @param d destinatario del messaggio.
+	 * @param m mittente del messaggio.
+	 * @param Attivazione true per attivazione/incremento
+	 * @param Uscita numero dell'uscita da cambiare
+	 * @param Variazione 0: circuito aperto, 1: contatto (cortocircuito a massa)
+	 */
+	public VariazioneIngressoMessage(int d, int m, boolean Attivazione, 
+			int Uscita, int Variazione) {
 		Destinatario = d & 0xFF;
 		Mittente = m & 0xFF;
-		TipoMessaggio = 4;
-		Byte1 = Uscita & 0x07 + ((Attivazione & 0x01) << 3);
+		TipoMessaggio = getMessageType();
+		Byte1 = Uscita & 0x07;
+		if (!Attivazione) {
+			Byte1 |= 0x01 << 3;
+		}
 		Byte2 = Variazione & 0x01;
+	}
+	
+	/**
+	 * Costruttore per messaggio diretto a cronotermostato.
+	 * 
+	 * @param d destinatario.
+	 * @param m mittente.
+	 * @param stato stato da impostare.
+	 * 
+	 * @see BMCChronoTerm
+	 */
+	public VariazioneIngressoMessage(int d, int m, int stato) {
+		Destinatario = d & 0xFF;
+		Mittente = m & 0xFF;
+		TipoMessaggio = getMessageType();
+		Byte1 = stato & 0x0f;
+		Byte2 = 0;
 	}
 
 	public VariazioneIngressoMessage(int[] message) {

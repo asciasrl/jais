@@ -12,7 +12,6 @@ import it.ascia.eds.device.BMCStandardIO;
 
 import java.io.*;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.PropertyConfigurator;
 
 /**
@@ -210,9 +209,9 @@ public class BusTest {
 	 	}
 	 	// Dimmer avanzato
 	 	bmcComputer.discoverBMC(255);
-	 	testBMCStandardIO();
-	 	/*testBMCDimmer();
-	 	testBMCChronoTerm(); */
+	 	// testBMCStandardIO();
+	 	// testBMCDimmer();
+	 	// testBMCChronoTerm();
 	 	testServer();
 	 	// La palla all'utente
 	 	System.out.println("Running ...");

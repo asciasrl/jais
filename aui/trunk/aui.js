@@ -5,14 +5,31 @@
 
 // http://www.webreference.com/programming/javascript/mk/column2/
 
+/**
+ * L'oggetto che sta ricevendo un "drag".
+ *
+ * <p>Questo oggetto deve essere riconosciuto in base al proprio id</p>.
+ */
 var dragObject  = null;
+/**
+ * Qui viene messa la posizione del mouse nel documento, al momento della
+ * pressione di un bottone.
+ *
+ * <p>Questo valore serve a ricordare dove e' stato fatto il click, per gestire
+ * un'operazione di trascinamento.</p>
+ */
 var mouseOffset = null;
+/**
+ * La posizione, relativa al documento, dell'oggetto che ha ricevuto il click.
+ */
 var objectOffset = null;
-
+/**
+ * True se l'utente sta trascinando qualcosa.
+ */
 dragging = false;
 
 /**
- * Posizione del mouse relativa al documento
+ * Posizione del mouse relativa al documento.
  */
 function mouseCoords(ev){
 	ev = ev || window.event;
@@ -25,41 +42,62 @@ function mouseCoords(ev){
 	};
 }
 
-function getMouseOffset(target, ev){
-	ev = ev || window.event;
+///**
+// * Ritorna la posizione del mouse relativa a un frame.
+// *
+// * @param target il frame in cui calcolare la posizione.
+// * @param ev un evento che contiene la posizione del mouse.
+// *
+// * @return le coordinate negli elementi {x, y}
+// */
+//	function getMouseOffset(target, ev){
+//		ev = ev || window.event;
+//	
+//		var docPos    = getPosition(target);
+//		var mousePos  = mouseCoords(ev);
+//		return {x:mousePos.x - docPos.x, y:mousePos.y - docPos.y};
+//	}
 
-	var docPos    = getPosition(target);
-	var mousePos  = mouseCoords(ev);
-	return {x:mousePos.x - docPos.x, y:mousePos.y - docPos.y};
-}
+///**
+// * Ritorna la posizione di un elemento relativa al documento (?).
+// *
+// * <p>Questa funzione somma tutti gli offset dei parenti dell'elemento.</p>
+// *
+// * @param e l'elemento di cui calcolare la posizione.
+// */
+//function getPosition(e){
+//	var left = 0;
+//	var top  = 0;
+//
+//	while (e.offsetParent){
+//		left += e.offsetLeft;
+//		top  += e.offsetTop;
+//		e     = e.offsetParent;
+//	}
+//
+//	left += e.offsetLeft;
+//	top  += e.offsetTop;
+//
+//	return {x:left, y:top};
+//}
 
-function getPosition(e){
-	var left = 0;
-	var top  = 0;
-
-	while (e.offsetParent){
-		left += e.offsetLeft;
-		top  += e.offsetTop;
-		e     = e.offsetParent;
-	}
-
-	left += e.offsetLeft;
-	top  += e.offsetTop;
-
-	return {x:left, y:top};
-}
-
+/**
+ * Ritorna l'offset di un elemento.
+ *
+ * @return gli offset negli attributi {x, y}.
+ */ 
 function getOffset(e) {
 	return {x:e.offsetLeft, y:e.offsetTop};
 }
 
 /**
- * Funzione collegata al movimento del mouse
+ * Funzione collegata al movimento del mouse.
  */
 function mouseMove(ev){
 	ev = ev || window.event;
 	var mousePos = mouseCoords(ev);
 	if (dragObject) {
+		dragging = true;
 		switch (dragObject.id) {
 			case 'piano-01A-big':
 				dragMap(mousePos);
@@ -73,58 +111,67 @@ function mouseMove(ev){
 
 document.onmousemove = mouseMove;
 
+/**
+ * TODO: questa dovrebbe muovere l'appbar.
+ */
 function dragFunzioni(mousePos) {
   new_left = mousePos.x - mouseOffset.x + objectOffset.x;
   setHeader(new_left);
   dragObject.style.left =  new_left + 'px';
 }
 
+/**
+ * TODO: questa deve centrare l'icona.
+ */
 function dragFunzioniStop() {
   dragObject.style.left =  '0px';
 }
 
+/**
+ * Sposta la mappa in base alla posizione del mouse.
+ *
+ * @param mousePos posizione del mouse relativa al documento.
+ */
 function dragMap(mousePos) {
 	//statusObject.innerHTML = mousePos.x + ',' + mousePos.y;
 
 	el = document.getElementById('piano-01A-big');
-  //statusObject.innerHTML += ' E '+el.offsetLeft+','+el.offsetTop;
-  
-	if (dragObject) {
+  	//statusObject.innerHTML += ' E '+el.offsetLeft+','+el.offsetTop;
+  	// if (dragObject) { // E' sicuramente vero, se stiamo qui
 
-	  dragging = true;
+	new_top = mousePos.y - mouseOffset.y + objectOffset.y;
+	new_left = mousePos.x - mouseOffset.x + objectOffset.x;
 
-		new_top = mousePos.y - mouseOffset.y + objectOffset.y;
-		new_left = mousePos.x - mouseOffset.x + objectOffset.x;
-
-	  // troppo a destra
-	  if (-new_left + 240 > dragObject.width) {
-	    new_left = 240 - dragObject.width;
-	  }
-	  // troppo a sinistra
-	  if (-new_left < 0) {
-	    new_left = 0;
-	  }
-	  // troppo in basso
-	  if (-new_top + 240 > dragObject.height) {
-	    new_top = 240 - dragObject.height;
-	  }
-	  // troppo in alto
-	  if (-new_top < 0) {
-	    new_top = 0;
-	  }
-
-		dragObject.style.top =  new_top + 'px';
-		dragObject.style.left =  new_left + 'px';
-		//statusObject.innerHTML += ' D '+(mousePos.x - mouseOffset.x)+','+(mousePos.y - mouseOffset.y);
-
-		return false;
+	// troppo a destra
+	if (-new_left + 240 > dragObject.width) {
+		new_left = 240 - dragObject.width;
 	}
+	// troppo a sinistra
+	if (-new_left < 0) {
+		new_left = 0;
+	}
+	// troppo in basso
+	if (-new_top + 240 > dragObject.height) {
+		new_top = 240 - dragObject.height;
+	}
+	// troppo in alto
+	if (-new_top < 0) {
+		new_top = 0;
+	}
+
+	dragObject.style.top =  new_top + 'px';
+	dragObject.style.left =  new_left + 'px';
+	//statusObject.innerHTML += ' D '+(mousePos.x - mouseOffset.x)+','+(mousePos.y - mouseOffset.y);
+
+	return false;
+	// } // if (dragObject)
 }
 
 /**
- * Quando viene rilasciato il bottone del mouse
+ * Quando viene rilasciato il bottone del mouse.
  */
 function mouseUp(){
+	dragging = false;
 	// TODO: riposizionare icona delle funzioni in posizione centrale
 	if (dragObject) {
 		switch (dragObject.id) {
@@ -139,7 +186,7 @@ function mouseUp(){
 document.onmouseup   = mouseUp;
 
 /**
- * Associa all'oggetto la funzione che gestisce la pressione del mouse
+ * Associa all'oggetto la funzione che gestisce la pressione del mouse.
  */
 function makeDraggable(item){
 	if(!item) return;

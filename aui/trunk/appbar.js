@@ -29,7 +29,10 @@ function appbar_icoset(name,size,opacity) {
 	  div_obj.style.filter='alpha(opacity='+opacity+')';
 	}
 }
-  
+
+/**
+ * Mostra le icone, centrando la numero n.
+ */
 function appbar_select(n) {
   if (n < 1) {
     n = 1;

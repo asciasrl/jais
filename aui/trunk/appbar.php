@@ -1,9 +1,9 @@
 <?php 
-$apps = array('Audio','Clima','Energia','Illuminazione','Serramenti','Sicurezza','Video'); 
+$apps = array('audio','clima','energia','illuminazione','serramenti','sicurezza','video'); 
 
 echo('<script language="javascript">appbar_num='.count($apps).';</script>');
 
-// ripete le prime 5 per creare l'effetto di circolarità
+// ripete le prime 5 per creare l'effetto di circolaritï¿½
 for ($i = 0; $i < 5; $i++) {
   $apps[] = $apps[$i]; 
 }

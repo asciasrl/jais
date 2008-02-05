@@ -4,48 +4,51 @@
 <table id="keypad" title="AUI login - immetti codice personale e premi OK" summary="keypad" cellpadding="0" cellspacing="0"
 	border="0">
 	<tr>
-		<td colspan="4"><img alt="panel" width="240" height="70"
-			border="0" src="images/key-panel.png" /></td>
+		<td colspan="4" style="text-align: center;"><input 
+		id="keypadScreen" type="text" size="8" disabled="disabled"><!-- <img alt="panel" width="240" height="70"
+			border="0" src="images/key-panel.png" /> --></td>
 	</tr>
 	<tr>
 		<td><img alt="1" width="60" height="48" border="0"
-			src="images/key01.png" /></td>
+			src="images/key01.png" onclick="keypadButton(1)" /></td>
 		<td><img alt="2" width="60" height="48" border="0"
-			src="images/key02.png" /></td>
+			src="images/key02.png" onclick="keypadButton(2)" /></td>
 		<td><img alt="3" width="60" height="48" border="0"
-			src="images/key03.png" /></td>
+			src="images/key03.png" onclick="keypadButton(3)" /></td>
 		<td><img alt="qwerty" width="60" height="48" border="0"
-			src="images/qwerty.png" /></td>
+			src="images/qwerty.png" onclick="keypadButton('qwerty')"/></td>
 	</tr>
 	<tr>
 		<td><img alt="4" width="60" height="48" border="0"
-			src="images/key04.png" /></td>
+			src="images/key04.png" onclick="keypadButton(4)" /></td>
 		<td><img alt="5" width="60" height="48" border="0"
-			src="images/key05.png" /></td>
+			src="images/key05.png" onclick="keypadButton(5)" /></td>
 		<td><img alt="6" width="60" height="48" border="0"
-			src="images/key06.png" /></td>
-		<td><img onclick="vai('screensaver');" alt="annulla" width="60"
-			height="48" border="0" src="images/annulla.png" /></td>
+			src="images/key06.png" onclick="keypadButton(6)" /></td>
+		<td><img onclick="keypadButton('x')" alt="annulla" width="60"
+			height="48" border="0" src="images/annulla.png" 
+			onclick="keypadButton('X')" /></td>
 	</tr>
 	<tr>
 		<td><img alt="7" width="60" height="48" border="0"
-			src="images/key07.png" /></td>
+			src="images/key07.png" onclick="keypadButton(7)" /></td>
 		<td><img alt="8" width="60" height="48" border="0"
-			src="images/key08.png" /></td>
+			src="images/key08.png" onclick="keypadButton(8)" /></td>
 		<td><img alt="9" width="60" height="48" border="0"
-			src="images/key09.png" /></td>
+			src="images/key09.png" onclick="keypadButton(9)" /></td>
 		<td><img alt="cancella" width="60" height="48" border="0"
-			src="images/back.png" /></td>
+			src="images/back.png" onclick="keypadButton('back')" /></td>
 	</tr>
 	<tr>
 		<td><img alt="*" width="60" height="48" border="0"
-			src="images/key-asterisk.png" /></td>
+			src="images/key-asterisk.png" onclick="keypadButton('*')"/></td>
 		<td><img alt="0" width="60" height="48" border="0"
-			src="images/key00.png" /></td>
+			src="images/key00.png" onclick="keypadButton(0)" /></td>
 		<td><img alt="#" width="60" height="48" border="0"
-			src="images/key-sharp.png" /></td>
-		<td><img onclick="vai('navigazione');" title="OK" alt="ok" width="60"
-			height="48" border="0" src="images/ok.png" /></td>
+			src="images/key-sharp.png" onclick="keypadButton('#')" /></td>
+		<td><img onclick="keypadButton('ok');" title="OK" alt="ok" width="60"
+			height="48" border="0" src="images/ok.png" 
+			onclick="keypadButton('ok')" /></td>
 	</tr>
 	<tr>
 		<td colspan="4"><img alt="footer" width="240" height="58"
@@ -91,5 +94,5 @@
 </div>
 </div>
 <script type="" language="javascript" src="aui.js"></script>
-
+<script type="" language="javascript" src="keypad.js"></script>
 <?php include('appbar.php'); ?>	

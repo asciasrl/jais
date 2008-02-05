@@ -11,11 +11,15 @@ const FINGER_SPEED_FACTOR = 5;
 /**
  * Decelerazione dello scorrimento. [pixel / sec^2]
  */
-const FRICTION = 3;
+const FRICTION = 500;
+/**
+ * True se l'attrito e' viscoso, false se e' cinetico.
+ */
+const VISCOSO_FRICTION = false;
 /**
  * Rigidita' della molla che attira l'icona centrale verso il centro.
  */
-const STIFFNESS = 20;
+const STIFFNESS = 40;
 /**
  * Area di attrazione per l'icona centrale ("centro allargato").
  */
@@ -215,10 +219,20 @@ function centralIconDeltaX() {
 function appbar_timer() {
 	if ((!dragging) && (!centralIconLocked)) {
 		var new_left;
-		// Attrito cinematico
-		var accel = -FRICTION * currentAppBarSpeed;
+		var accel;
 		var dX = centralIconDeltaX();
 		var adX = Math.abs(dX);
+		// Attrito
+		if (VISCOSO_FRICTION) {
+			accel = -FRICTION * currentAppBarSpeed;
+		} else {
+			// Attrito cinematico
+			if (currentAppBarSpeed > 0) {
+				accel = -FRICTION;
+			} else {
+				accel = FRICTION;
+			}
+		}
 		// Molla lineare
 		if (dX > 0) {
 			accel += STIFFNESS * adX;

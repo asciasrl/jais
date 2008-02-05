@@ -6,7 +6,7 @@
 // http://www.webreference.com/programming/javascript/mk/column2/
 
 /**
- * L'oggetto che sta ricevendo un "drag".
+ * L'oggetto che sta ricevendo un "drag" o un click del mouse.
  *
  * <p>Questo oggetto deve essere riconosciuto in base al proprio id</p>.
  */

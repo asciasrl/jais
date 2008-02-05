@@ -26,7 +26,12 @@ var objectOffset = null;
 /**
  * True se l'utente sta trascinando qualcosa.
  */
-dragging = false;
+var dragging = false;
+/**
+ * In quale istante si e' registrato l'ultimo evento di spostamento.
+ */
+var lastDragTimeStamp = 0;
+
 
 /**
  * Posizione del mouse relativa al documento.
@@ -97,35 +102,21 @@ function mouseMove(ev){
 	ev = ev || window.event;
 	var mousePos = mouseCoords(ev);
 	if (dragObject) {
+		var d = new Date();
 		dragging = true;
+		lastDragTimeStamp = d.getTime();
 		switch (dragObject.id) {
 			case 'piano-01A-big':
 				dragMap(mousePos);
 				break;
-			case 'funzioni':
-				dragFunzioni(mousePos);
+			case 'appbar':
+				dragAppBar(mousePos);
 				break;
 		}
 	}
 }
 
 document.onmousemove = mouseMove;
-
-/**
- * TODO: questa dovrebbe muovere l'appbar.
- */
-function dragFunzioni(mousePos) {
-  new_left = mousePos.x - mouseOffset.x + objectOffset.x;
-  setHeader(new_left);
-  dragObject.style.left =  new_left + 'px';
-}
-
-/**
- * TODO: questa deve centrare l'icona.
- */
-function dragFunzioniStop() {
-  dragObject.style.left =  '0px';
-}
 
 /**
  * Sposta la mappa in base alla posizione del mouse.
@@ -170,16 +161,17 @@ function dragMap(mousePos) {
 /**
  * Quando viene rilasciato il bottone del mouse.
  */
-function mouseUp(){
-	dragging = false;
-	// TODO: riposizionare icona delle funzioni in posizione centrale
+function mouseUp(ev){
+	ev = ev || window.event;
 	if (dragObject) {
+		var d = new Date();
 		switch (dragObject.id) {
-			case 'funzioni':
-				dragFunzioniStop();
+			case 'appbar':
+				dragAppBarStop(mouseCoords(ev), d.getTime());
 				break;
 		}
-	}	
+	}
+	dragging = false;		
 	dragObject = null;	
 }
 
@@ -193,9 +185,9 @@ function makeDraggable(item){
 	item.onmousedown = function(ev){
 		dragObject  = this;
 		//mouseOffset = getMouseOffset(this, ev);
-	  mouseOffset = mouseCoords(ev);
-	  objectOffset = getOffset(this);
-	  dragging = false;
+		mouseOffset = mouseCoords(ev);
+		objectOffset = getOffset(this);
+		dragging = false;
 		return false;
 	}
 }
@@ -337,4 +329,3 @@ function ingrandisci1(X,Y,da,a) {
 }
 
 makeDraggable(document.getElementById('piano-01A-big'));
-makeDraggable(document.getElementById('funzioni'));

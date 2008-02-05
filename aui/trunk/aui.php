@@ -89,71 +89,7 @@
 	onclick="clicca('piano-01A-big','piano-01A-big','piano-01A');" id="piano-01A-big"
 	src="images/piano-01A-big.png" alt="" /></div>
 </div>
-<div style="height: 60px; display: none;">
-<table id="servizi" summary="servizi" title="AUI servizi - clicca per scegliere cosa gestire" cellpadding="0" cellspacing="0"
-	border="0">
-<?php
-$funzioni = array('clima','serramenti','sicurezza','luci','energia');
-$estensioni = array('clima' => 'jpg','serramenti'=>'jpg','sicurezza'=>'png','luci'=>'png','energia'=>'png');
-foreach ($funzioni as $i => $f):
-  $ext = $estensioni[$f];
-?>	
-	<tr id="<?php echo($f); ?>" <?php if ($i > 0): ?>style="display: none;"<?php endif; ?>>
-	<?php for ($d = -2 ; $d <= 2 ; $d++):
-		$j = $i + $d;
-		if ($j < 0) {
-		  $k = $j + sizeof($funzioni);
-		} elseif ($j >= sizeof($funzioni)) {
-		  $k = $j - sizeof($funzioni);
-		} else {
-		  $k = $j;
-		}
-		$to = $funzioni[$k];
-		switch ($d) {
-		  case -2:
-		    $m = '-sx2';
-		    $w = 40;
-		    break;
-		  case -1:
-		    $m = '-sx1';
-		    $w = 50;
-		    break;
-		  case 0:
-		    $m = '';
-		    $w = 60;
-		    break;
-		  case +1:
-		    $m = '-dx1';
-		    $w = 50;
-		    break;
-		  case +2:
-		    $m = '-dx2';
-		    $w = 40;
-		    break;
-		}
-		$img = "images/" . $to . $m . '.' . $estensioni[$to]; 
-	?>
-		<td><img onclick="clicca1('<?php echo($f); ?>','<?php echo($funzioni[$k]); ?>');" alt="luci"
-			width="<?php echo($w); ?>" height="60" border="0" src="<?php echo($img); ?>" /></td>
-	<?php endfor; ?>
-	</tr>
-<?php endforeach; ?>
-
-
-
-
-
-
-
-
-
-
-
-</table>
 </div>
-</div>
+<script type="" language="javascript" src="aui.js"></script>
 
 <?php include('appbar.php'); ?>	
-
-
-<script type="" language="javascript" src="aui.js"></script>

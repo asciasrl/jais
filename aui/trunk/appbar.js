@@ -7,19 +7,27 @@
  * Fattore di moltiplicazione per ottenere la velocita' di scorrimento a partire
  * dalla velocita' del mouse/dito.
  */
-const speedFactor = 30; 
+const FINGER_SPEED_FACTOR = 5;
 /**
  * Decelerazione dello scorrimento. [pixel / sec^2]
  */
-const speedFriction = 400;
+const FRICTION = 3;
+/**
+ * Rigidita' della molla che attira l'icona centrale verso il centro.
+ */
+const STIFFNESS = 20;
+/**
+ * Area di attrazione per l'icona centrale ("centro allargato").
+ */
+const LOCK_AREA_WIDTH = 2;
 /**
  * Periodo di aggiornamento del calcolo della velocita'. [msec]
  */
-const speedRefreshPeriod = 40;
+const REFRESH_PERIOD = 50;
 /**
  * Massima velocita' [pixel / sec].
  */
-const maxAppBarSpeed = 1000;
+const MAX_ICON_SPEED = 100000;
 /**
  * A che pixel si trovava l'appbar all'ultima selezione.
  */
@@ -27,11 +35,15 @@ var lastAppBarPosition = 0;
 /**
  * A che pixel si trova l'appbar (durante lo scorrimento).
  */
-var currentAppBarPosition = 0;
+var currentAppBarPosition = 40;
 /**
  * Velocita' corrente della appbar.
  */
 var currentAppBarSpeed = 0;
+/**
+ * True se le icone si sono fermate (bene).
+ */
+var centralIconLocked = false;
 /**
  * DEBUG: dove scrivere messaggi di stato.
  */
@@ -63,7 +75,7 @@ function appbar_icoset(name,size,opacity) {
 	  img_obj.style.height=size+'px';
 	  
 	  if (opacity < 100) {
-	    div_obj.style.opacity='.'+opacity;
+	    div_obj.style.opacity=(opacity / 100);
 	  } else {
 	    div_obj.style.opacity='1';
 	  }
@@ -184,30 +196,51 @@ function appbar_scroll(n) {
 //appbar_scroll(320);
 
 
-// prova animazione
+/**
+ * Calcola la distanza dell'icona piu' centrale dal centro.
+ */
+function centralIconDeltaX() {
+	var deltaX;
+	if (currentAppBarPosition > 0) {
+		deltaX = 40 - (currentAppBarPosition % 80);
+	} else {
+		deltaX = (-currentAppBarPosition % 80) - 40;
+	}
+	return deltaX;
+}
+
+/**
+ * Anima le icone, calcolando le accelerazioni.
+ */
 function appbar_timer() {
-	if ((!dragging) && (currentAppBarSpeed != 0)) {
-		var sign, new_left;
-		if (currentAppBarSpeed > 0) { // C'e' un modo migliore di questo?
-			sign = 1;
+	if ((!dragging) && (!centralIconLocked)) {
+		var new_left;
+		// Attrito cinematico
+		var accel = -FRICTION * currentAppBarSpeed;
+		var dX = centralIconDeltaX();
+		var adX = Math.abs(dX);
+		// Molla lineare
+		if (dX > 0) {
+			accel += STIFFNESS * adX;
 		} else {
-			sign = -1;
+			accel -= STIFFNESS * adX;
 		}
-		currentAppBarSpeed -= ((speedFriction * speedRefreshPeriod / 1000) * sign);
-		if (Math.abs(currentAppBarSpeed) < 
-			(speedFriction * speedRefreshPeriod / 1000)) {
+		statusObject.innerHTML = "accel: " + accel;
+		currentAppBarSpeed += ((accel * REFRESH_PERIOD / 1000));
+		// Trucco: se stiamo lenti e vicini allo 0, ci fermiamo li'
+		if ((adX < LOCK_AREA_WIDTH) && 
+			(Math.abs(currentAppBarSpeed) <	(STIFFNESS * adX * 2))) {
+			// Lock!
 			currentAppBarSpeed = 0;
-			new_left = currentAppBarPosition;
-			attractCentralAppBarIcon();
-		} else {
-			new_left = currentAppBarPosition + 
-				currentAppBarSpeed * (speedRefreshPeriod / 1000);
-			// statusObject.innerHTML = "x = " + currentAppBarPosition + ", v = " + currentAppBarSpeed;
+			currentAppBarPosition += centralIconDeltaX();
+			centralIconLocked = true;
 		}
+		new_left = currentAppBarPosition + 
+			currentAppBarSpeed * (REFRESH_PERIOD / 1000);
 		appbar_scroll(new_left);
 		lastAppBarPosition = currentAppBarPosition;
 	}
-	setTimeout("appbar_timer()", speedRefreshPeriod);
+	setTimeout("appbar_timer()", REFRESH_PERIOD);
 }
 
 /**
@@ -221,6 +254,7 @@ function dragAppBar(mousePos) {
 	var new_left = mouseOffset.x - mousePos.x;
 	// statusObject.innerHTML = new_left; 
 	appbar_scroll(new_left + lastAppBarPosition);
+	centralIconLocked = false;
 }
 
 /**
@@ -228,42 +262,42 @@ function dragAppBar(mousePos) {
  * vicina al centro.
  */
 function attractCentralAppBarIcon() {
-	var deltaX;
-	if (currentAppBarPosition > 0) {
-		deltaX = 40 - (currentAppBarPosition % 80);
-	} else {
-		deltaX = (-currentAppBarPosition % 80) - 40;
-	}
+	var deltaX = centralIconDeltaX();
 	if (deltaX > 0) {
-		currentAppBarSpeed = Math.sqrt(2 * speedFriction * deltaX);
+		currentAppBarSpeed = Math.sqrt(2 * FRICTION * deltaX);
 	} else if (deltaX < 0) {
-		currentAppBarSpeed = -Math.sqrt(-2 * speedFriction * deltaX);
+		currentAppBarSpeed = -Math.sqrt(-2 * FRICTION * deltaX);
 	} else { // Siamo gia' centrati.
 		currentAppBarSpeed = 0;
 	}
 }
 
 /**
- * TODO: questa deve centrare l'icona.
+ * Calcola la velocita' dell'ultimo trascinamento e attiva lo scorrimento 
+ * automatico delle icone.
+ *
+ * <p>Questa funzione viene chiamata quando termina un'operazione di 
+ * trascinamento.</p>
  */
 function dragAppBarStop(mousePos, timeStamp) {
 	var new_left = mouseOffset.x - mousePos.x;
 	if (timeStamp != 0) { // Abbiamo il timeStamp?
 		// Calcoliamo e saturiamo la velocita'
 		currentAppBarSpeed = new_left / 
-			(timeStamp - lastDragTimeStamp) * speedFactor;
-		if (currentAppBarSpeed > maxAppBarSpeed) {
-			currentAppBarSpeed = maxAppBarSpeed;
-		} else if (currentAppBarSpeed < - maxAppBarSpeed) {
-			currentAppBarSpeed = - maxAppBarSpeed;
+			(timeStamp - lastDragTimeStamp) * FINGER_SPEED_FACTOR;
+		if (currentAppBarSpeed > MAX_ICON_SPEED) {
+			currentAppBarSpeed = MAX_ICON_SPEED;
+		} else if (currentAppBarSpeed < - MAX_ICON_SPEED) {
+			currentAppBarSpeed = - MAX_ICON_SPEED;
 		}
 	} else {
-		attractCentralAppBarIcon();
+		currentAppBarSpeed = 0;
 	}
 	lastAppBarPosition = currentAppBarPosition;
+	centralIconLocked = false;
 	/* statusObject.innerHTML = new_left + " / " + 
-		(timeStamp - lastDragTimeStamp) * speedFactor; */
+		(timeStamp - lastDragTimeStamp) * FINGER_SPEED_FACTOR; */
 }
 
-setTimeout("appbar_timer()", speedRefreshPeriod);
+setTimeout("appbar_timer()", REFRESH_PERIOD);
 makeDraggable(document.getElementById('appbar'));

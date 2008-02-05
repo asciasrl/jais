@@ -329,3 +329,4 @@ function ingrandisci1(X,Y,da,a) {
 }
 
 makeDraggable(document.getElementById('piano-01A-big'));
+makeDraggable(document.getElementById('appbar'));

@@ -11,19 +11,28 @@ const FINGER_SPEED_FACTOR = 5;
 /**
  * Decelerazione dello scorrimento. [pixel / sec^2]
  */
-const FRICTION = 500;
+const FRICTION = 100;
 /**
- * True se l'attrito e' viscoso, false se e' cinetico.
+ * Accelerazione delle icone. [pixel / sec^2].
+ *
+ * <p>Le icone accelerano se partono piu' lente della velocita' di crociera.</p>
  */
-const VISCOSO_FRICTION = false;
+const ICON_ACCELERATION = 100; 
 /**
- * Rigidita' della molla che attira l'icona centrale verso il centro.
+ * Velocita' di crociera delle icone. [pixel / sec]
  */
-const STIFFNESS = 40;
+const ICON_CRUISE_SPEED = 320;
 /**
- * Area di attrazione per l'icona centrale ("centro allargato").
+ * Velocita' di avvicinamento delle icone a quella centrale. [pixel / sec]
  */
-const LOCK_AREA_WIDTH = 2;
+const ICON_APPROACHING_SPEED = 60;
+/**
+ * Distanza dal centro che fa decelerare le icone.
+ *
+ * <p>Quando l'icona piu' al centro arriva a questa distanza dal centro, essa
+ * inizia a decelerare.</p>
+ */
+const ICON_LOCK_DISTANCE = 20;
 /**
  * Periodo di aggiornamento del calcolo della velocita'. [msec]
  */
@@ -31,7 +40,7 @@ const REFRESH_PERIOD = 50;
 /**
  * Massima velocita' [pixel / sec].
  */
-const MAX_ICON_SPEED = 160;
+const MAX_ICON_SPEED = 240;
 /**
  * A che pixel si trovava l'appbar all'ultima selezione.
  */
@@ -54,6 +63,8 @@ var centralIconLocked = false;
 var appBarGoing = false;
 /**
  * Dove stiamo andando (posizione desiderata).
+ *
+ * <p>Questo valore deve essere controllato se appBarGoing e' true.</p>
  */
 var targetAppBarPosition = 0;
 /**
@@ -150,9 +161,12 @@ function appbar_scroll(n) {
 	// minimalista
 	//appbar_select(Math.round(n/80));  
 
+	// Posizione interna alla barra
 	var p = (n + 40) / 80;
+	// Portiamo p nell'intervallo [0, appbar_num]
 	p = appbar_num * (p/appbar_num - Math.floor(p/appbar_num));
-	sel = Math.round(p);
+	// Numero dell'icona selezionata
+	var sel = Math.round(p);
 	if (p < 3) {
 		p = p + appbar_num;
 	}
@@ -193,7 +207,7 @@ function appbar_scroll(n) {
 	var k = p - Math.floor(p)
 	// s+=" k="+k;
 	
-	appBarOffset = (50 - 20 * k ) * k;
+	var appBarOffset = (50 - 20 * k ) * k;
 	appBarOffset = Math.round(appBarOffset);
    
 	var scrollerObject = document.getElementById('scroller');
@@ -209,14 +223,21 @@ function appbar_scroll(n) {
 
 
 /**
- * Calcola la distanza dell'icona piu' centrale dal centro.
+ * Calcola la distanza dal centro dell'icona più centrale o di quella 
+ * selezionata.
  */
 function centralIconDeltaX() {
 	var deltaX;
-	if (currentAppBarPosition > 0) {
-		deltaX = 40 - (currentAppBarPosition % 80);
+	if (appBarGoing) {
+		// Stiamo andando verso un'icona precisa
+		deltaX = targetAppBarPosition - currentAppBarPosition;
 	} else {
-		deltaX = (-currentAppBarPosition % 80) - 40;
+		// Calcoliamo rispetto all'icona piu' al centro
+		if (currentAppBarPosition > 0) {
+			deltaX = 40 - (currentAppBarPosition % 80);
+		} else {
+			deltaX = (-currentAppBarPosition % 80) - 40;
+		}
 	}
 	return deltaX;
 }
@@ -226,54 +247,59 @@ function centralIconDeltaX() {
  */
 function appbar_timer() {
 	if ((!dragging) && (!centralIconLocked)) {
-		var dX;
-		if (appBarGoing) {
-			dX = (currentAppBarPosition - targetAppBarPosition);
-			// Velocita' direttamente prop. alla distanza
-			currentAppBarSpeed = Math.round(-dX * 10);
-			saturateAppBarSpeed();			
-			statusObject.innerHTML = "going to: " + targetAppBarPosition + 
-				"<br>" + " (dx = " + dX + ")" + "speed: " + currentAppBarSpeed;
-			if ((dX >= LOCK_AREA_WIDTH) && (dX <= LOCK_AREA_WIDTH)) {
-				// Riattiviamo le accelerazioni
-				appBarGoing = false;
-			}
-		} else {
-			var new_left;
-			var accel;
-			dX = centralIconDeltaX();
-			var adX = Math.abs(dX);
-			// Attrito
-			if (VISCOSO_FRICTION) {
-				accel = -FRICTION * currentAppBarSpeed;
-			} else {
-				// Attrito cinematico
-				if (currentAppBarSpeed > 0) {
-					accel = -FRICTION;
-				} else {
-					accel = FRICTION;
-				}
-			}
-			// Molla lineare
+		var dX = centralIconDeltaX();
+		var speedSign;
+		if (currentAppBarSpeed == 0) {
+			// Stiamo partendo da fermi -> partiamo lenti
 			if (dX > 0) {
-				accel += STIFFNESS * adX;
+				currentAppBarSpeed = ICON_APPROACHING_SPEED;
 			} else {
-				accel -= STIFFNESS * adX;
+				currentAppBarSpeed = -ICON_APPROACHING_SPEED;
 			}
-			currentAppBarSpeed += ((accel * REFRESH_PERIOD / 1000));
-			//statusObject.innerHTML = "accel: " + accel + "<br>Speed: " +
-			//	currentAppBarSpeed;
-		} // calcolo velocita'
-		// Trucco: se stiamo lenti e vicini allo 0, ci fermiamo li'
-		if ((adX < LOCK_AREA_WIDTH) && 
-			(Math.abs(currentAppBarSpeed) <	(STIFFNESS * adX * 2))) {
-			// Lock!
-			currentAppBarSpeed = 0;
-			currentAppBarPosition += centralIconDeltaX();
-			centralIconLocked = true;
-			appBarGoing = false;
-			statusObject.innerHTML = "Pos: " + currentAppBarPosition;
 		}
+		if (currentAppBarSpeed > 0) {
+			speedSign = 1;
+		} else {
+			speedSign = -1;
+		}
+		if (Math.abs(currentAppBarSpeed) > ICON_CRUISE_SPEED) {
+			// Siamo molto veloci: freniamo e continuiamo a scorrere
+			currentAppBarSpeed -= FRICTION * REFRESH_PERIOD * speedSign / 1000;
+		} else {
+			// Andiamo verso l'icona centrale?
+			if ((dX * speedSign) > 0) {
+				// Valutiamo la possibilita' di decelerare
+				if (Math.abs(dX) <= ICON_LOCK_DISTANCE) {
+					// Ci avviciniamo lentamente all'icona
+					if (dX > 0) {
+						currentAppBarSpeed = ICON_APPROACHING_SPEED;
+					} else {
+						currentAppBarSpeed = -ICON_APPROACHING_SPEED;
+					}
+					// Al passo successivo andremmo oltre?
+					if (Math.abs(dX) <= 
+						ICON_APPROACHING_SPEED * REFRESH_PERIOD / 1000 ) {
+						currentAppBarSpeed = 0;
+						// Siamo arrivati!
+						centralIconLocked = true;
+						going = false;
+					}
+				} else {
+					// Portiamoci a velocita' di crociera, accelerando se
+					// necessario 
+					var acceleratedSpeed = currentAppBarSpeed + speedSign *
+						ICON_ACCELERATION;
+					if (Math.abs(acceleratedSpeed) <= ICON_CRUISE_SPEED) {
+						currentAppBarSpeed = acceleratedSpeed;
+					} else {
+						currentAppBarSpeed = ICON_CRUISE_SPEED * speedSign;
+					}
+				}
+			} else {
+				// Ci allontaniamo dall'icona centrale a velocita' di crociera
+				currentAppBarSpeed = ICON_CRUISE_SPEED * speedSign;
+			}
+		} // Se siamo troppo veloci
 		new_left = Math.round(currentAppBarPosition + 
 			currentAppBarSpeed * (REFRESH_PERIOD / 1000));
 		appbar_scroll(new_left);
@@ -336,8 +362,8 @@ function dragAppBarStop(mousePos, timeStamp) {
 		// E' la fine di un trascinamento!
 		if (timeStamp != 0) { // Abbiamo il timeStamp?
 			// Calcoliamo e saturiamo la velocita'
-			currentAppBarSpeed = new_left / 
-				(timeStamp - lastDragTimeStamp) * FINGER_SPEED_FACTOR;
+			currentAppBarSpeed = Math.round(new_left / 
+				(timeStamp - lastDragTimeStamp) * FINGER_SPEED_FACTOR);
 			saturateAppBarSpeed();
 		} else {
 			currentAppBarSpeed = 0;

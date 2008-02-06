@@ -216,47 +216,81 @@ function vai(a_pagina) {
 var first_click = true;
 var click_timer;
 
+/**
+ * Gestisce uno o due click, chiamando clicca1().
+ *
+ * @param da id del'oggetto da far sparire.
+ * @param a id dell'oggetto da far apparire con un solo click.
+ * @param ret id dell'oggetto da far apparire con un doppio click.
+ *
+ * @see clicca1()
+ */
 function clicca(da,a,ret) {
-  if (dragging) return;
-  if (first_click) {
-    first_click = false;
-    //setHeader("1° "+da+">"+a);
-    click_timer = setTimeout("clicca1('"+da+"','"+a+"')",double_click_time);
-  } else {
-    first_click = true;
-    clearTimeout(click_timer);
-    //setHeader("2° "+da+">"+ret);
-    clicca1(da,ret);
-  }
-}
-
-function clicca1(da,a) {
-  first_click = true;
-  da_el = document.getElementById(da);
-  a_el = document.getElementById(a);
-  if (da_el && a_el) {
-	  da_el.style.display='none';
-	  a_el.style.display='';
-	  //setHeader(a_el.getProperty('header'));
+	if (dragging) return;
+	if (first_click) {
+		first_click = false;
+		//setHeader("1° "+da+">"+a);
+		click_timer = setTimeout("clicca1('"+da+"','"+a+"')",double_click_time);
 	} else {
-	  window.alert("da="+da+" ("+da_el+") a="+a+" ("+a_el+")");
+		first_click = true;
+		clearTimeout(click_timer);
+		//setHeader("2° "+da+">"+ret);
+		clicca1(da,ret);
 	}
-  //window.event.cancelBubble = true;
 }
 
+/**
+ * Riceve un click e scambia due layer.
+ *
+ * @param da id dell'oggetto da far sparire
+ * @param a id dell'oggetto da far apparire
+ */
+function clicca1(da,a) {
+	first_click = true;
+	da_el = document.getElementById(da);
+	a_el = document.getElementById(a);
+	if (da_el && a_el) {
+		da_el.style.display='none';
+		a_el.style.display='';
+		//setHeader(a_el.getProperty('header'));
+	} else {
+		window.alert("da="+da+" ("+da_el+") a="+a+" ("+a_el+")");
+	}
+	//window.event.cancelBubble = true;
+}
+
+/**
+ * Gestisce uno o due click, chiamando ingrandisci1().
+ *
+ * @param ev evento click.
+ * @param da id del'oggetto da far sparire.
+ * @param a id dell'oggetto da far apparire con un solo click.
+ * @param ret id dell'oggetto da far apparire con un doppio click.
+ *
+ * @see ingrandisci1()
+ */
 function ingrandisci(ev,da,a,ret) {
-  if (first_click) {
-	  //setHeader("1° "+da+">"+a);
-    first_click = false;
-    click_timer = setTimeout("ingrandisci1("+ev.clientX+","+ev.clientY+",'"+da+"','"+a+"')",double_click_time);
-  } else {
-	  //setHeader("2° "+da+">"+ret);
-    first_click = true;
-    clearTimeout(click_timer);
-    clicca1(da,ret);
-  }
+	if (first_click) {
+		//setHeader("1° "+da+">"+a);
+		first_click = false;
+		click_timer = setTimeout("ingrandisci1("+ ev.clientX + "," + 
+			ev.clientY + ",'" + da + "','" + a + "')", double_click_time);
+	} else {
+		//setHeader("2° "+da+">"+ret);
+		first_click = true;
+		clearTimeout(click_timer);
+		clicca1(da,ret);
+	}
 }
 
+/**
+ * Scambia due oggetti, mostrando il secondo alla posizione indicata.
+ *
+ * @param X coordinata X da centrare.
+ * @param Y coordinata Y da centrare.
+ * @param da id dell'oggetto da far sparire.
+ * @param a id dell'oggetto da far apparire.
+ */
 function ingrandisci1(X,Y,da,a) {
   first_click = true;
   //ev = window.event;

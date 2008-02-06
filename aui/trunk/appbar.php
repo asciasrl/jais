@@ -1,7 +1,11 @@
-<?php 
-$apps = array('audio','clima','energia','illuminazione','serramenti','sicurezza','video'); 
+<script language="javascript">
+const SERVICES = [<?php
+foreach ($apps as $a):
+echo("\"$a\", ");
+endforeach ?>];
 
-echo('<script language="javascript">appbar_num='.count($apps).';</script>');
+appbar_num=<?php echo(count($apps)); ?>;
+</script><?php
 
 // ripete le prime 5 per creare l'effetto di circolarit�
 for ($i = 0; $i < 5; $i++) {
@@ -19,8 +23,11 @@ for ($i = 0; $i < 5; $i++) {
 foreach ($apps as $k => $app):
   $i = $k + 1;
 ?>  
-    <div id="<?php echo("app-".$i); ?>" style="float: left; background-color: black; width: 80px; height: 80px; margin-top: 0px; overflow: hidden;">
-      <img id="<?php echo("app-".$i."-img"); ?>" title="<?php echo("$app $i"); ?>" alt="<?php echo($app); ?>" width="80" height="80" border="0" src="images/<?php echo($app); ?>.png" />
+    <div id="<?php echo("app-".$i); ?>" style="float: left; background-color: black; width: 80px; height: 80px; margin-top: 0px; overflow: hidden;" servicename="<?php echo("$app"); ?>">
+      <img id="<?php echo("app-".$i."-img"); ?>" 
+      	title="<?php echo("$app $i"); ?>" alt="<?php echo($app); ?>" 
+      	width="80" height="80" border="0" src="images/<?php echo($app); ?>.png"
+        onclick="iconClicked(this)"/>
     </div>  
 <?php 
 endforeach;    

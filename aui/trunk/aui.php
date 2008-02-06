@@ -1,3 +1,48 @@
+<?php
+
+/**
+ * Lista dei servizi.
+ */
+$apps = array('audio','clima','energia','illuminazione','serramenti','sicurezza','video'); 
+
+/**
+ * Lista dei piani.
+ */
+$piani = Array(
+	Array(
+		"id" => "piano-01A",
+		"header" => "Piano 1A",
+		"mapFile" => "images/piano-01A.png",
+		"bigMapFile" => "images/piano-01A-big.png"));
+
+	define("ILL_LUCE", 0);
+	define("ILL_DIMMER", 1);
+/**
+ * Frame: illuminazione.
+ * 
+ * <p>Gli indici sono gli ID dei piani.</p>
+ */
+$frameIlluminazione = Array(
+	"piano-01A" => Array(
+		"p1a-luce1" => Array(
+			"type" => ILL_LUCE,
+			"x" => 100,
+			"y" => 100,
+			"label" => "Applique",
+			"address" => "0.3:1"),
+		"p1a-luce2" => Array(
+			"type" => ILL_LUCE,
+			"x" => 300,
+			"y" => 100,
+			"label" => "Luce pitosforo",
+			"address" => "0.3:2"),
+		"p1a-dimmer1" => Array(
+			"type" => ILL_DIMMER,
+			"x" => 100,
+			"y" => 300,
+			"label" => "Luce dimmerizzata",
+			"address" => "0.5:0")));
+ ?>
 <div id="screensaver" title="AUI screensaver - clicca per accedere" onclick="vai('login');"><img
 	alt="aree schermo" src="images/aree-schermo2.jpg" /></div>
 <div id="login" style="display: none;">
@@ -71,26 +116,74 @@
 </table>
 </div>
 <div style="width: 240px; height: 240px;">
-<div id="mappa"
-	style="position: absolute; width: 240px; height: 240px; overflow: hidden;">
-<img 
-	header="ASCIA Building"
-	title="AUI edificio - clicca su un appartamento" 
-	style="position: absolute;"
-	onclick="clicca1('piani-all','piano-01A');"
-	id="piani-all"	src="images/piani-all.png" alt="" />
-<img
-	header="Piano 1A"
-	title="AUI mappa appartamento - clicca per ingrandire - doppio click per ritornare"
-	style="position: absolute; display: none;"
-	onclick="ingrandisci(event,'piano-01A','piano-01A-big','piani-all');"
-	id="piano-01A" src="images/piano-01A.png" alt="" />
-<img
-	header="Piano 1A"
-	title="AUI appartamento - doppio click per ritornare"
-	style="position: absolute; display: none;"
-	onclick="clicca('piano-01A-big','piano-01A-big','piano-01A');" id="piano-01A-big"
-	src="images/piano-01A-big.png" alt="" /></div>
+	<div id="mappa"
+		style="position: absolute; width: 240px; height: 240px; overflow: hidden;">
+		<div id="piani-all" 
+			style="position: absolute; width: 240px; height: 240px; overflow: hidden;">
+			<img 
+				header="ASCIA Building"
+				title="AUI edificio - clicca su un appartamento" 
+				style="position: absolute;"
+				onclick="clicca1('piani-all','piano-01A');"
+				src="images/piani-all.png" alt="" />
+		</div>
+<?php
+foreach ($piani as $piano):
+ ?>
+		<div id="<?php echo($piano["id"]); ?>" 
+			style="position: absolute; width: 240px; height: 240px; overflow: hidden; display: none;">
+			<img
+				header="<?php echo($piano["header"]); ?>"
+				title="AUI mappa appartamento - clicca per ingrandire - doppio click per ritornare"
+				style="position: absolute;"
+				onclick="ingrandisci(event,'<?php echo($piano["id"]); ?>','<?php echo($piano["id"] . "-big"); ?>','piani-all');"
+				src="<?php echo($piano["mapFile"]); ?>" alt="" />
+		</div>
+		<div id="<?php echo($piano["id"] . "-big"); ?>"
+			style="position: absolute; display: none;"
+			onclick="clicca('<?php echo($piano["id"] . "-big"); ?>','<?php echo($piano["id"] . "-big"); ?>','<?php echo($piano["id"]); ?>');">
+			<img
+				header="<?php echo($piano["header"]); ?>"
+				title="AUI appartamento - doppio click per ritornare"
+				style="position: absolute;"
+				src="<?php echo($piano["bigMapFile"]); ?>" alt="" />
+<?php
+	// Crea un layer per ciascun servizio
+	foreach ($apps as $s):
+ ?>
+			<div id="<?php echo($piano["id"] . "-big-" . $s); ?>"
+				style="position: absolute; display: none;">
+<?php
+		switch($s) {
+		case "illuminazione":
+			if (isset($frameIlluminazione[$piano["id"]])) {
+				foreach ($frameIlluminazione[$piano["id"]] as $idLuce => $luce) {
+					echo("<div id=\"$idLuce\" style=\"position:absolute; left: " .
+						$luce["x"] . "px; top: " . $luce["y"] . "px;\" lit=\"no\"");
+					if ($luce["type"] == ILL_LUCE) {
+						echo("onClick=\"lightClicked(this)\"");
+					} else {
+						echo("onClick=\"dimmerClicked(this)\"");
+					}
+					echo("><img src=\"images/luce_off.png\" alt=\"" . $luce["label"] .
+						"\" /></div>");
+				} // foreach luce
+			} else {
+				echo("Non ci sono luci per questo piano!");
+			}
+			break;
+		default:
+		echo("$s<br/>$s<br/>$s<br/>");
+		}
+?></div>
+<?php
+	endforeach;
+ ?>
+		</div> <!-- FIXME: bisogna dare le dimensioni al <div>-->
+<?php
+endforeach; // $piani as $piano
+ ?>
+	</div>
 </div>
 </div>
 <script type="" language="javascript" src="aui.js"></script>

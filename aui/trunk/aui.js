@@ -31,7 +31,14 @@ var dragging = false;
  * In quale istante si e' registrato l'ultimo evento di spostamento.
  */
 var lastDragTimeStamp = 0;
-
+/**
+ * Elemento che contiene la mappa visualizzata.
+ */
+var currentMap;
+/**
+ * Servizio attivo.
+ */
+var activeService = "";
 
 /**
  * Posizione del mouse relativa al documento.
@@ -149,7 +156,6 @@ function dragMap(mousePos) {
 	if (-new_top < 0) {
 		new_top = 0;
 	}
-
 	dragObject.style.top =  new_top + 'px';
 	dragObject.style.left =  new_left + 'px';
 	//statusObject.innerHTML += ' D '+(mousePos.x - mouseOffset.x)+','+(mousePos.y - mouseOffset.y);
@@ -296,6 +302,7 @@ function ingrandisci1(X,Y,da,a) {
   //ev = window.event;
   da_el = document.getElementById(da);
   a_el = document.getElementById(a);
+  currentMap = a_el;
   //setHeader(a_el.getProperty('header'));
   
   // somma gli offset della gerarchia
@@ -325,6 +332,8 @@ function ingrandisci1(X,Y,da,a) {
   new_x = a_el.clientWidth * click_x / da_el.clientWidth;
   new_y = a_el.clientHeight * click_y / da_el.clientHeight;
 */
+	// NOTA: se uno degli elementi da_el o a_el non ha definite le dimensioni,
+	// questi conti possono dare risultato NaN
   new_x = a_el.width * click_x / da_el.width;
   new_y = a_el.height * click_y / da_el.height;
 
@@ -339,7 +348,7 @@ function ingrandisci1(X,Y,da,a) {
     new_left = a_el.width - 240;
   }
   // troppo a sinistra
-  if (new_left < 0) {
+  if (!(new_left > 0)) { // Filtriamo NaN
     new_left = 0;
   }
   // troppo in basso
@@ -347,7 +356,7 @@ function ingrandisci1(X,Y,da,a) {
     new_top = a_el.height - 240;
   }
   // troppo in alto
-  if (new_top < 0) {
+  if (!(new_top > 0)) { // Filtriamo NaN
     new_top = 0;
   }
   
@@ -360,6 +369,57 @@ function ingrandisci1(X,Y,da,a) {
   a_el.style.top = '-' + new_top + 'px';
       
   //alert('ev.x='+ev.x+' ev.y='+ev.y+' dx='+dx+' dy='+dy);
+}
+
+/**
+ * Questa funzione viene chiamata quando un'icona della appBar viene premuta.
+ *
+ * <p>Accende il layer corrispondente alla funzione scelta.</p>
+ */
+function iconClicked(iconElement) {
+	var funzione = iconElement.alt; // FIXME
+	if (!currentMap) {
+		return;
+	}
+	var currentMapId = currentMap.id;
+	// Accendiamo il solo layer giusto.
+	for (i = 0; i < SERVICES.length; i++) {
+		var service = SERVICES[i];
+		var element = 
+			document.getElementById(currentMapId + "-" + service);
+		if (SERVICES[i] == funzione) {
+			element.style.display = "";
+			activeService = funzione;
+		} else {
+			if (element != null) {
+				element.style.display = "none";
+			}
+		}
+	}
+	// Propaghiamo l'evento
+	return true;
+}
+
+/**
+ * L'utente ha fatto click su una luce.
+ */
+function lightClicked(lightDiv) {
+	var lightElement = lightDiv.firstChild;
+	var lit = lightDiv.attributes.getNamedItem("lit");
+	if (lit.value == "yes") {
+		lightElement.src = "images/luce_off.png";
+		lit.value = "no";
+	} else {
+		lightElement.src = "images/luce_on.png";
+		lit.value = "yes";
+	}
+}
+
+/**
+ * L'utente ha fatto click su un dimmer.
+ */
+function dimmerClicked(dimmerDiv) {
+	statusObject.innerHTML = "Dimmer non supportato.";
 }
 
 makeDraggable(document.getElementById('piano-01A-big'));

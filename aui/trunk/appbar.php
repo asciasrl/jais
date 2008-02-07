@@ -2,20 +2,17 @@
 const SERVICES = [<?php
 foreach ($apps as $a):
 echo("\"$a\", ");
-endforeach ?>];
+endforeach; ?>];
 
 appbar_num=<?php echo(count($apps)); ?>;
 </script><?php
 
-// ripete le prime 5 per creare l'effetto di circolarit�
+// ripete le prime 5 per creare l'effetto di circolarita'
 for ($i = 0; $i < 5; $i++) {
   $apps[] = $apps[$i]; 
 }
 ?>
 
-<div id="status" style="height: 200px;">Stato</div>
-
-<div style="margin: 0px auto; width: 320px; height: 80px;">
 <div id="appbar" style="margin: 0px auto; width: 320px; height: 80px; overflow: hidden; position: absolute;">
   <div id="scroller" style="background-color: black; position: absolute; width: 1000px; height: 80px;">
 <?php
@@ -33,7 +30,6 @@ foreach ($apps as $k => $app):
 endforeach;    
 ?>  
   </div>
-</div>
 </div>
 
 <script type="" language="javascript" src="appbar.js"></script>

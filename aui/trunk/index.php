@@ -7,21 +7,27 @@
 <link href="aui.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
-
-<div title="AUI dispositivo di controllo senza fili"
-	style="margin: 0px auto; width: 481px; height: 615px;">
-<div style="margin: 0px; width: 481px; height: 615px;">
-
-<div><img src="images/AUI-ipod-top.jpg" width="481" height="107"/></div>
-<div style="background-color: black; float: left; width:97px; height:320px;"><img src="images/AUI-ipod-sx.jpg"  width="97" height="320" /></div>
-<div style="float: left; width: 240px; height: 320px; background-color: black; color: white;">
-<?php include('aui.php'); ?>	
+<div style="margin: 0px auto; width: 598px; height: 743px;">
+  <div style="z-index: 1; position: absolute;"><img src="images/touch-ipod_480x320_03_nero.png"></div>
+  <div style="z-index: 2; position: absolute; margin-left: 139px; margin-top: 107px;">
+  <!-- Barra di sistema dell iPod -->
+  <div id="iPod-system" style="width: 320px; height: 20px;">
+    <div style="position: absolute;"><img src="images/barrastato_ipod.png" /></div>
+    <div id="iPod-clock" style="position: absolute; margin: 0px 120px; margin-top: 1px; height: 20px; width: 80px; text-align: center; color: white; font-family: Arial; font-size: 14px;">--:--</div>
+  </div>
+  <script language="javascript">
+  iPodClockObj = document.getElementById('iPod-clock');
+  function iPodClock() {
+    var date = new Date();
+    iPodClockObj.innerHTML = date.getHours() + ":" + (date.getMinutes()< 10 ? "0" : "") + date.getMinutes(); 
+    setTimeout("iPodClock()", 100);
+  }
+  iPodClock();
+  </script>
+  <!-- Fine Barra di sistema dell iPod -->  
+<?php include('aui.php'); ?>
+  </div>
+  <div style="z-index: 2; position: absolute; margin-left: 259px; margin-top: 580px; width: 80px; height: 80px;" onClick="vai('screensaver');"></div>
 </div>
-<div style="float: left; width:144px; height:320px;"><img src="images/AUI-ipod-dx.jpg"  width="144" height="320" /></div>
-<img src="images/AUI-ipod-down.jpg" width="481" height="188"/>
-
-</div>
-</div>
-
 </body>
 </html>

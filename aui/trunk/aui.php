@@ -43,6 +43,10 @@ $frameIlluminazione = Array(
 			"label" => "Luce dimmerizzata",
 			"address" => "0.5:0")));
  ?>
+<div style="position: absolute; z-index: 30; width: 320px; height: 40px; filter:alpha(opacity='60'); opacity: 0.60;">
+<div style="position: absolute;"><img src="images/barratesti.png" /></div>
+<div id="header" style="position: absolute; margin-top: 9px; height: 22px; width: 320px; text-align: center;"><b>barra di stato</b></div>
+</div>
 <div id="screensaver" title="AUI screensaver - clicca per accedere" onclick="vai('login');"><img
 	alt="aree schermo" src="images/aree-schermo2.jpg" /></div>
 <div id="login" style="display: none;">
@@ -102,20 +106,7 @@ $frameIlluminazione = Array(
 </table>
 </div>
 <div id="navigazione" style="display: none;">
-<div style="height: 20px;">
-<table id="top" summary="top" cellpadding="0" cellspacing="0" border="0">
-	<tr>
-		<td title="Menu"><img onclick="vai('login');" alt="menu" xwidth="40"
-			xheight="60" border="0" src="images/infomenu-sx.png" /></td>
-		<td title="Status bar" width="180">
-		<div id="header" style="width: 180px; height: 20px; overflow: hidden; font-size: small; text-align: center;">ASCIA User Interface</div>
-		</td>
-		<td title="Exit"><img onclick="vai('screensaver');" alt="exit" xwidth="40"
-			xheight="60" border="0" src="images/exit-dx.png" /></td>
-	</tr>
-</table>
-</div>
-<div style="width: 240px; height: 240px;">
+  <div id="mappa-out" style="width: 320px; height: 380px;">
 	<div id="mappa"
 		style="position: absolute; width: 240px; height: 240px; overflow: hidden;">
 		<div id="piani-all" 
@@ -184,8 +175,11 @@ foreach ($piani as $piano):
 endforeach; // $piani as $piano
  ?>
 	</div>
-</div>
+	<!-- fine mappa -->
+  </div>
+  <div id="appbar-out">
+<?php include('appbar.php'); ?>
+  </div>
 </div>
 <script type="" language="javascript" src="aui.js"></script>
-<script type="" language="javascript" src="keypad.js"></script>
-<?php include('appbar.php'); ?>	
+<script type="" language="javascript" src="keypad.js"></script>	

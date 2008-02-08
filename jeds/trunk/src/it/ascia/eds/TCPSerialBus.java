@@ -131,6 +131,7 @@ public class TCPSerialBus extends Bus {
     public TCPSerialBus(String hostName, int port) throws EDSException {    	
     	this.tcpPort = port;
 		try {
+			logger.info("Connessione a " + hostName + ":" + port);
 			sock = SocketChannel.open(new InetSocketAddress(hostName, tcpPort));
 			sock.configureBlocking(false);
 		} catch (UnresolvedAddressException e) {
@@ -154,6 +155,7 @@ public class TCPSerialBus extends Bus {
 					"scrittura: " +	e.getMessage());
 		}
 		tcpSerialBusReader = new TCPSerialBusReader(readSelector, this, sock);
+		logger.debug("Avvio listener");
 		new Thread(tcpSerialBusReader).start();
 		writeLock = new ReentrantLock();
     }

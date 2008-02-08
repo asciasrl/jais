@@ -53,7 +53,6 @@ public class SerialBus extends Bus implements SerialPortEventListener {
         boolean portFound = false;
         
     	portList = CommPortIdentifier.getPortIdentifiers();
-
     	while (!portFound && portList.hasMoreElements()) {
     	    portId = (CommPortIdentifier) portList.nextElement();
     	    logger.debug("Detected port: " + portId.getName());
@@ -68,6 +67,7 @@ public class SerialBus extends Bus implements SerialPortEventListener {
     	    throw new EDSException("port " + portName + " not found.");
     	} 
 
+    	logger.info("Connessione a " + portName); 
     	try {
     		serialPort = (SerialPort) portId.open("SerialBus", 2000);
     	} catch (PortInUseException e) {

@@ -70,7 +70,7 @@ var targetAppBarPosition = 0;
 /**
  * DEBUG: dove scrivere messaggi di stato.
  */
-var statusObject = document.getElementById('status');
+var statusObject = document.getElementById('header');
 
 /**
  * Imposta la dimensione e l'opacita' di un'icona.
@@ -311,9 +311,7 @@ function appbar_timer() {
 /**
  * Muove l'appbar.
  *
- * @param mousePos posizione attuale del mouse.
- * @param timeStamp istante di tempo (in millisecondi) al quale si e' verificato
- * l'evento.
+ * @param mousePos posizione attuale del mouse relativa all'appbar.
  */
 function dragAppBar(mousePos) {
 	var new_left = mouseOffset.x - mousePos.x;
@@ -355,6 +353,9 @@ function saturateAppBarSpeed() {
  *
  * <p>Questa funzione viene chiamata quando il bottone del mouse viene 
  * rilasciato.</p>
+ *
+ * @param mousePos posizione del mouse relativa all'appbar.
+ * @param timeStamp istante in cui il bottone viene rilasciato.
  */
 function dragAppBarStop(mousePos, timeStamp) {
 	var new_left = mouseOffset.x - mousePos.x;
@@ -370,12 +371,15 @@ function dragAppBarStop(mousePos, timeStamp) {
 		}
 	} else { // Era un click
 		appBarGoing = true;
-		targetAppBarPosition = mousePos.x - objectOffset.x - 
-			dragObject.offsetWidth / 2 + currentAppBarPosition;
+		targetAppBarPosition = mousePos.x + currentAppBarPosition - 
+			 dragObject.offsetWidth / 2;
+		statusObject.innerHTML = "From: " + currentAppBarPosition + " to: " +
+			targetAppBarPosition;
 		// Trucco: approssimiamo le coordinate del click, in modo da prendere
 		// il centro di un'icona
 		targetAppBarPosition = 
-			Math.floor((targetAppBarPosition) / 80) * 80 + 40;	
+			Math.floor((targetAppBarPosition) / 80) * 80 + 40;
+		statusObject.innerHTML += " (" + targetAppBarPosition + ")";
 	}
 	lastAppBarPosition = currentAppBarPosition;
 	centralIconLocked = false;

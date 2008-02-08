@@ -12,8 +12,8 @@
  */
 var dragObject  = null;
 /**
- * Qui viene messa la posizione del mouse nel documento, al momento della
- * pressione di un bottone.
+ * Qui viene messa la posizione del mouse, al momento della
+ * pressione di un bottone, relativa all'oggetto che ha ricevuto il click.
  *
  * <p>Questo valore serve a ricordare dove e' stato fatto il click, per gestire
  * un'operazione di trascinamento.</p>
@@ -22,7 +22,7 @@ var mouseOffset = null;
 /**
  * La posizione, relativa al documento, dell'oggetto che ha ricevuto il click.
  */
-var objectOffset = null;
+var dragObjectPosition = null;
 /**
  * True se l'utente sta trascinando qualcosa.
  */
@@ -36,21 +36,31 @@ var lastDragTimeStamp = 0;
  */
 var currentMap;
 /**
+ * Attuale posizione della mappa.
+ */
+var currentMapPosition = {x:0, y:0};
+/**
+ * Ultima posizione della mappa.
+ */
+var lastMapPosition = {x:0, y:0};
+/**
  * Servizio attivo.
  */
 var activeService = "";
 
 /**
- * Posizione del mouse relativa al documento.
+ * Posizione del mouse relativa all'oggetto.
  */
-function mouseCoords(ev){
+function mouseCoords(ev, objectPosition){
 	ev = ev || window.event;
 	if(ev.pageX || ev.pageY){
-		return {x:ev.pageX, y:ev.pageY};
+		return {x:ev.pageX - objectPosition.x, y:ev.pageY -	objectPosition.y};
 	}
 	return {
-		x:ev.clientX + document.body.scrollLeft - document.body.clientLeft,
-		y:ev.clientY + document.body.scrollTop  - document.body.clientTop
+		x:ev.clientX + document.body.scrollLeft - document.body.clientLeft -
+			objectPosition.x,
+		y:ev.clientY + document.body.scrollTop  - document.body.clientTop -
+			objectPosition.y
 	};
 }
 
@@ -70,28 +80,28 @@ function mouseCoords(ev){
 //		return {x:mousePos.x - docPos.x, y:mousePos.y - docPos.y};
 //	}
 
-///**
-// * Ritorna la posizione di un elemento relativa al documento (?).
-// *
-// * <p>Questa funzione somma tutti gli offset dei parenti dell'elemento.</p>
-// *
-// * @param e l'elemento di cui calcolare la posizione.
-// */
-//function getPosition(e){
-//	var left = 0;
-//	var top  = 0;
-//
-//	while (e.offsetParent){
-//		left += e.offsetLeft;
-//		top  += e.offsetTop;
-//		e     = e.offsetParent;
-//	}
-//
-//	left += e.offsetLeft;
-//	top  += e.offsetTop;
-//
-//	return {x:left, y:top};
-//}
+/**
+ * Ritorna la posizione di un elemento relativa al documento (?).
+ *
+ * <p>Questa funzione somma tutti gli offset dei parenti dell'elemento.</p>
+ *
+ * @param e l'elemento di cui calcolare la posizione.
+ */
+function getPosition(e){
+	var left = 0;
+	var top  = 0;
+
+	while (e.offsetParent){
+		left += e.offsetLeft;
+		top  += e.offsetTop;
+		e     = e.offsetParent;
+	}
+
+	left += e.offsetLeft;
+	top  += e.offsetTop;
+	// statusObject.innerHTML=("getPosition(" + e + ") = " + left + ", " + top); 
+	return {x:left, y:top};
+}
 
 /**
  * Ritorna l'offset di un elemento.
@@ -106,9 +116,9 @@ function getOffset(e) {
  * Funzione collegata al movimento del mouse.
  */
 function mouseMove(ev){
-	ev = ev || window.event;
-	var mousePos = mouseCoords(ev);
 	if (dragObject) {
+		ev = ev || window.event;
+		var mousePos = mouseCoords(ev, dragObjectPosition);
 		var d = new Date();
 		dragging = true;
 		lastDragTimeStamp = d.getTime();
@@ -128,18 +138,15 @@ document.onmousemove = mouseMove;
 /**
  * Sposta la mappa in base alla posizione del mouse.
  *
- * @param mousePos posizione del mouse relativa al documento.
+ * @param mousePos posizione del mouse relativa all'oggetto.
  */
 function dragMap(mousePos) {
-	//statusObject.innerHTML = mousePos.x + ',' + mousePos.y;
+	// statusObject.innerHTML = "Mouse:" + mousePos.x + ',' + mousePos.y;
+  	// statusObject.innerHTML += ' Da:'+dragObject.offsetLeft+','+dragObject.offsetTop;
 
-	el = document.getElementById('piano-01A-big');
-  	//statusObject.innerHTML += ' E '+el.offsetLeft+','+el.offsetTop;
-  	// if (dragObject) { // E' sicuramente vero, se stiamo qui
-
-	new_top = mousePos.y - mouseOffset.y + objectOffset.y;
-	new_left = mousePos.x - mouseOffset.x + objectOffset.x;
-
+	new_top = mousePos.y - mouseOffset.y + lastMapPosition.y;
+	new_left = mousePos.x - mouseOffset.x + lastMapPosition.x;
+	// statusObject.innerHTML += ' A:'+new_top+','+new_left;
 	// troppo a destra
 	if (-new_left + 240 > dragObject.width) {
 		new_left = 240 - dragObject.width;
@@ -158,10 +165,21 @@ function dragMap(mousePos) {
 	}
 	dragObject.style.top =  new_top + 'px';
 	dragObject.style.left =  new_left + 'px';
-	//statusObject.innerHTML += ' D '+(mousePos.x - mouseOffset.x)+','+(mousePos.y - mouseOffset.y);
+	currentMapPosition = {x:new_left, y:new_top};
+	// statusObject.innerHTML += ' D '+(mousePos.x - mouseOffset.x)+','+(mousePos.y - mouseOffset.y);
 
 	return false;
-	// } // if (dragObject)
+}
+
+/**
+ * Quando termina il trascinamento della mappa.
+ */
+function dragMapStop() {
+	if (dragging) {
+		lastMapPosition = currentMapPosition;
+		statusObject.innerHTML = "Stopping at " + dragObject.style.left + ", " +
+			dragObject.style.top;
+	}
 }
 
 /**
@@ -172,8 +190,11 @@ function mouseUp(ev){
 	if (dragObject) {
 		var d = new Date();
 		switch (dragObject.id) {
+			case 'piano-01A-big':
+				dragMapStop();
+				break;
 			case 'appbar':
-				dragAppBarStop(mouseCoords(ev), d.getTime());
+				dragAppBarStop(mouseCoords(ev, dragObjectPosition), d.getTime());
 				break;
 		}
 	}
@@ -191,8 +212,8 @@ function makeDraggable(item){
 	item.onmousedown = function(ev){
 		dragObject  = this;
 		//mouseOffset = getMouseOffset(this, ev);
-		mouseOffset = mouseCoords(ev);
-		objectOffset = getOffset(this);
+		dragObjectPosition = getPosition(this);
+		mouseOffset = mouseCoords(ev, dragObjectPosition);
 		dragging = false;
 		return false;
 	}
@@ -279,8 +300,12 @@ function ingrandisci(ev,da,a,ret) {
 	if (first_click) {
 		//setHeader("1° "+da+">"+a);
 		first_click = false;
-		click_timer = setTimeout("ingrandisci1("+ ev.clientX + "," + 
-			ev.clientY + ",'" + da + "','" + a + "')", double_click_time);
+		var target = ev.target || ev.srcElement; // Firefox vs. IE
+		var targetPos = getPosition(target);
+		var relativeX = ev.clientX - targetPos.x;
+		var relativeY = ev.clientY - targetPos.y; 
+		click_timer = setTimeout("ingrandisci1("+ relativeX + "," + relativeY + 
+			",'" + da + "','" + a + "')", double_click_time);
 	} else {
 		//setHeader("2° "+da+">"+ret);
 		first_click = true;
@@ -292,20 +317,20 @@ function ingrandisci(ev,da,a,ret) {
 /**
  * Scambia due oggetti, mostrando il secondo alla posizione indicata.
  *
- * @param X coordinata X da centrare.
- * @param Y coordinata Y da centrare.
+ * @param X coordinata X relativa all'oggetto che ha ricevuto il click.
+ * @param Y coordinata Y relativa all'oggetto che ha ricevuto il click.
  * @param da id dell'oggetto da far sparire.
  * @param a id dell'oggetto da far apparire.
  */
 function ingrandisci1(X,Y,da,a) {
-  first_click = true;
-  //ev = window.event;
-  da_el = document.getElementById(da);
-  a_el = document.getElementById(a);
-  currentMap = a_el;
-  //setHeader(a_el.getProperty('header'));
+	first_click = true;
+	//ev = window.event;
+	var da_el = document.getElementById(da);
+	var a_el = document.getElementById(a);
+	currentMap = a_el;
+	//setHeader(a_el.getProperty('header'));
   
-  // somma gli offset della gerarchia
+	// somma gli offset della gerarchia
 /*
   el = da_el;
   s = '';
@@ -320,54 +345,54 @@ function ingrandisci1(X,Y,da,a) {
   if (debug) alert(s);
 */
   
-  // coordinate del click
-  el_div = da_el.parentNode;
-  click_x = X - el_div.offsetLeft;
-  click_y = Y - el_div.offsetTop;
-
-  if (debug) alert('ev.x='+ev.clientX+' ev.y='+ev.clientY+' click_x='+click_x+' click_y='+click_y);
+	// coordinate del click
+	var el_div = da_el.parentNode;
+	if (debug) alert('click_x='+X+' click_y='+Y);
   
-  // calcolo del punto equivalente sulla nuova mappa
+	// calcolo del punto equivalente sulla nuova mappa
 /*
   new_x = a_el.clientWidth * click_x / da_el.clientWidth;
   new_y = a_el.clientHeight * click_y / da_el.clientHeight;
 */
-	// NOTA: se uno degli elementi da_el o a_el non ha definite le dimensioni,
-	// questi conti possono dare risultato NaN
-  new_x = a_el.width * click_x / da_el.width;
-  new_y = a_el.height * click_y / da_el.height;
+	// Ricaviamo le dimensioni degli elementi
+	var a_width = a_el.style.width.slice(0, a_el.style.width.length - 2);
+	var a_height = a_el.style.width.slice(0, a_el.style.height.length - 2);
+	var da_width = da_el.style.width.slice(0, da_el.style.width.length - 2);
+	var da_height = da_el.style.width.slice(0, da_el.style.height.length - 2);
+	new_x = a_width * X / da_width;
+	new_y = a_height * Y / da_height;
 
-  if (debug) alert('new_x='+new_x+' new_y='+new_y);
+	if (debug) alert('new_x='+new_x+' new_y='+new_y);
   
-  // prova a mettere il nuovo punto esattamente nel centro
-  new_left = new_x - 240 / 2;
-  new_top = new_y - 240 / 2;
+	// prova a mettere il nuovo punto esattamente nel centro
+	new_left = new_x - 240 / 2; // FIXME: parametrizza questo "240"
+	new_top = new_y - 240 / 2;
   
-  // troppo a destra
-  if (new_left + 240 > a_el.width) {
-    new_left = a_el.width - 240;
-  }
-  // troppo a sinistra
-  if (!(new_left > 0)) { // Filtriamo NaN
-    new_left = 0;
-  }
-  // troppo in basso
-  if (new_top + 240 > a_el.height) {
-    new_top = a_el.height - 240;
-  }
-  // troppo in alto
-  if (!(new_top > 0)) { // Filtriamo NaN
-    new_top = 0;
-  }
+	// troppo a destra
+	if (new_left + 240 > a_el.width) {
+		new_left = a_el.width - 240;
+	}
+	// troppo a sinistra
+	if (!(new_left > 0)) { // Filtriamo NaN
+		new_left = 0;
+	}
+	// troppo in basso
+	if (new_top + 240 > a_el.height) {
+		new_top = a_el.height - 240;
+	}
+	// troppo in alto
+	if (!(new_top > 0)) { // Filtriamo NaN
+		new_top = 0;
+	}
+
+	if (debug) alert('left='+new_left+' top='+new_top);
   
-  if (debug) alert('left='+new_left+' top='+new_top);
-  
-  // scambia visualizzazione
-  da_el.style.display='none';
-  a_el.style.display='';
-  a_el.style.left = '-' + new_left + 'px';
-  a_el.style.top = '-' + new_top + 'px';
-      
+	// scambia visualizzazione
+	da_el.style.display='none';
+	a_el.style.display='';
+	a_el.style.left = '-' + new_left + 'px';
+	a_el.style.top = '-' + new_top + 'px';
+    lastMapPosition = xurrentMapPosition = {x:-new_left, y:-new_top};  
   //alert('ev.x='+ev.x+' ev.y='+ev.y+' dx='+dx+' dy='+dy);
 }
 
@@ -377,7 +402,8 @@ function ingrandisci1(X,Y,da,a) {
  * <p>Accende il layer corrispondente alla funzione scelta.</p>
  */
 function iconClicked(iconElement) {
-	var funzione = iconElement.alt; // FIXME
+	var funzione = 
+		iconElement.parentNode.attributes.getNamedItem("service").value;
 	if (!currentMap) {
 		return;
 	}
@@ -406,12 +432,15 @@ function iconClicked(iconElement) {
 function lightClicked(lightDiv) {
 	var lightElement = lightDiv.firstChild;
 	var lit = lightDiv.attributes.getNamedItem("lit");
+	var address = lightDiv.attributes.getNamedItem("busaddress").value;
 	if (lit.value == "yes") {
 		lightElement.src = "images/luce_off.png";
 		lit.value = "no";
+		getPort(address);
 	} else {
 		lightElement.src = "images/luce_on.png";
 		lit.value = "yes";
+		getPort(address);
 	}
 }
 

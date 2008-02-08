@@ -13,7 +13,8 @@ $piani = Array(
 		"id" => "piano-01A",
 		"header" => "Piano 1A",
 		"mapFile" => "images/piano-01A.png",
-		"bigMapFile" => "images/piano-01A-big.png"));
+		"bigMapFile" => "images/piano-01A-big.png",
+		"bigMapSize" => Array("w" => 720, "h" => 720)));
 
 	define("ILL_LUCE", 0);
 	define("ILL_DIMMER", 1);
@@ -131,13 +132,18 @@ foreach ($piani as $piano):
 				src="<?php echo($piano["mapFile"]); ?>" alt="" />
 		</div>
 		<div id="<?php echo($piano["id"] . "-big"); ?>"
-			style="position: absolute; display: none;"
+			style="position: absolute;
+				display: none; 
+				width: <?php echo($piano["bigMapSize"]["w"]); ?>px;
+				height: <?php echo($piano["bigMapSize"]["h"]); ?>px;"
 			onclick="clicca('<?php echo($piano["id"] . "-big"); ?>','<?php echo($piano["id"] . "-big"); ?>','<?php echo($piano["id"]); ?>');">
 			<img
 				header="<?php echo($piano["header"]); ?>"
 				title="AUI appartamento - doppio click per ritornare"
 				style="position: absolute;"
-				src="<?php echo($piano["bigMapFile"]); ?>" alt="" />
+				src="<?php echo($piano["bigMapFile"]); ?>" alt="" 
+				width="<?php echo($piano["bigMapSize"]["w"]); ?>"
+				height="<?php echo($piano["bigMapSize"]["h"]); ?>" />
 <?php
 	// Crea un layer per ciascun servizio
 	foreach ($apps as $s):
@@ -150,7 +156,8 @@ foreach ($piani as $piano):
 			if (isset($frameIlluminazione[$piano["id"]])) {
 				foreach ($frameIlluminazione[$piano["id"]] as $idLuce => $luce) {
 					echo("<div id=\"$idLuce\" style=\"position:absolute; left: " .
-						$luce["x"] . "px; top: " . $luce["y"] . "px;\" lit=\"no\"");
+						$luce["x"] . "px; top: " . $luce["y"] . "px;\" lit=\"no\" " .
+						"busaddress=\"" . $luce["address"] . "\"");
 					if ($luce["type"] == ILL_LUCE) {
 						echo("onClick=\"lightClicked(this)\"");
 					} else {
@@ -182,4 +189,6 @@ endforeach; // $piani as $piano
   </div>
 </div>
 <script type="" language="javascript" src="aui.js"></script>
-<script type="" language="javascript" src="keypad.js"></script>	
+<script type="" language="javascript" src="comm.js"></script>
+<script type="" language="javascript" src="appbar.js"></script>
+<script type="" language="javascript" src="keypad.js"></script>

@@ -45,7 +45,8 @@ function lightClicked(lightDiv) {
  * L'utente ha fatto click su un dimmer.
  */
 function dimmerClicked(dimmerDiv) {
-	onOffIcon(dimmerDiv, "lit", "images/luce_on.png", "images/luce_off.png");
+	// onOffIcon(dimmerDiv, "lit", "images/luce_on.png", "images/luce_off.png");
+	showDimmer(dimmerDiv);
 }
 
 /**

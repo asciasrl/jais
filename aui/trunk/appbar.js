@@ -44,7 +44,7 @@ const MAX_ICON_SPEED = 240;
 /**
  * A che pixel si trovava l'appbar all'ultima selezione.
  */
-var lastAppBarPosition = 0;
+var lastAppBarPosition = 40;
 /**
  * A che pixel si trova l'appbar (durante lo scorrimento).
  */
@@ -305,7 +305,10 @@ function appbar_timer() {
 		appbar_scroll(new_left);
 		lastAppBarPosition = currentAppBarPosition;
 	}
-	setTimeout("appbar_timer()", REFRESH_PERIOD);
+	// Andremo a fare un'altra iterazione solo se necessario. 
+	if (!centralIconLocked) {
+		setTimeout("appbar_timer()", REFRESH_PERIOD);
+	}
 }
 
 /**
@@ -385,7 +388,39 @@ function dragAppBarStop(mousePos, timeStamp) {
 	centralIconLocked = false;
 	/* statusObject.innerHTML = new_left + " / " + 
 		(timeStamp - lastDragTimeStamp) * FINGER_SPEED_FACTOR; */
+	// Attiviamo lo scorrimento automatico.
+	setTimeout("appbar_timer()", REFRESH_PERIOD);
 }
 
-setTimeout("appbar_timer()", REFRESH_PERIOD);
+/**
+ * Questa funzione viene chiamata quando un'icona della appBar viene premuta.
+ *
+ * <p>Accende il layer corrispondente alla funzione scelta.</p>
+ */
+function iconPressed(iconElement) {
+	var funzione = 
+		iconElement.parentNode.attributes.getNamedItem("service").value;
+	if (!currentMap) { // Sanity check
+		return;
+	}
+	var currentMapId = currentMap.id;
+	// Accendiamo il solo layer giusto.
+	for (i = 0; i < SERVICES.length; i++) {
+		var service = SERVICES[i];
+		var element = 
+			document.getElementById(currentMapId + "-" + service);
+		if (SERVICES[i] == funzione) {
+			element.style.display = "";
+			activeService = funzione;
+		} else {
+			if (element != null) {
+				element.style.display = "none";
+			}
+		}
+	}
+	// Propaghiamo l'evento
+	return true;
+}
+
+appbar_scroll(currentAppBarPosition);
 makeDraggable(document.getElementById('appbar'));

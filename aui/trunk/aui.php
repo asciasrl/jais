@@ -60,6 +60,48 @@ $frameIlluminazione = Array(
 			"y" => 300,
 			"label" => "Luce dimmerizzata",
 			"address" => "0.5:Out1")));
+
+/**
+ * Frame: energia.
+ * 
+ * <p>Gli indici sono gli ID dei piani.</p>
+ */
+$frameEnergia = Array(
+	"piano-01A" => Array(
+		"p1a-presa1" => Array(
+			"x" => 200,
+			"y" => 200,
+			"label" => "Presa 1",
+			"address" => "0.3:Out3"),
+		"p1a-presa2" => Array(
+			"x" => 400,
+			"y" => 200,
+			"label" => "Presa pitosforo",
+			"address" => "0.3:Out4"),
+		"p1a-presa3" => Array(
+			"x" => 200,
+			"y" => 400,
+			"label" => "Presa lavatrice",
+			"address" => "0.5:Out5")));
+
+/**
+ * Frame: clima.
+ * 
+ * <p>Gli indici sono gli ID dei piani.</p>
+ */
+$frameClima = Array(
+	"piano-01A" => Array(
+		"p1a-clima1" => Array(
+			"x" => 300,
+			"y" => 200,
+			"label" => "Termostato a vapore",
+			"address" => "0.3:Out6"),
+		"p1a-clima2" => Array(
+			"x" => 400,
+			"y" => 400,
+			"label" => "Bruciatore",
+			"address" => "0.3:Out7")));
+
  ?>
 <div style="position: absolute; z-index: 30; width: 320px; height: 40px; filter:alpha(opacity='60'); opacity: 0.60;">
 <div style="position: absolute;"><img src="images/barratesti.png" /></div>
@@ -173,7 +215,7 @@ foreach ($piani as $piano):
 			if (isset($frameIlluminazione[$piano["id"]])) {
 				foreach ($frameIlluminazione[$piano["id"]] as $idLuce => $luce) {
 					echo("<div id=\"$idLuce\" style=\"position:absolute; left: " .
-						$luce["x"] . "px; top: " . $luce["y"] . "px;\" lit=\"no\" " .
+						$luce["x"] . "px; top: " . $luce["y"] . "px;\" lit=\"off\" " .
 						"busaddress=\"" . $luce["address"] . "\"");
 					if ($luce["type"] == ILL_LUCE) {
 						echo("onClick=\"lightClicked(this)\"");
@@ -185,6 +227,34 @@ foreach ($piani as $piano):
 				} // foreach luce
 			} else {
 				echo("Non ci sono luci per questo piano!");
+			}
+			break;
+		case "energia":
+			if (isset($frameEnergia[$piano["id"]])) {
+				foreach ($frameEnergia[$piano["id"]] as $idPresa => $presa) {
+					echo("<div id=\"$idPresa\" style=\"position:absolute; left: " .
+						$presa["x"] . "px; top: " . $presa["y"] . "px;\" power=\"off\" " .
+						"busaddress=\"" . $presa["address"] . "\"");
+					echo("onClick=\"powerClicked(this)\"");
+					echo("><img src=\"images/energia_off.png\" alt=\"" . $presa["label"] .
+						"\" /></div>");
+				} // foreach presa
+			} else {
+				echo("Non ci sono prese comandate su questo piano!");
+			}
+			break;
+		case "clima":
+			if (isset($frameClima[$piano["id"]])) {
+				foreach ($frameClima[$piano["id"]] as $idClima => $clima) {
+					echo("<div id=\"$idClima\" style=\"position:absolute; left: " .
+						$clima["x"] . "px; top: " . $clima["y"] . "px;\" power=\"off\" " .
+						"busaddress=\"" . $clima["address"] . "\"");
+					echo("onClick=\"thermoClicked(this)\"");
+					echo("><img src=\"images/clima_off.png\" alt=\"" . $clima["label"] .
+						"\" /></div>");
+				} // foreach clima
+			} else {
+				echo("Non ci sono termostati su questo piano!");
 			}
 			break;
 		default:

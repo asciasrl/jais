@@ -396,35 +396,5 @@ function ingrandisci1(X,Y,da,a) {
   //alert('ev.x='+ev.x+' ev.y='+ev.y+' dx='+dx+' dy='+dy);
 }
 
-/**
- * Questa funzione viene chiamata quando un'icona della appBar viene premuta.
- *
- * <p>Accende il layer corrispondente alla funzione scelta.</p>
- */
-function iconClicked(iconElement) {
-	var funzione = 
-		iconElement.parentNode.attributes.getNamedItem("service").value;
-	if (!currentMap) {
-		return;
-	}
-	var currentMapId = currentMap.id;
-	// Accendiamo il solo layer giusto.
-	for (i = 0; i < SERVICES.length; i++) {
-		var service = SERVICES[i];
-		var element = 
-			document.getElementById(currentMapId + "-" + service);
-		if (SERVICES[i] == funzione) {
-			element.style.display = "";
-			activeService = funzione;
-		} else {
-			if (element != null) {
-				element.style.display = "none";
-			}
-		}
-	}
-	// Propaghiamo l'evento
-	return true;
-}
-
 makeDraggable(document.getElementById('piano-01A-big'));
 makeDraggable(document.getElementById('appbar'));

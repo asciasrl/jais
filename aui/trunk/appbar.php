@@ -24,7 +24,7 @@ foreach ($apps as $k => $app):
       <img id="<?php echo("app-".$i."-img"); ?>" 
       	title="<?php echo("$app $i"); ?>" alt="<?php echo($app); ?>" 
       	width="80" height="80" border="0" src="images/<?php echo($app); ?>.png"
-        onclick="iconClicked(this)"/>
+        onmousedown="iconPressed(this)"/>
     </div>  
 <?php 
 endforeach;    

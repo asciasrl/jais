@@ -226,6 +226,8 @@ function clicca1(da,a) {
 	if (da_el && a_el) {
 		da_el.style.display='none';
 		a_el.style.display='';
+		currentMap = a_el;
+		refreshServicesLayer();
 		//setHeader(a_el.getProperty('header'));
 	} else {
 		window.alert("da="+da+" ("+da_el+") a="+a+" ("+a_el+")");
@@ -275,6 +277,7 @@ function ingrandisci1(X,Y,da,a) {
 	var da_el = document.getElementById(da);
 	var a_el = document.getElementById(a);
 	currentMap = a_el;
+	refreshServicesLayer();
 	//setHeader(a_el.getProperty('header'));
   
 	// somma gli offset della gerarchia

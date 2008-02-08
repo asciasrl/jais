@@ -376,13 +376,10 @@ function dragAppBarStop(mousePos, timeStamp) {
 		appBarGoing = true;
 		targetAppBarPosition = mousePos.x + currentAppBarPosition - 
 			 dragObject.offsetWidth / 2;
-		statusObject.innerHTML = "From: " + currentAppBarPosition + " to: " +
-			targetAppBarPosition;
 		// Trucco: approssimiamo le coordinate del click, in modo da prendere
 		// il centro di un'icona
 		targetAppBarPosition = 
 			Math.floor((targetAppBarPosition) / 80) * 80 + 40;
-		statusObject.innerHTML += " (" + targetAppBarPosition + ")";
 	}
 	lastAppBarPosition = currentAppBarPosition;
 	centralIconLocked = false;
@@ -398,26 +395,9 @@ function dragAppBarStop(mousePos, timeStamp) {
  * <p>Accende il layer corrispondente alla funzione scelta.</p>
  */
 function iconPressed(iconElement) {
-	var funzione = 
+	activeService = 
 		iconElement.parentNode.attributes.getNamedItem("service").value;
-	if (!currentMap) { // Sanity check
-		return;
-	}
-	var currentMapId = currentMap.id;
-	// Accendiamo il solo layer giusto.
-	for (i = 0; i < SERVICES.length; i++) {
-		var service = SERVICES[i];
-		var element = 
-			document.getElementById(currentMapId + "-" + service);
-		if (SERVICES[i] == funzione) {
-			element.style.display = "";
-			activeService = funzione;
-		} else {
-			if (element != null) {
-				element.style.display = "none";
-			}
-		}
-	}
+	refreshServicesLayer();
 	// Propaghiamo l'evento
 	return true;
 }

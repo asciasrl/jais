@@ -55,8 +55,34 @@ function dragMap(mousePos) {
  */
 function dragMapStop() {
 	if (dragging) {
-		lastMapPosition = currentMapPosition;
-		statusObject.innerHTML = "Stopping at " + dragObject.style.left + ", " +
-			dragObject.style.top;
+		lastMapPosition = currentMapPosition; 
 	}
+}
+
+/**
+ * Fa apparire il layer corrispondente al servizio selezionato.
+ *
+ * <p>La mappa attuale e' letta dalla variabile currentMap. Il servizio
+ * attivo e' letto dalla variabile activeService.</p>
+ *
+ * @param funzione il servizio selezionato.
+ */
+function refreshServicesLayer() {
+	if ((!currentMap) || (!activeService)) { // Sanity check
+		return;
+	}
+	var currentMapId = currentMap.id;
+	// Accendiamo il solo layer giusto.
+	for (i = 0; i < SERVICES.length; i++) {
+		var service = SERVICES[i];
+		var element = 
+			document.getElementById(currentMapId + "-" + service);
+		if ((SERVICES[i] == activeService) && (element)) {
+			element.style.display = "";
+		} else {
+			if (element != null) {
+				element.style.display = "none";
+			}
+		}
+	} // For sui servizi
 }

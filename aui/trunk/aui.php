@@ -102,7 +102,106 @@ $frameClima = Array(
 			"label" => "Bruciatore",
 			"address" => "0.3:Out7")));
 
+/**
+ * Crea un layer per ciascun servizio.
+ * 
+ * @param $piano il piano.
+ * @param $big true se stiamo facendo i layer della mappa grande.
+ */
+function creaLayerServizi($piano, $big) {
+	global $apps, $frameIlluminazione, $frameEnergia, $frameClima;
+	if ($big) {
+		$scale = 1;
+	} else {
+		// Assumiamo che la mappa piccola e' uguale alla grande rimpicciolita
+		$scale = $piano["mapSize"]["w"] / $piano["bigMapSize"]["w"];
+	}
+	foreach ($apps as $s):
+		if ($big) {
+			$idPiano = $piano["id"] . "-big-" . $s; 
+		} else {
+			$idPiano = $piano["id"] . "-" . $s;
+		}
  ?>
+			<div id="<?php echo($idPiano); ?>" style="position: absolute; display: none;">
+<?php
+		switch($s) {
+		case "illuminazione":
+			if (isset($frameIlluminazione[$piano["id"]])) {
+				foreach ($frameIlluminazione[$piano["id"]] as $idLuce => $luce) {
+					if ($big) {
+						$id = "id=\"$idLuce\"";
+						if ($luce["type"] == ILL_LUCE) {
+							$lit = "lit=\"off\" onClick=\"lightClicked(this)\"";
+						} else {
+							$lit = "lit=\"0\" onClick=\"dimmerClicked(this)\"";
+						}
+						$busaddress = "busaddress=\"" . $luce["address"] . "\""; 
+					} else {
+						$id = "";
+						$lit = "";
+						$busaddress = "";
+					}
+					echo("<div $id style=\"position:absolute; left: " .
+						$luce["x"] * $scale . "px; top: " . $luce["y"] * $scale. "px;\" " .
+						"$busaddress $lit><img src=\"images/luce_off.png\" alt=\"" . $luce["label"] .
+						"\" /></div>");
+				} // foreach luce
+			} else {
+				echo("Non ci sono luci per questo piano!");
+			}
+			break;
+		case "energia":
+			if (isset($frameEnergia[$piano["id"]])) {
+				foreach ($frameEnergia[$piano["id"]] as $idPresa => $presa) {
+					if ($big) {
+						$id = "id=\"$idPresa\"";
+						$active = "power=\"off\" busaddress=\"" . $presa["address"] . 
+							"\" onClick=\"powerClicked(this)\"";
+					} else {
+						$id = "";
+						$active = "";
+					}
+					echo("<div $id style=\"position:absolute; left: " .
+						$presa["x"] * $scale. "px; top: " . 
+						$presa["y"] * $scale. "px;\" $active><img src=\"images/energia_off.png\" alt=\"" . $presa["label"] .
+						"\" /></div>");
+				} // foreach presa
+			} else {
+				echo("Non ci sono prese comandate su questo piano!");
+			}
+			break;
+		case "clima":
+			if (isset($frameClima[$piano["id"]])) {
+				foreach ($frameClima[$piano["id"]] as $idClima => $clima) {
+					if ($big) {
+						$id = "id=\"$idClima\"";
+						$active = "power=\"off\" busaddress=\"" . 
+							$clima["address"] . "\" onClick=\"thermoClicked(this)\"";
+					} else {
+						$id = "";
+						$active = "";
+					}
+					echo("<div $idClima style=\"position:absolute; left: " .
+						$clima["x"] * $scale. "px; top: " . 
+						$clima["y"] * $scale . "px;\" $active><img src=\"images/clima_off.png\" alt=\"" . $clima["label"] .
+						"\"/></div>");
+				} // foreach clima
+			} else {
+				echo("Non ci sono termostati su questo piano!");
+			}
+			break;
+		default:
+		// echo("$s<br/>$s<br/>$s<br/>");
+		}
+?></div>
+<?php
+	endforeach;
+}
+ ?>
+
+ 
+
 <div style="position: absolute; z-index: 30; width: 320px; height: 40px; filter:alpha(opacity='60'); opacity: 0.60;">
 <div style="position: absolute;"><img src="images/barratesti.png" /></div>
 <div id="header" style="position: absolute; margin-top: 9px; height: 22px; width: 320px; text-align: center;"><b>barra di stato</b></div>
@@ -189,6 +288,7 @@ foreach ($piani as $piano):
 				style="position: absolute;"
 				onclick="ingrandisci(event,'<?php echo($piano["id"]); ?>','<?php echo($piano["id"] . "-big"); ?>','piani-all');"
 				src="<?php echo($piano["mapFile"]); ?>" alt="" />
+			<?php creaLayerServizi($piano, false); ?>
 		</div>
 		<div id="<?php echo($piano["id"] . "-big"); ?>"
 			style="position: absolute;
@@ -203,67 +303,7 @@ foreach ($piani as $piano):
 				src="<?php echo($piano["bigMapFile"]); ?>" alt="" 
 				width="<?php echo($piano["bigMapSize"]["w"]); ?>"
 				height="<?php echo($piano["bigMapSize"]["h"]); ?>" />
-<?php
-	// Crea un layer per ciascun servizio
-	foreach ($apps as $s):
- ?>
-			<div id="<?php echo($piano["id"] . "-big-" . $s); ?>"
-				style="position: absolute; display: none;">
-<?php
-		switch($s) {
-		case "illuminazione":
-			if (isset($frameIlluminazione[$piano["id"]])) {
-				foreach ($frameIlluminazione[$piano["id"]] as $idLuce => $luce) {
-					echo("<div id=\"$idLuce\" style=\"position:absolute; left: " .
-						$luce["x"] . "px; top: " . $luce["y"] . "px;\" " .
-						"busaddress=\"" . $luce["address"] . "\"");
-					if ($luce["type"] == ILL_LUCE) {
-						echo("lit=\"off\" onClick=\"lightClicked(this)\"");
-					} else {
-						echo("lit=\"0\" onClick=\"dimmerClicked(this)\"");
-					}
-					echo("><img src=\"images/luce_off.png\" alt=\"" . $luce["label"] .
-						"\" /></div>");
-				} // foreach luce
-			} else {
-				echo("Non ci sono luci per questo piano!");
-			}
-			break;
-		case "energia":
-			if (isset($frameEnergia[$piano["id"]])) {
-				foreach ($frameEnergia[$piano["id"]] as $idPresa => $presa) {
-					echo("<div id=\"$idPresa\" style=\"position:absolute; left: " .
-						$presa["x"] . "px; top: " . $presa["y"] . "px;\" power=\"off\" " .
-						"busaddress=\"" . $presa["address"] . "\"");
-					echo("onClick=\"powerClicked(this)\"");
-					echo("><img src=\"images/energia_off.png\" alt=\"" . $presa["label"] .
-						"\" /></div>");
-				} // foreach presa
-			} else {
-				echo("Non ci sono prese comandate su questo piano!");
-			}
-			break;
-		case "clima":
-			if (isset($frameClima[$piano["id"]])) {
-				foreach ($frameClima[$piano["id"]] as $idClima => $clima) {
-					echo("<div id=\"$idClima\" style=\"position:absolute; left: " .
-						$clima["x"] . "px; top: " . $clima["y"] . "px;\" power=\"off\" " .
-						"busaddress=\"" . $clima["address"] . "\"");
-					echo("onClick=\"thermoClicked(this)\"");
-					echo("><img src=\"images/clima_off.png\" alt=\"" . $clima["label"] .
-						"\" /></div>");
-				} // foreach clima
-			} else {
-				echo("Non ci sono termostati su questo piano!");
-			}
-			break;
-		default:
-		echo("$s<br/>$s<br/>$s<br/>");
-		}
-?></div>
-<?php
-	endforeach;
- ?>
+			<?php creaLayerServizi($piano, true); ?>
 		</div>
 <?php
 endforeach; // $piani as $piano

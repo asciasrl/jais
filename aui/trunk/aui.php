@@ -3,7 +3,13 @@
 /**
  * Lista dei servizi.
  */
-$apps = array('audio','clima','energia','illuminazione','serramenti','sicurezza','video'); 
+$apps = array('audio','clima','energia','illuminazione','serramenti','sicurezza','video');
+
+/**
+ * Immagine che mostra i piani.
+ */
+$pianiFile = "images/assonometria320x370.png"; // images/piani-all.png";
+$pianiSize = Array("w" => 320, "h" => 370); // Array("w" => 240, "h" => 240);
 
 /**
  * Lista dei piani.
@@ -12,9 +18,20 @@ $piani = Array(
 	Array(
 		"id" => "piano-01A",
 		"header" => "Piano 1A",
+		"mapFile" => "images/planimetria.png",
+		"mapSize" => Array("w" => 320, "h" => 299),
+		"bigMapFile" => "images/planimetria-big.png",
+		"bigMapSize" => Array("w" => 800, "h" => 748)));
+
+/* Vecchi piani
+$piani = Array(
+	Array(
+		"id" => "piano-01A",
+		"header" => "Piano 1A",
 		"mapFile" => "images/piano-01A.png",
 		"bigMapFile" => "images/piano-01A-big.png",
 		"bigMapSize" => Array("w" => 720, "h" => 720)));
+*/
 
 	define("ILL_LUCE", 0);
 	define("ILL_DIMMER", 1);
@@ -30,19 +47,19 @@ $frameIlluminazione = Array(
 			"x" => 100,
 			"y" => 100,
 			"label" => "Applique",
-			"address" => "0.3:1"),
+			"address" => "0.3:Out1"),
 		"p1a-luce2" => Array(
 			"type" => ILL_LUCE,
 			"x" => 300,
 			"y" => 100,
 			"label" => "Luce pitosforo",
-			"address" => "0.3:2"),
+			"address" => "0.3:Out2"),
 		"p1a-dimmer1" => Array(
 			"type" => ILL_DIMMER,
 			"x" => 100,
 			"y" => 300,
 			"label" => "Luce dimmerizzata",
-			"address" => "0.5:0")));
+			"address" => "0.5:Out1")));
  ?>
 <div style="position: absolute; z-index: 30; width: 320px; height: 40px; filter:alpha(opacity='60'); opacity: 0.60;">
 <div style="position: absolute;"><img src="images/barratesti.png" /></div>
@@ -109,21 +126,21 @@ $frameIlluminazione = Array(
 <div id="navigazione" style="display: none;">
   <div id="mappa-out" style="width: 320px; height: 380px;">
 	<div id="mappa"
-		style="position: absolute; width: 240px; height: 240px; overflow: hidden;">
+		style="position: absolute; width: 320px; height: 380px; overflow: hidden;">
 		<div id="piani-all" 
-			style="position: absolute; width: 240px; height: 240px; overflow: hidden;">
+			style="position: absolute; width: <?php echo ($pianiSize["w"]); ?>px; height: <?php echo($pianiSize["h"]); ?>px; overflow: hidden;">
 			<img 
 				header="ASCIA Building"
 				title="AUI edificio - clicca su un appartamento" 
 				style="position: absolute;"
 				onclick="clicca1('piani-all','piano-01A');"
-				src="images/piani-all.png" alt="" />
+				src="<?php echo($pianiFile); ?>" alt="" />
 		</div>
 <?php
 foreach ($piani as $piano):
  ?>
 		<div id="<?php echo($piano["id"]); ?>" 
-			style="position: absolute; width: 240px; height: 240px; overflow: hidden; display: none;">
+			style="position: absolute; width: <?php echo($piano["mapSize"]["w"]); ?>px; height: <?php echo($piano["mapSize"]["h"]); ?>px; overflow: hidden; display: none;">
 			<img
 				header="<?php echo($piano["header"]); ?>"
 				title="AUI mappa appartamento - clicca per ingrandire - doppio click per ritornare"
@@ -191,4 +208,5 @@ endforeach; // $piani as $piano
 <script type="" language="javascript" src="aui.js"></script>
 <script type="" language="javascript" src="comm.js"></script>
 <script type="" language="javascript" src="appbar.js"></script>
+<script type="" language="javascript" src="services.js"></script>
 <script type="" language="javascript" src="keypad.js"></script>

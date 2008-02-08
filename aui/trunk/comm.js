@@ -6,11 +6,11 @@
 /**
  * Indirizzo per comandi "get".
  */
-const CMD_GET = "get";
+const CMD_GET = "jeds/get";
 /**
  * Indirizzo per comandi "set".
  */
-const CMD_SET = "set";
+const CMD_SET = "jeds/set";
 
 /**
  * Valore ricevuto dalla richiesta XMLHTTP.
@@ -23,6 +23,33 @@ var xmlhttpValue;
 var xmlhttp;
 
 /**
+ * Effettua una richiesta al server.
+ *
+ * <p>Eventuali messaggi di errore vengono mostrati nell'area di stato.</p>
+ *
+ * @param command il comando da inviare.
+ *
+ * @return il messaggio ricevuto dal server, oppure false se si sono verificati
+ * errori. 
+ */ 
+function query(command) {
+	var retval = false;
+	try {
+		xmlhttp.open("GET", command, false);
+		xmlhttp.send(null);
+		if (xmlhttp.readyState == 4) {
+			retval = xmlhttp.statusText;
+		} else {
+			statusObject.innerHTML = "Errore di comunicazione: " + 
+				xmlhttp.statusText;
+		}
+	} catch (e) {
+		statusObject.innerHTML = "Errore grave di comunicazione: " + e;
+	}
+	return retval;
+}
+
+/**
  * Ritorna lo stato di una porta.
  *
  * @param port l'indirizzo della porta.
@@ -30,20 +57,8 @@ var xmlhttp;
  * @return il messaggio del server.
  */
 function getPort(port) {
-	try {
-		window.alert(CMD_GET);
-		xmlhttp.open("GET", CMD_GET /*+ "?name=" + port*/, false);
-		xmlhttp.send(null);
-		if (xmlhttp.readyState==4) {
-   			alert(xmlhttp.responseText)
-		} else {
-			alert("Errore di comunicazione: " + xmlhttp.statusText);
-			return false;
-		}
-		return xmlhttp.responseText;
-	} catch (e) {
-		alert("Errore grave di comunicazione: " + e);
-	}
+	// TODO: parsing della risposta
+	return query(CMD_GET + "?name=" + port);
 }
 
 /**
@@ -52,18 +67,19 @@ function getPort(port) {
  * @param port l'indirizzo della porta.
  * @param value il valore da impostare.
  *
- * @return il messaggio del server.
+ * @return true se il comando e' riuscito.
  */
 function setPort(port, value) {
-	xmlhttp.open("GET", CMD_SET + "?name=" + port + "&value=" + value, false);
-	if (xmlhttp.readyState==4) {
-   		alert(xmlhttp.responseText)
+	var response = query(CMD_SET + "?name=" + port + "&value=" + value); 
+	if (response == "OK") {
+		return true;
 	} else {
-		alert("Errore di comunicazione: " + xmlhttp.statusText);
+		statusObject.innerHTML = response; 
 		return false;
 	}
-	return xmlhttp.responseText;
 }
+
+
 // Inizializza l'oggetto xmlhttp
 try {
 	xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");

@@ -426,30 +426,5 @@ function iconClicked(iconElement) {
 	return true;
 }
 
-/**
- * L'utente ha fatto click su una luce.
- */
-function lightClicked(lightDiv) {
-	var lightElement = lightDiv.firstChild;
-	var lit = lightDiv.attributes.getNamedItem("lit");
-	var address = lightDiv.attributes.getNamedItem("busaddress").value;
-	if (lit.value == "yes") {
-		lightElement.src = "images/luce_off.png";
-		lit.value = "no";
-		getPort(address);
-	} else {
-		lightElement.src = "images/luce_on.png";
-		lit.value = "yes";
-		getPort(address);
-	}
-}
-
-/**
- * L'utente ha fatto click su un dimmer.
- */
-function dimmerClicked(dimmerDiv) {
-	statusObject.innerHTML = "Dimmer non supportato.";
-}
-
 makeDraggable(document.getElementById('piano-01A-big'));
 makeDraggable(document.getElementById('appbar'));

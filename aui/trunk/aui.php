@@ -215,12 +215,12 @@ foreach ($piani as $piano):
 			if (isset($frameIlluminazione[$piano["id"]])) {
 				foreach ($frameIlluminazione[$piano["id"]] as $idLuce => $luce) {
 					echo("<div id=\"$idLuce\" style=\"position:absolute; left: " .
-						$luce["x"] . "px; top: " . $luce["y"] . "px;\" lit=\"off\" " .
+						$luce["x"] . "px; top: " . $luce["y"] . "px;\" " .
 						"busaddress=\"" . $luce["address"] . "\"");
 					if ($luce["type"] == ILL_LUCE) {
-						echo("onClick=\"lightClicked(this)\"");
+						echo("lit=\"off\" onClick=\"lightClicked(this)\"");
 					} else {
-						echo("onClick=\"dimmerClicked(this)\"");
+						echo("lit=\"0\" onClick=\"dimmerClicked(this)\"");
 					}
 					echo("><img src=\"images/luce_off.png\" alt=\"" . $luce["label"] .
 						"\" /></div>");
@@ -264,12 +264,24 @@ foreach ($piani as $piano):
 <?php
 	endforeach;
  ?>
-		</div> <!-- FIXME: bisogna dare le dimensioni al <div>-->
+		</div>
 <?php
 endforeach; // $piani as $piano
  ?>
-	</div>
+	</div> 
 	<!-- fine mappa -->
+	<div id="dimmer"
+		style="position: absolute; width: 320px; height: 380px; 
+			overflow: hidden; display: none;" onclick="hideDimmer()">
+		<div id="dimmer-sfondo" style="position: absolute; width: 80px; 
+			height: 300px; margin-top: 40px; margin-left: 120px;"
+			onclick="dimmerSliderClicked(event)" >
+			<img src="images/dimmer-sfondo.png"	style="position: absolute;" />
+			<div id="dimmer-tasto" style="position: absolute; 
+				margin-left: 12px; top: 217px;"><img  src="images/dimmer-tasto.png" />
+				</div>
+		</div> <!--  dimmer-sfondo -->
+	</div><!--  dimmer -->
   </div>
   <div id="appbar-out">
 <?php include('appbar.php'); ?>
@@ -277,6 +289,8 @@ endforeach; // $piani as $piano
 </div>
 <script type="" language="javascript" src="aui.js"></script>
 <script type="" language="javascript" src="comm.js"></script>
+<script type="" language="javascript" src="map.js"></script>
 <script type="" language="javascript" src="appbar.js"></script>
 <script type="" language="javascript" src="services.js"></script>
+<script type="" language="javascript" src="dimmer_slider.js"></script>
 <script type="" language="javascript" src="keypad.js"></script>

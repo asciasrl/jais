@@ -50,6 +50,8 @@ public class HTTPServer {
 	 */
 	public HTTPServer(int port, BusController controller, String auiDirectory) 
 		throws EDSException {
+		// Scegliamo il nostro logger anziche' quello predefinito di Jetty
+		System.setProperty("org.mortbay.log.class", "it.ascia.eds.JettyLogger");
 		ContextHandlerCollection contexts = new ContextHandlerCollection();
 		Context filesContext, requestsContext;
 		ServletHolder holder;

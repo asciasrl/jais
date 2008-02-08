@@ -154,7 +154,7 @@ public class BusTest {
 	static void testServer() {
 		try {
 			server = new HTTPServer(8080, new BusController(bus), 
-					"/home/arrigo/public_html");
+					"/home/arrigo/public_html/auiFixed");
 		} catch (EDSException e) {
 			System.err.println(e.getMessage());
 			System.exit(-1);

@@ -11,6 +11,11 @@ const CMD_GET = "jeds/get";
  * Indirizzo per comandi "set".
  */
 const CMD_SET = "jeds/set";
+/**
+ * Indirizzo per comandi "getAll".
+ */
+const CMD_GETALL = "jeds/getAll";
+
 
 /**
  * Valore ricevuto dalla richiesta XMLHTTP.
@@ -37,8 +42,8 @@ function query(command) {
 	try {
 		xmlhttp.open("GET", command, false);
 		xmlhttp.send(null);
-		if (xmlhttp.readyState == 4) {
-			retval = xmlhttp.statusText;
+		if ((xmlhttp.readyState == 4) && (xmlhttp.status == 200)) {
+			retval = xmlhttp.responseText;
 		} else {
 			statusObject.innerHTML = "Errore di comunicazione: " + 
 				xmlhttp.statusText;
@@ -50,15 +55,51 @@ function query(command) {
 }
 
 /**
+ * Ricava il valore di una porta dalla risposta del server.
+ *
+ * @param port il nome della porta di cui si vuole il valore.
+ * @param answer il testo ritornato dal server.
+ *
+ * @return il valore della porta contenuto nella risposta, o false se la porta
+ * non e' nella risposta.
+ */
+function parseServerAnswer(port, answer) {
+	var found = false;
+	var lines = answer.split("\n");
+	var i;
+	for(i = 0; (!found) && (i < lines.length); i++) {
+		var line = lines[i];
+		if (line.indexOf(port) == 0) {
+			var equalsIndex = line.indexOf("=");
+			if (equalsIndex != -1) { // Trovato!
+				found = line.slice(equalsIndex + 1, line.length);
+			} else {
+				window.alert("Manca '=' nel messaggio: " + answer);
+			}
+		}
+	}
+	return found;
+}
+
+/**
  * Ritorna lo stato di una porta.
  *
  * @param port l'indirizzo della porta.
  *
- * @return il messaggio del server.
+ * @return il messaggio del server o false se si sono verificati errori.
  */
 function getPort(port) {
 	// TODO: parsing della risposta
 	return query(CMD_GET + "?name=" + port);
+}
+
+/**
+ * Ritorna lo stato di tutte le porte del sistema.
+ *
+ * @return il messaggio del server o false se si sono verificati errori.
+ */
+function getAll() {
+	return query(CMD_GETALL);
 }
 
 /**
@@ -71,7 +112,7 @@ function getPort(port) {
  */
 function setPort(port, value) {
 	var response = query(CMD_SET + "?name=" + port + "&value=" + value); 
-	if (response == "OK") {
+	if (response.indexOf("OK") == 0) {
 		return true;
 	} else {
 		statusObject.innerHTML = response; 

@@ -35,6 +35,14 @@ $piani = Array(
 
 	define("ILL_LUCE", 0);
 	define("ILL_DIMMER", 1);
+
+/**
+ * Luci presenti nel sistema.
+ * 
+ * <p>Questa array di ID verra' popolata in fase di creazione delle luci.</p>
+ */
+$idLuci = Array();
+
 /**
  * Frame: illuminazione.
  * 
@@ -62,6 +70,14 @@ $frameIlluminazione = Array(
 			"address" => "0.5:Out1")));
 
 /**
+ * Prese comandate presenti nel sistema.
+ * 
+ * <p>Questa array di ID verra' popolata in fase di creazione delle prese
+ * comandate.</p>
+ */
+$idPrese = Array();
+
+/**
  * Frame: energia.
  * 
  * <p>Gli indici sono gli ID dei piani.</p>
@@ -83,6 +99,14 @@ $frameEnergia = Array(
 			"y" => 400,
 			"label" => "Presa lavatrice",
 			"address" => "0.5:Out5")));
+
+/**
+ * Termostati presenti nel sistema.
+ * 
+ * <p>Questa array di ID verra' popolata in fase di creazione delle prese
+ * comandate.</p>
+ */
+$idClimi = Array();
 
 /**
  * Frame: clima.
@@ -110,6 +134,7 @@ $frameClima = Array(
  */
 function creaLayerServizi($piano, $big) {
 	global $apps, $frameIlluminazione, $frameEnergia, $frameClima;
+	global $idLuci, $idPrese, $idClimi;
 	if ($big) {
 		$scale = 1;
 	} else {
@@ -136,7 +161,8 @@ function creaLayerServizi($piano, $big) {
 						} else {
 							$lit = "lit=\"0\" onClick=\"dimmerClicked(this)\"";
 						}
-						$busaddress = "busaddress=\"" . $luce["address"] . "\""; 
+						$busaddress = "busaddress=\"" . $luce["address"] . "\"";
+						$idLuci[] = $idLuce; 
 					} else {
 						$id = "";
 						$lit = "";
@@ -158,6 +184,7 @@ function creaLayerServizi($piano, $big) {
 						$id = "id=\"$idPresa\"";
 						$active = "power=\"off\" busaddress=\"" . $presa["address"] . 
 							"\" onClick=\"powerClicked(this)\"";
+						$idPrese[] = $idPresa;
 					} else {
 						$id = "";
 						$active = "";
@@ -178,11 +205,12 @@ function creaLayerServizi($piano, $big) {
 						$id = "id=\"$idClima\"";
 						$active = "power=\"off\" busaddress=\"" . 
 							$clima["address"] . "\" onClick=\"thermoClicked(this)\"";
+						$idClimi[] = $idClima;
 					} else {
 						$id = "";
 						$active = "";
 					}
-					echo("<div $idClima style=\"position:absolute; left: " .
+					echo("<div $id style=\"position:absolute; left: " .
 						$clima["x"] * $scale. "px; top: " . 
 						$clima["y"] * $scale . "px;\" $active><img src=\"images/clima_off.png\" alt=\"" . $clima["label"] .
 						"\"/></div>");
@@ -197,6 +225,19 @@ function creaLayerServizi($piano, $big) {
 ?></div>
 <?php
 	endforeach;
+}
+
+/**
+ * Scrive gli elementi di un'array PHP sotto forma di array Javascript.
+ * 
+ * @param arr array PHP.
+ */
+function arrayJavascript($arr) {
+	echo("[");
+	foreach ($arr as $elem) {
+		echo("\"$elem\", ");	
+	}
+	echo("]");
 }
  ?>
 
@@ -327,6 +368,11 @@ endforeach; // $piani as $piano
 <?php include('appbar.php'); ?>
   </div>
 </div>
+<script type="" language="javascript">
+	const ID_LUCI = <?php arrayJavascript($idLuci); ?>;
+	const ID_PRESE = <?php arrayJavascript($idPrese); ?>;
+	const ID_CLIMI = <?php arrayJavascript($idClimi); ?>;
+</script>
 <script type="" language="javascript" src="aui.js"></script>
 <script type="" language="javascript" src="comm.js"></script>
 <script type="" language="javascript" src="map.js"></script>
@@ -334,3 +380,6 @@ endforeach; // $piani as $piano
 <script type="" language="javascript" src="services.js"></script>
 <script type="" language="javascript" src="dimmer_slider.js"></script>
 <script type="" language="javascript" src="keypad.js"></script>
+<script type="" language="javascript">
+	refreshEverything();
+</script>

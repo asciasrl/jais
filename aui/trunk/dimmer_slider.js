@@ -94,8 +94,9 @@ function showDimmer(divOnMap) {
 	dimmerValueElement = attributes.getNamedItem("lit");
 	dimmerIconOnMap = divOnMap.firstChild;
 	dimmerAddress = attributes.getNamedItem("busaddress").value;
-	currentDimmerCursorTop = dimmerValueElement.value / 100 * 
+	currentDimmerCursorTop = (100 - dimmerValueElement.value) / 100 * 
 		(DIMMER_TOP_MAX - DIMMER_TOP_MIN);
+	dimmerCursorLayer.style.top = currentDimmerCursorTop + "px";
 	statusObject.innerHTML = dimmerName + ": " + dimmerValueElement.value;
 }
 
@@ -135,9 +136,9 @@ function dragDimmerCursor(mousePos) {
 		// Aggiorniamo l'icona sulla mappa, se necessario
 		if (newValue * dimmerValueElement.value == 0) {
 			if (newValue == 0) {
-				dimmerIconOnMap.src = "images/luce_off.png";
+				dimmerIconOnMap.src = IMG_LIGHT_OFF;
 			} else {
-				dimmerIconOnMap.src = "images/luce_on.png";
+				dimmerIconOnMap.src = IMG_LIGHT_ON;
 			}
 		}
 		dimmerValueElement.value = newValue;

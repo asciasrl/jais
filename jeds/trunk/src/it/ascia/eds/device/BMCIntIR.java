@@ -64,7 +64,7 @@ public class BMCIntIR extends BMC {
 	public String getStatus(String port, String busName) { // TODO
 		String compactName = busName + "." + getAddress();
 		return compactName + ":" + getInputCompactName(0) +
-			"=" + (irInput? "ON" : "OFF") + "\r\n";
+			"=" + (irInput? "ON" : "OFF") + "\n";
 	}
 
 	/**

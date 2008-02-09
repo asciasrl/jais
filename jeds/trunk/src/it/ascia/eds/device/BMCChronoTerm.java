@@ -283,15 +283,15 @@ public class BMCChronoTerm extends BMC {
 		}
 		if (port.equals("*") || port.equals(port_temperature)) {
 			retval += compactName + ":" + port_temperature + "=" + temperature + 
-				"\r\n";
+				"\n";
 		}
 		if (port.equals("*") || port.equals(port_setpoint)) {
 			retval += compactName + ":" + port_setpoint + "=" + setPoint + 
-				"\r\n";
+				"\n";
 		}
 		if (port.equals("*") || port.equals(port_state)) {
 			retval += compactName + ":" + port_state + "=" + 
-				getStateAsString() + "\r\n";
+				getStateAsString() + "\n";
 		}
 		return retval;
 	}

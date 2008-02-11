@@ -111,13 +111,15 @@ function getAll() {
  * @return true se il comando e' riuscito.
  */
 function setPort(port, value) {
-	var response = query(CMD_SET + "?name=" + port + "&value=" + value); 
-	if (response.indexOf("OK") == 0) {
-		return true;
-	} else {
-		statusObject.innerHTML = response; 
-		return false;
-	}
+	var response = query(CMD_SET + "?name=" + port + "&value=" + value);
+	if (response) { 
+		if (response.indexOf("OK") == 0) {
+			return true;
+		} else {
+			statusObject.innerHTML = response; 
+			return false;
+		}
+	} 
 }
 
 

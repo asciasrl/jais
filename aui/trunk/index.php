@@ -20,7 +20,7 @@
   function iPodClock() {
     var date = new Date();
     iPodClockObj.innerHTML = date.getHours() + ":" + (date.getMinutes()< 10 ? "0" : "") + date.getMinutes(); 
-    setTimeout("iPodClock()", 100);
+    setTimeout("iPodClock()", 1000);
   }
   iPodClock();
   </script>

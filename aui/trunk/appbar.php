@@ -23,8 +23,8 @@ foreach ($apps as $k => $app):
     <div id="<?php echo("app-".$i); ?>" style="float: left; background-color: black; width: 80px; height: 80px; margin-top: 0px; overflow: hidden;" service="<?php echo("$app"); ?>">
       <img id="<?php echo("app-".$i."-img"); ?>" 
       	title="<?php echo("$app $i"); ?>" alt="<?php echo($app); ?>" 
-      	width="80" height="80" border="0" src="images/<?php echo($app); ?>.png"
-        onmousedown="iconPressed(this)"/>
+      	width="80" height="80" border="0" 
+      	src="images/<?php echo($app); ?>.png" />
     </div>  
 <?php 
 endforeach;    

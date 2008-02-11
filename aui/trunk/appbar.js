@@ -50,6 +50,10 @@ var lastAppBarPosition = 40;
  */
 var currentAppBarPosition = 40;
 /**
+ * Numero dell'icona attualmente centrata.
+ */
+var centeredAppBarIconNumber;
+/**
  * Velocita' corrente della appbar.
  */
 var currentAppBarSpeed = 0;
@@ -149,6 +153,24 @@ function appbar_icoset(name,size,opacity) {
 //appbar_select(3);
 
 /**
+ * Ritorna il numero dell'icona al centro, a partire dalla posizione
+ * della barra.
+ *
+ * <p>Se la barra non e' centrata su un'icona, viene ritornato un numero
+ * decimale.</p>
+ *
+ * @return un numero tra 0 e appbar_num. Nota che entrambi questi i valori
+ * limite corrispondono allo stesso servizio: l'ultimo. 
+ */
+function getCenteredAppBarIconNumber(appBarPosition) {
+	// Posizione interna alla barra
+	var p = (appBarPosition - 40) / 80;
+	// Portiamo p nell'intervallo [0, appbar_num]
+	p = (appbar_num) * (p/(appbar_num) - Math.floor(p/(appbar_num)));
+	return p;
+}
+ 
+/**
  * Posiziona la barra delle applicazioni.
  *
  * <p>Questa funzione imposta currentAppBarPosition.</p>
@@ -162,11 +184,9 @@ function appbar_scroll(n) {
 	//appbar_select(Math.round(n/80));  
 
 	// Posizione interna alla barra
-	var p = (n + 40) / 80;
-	// Portiamo p nell'intervallo [0, appbar_num]
-	p = appbar_num * (p/appbar_num - Math.floor(p/appbar_num));
+	var p = getCenteredAppBarIconNumber(n);
 	// Numero dell'icona selezionata
-	var sel = Math.round(p);
+	centeredAppBarIconNumber = Math.round(p);
 	if (p < 3) {
 		p = p + appbar_num;
 	}
@@ -174,7 +194,7 @@ function appbar_scroll(n) {
 		p = p - appbar_num;
 	}
 
-	var s = "n="+n+" sel="+sel+" p="+p;
+	var s = "n="+n+" sel="+centeredAppBarIconNumber+" p="+p;
   
 	// determino per ogni icona la grandezza
 	for (i=1; i <= appbar_num + 5; i++) {
@@ -248,18 +268,18 @@ function centralIconDeltaX() {
 function appbar_timer() {
 	if ((!dragging) && (!centralIconLocked)) {
 		var dX = centralIconDeltaX();
-		var speedSign;
+		var speedSign = 0;
 		if (currentAppBarSpeed == 0) {
 			// Stiamo partendo da fermi -> partiamo lenti
 			if (dX > 0) {
 				currentAppBarSpeed = ICON_APPROACHING_SPEED;
-			} else {
+			} else if (dX < 0) {
 				currentAppBarSpeed = -ICON_APPROACHING_SPEED;
 			}
 		}
 		if (currentAppBarSpeed > 0) {
 			speedSign = 1;
-		} else {
+		} else if (currentAppBarSpeed < 0) {
 			speedSign = -1;
 		}
 		if (Math.abs(currentAppBarSpeed) > ICON_CRUISE_SPEED) {
@@ -267,10 +287,17 @@ function appbar_timer() {
 			currentAppBarSpeed -= FRICTION * REFRESH_PERIOD * speedSign / 1000;
 		} else {
 			// Andiamo verso l'icona centrale?
-			if ((dX * speedSign) > 0) {
+			if ((dX * speedSign) >= 0) {
 				// Valutiamo la possibilita' di decelerare
 				if (Math.abs(dX) <= ICON_LOCK_DISTANCE) {
-					// Ci avviciniamo lentamente all'icona
+					// Ci avviciniamo lentamente all'icona, che attiviamo
+					var selectedIconNumber = 
+						Math.round(getCenteredAppBarIconNumber(currentAppBarPosition));
+					if (selectedIconNumber == 0) {
+						selectedIconNumber = appbar_num;
+					}
+					var selectedService = SERVICES[selectedIconNumber - 1];
+					iconSelected(selectedService);
 					if (dX > 0) {
 						currentAppBarSpeed = ICON_APPROACHING_SPEED;
 					} else {
@@ -318,7 +345,7 @@ function appbar_timer() {
  */
 function dragAppBar(mousePos) {
 	var new_left = mouseOffset.x - mousePos.x;
-	// statusObject.innerHTML = new_left; 
+	// statusMessage(new_left); 
 	appbar_scroll(new_left + lastAppBarPosition);
 	centralIconLocked = false;
 	appBarGoing = false;
@@ -379,27 +406,36 @@ function dragAppBarStop(mousePos, timeStamp) {
 		// Trucco: approssimiamo le coordinate del click, in modo da prendere
 		// il centro di un'icona
 		targetAppBarPosition = 
-			Math.floor((targetAppBarPosition) / 80) * 80 + 40;
+			Math.round((targetAppBarPosition - 40) / 80) * 80 + 40; 
+		// Capiamo quale icona e' interessata
+		var selectedIconNumber = 
+			Math.round(getCenteredAppBarIconNumber(targetAppBarPosition));
+		if (selectedIconNumber == 0) {
+			selectedIconNumber = appbar_num;
+		}
+		var selectedService = SERVICES[selectedIconNumber - 1];
+		iconSelected(selectedService);
 	}
 	lastAppBarPosition = currentAppBarPosition;
 	centralIconLocked = false;
-	/* statusObject.innerHTML = new_left + " / " + 
-		(timeStamp - lastDragTimeStamp) * FINGER_SPEED_FACTOR; */
+	/* statusMessage(new_left + " / " + 
+		(timeStamp - lastDragTimeStamp) * FINGER_SPEED_FACTOR); */
 	// Attiviamo lo scorrimento automatico.
 	setTimeout("appbar_timer()", REFRESH_PERIOD);
 }
 
 /**
- * Questa funzione viene chiamata quando un'icona della appBar viene premuta.
+ * Questa funzione viene chiamata quando un'icona della appBar viene 
+ * selezionata.
  *
- * <p>Accende il layer corrispondente alla funzione scelta.</p>
+ * <p>Accende il layer corrispondente alla funzione scelta, ma solo se
+ * tale layer non e' gia' acceso.</p>
  */
-function iconPressed(iconElement) {
-	activeService = 
-		iconElement.parentNode.attributes.getNamedItem("service").value;
-	refreshServicesLayer();
-	// Propaghiamo l'evento
-	return true;
+function iconSelected(serviceName) {
+	if (activeService != serviceName) {
+		activeService = serviceName;
+		refreshServicesLayer();
+	}
 }
 
 appbar_scroll(currentAppBarPosition);

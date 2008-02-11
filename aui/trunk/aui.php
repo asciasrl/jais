@@ -6,6 +6,21 @@
 $apps = array('audio','clima','energia','illuminazione','serramenti','sicurezza','video');
 
 /**
+ * Icone varie.
+ */
+define("IMG_LIGHT_ON", "images/light-on.jpg");
+define("IMG_LIGHT_OFF", "images/light-off2.jpg");
+define("IMG_POWER_ON", "images/energia_on.png");
+define("IMG_POWER_OFF", "images/energia_off.png");
+define("IMG_THERMO_ON", "images/clima_on.png");
+define("IMG_THERMO_OFF", "images/clima_off.png");
+
+/**
+ * Altezza della status bar [pixel].
+ */
+define("STATUS_BAR_HEIGHT", 22);
+
+/**
  * Immagine che mostra i piani.
  */
 $pianiFile = "images/assonometria320x370.png"; // images/piani-all.png";
@@ -65,7 +80,7 @@ $frameIlluminazione = Array(
 		"p1a-dimmer1" => Array(
 			"type" => ILL_DIMMER,
 			"x" => 100,
-			"y" => 300,
+			"y" => 340,
 			"label" => "Luce dimmerizzata",
 			"address" => "0.5:Out1")));
 
@@ -158,8 +173,10 @@ function creaLayerServizi($piano, $big) {
 						$id = "id=\"$idLuce\"";
 						if ($luce["type"] == ILL_LUCE) {
 							$lit = "lit=\"off\" onClick=\"lightClicked(this)\"";
+							$text="OFF";
 						} else {
 							$lit = "lit=\"0\" onClick=\"dimmerClicked(this)\"";
+							$text="0%";
 						}
 						$busaddress = "busaddress=\"" . $luce["address"] . "\"";
 						$idLuci[] = $idLuce; 
@@ -169,9 +186,10 @@ function creaLayerServizi($piano, $big) {
 						$busaddress = "";
 					}
 					echo("<div $id style=\"position:absolute; left: " .
-						$luce["x"] * $scale . "px; top: " . $luce["y"] * $scale. "px;\" " .
-						"$busaddress $lit><img src=\"images/luce_off.png\" alt=\"" . $luce["label"] .
-						"\" /></div>");
+						$luce["x"] * $scale . "px; top: " . $luce["y"] * $scale. "px; color: white;\" " .
+						"$busaddress $lit name=\"" . $luce["label"] . "\"><div style=\"position: absolute;\"><img src=\"".IMG_LIGHT_OFF.
+						"\" alt=\"" . $luce["label"] .
+						"\" /></div><div style=\"position: absolute;\">$text</div></div>");
 				} // foreach luce
 			} else {
 				echo("Non ci sono luci per questo piano!");
@@ -185,14 +203,18 @@ function creaLayerServizi($piano, $big) {
 						$active = "power=\"off\" busaddress=\"" . $presa["address"] . 
 							"\" onClick=\"powerClicked(this)\"";
 						$idPrese[] = $idPresa;
+						$text = "OFF";
 					} else {
 						$id = "";
 						$active = "";
+						$text = "";
 					}
 					echo("<div $id style=\"position:absolute; left: " .
 						$presa["x"] * $scale. "px; top: " . 
-						$presa["y"] * $scale. "px;\" $active><img src=\"images/energia_off.png\" alt=\"" . $presa["label"] .
-						"\" /></div>");
+						$presa["y"] * $scale. "px; color: white;\" $active name=\"" . 
+							$presa["label"] . "\"><div style=\"position: absolute;\"><img src=\"".
+							IMG_POWER_OFF."\" alt=\"" . $presa["label"] .
+							"\" /></div><div style=\"position: absolute;\">$text</div></div>");
 				} // foreach presa
 			} else {
 				echo("Non ci sono prese comandate su questo piano!");
@@ -206,14 +228,18 @@ function creaLayerServizi($piano, $big) {
 						$active = "power=\"off\" busaddress=\"" . 
 							$clima["address"] . "\" onClick=\"thermoClicked(this)\"";
 						$idClimi[] = $idClima;
+						$text = "20&deg;C";
 					} else {
 						$id = "";
 						$active = "";
+						$text = "";
 					}
 					echo("<div $id style=\"position:absolute; left: " .
 						$clima["x"] * $scale. "px; top: " . 
-						$clima["y"] * $scale . "px;\" $active><img src=\"images/clima_off.png\" alt=\"" . $clima["label"] .
-						"\"/></div>");
+						$clima["y"] * $scale . "px; color: white;\" $active name=\"" . 
+							$clima["label"] . "\"><div style=\"position: absolute;\"><img src=\"".
+							IMG_THERMO_OFF."\" alt=\"" . $clima["label"] .
+							"\"/></div><div style=\"position: absolute;\">$text</div></div>");
 				} // foreach clima
 			} else {
 				echo("Non ci sono termostati su questo piano!");
@@ -243,12 +269,12 @@ function arrayJavascript($arr) {
 
  
 
-<div style="position: absolute; z-index: 30; width: 320px; height: 40px; filter:alpha(opacity='60'); opacity: 0.60;">
+<div id="header-out" style="position: absolute; z-index: 30; width: 320px; height: 40px; filter:alpha(opacity='60'); opacity: 0.60;">
 <div style="position: absolute;"><img src="images/barratesti.png" /></div>
-<div id="header" style="position: absolute; margin-top: 9px; height: 22px; width: 320px; text-align: center;"><b>barra di stato</b></div>
+<div id="header" style="position: absolute; margin-top: 9px; height: <php echo(STATUS_BAR_HEIGHT); ?>px; width: 320px; text-align: center;"><b>barra di stato</b></div>
 </div>
 <div id="screensaver" title="AUI screensaver - clicca per accedere" onclick="vai('login');"><img
-	alt="aree schermo" src="images/aree-schermo2.jpg" /></div>
+	alt="AUI" src="images/newlogo_02_320x380.png" /></div>
 <div id="login" style="display: none;">
 <table id="keypad" title="AUI login - immetti codice personale e premi OK" summary="keypad" cellpadding="0" cellspacing="0"
 	border="0">
@@ -322,12 +348,12 @@ function arrayJavascript($arr) {
 foreach ($piani as $piano):
  ?>
 		<div id="<?php echo($piano["id"]); ?>" 
-			style="position: absolute; width: <?php echo($piano["mapSize"]["w"]); ?>px; height: <?php echo($piano["mapSize"]["h"]); ?>px; overflow: hidden; display: none;">
+			style="position: absolute; width: <?php echo($piano["mapSize"]["w"]); ?>px; height: <?php echo($piano["mapSize"]["h"]); ?>px; overflow: hidden; display: none;"
+			onclick="ingrandisci(event,'<?php echo($piano["id"]); ?>','<?php echo($piano["id"] . "-big"); ?>','piani-all');">
 			<img
 				header="<?php echo($piano["header"]); ?>"
 				title="AUI mappa appartamento - clicca per ingrandire - doppio click per ritornare"
 				style="position: absolute;"
-				onclick="ingrandisci(event,'<?php echo($piano["id"]); ?>','<?php echo($piano["id"] . "-big"); ?>','piani-all');"
 				src="<?php echo($piano["mapFile"]); ?>" alt="" />
 			<?php creaLayerServizi($piano, false); ?>
 		</div>
@@ -372,7 +398,15 @@ endforeach; // $piani as $piano
 	const ID_LUCI = <?php arrayJavascript($idLuci); ?>;
 	const ID_PRESE = <?php arrayJavascript($idPrese); ?>;
 	const ID_CLIMI = <?php arrayJavascript($idClimi); ?>;
+	const IMG_LIGHT_ON = "<?php echo(IMG_LIGHT_ON); ?>";
+	const IMG_LIGHT_OFF = "<?php echo(IMG_LIGHT_OFF); ?>";
+	const IMG_POWER_ON = "<?php echo(IMG_POWER_ON); ?>";
+	const IMG_POWER_OFF = "<?php echo(IMG_POWER_OFF); ?>";
+	const IMG_THERMO_ON = "<?php echo(IMG_THERMO_ON); ?>";
+	const IMG_THERMO_OFF = "<?php echo(IMG_THERMO_OFF); ?>";
+	const STATUS_BAR_HEIGHT = "<?php echo(STATUS_BAR_HEIGHT); ?>";
 </script>
+<script type="" language="javascript" src="statusbar.js"></script>
 <script type="" language="javascript" src="aui.js"></script>
 <script type="" language="javascript" src="comm.js"></script>
 <script type="" language="javascript" src="map.js"></script>

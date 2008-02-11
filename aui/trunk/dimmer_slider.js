@@ -29,7 +29,7 @@ const DIMMER_TOP_MIN = 23;
 const DIMMER_TOP_MAX = 217;
 
 /**
- * Minima variazione per cui il cursore viene spostato.
+ * Minima variazione per cui il cursore viene spostato. [pixel]
  *
  * <p>Questo parametro riduce la fluidita' ma aumenta la velocita' di risposta
  * del controllo.</p>
@@ -82,6 +82,39 @@ var dimmerValueElement;
 var dimmerIconOnMap;
 
 /**
+ * Elemento che contiene il testo vicino all'icona del dimmer sulla mappa.
+ */
+var dimmerTextOnMap;
+
+/**
+ * Calcola la posizione del cursore del dimmer a partire dal valore (0-100).
+ */
+function dimmerValue2Cursor(value) {
+	if (value >= 100) {
+		return DIMMER_TOP_MIN;
+	} else if (value <= 0) {
+		return DIMMER_TOP_MAX;
+	} 
+	return Math.floor((100 - value) / 100 *
+		(DIMMER_TOP_MAX - DIMMER_TOP_MIN) + DIMMER_TOP_MIN);
+}
+
+/**
+ * Calcola il valore dell'intensita' luminosa a partire dalla posizione del
+ * cursore.
+ */
+function dimmerCursor2Value(cursorTop) {
+	var y = cursorTop - DIMMER_CURSOR_MIDDLE; // Centriamo il centro del cursore
+	if (y <= DIMMER_TOP_MIN) {
+		return 100;
+	} else if (y >= DIMMER_TOP_MAX) {
+		return 0;
+	}
+	return 100 - Math.floor((y - DIMMER_TOP_MIN) / 
+		(DIMMER_TOP_MAX - DIMMER_TOP_MIN) * 100);
+}
+
+/**
  * Mostra il cursore del dimmer.
  *
  * @param divOnMap elemento div che contiene l'icona del dimmer
@@ -89,15 +122,15 @@ var dimmerIconOnMap;
  */
 function showDimmer(divOnMap) {
 	dimmerLayer.style.display = "";
-	dimmerName = divOnMap.firstChild.alt;
+	dimmerName = divOnMap.attributes.getNamedItem("name").value;
 	var attributes = divOnMap.attributes;
 	dimmerValueElement = attributes.getNamedItem("lit");
-	dimmerIconOnMap = divOnMap.firstChild;
+	dimmerIconOnMap = divOnMap.firstChild.firstChild;
+	dimmerTextOnMap = divOnMap.lastChild.firstChild;
 	dimmerAddress = attributes.getNamedItem("busaddress").value;
-	currentDimmerCursorTop = (100 - dimmerValueElement.value) / 100 * 
-		(DIMMER_TOP_MAX - DIMMER_TOP_MIN);
+	currentDimmerCursorTop = dimmerValue2Cursor(dimmerValueElement.value); 
 	dimmerCursorLayer.style.top = currentDimmerCursorTop + "px";
-	statusObject.innerHTML = dimmerName + ": " + dimmerValueElement.value;
+	statusMessage(dimmerName + ": " + dimmerValueElement.value);
 }
 
 /**
@@ -114,37 +147,42 @@ function hideDimmer() {
  * Segue il trascinamento del cursore.
  *
  * @param mousePos posizione del mouse relativa allo slider.
+ * @param forceUpdate facoltativo, se true impone che il cursore venga spostato.
  */
-function dragDimmerCursor(mousePos) {
-	var y = mousePos.y - DIMMER_CURSOR_MIDDLE;
-	if (y < DIMMER_TOP_MIN) {
-		y = DIMMER_TOP_MIN;
-	} else if (y > DIMMER_TOP_MAX) {
-		y = DIMMER_TOP_MAX;
-	}
-	var newValue = 100 - Math.floor((y - DIMMER_TOP_MIN) / 
-		(DIMMER_TOP_MAX - DIMMER_TOP_MIN) * 100);	
-	statusObject.innerHTML = dimmerName + ": " + newValue;
+function dragDimmerCursor(mousePos, forceUpdate) {
+	var y = mousePos.y;
+	var newValue = dimmerCursor2Value(y);
+	var newTop = dimmerValue2Cursor(newValue);
+	statusMessage(dimmerName + ": " + newValue);
 	// Il massimo e il minimo valore sono anti-jerkiness, perche' e' brutto
 	// se il cursore non arriva in fondo.
-	if ((Math.abs(y - currentDimmerCursorTop) > DIMMER_JERKINESS) ||
+	if (forceUpdate || 
+		(Math.abs(newTop - currentDimmerCursorTop) >= DIMMER_JERKINESS) ||
 		(newValue == 0) || (newValue == 100)) {
-		dimmerCursorLayer.style.top = y + "px";
-		currentDimmerCursorTop = y;
+		dimmerCursorLayer.style.top = newTop + "px";
+		currentDimmerCursorTop = newTop;
 	}
 	if (setPort(dimmerAddress, newValue)) { 
 		// Aggiorniamo l'icona sulla mappa, se necessario
-		if (newValue * dimmerValueElement.value == 0) {
-			if (newValue == 0) {
-				dimmerIconOnMap.src = IMG_LIGHT_OFF;
-			} else {
-				dimmerIconOnMap.src = IMG_LIGHT_ON;
-			}
+		if (newValue == 0) {
+			dimmerIconOnMap.src = IMG_LIGHT_OFF;
+		} else {
+			dimmerIconOnMap.src = IMG_LIGHT_ON;
 		}
+		dimmerTextOnMap.textContent = newValue + "%";
 		dimmerValueElement.value = newValue;
 	} else { // Errore: fissiamo lo slider a 0
 		dimmerCursorLayer.style.top = DIMMER_TOP_MAX + "px";
 	}
+}
+
+/**
+ * Conclude il trascinamento del cursore (o risponde a un click).
+ *
+ * @param mousePos posizione del mouse relativa allo slider.
+ */
+function dragDimmerStop(mousePos) {
+	dragDimmerCursor(mousePos, true);
 }
 
 /**

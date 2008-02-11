@@ -45,11 +45,10 @@ function query(command) {
 		if ((xmlhttp.readyState == 4) && (xmlhttp.status == 200)) {
 			retval = xmlhttp.responseText;
 		} else {
-			statusObject.innerHTML = "Errore di comunicazione: " + 
-				xmlhttp.statusText;
+			statusMessage("Errore di comunicazione: " +	xmlhttp.statusText);
 		}
 	} catch (e) {
-		statusObject.innerHTML = "Errore grave di comunicazione: " + e;
+		statusMessage("Errore grave di comunicazione: " + e);
 	}
 	return retval;
 }
@@ -116,7 +115,7 @@ function setPort(port, value) {
 		if (response.indexOf("OK") == 0) {
 			return true;
 		} else {
-			statusObject.innerHTML = response; 
+			statusMessage(response); 
 			return false;
 		}
 	} 

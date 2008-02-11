@@ -37,6 +37,11 @@ var lastDragTimeStamp = 0;
 var activeService = "";
 
 /**
+ * Conto alla rovescia per far sparire la barra di stato.
+ */
+var statusBarTimeout;
+ 
+/**
  * Posizione del mouse relativa all'oggetto.
  */
 function mouseCoords(ev, objectPosition){
@@ -87,7 +92,7 @@ function getPosition(e){
 
 	left += e.offsetLeft;
 	top  += e.offsetTop;
-	// statusObject.innerHTML=("getPosition(" + e + ") = " + left + ", " + top); 
+	// statusMessage("getPosition(" + e + ") = " + left + ", " + top); 
 	return {x:left, y:top};
 }
 
@@ -141,6 +146,8 @@ function mouseUp(ev){
 			case 'appbar':
 				dragAppBarStop(mouseCoords(ev, dragObjectPosition), d.getTime());
 				break;
+			case 'dimmer-sfondo':
+				dragDimmerStop(mouseCoords(ev, dragObjectPosition));
 		}
 	}
 	dragging = false;		
@@ -239,9 +246,10 @@ function clicca1(da,a) {
  * Gestisce uno o due click, chiamando ingrandisci1().
  *
  * @param ev evento click.
- * @param da id del'oggetto da far sparire.
- * @param a id dell'oggetto da far apparire con un solo click.
- * @param ret id dell'oggetto da far apparire con un doppio click.
+ * @param da id del div da far sparire (e rispetto al quale calcolare le
+ * coordinate del click).
+ * @param a id del div da far apparire con un solo click.
+ * @param ret id del div da far apparire con un doppio click.
  *
  * @see ingrandisci1()
  */
@@ -249,7 +257,8 @@ function ingrandisci(ev,da,a,ret) {
 	if (first_click) {
 		//setHeader("1° "+da+">"+a);
 		first_click = false;
-		var target = ev.target || ev.srcElement; // Firefox vs. IE
+		// var target = ev.target || ev.srcElement; // Firefox vs. IE
+		var target = document.getElementById(da);
 		var targetPos = getPosition(target);
 		var relativeX = ev.clientX - targetPos.x;
 		var relativeY = ev.clientY - targetPos.y; 
@@ -264,12 +273,12 @@ function ingrandisci(ev,da,a,ret) {
 }
 
 /**
- * Scambia due oggetti, mostrando il secondo alla posizione indicata.
+ * Scambia due div, mostrando il secondo alla posizione indicata.
  *
  * @param X coordinata X relativa all'oggetto che ha ricevuto il click.
  * @param Y coordinata Y relativa all'oggetto che ha ricevuto il click.
- * @param da id dell'oggetto da far sparire.
- * @param a id dell'oggetto da far apparire.
+ * @param da id del div da far sparire.
+ * @param a id del div da far apparire.
  */
 function ingrandisci1(X,Y,da,a) {
 	first_click = true;
@@ -296,7 +305,6 @@ function ingrandisci1(X,Y,da,a) {
 */
   
 	// coordinate del click
-	var el_div = da_el.parentNode;
 	if (debug) alert('click_x='+X+' click_y='+Y);
   
 	// calcolo del punto equivalente sulla nuova mappa

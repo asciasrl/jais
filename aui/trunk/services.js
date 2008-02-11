@@ -2,32 +2,28 @@
  * Copyright (C) 2008 ASCIA S.R.L.
  */
  
-const IMG_LIGHT_ON = "images/luce_on.png";
-const IMG_LIGHT_OFF = "images/luce_off.png";
-const IMG_POWER_ON = "images/energia_on.png";
-const IMG_POWER_OFF = "images/energia_off.png";
-const IMG_THERMO_ON = "images/clima_on.png";
-const IMG_THERMO_OFF = "images/clima_off.png";
-
 /**
  * Accende o spegne un'icona legata a un controllo on-off.
  *
  * <p>Nella barra di stato scrive l'attributo "alt" dell'icona.</p>
  *
- * @param divElement elemento div che contiene l'icona (come firstChild).
+ * @param divElement elemento div che contiene l'icona (come firstChild) e un
+ * testo (come lastChild).
  * @param attributeName nome dell'attributo che memorizza lo stato (on/off).
  * @param iconOn icona da mostrare se il controllo e' on.
  * @param iconOff icona da mostrare se il controllo e' off.
  */
 function onOffIcon(divElement, attributeName, iconOn, iconOff) {
-	var iconElement = divElement.firstChild;
+	var iconElement = divElement.firstChild.firstChild;
+	var textElement = divElement.lastChild.firstChild;
 	var status = divElement.attributes.getNamedItem(attributeName);
 	var address = divElement.attributes.getNamedItem("busaddress").value;
-	statusObject.innerHTML = iconElement.alt;
+	statusMessage(divElement.attributes.getNamedItem("name").value);
 	if (status.value.toUpperCase() == "ON") {
 		iconElement.src = iconOff;
 		if (setPort(address, "OFF")) {
 			status.value = "OFF";
+			textElement.textContent = "OFF";
 		} else { // Errore: rimettiamo l'immagine di prima
 			iconElement.src = iconOn;
 		}
@@ -35,6 +31,7 @@ function onOffIcon(divElement, attributeName, iconOn, iconOff) {
 		iconElement.src = iconOn;
 		if (setPort(address, "ON")) {
 			status.value = "ON";
+			textElement.textContent = "ON";
 		} else { // Errore: rimettiamo l'immagine di prima
 			iconElement.src = iconOff;
 		}
@@ -87,12 +84,21 @@ function refreshElements(status, ids, attributeName, iconOn, iconOff) {
 		var value = parseServerAnswer(attrs.getNamedItem("busaddress").value, 
 			status);
 		if (value) {
-			var icon = element.firstChild;
+			var icon = element.firstChild.firstChild;
+			var text = element.lastChild.firstChild;
 			attrs.getNamedItem(attributeName).value = value;
-			if ((value == 0) || (value.toUpperCase() == "OFF")) {
+			if (value.toUpperCase() == "OFF") {
 				icon.src = iconOff;
-			} else {
+				text.nodeValue = "OFF";
+			} else if (value == 0) {
+				icon.src = iconOff;
+				text.nodeValue = "0%";
+			} else if (value.toUpperCase() == "ON") {
 				icon.src = iconOn;
+				text.nodeValue = "ON";
+			} else { // E' un dimmer, oppure qualcos'altro
+				icon.src = iconOn;
+				text.nodeValue = value;
 			}
 		}
 	}

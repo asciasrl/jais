@@ -2,7 +2,7 @@
  * Copyright (C) 2008 ASCIA S.R.L.
  */
 /**
- * Elemento che contiene la mappa visualizzata.
+ * Elemento (&lt;div&gt;) che contiene la mappa visualizzata.
  */
 var currentMap;
 /**
@@ -20,7 +20,7 @@ var lastMapPosition = {x:0, y:0};
  * @param mousePos posizione del mouse relativa all'oggetto.
  */
 function dragMap(mousePos) {
-	// statusObject.innerHTML = "Mouse:" + mousePos.x + ',' + mousePos.y;
+	// statusMessage("Mouse:" + mousePos.x + ',' + mousePos.y);
   	// statusObject.innerHTML += ' Da:'+dragObject.offsetLeft+','+dragObject.offsetTop;
 
 	new_top = mousePos.y - mouseOffset.y + lastMapPosition.y;

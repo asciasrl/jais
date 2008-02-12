@@ -37,11 +37,6 @@ var lastDragTimeStamp = 0;
 var activeService = "";
 
 /**
- * Conto alla rovescia per far sparire la barra di stato.
- */
-var statusBarTimeout;
- 
-/**
  * Posizione del mouse relativa all'oggetto.
  */
 function mouseCoords(ev, objectPosition){

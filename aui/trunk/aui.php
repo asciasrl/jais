@@ -274,7 +274,7 @@ function arrayJavascript($arr) {
 
  
 
-<div id="header-out" style="position: absolute; z-index: 30; width: 320px; height: 40px; filter:alpha(opacity='60'); opacity: <?php echo(STATUS_BAR_OPACITY); ?>;">
+<div id="header-out" style="display: none; position: absolute; z-index: 30; width: 320px; height: 40px; filter:alpha(opacity='60'); opacity: <?php echo(STATUS_BAR_OPACITY); ?>;">
 <div style="position: absolute;"><img src="images/barratesti.png" /></div>
 <div id="header" style="position: absolute; margin-top: 9px; height: <php echo(STATUS_BAR_HEIGHT); ?>px; width: 320px; text-align: center;"><b>barra di stato</b></div>
 </div>
@@ -422,5 +422,5 @@ endforeach; // $piani as $piano
 <script type="" language="javascript" src="dimmer_slider.js"></script>
 <script type="" language="javascript" src="keypad.js"></script>
 <script type="" language="javascript">
-	refreshEverything();
+setInterval("refreshEverything()", 3000);
 </script>

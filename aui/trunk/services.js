@@ -71,7 +71,7 @@ function onOffIcon(divElement, attributeName, iconOn, iconOff) {
 		var newStatus = toggleIcon();
 		setPort(address, newStatus, onOffIconCallback);
 	} else { // C'e' gia' una chiamata a onOffIcon in corso
-		statusMessage("Richiesta on/off gia' in corso, riprova.");
+		// statusMessage("Richiesta gia' in corso, riprova.");
 	}
 }
  
@@ -133,9 +133,9 @@ function refreshElements(status, ids, attributeName, iconOn, iconOff) {
 			} else if (value.toUpperCase() == "ON") {
 				icon.src = iconOn;
 				text.nodeValue = "ON";
-			} else { // E' un dimmer, oppure qualcos'altro
+			} else { // E' un dimmer
 				icon.src = iconOn;
-				text.nodeValue = value;
+				text.nodeValue = value + "%";
 			}
 		}
 	}

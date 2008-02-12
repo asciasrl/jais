@@ -16,6 +16,13 @@ const CMD_SET = "jeds/set";
  */
 const CMD_GETALL = "jeds/getAll";
 
+/**
+ * Timeout forzato per una richiesta [msec].
+ *
+ * <p>Le richieste che durino piu' di questo tempo verranno interrotte.</p>
+ */
+const REQUEST_TIMEOUT = 3000;
+
 
 /**
  * Valore ricevuto dalla richiesta XMLHTTP.
@@ -28,24 +35,95 @@ var xmlhttpValue;
 var xmlhttp;
 
 /**
+ * Contatore per verificare i timeout della connessione.
+ *
+ * <p>Questa variabile e' usata anche per capire se ci sono richieste in corso.
+ * </p>
+ */
+var xmlhttpTimeout;
+
+/**
+ * Quale funzione chiamare al termine della richiesta.
+ */
+var httpCallbackFunction;
+
+/**
+ * Quale funzione chiamare al termine della richiesta getAll.
+ *
+ * <p>Questa variabile e' usata anche per capire se ci sono richieste in corso.
+ * </p>
+ */
+var getAllUserCallback = false;
+
+/**
+ * Quale funzione chiamare al termine della richiesta setPort.
+ *
+ * <p>Questa variabile e' usata anche per capire se ci sono richieste in corso.
+ * </p>
+ */
+var setPortUserCallback = false;
+
+/**
+ * Interrompe una connessione che sta durando troppo.
+ *
+ * <p>Questo metodo viene chiamato da un timeout.</p>
+ */
+function httpRequestTimeout() {
+	xmlhttpTimeout = false;
+	xmlhttp.abort();
+}
+
+/**
+ * Gestisce il cambio di stato della richiesta xmlhttp.
+ *
+ * <p>Questa funzione viene chiamata quando i dati sono pronti, oppure la
+ * richiesta e' fallita. Il suo lavoro e' chiamare la funzione callback che
+ * l'utente ha indicato a query().</p>
+ */
+function httpDataReceived() {
+	if (xmlhttp.readyState == 4) {
+		if (xmlhttpTimeout) {
+			// La richiesta e' completa. Possiamo bloccare il timeout.
+			window.clearTimeout(xmlhttpTimeout);
+			xmlhttpTimeout = false;
+			if (xmlhttp.status == 200) {
+				httpCallbackFunction(xmlhttp.responseText, false);
+			} else {
+				httpCallbackFunction(false, 
+					"Errore di comunicazione: " + xmlhttp.statusText);
+			}
+		} else { // E' il timeout che ci ha bloccato
+			httpCallbackFunction(false, 
+					"Errore: timeout nella connessione!");
+		}
+	} // Altrimenti aspettiamo che xmlhttp arrivi allo stato 4
+}
+
+/**
  * Effettua una richiesta al server.
  *
  * <p>Eventuali messaggi di errore vengono mostrati nell'area di stato.</p>
  *
  * @param command il comando da inviare.
  *
- * @return il messaggio ricevuto dal server, oppure false se si sono verificati
- * errori. 
+ * @param callbackFunction funzione da chiamare quando la richiesta e'
+ * conclusa. Saranno passati due parametri: il messaggio ricevuto dal server 
+ * (false se si sono verificati errori), e il messaggio di errore (false se
+ * tutto e' andato bene). 
  */ 
-function query(command) {
+function query(command, callbackFunction) {
 	var retval = false;
 	try {
-		xmlhttp.open("GET", command, false);
-		xmlhttp.send(null);
-		if ((xmlhttp.readyState == 4) && (xmlhttp.status == 200)) {
-			retval = xmlhttp.responseText;
+		if (xmlhttpTimeout) {
+			// C'e' gia' una richiesta in corso.
+			callbackFunction(false, "Connessione occupata");
 		} else {
-			statusMessage("Errore di comunicazione: " +	xmlhttp.statusText);
+			httpCallbackFunction = callbackFunction;
+			xmlhttpTimeout = window.setTimeout("httpRequestTimeout()", 
+				REQUEST_TIMEOUT);
+			xmlhttp.open("GET", command, true);
+			xmlhttp.onreadystatechange = httpDataReceived;
+			xmlhttp.send(null);
 		}
 	} catch (e) {
 		statusMessage("Errore grave di comunicazione: " + e);
@@ -93,12 +171,55 @@ function getPort(port) {
 }
 
 /**
+ * Callback per getAll.
+ */
+function getAllCallback(goodNews, badNews) {
+	// E' possibile che la callback faccia una nuova getAll. Permettiamoglielo. 
+	var callback = getAllUserCallback; 
+	getAllUserCallback = false;
+	if (goodNews) {
+		callback(goodNews);
+	} else { // Bad news :-(
+		statusMessage(badNews);
+		callback(false);
+	}
+}
+
+/**
  * Ritorna lo stato di tutte le porte del sistema.
  *
- * @return il messaggio del server o false se si sono verificati errori.
+ * @param callback la funzione che ricevera' i dati. Ricevera' un parametro,
+ * che saranno i dati oppure false in caso di errore.
  */
-function getAll() {
-	return query(CMD_GETALL);
+function getAll(callback) {
+	if (getAllUserCallback) {
+		// C'e' gia' una richiesta di questo tipo in esecuzione.
+		callback(false);
+	} else {
+		getAllUserCallback = callback;
+		query(CMD_GETALL, getAllCallback);
+	}
+}
+
+/**
+ * Callback per setPort.
+ */
+function setPortCallback(goodNews, badNews) {
+	// E' possibile che la callback faccia una nuova setPort. Permettiamoglielo.
+	var callback = setPortUserCallback; 
+	setPortUserCallback = false;
+	if (goodNews) {
+		if (goodNews.indexOf("OK") == 0) {
+			callback(true);
+		} else {
+			// Errore che non siamo capaci di interpretare qui
+			statusMessage(goodNews); 
+			callback(false);
+		}
+	} else { // Bad news :-(
+		statusMessage(badNews);
+		callback(false);
+	}
 }
 
 /**
@@ -106,19 +227,19 @@ function getAll() {
  *
  * @param port l'indirizzo della porta.
  * @param value il valore da impostare.
+ * @param callBack funzione callBack. Deve accettare un solo parametro, che 
+ * sara' true se il comando e' riuscito.
  *
  * @return true se il comando e' riuscito.
  */
-function setPort(port, value) {
-	var response = query(CMD_SET + "?name=" + port + "&value=" + value);
-	if (response) { 
-		if (response.indexOf("OK") == 0) {
-			return true;
-		} else {
-			statusMessage(response); 
-			return false;
-		}
-	} 
+function setPort(port, value, callBack) {
+	if (setPortUserCallback) {
+		// C'e' una richiesta setPort gia' in esecuzione
+		callBack(false);
+	} else {
+		setPortUserCallback = callBack;
+		query(CMD_SET + "?name=" + port + "&value=" + value, setPortCallback);
+	}
 }
 
 

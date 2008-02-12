@@ -385,6 +385,7 @@ endforeach; // $piani as $piano
 	<div id="dimmer"
 		style="position: absolute; width: 320px; height: 380px; 
 			overflow: hidden; display: none;" onclick="hideDimmer()">
+		<div style="position: absolute; width: 320px; height: 380px; background-color: black; filter:alpha(opacity='80'); opacity: 0.8;">&nbsp;</div>
 		<div id="dimmer-sfondo" style="position: absolute; width: 80px; 
 			height: 300px; margin-top: 40px; margin-left: 120px;"
 			onclick="dimmerSliderClicked(event)" >

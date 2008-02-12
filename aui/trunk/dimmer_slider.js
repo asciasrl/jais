@@ -144,6 +144,24 @@ function hideDimmer() {
 }	
 
 /**
+ * Riceve la risposta alla richiesta setPort sul dimmer.
+ *
+ * <p>Aggiorna la posizione del cursore e l'icona sulla mappa.</p>
+ */
+function dimmerSetCallback(ok) {
+	if (ok) { 
+		// Aggiorniamo l'icona sulla mappa
+		if (currentDimmerValue == 0) {	
+			dimmerIconOnMap.src = IMG_LIGHT_OFF;
+		} else {
+			dimmerIconOnMap.src = IMG_LIGHT_ON;
+		}
+		dimmerTextOnMap.textContent = currentDimmerValue + "%";
+		dimmerValueElement.value = currentDimmerValue;
+	}
+}
+
+/**
  * Segue il trascinamento del cursore.
  *
  * @param mousePos posizione del mouse relativa allo slider.
@@ -162,18 +180,8 @@ function dragDimmerCursor(mousePos, forceUpdate) {
 		dimmerCursorLayer.style.top = newTop + "px";
 		currentDimmerCursorTop = newTop;
 	}
-	if (setPort(dimmerAddress, newValue)) { 
-		// Aggiorniamo l'icona sulla mappa, se necessario
-		if (newValue == 0) {
-			dimmerIconOnMap.src = IMG_LIGHT_OFF;
-		} else {
-			dimmerIconOnMap.src = IMG_LIGHT_ON;
-		}
-		dimmerTextOnMap.textContent = newValue + "%";
-		dimmerValueElement.value = newValue;
-	} else { // Errore: fissiamo lo slider a 0
-		dimmerCursorLayer.style.top = DIMMER_TOP_MAX + "px";
-	}
+	currentDimmerValue = newValue;
+	setPort(dimmerAddress, newValue, dimmerSetCallback);
 }
 
 /**

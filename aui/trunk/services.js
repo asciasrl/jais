@@ -3,6 +3,52 @@
  */
  
 /**
+ * Informazioni sull'icona che si sta accendendo o spegnendo in questo momento.
+ *
+ * @see onOffIcon()
+ */
+var iconToToggle = false;
+
+/**
+ * Riceve le risposte delle richieste fatte da onOffIcon().
+ *
+ * <p>In caso di errore, ripristina l'icona "spento".</p>
+ */
+function onOffIconCallback(ok) {
+	if (!ok) {
+		toggleIcon();
+	}
+	iconToToggle = false;
+}
+
+/**
+ * Accende o spegne un'icona legata a un controllo on-off, ritornando il
+ * nuovo valore.
+ *
+ * <p>Si aspetta che iconToToggle sia impostata.</p>
+ *
+ * <p><b>NOTA:</b> questa funzione e' solo per uso interno! Da fuori, bisogna
+ * chiamare onOffIcon().</p>
+ *
+ * @return il nuovo stato dell'icona ("ON" o "OFF")
+ */
+function toggleIcon() {
+	var iconElement	= iconToToggle.img;
+	var textElement = iconToToggle.txt;
+	var status = iconToToggle.status;
+	if (status.value.toUpperCase() == "ON") {
+		iconElement.src = iconToToggle.iconOff;
+		status.value = "OFF";
+		textElement.textContent = "OFF";
+	} else {
+		iconElement.src = iconToToggle.iconOn;
+		status.value = "ON";
+		textElement.textContent = "ON";
+	}
+	return status.value;
+}
+
+/**
  * Accende o spegne un'icona legata a un controllo on-off.
  *
  * <p>Nella barra di stato scrive l'attributo "alt" dell'icona.</p>
@@ -19,22 +65,13 @@ function onOffIcon(divElement, attributeName, iconOn, iconOff) {
 	var status = divElement.attributes.getNamedItem(attributeName);
 	var address = divElement.attributes.getNamedItem("busaddress").value;
 	statusMessage(divElement.attributes.getNamedItem("name").value);
-	if (status.value.toUpperCase() == "ON") {
-		iconElement.src = iconOff;
-		if (setPort(address, "OFF")) {
-			status.value = "OFF";
-			textElement.textContent = "OFF";
-		} else { // Errore: rimettiamo l'immagine di prima
-			iconElement.src = iconOn;
-		}
-	} else {
-		iconElement.src = iconOn;
-		if (setPort(address, "ON")) {
-			status.value = "ON";
-			textElement.textContent = "ON";
-		} else { // Errore: rimettiamo l'immagine di prima
-			iconElement.src = iconOff;
-		}
+	if (!iconToToggle) {
+		iconToToggle = {img:iconElement, txt:textElement, status:status,
+			iconOn:iconOn, iconOff:iconOff};
+		var newStatus = toggleIcon();
+		setPort(address, newStatus, onOffIconCallback);
+	} else { // C'e' gia' una chiamata a onOffIcon in corso
+		statusMessage("Richiesta on/off gia' in corso, riprova.");
 	}
 }
  
@@ -133,12 +170,21 @@ function refreshPowers(status) {
 
 /**
  * Aggiorna lo stato di tutti i sistemi.
+ *
+ * @see refreshEverything
  */
-function refreshEverything() {
-	var globalStatus = getAll();
+function refreshEverythingCallback(globalStatus) {
 	if (globalStatus) {
 		refreshLights(globalStatus);
 		refreshThermos(globalStatus);
 		refreshPowers(globalStatus);
 	}
+}
+/**
+ * Richiede un aggiornamento dello stato di tutti i sistemi.
+ *
+ * @see refreshEverythingCallback
+ */
+function refreshEverything() {
+	getAll(refreshEverythingCallback);
 }

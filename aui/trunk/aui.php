@@ -21,6 +21,11 @@ define("IMG_THERMO_OFF", "images/clima_off.png");
 define("STATUS_BAR_HEIGHT", 22);
 
 /**
+ * Opacita' di default della status bar [0 .. 1].
+ */
+define("STATUS_BAR_OPACITY", 0.60);
+
+/**
  * Immagine che mostra i piani.
  */
 $pianiFile = "images/assonometria320x370.png"; // images/piani-all.png";
@@ -269,7 +274,7 @@ function arrayJavascript($arr) {
 
  
 
-<div id="header-out" style="position: absolute; z-index: 30; width: 320px; height: 40px; filter:alpha(opacity='60'); opacity: 0.60;">
+<div id="header-out" style="position: absolute; z-index: 30; width: 320px; height: 40px; filter:alpha(opacity='60'); opacity: <?php echo(STATUS_BAR_OPACITY); ?>;">
 <div style="position: absolute;"><img src="images/barratesti.png" /></div>
 <div id="header" style="position: absolute; margin-top: 9px; height: <php echo(STATUS_BAR_HEIGHT); ?>px; width: 320px; text-align: center;"><b>barra di stato</b></div>
 </div>
@@ -405,6 +410,7 @@ endforeach; // $piani as $piano
 	const IMG_THERMO_ON = "<?php echo(IMG_THERMO_ON); ?>";
 	const IMG_THERMO_OFF = "<?php echo(IMG_THERMO_OFF); ?>";
 	const STATUS_BAR_HEIGHT = "<?php echo(STATUS_BAR_HEIGHT); ?>";
+	const STATUS_BAR_OPACITY = "<?php echo(STATUS_BAR_OPACITY); ?>";
 </script>
 <script type="" language="javascript" src="statusbar.js"></script>
 <script type="" language="javascript" src="aui.js"></script>

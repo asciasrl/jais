@@ -175,23 +175,25 @@ public class BMCComputer extends BMC {
 	 * @return true se l'invio e' andato a buon fine; nel caso di richieste,
 	 * ritorna true se e' arrivata una risposta.
 	 */
-	public boolean sendMessage(Message m) {
+	public synchronized boolean sendMessage(Message m) {
+		boolean retval;
 		if (m.isBroadcast()) {
 			sendBroadcastMessage((BroadcastMessage) m);
-			return true;
+			retval = true;
 		} else { 
 			// E' un PTPMessage
 			PTPMessage ptpm = (PTPMessage) m;
 			if (ptpm.wantsReply()) {
 				// E' un PTPRequest
-				return sendPTPRequest((PTPRequest) ptpm);
+				retval = sendPTPRequest((PTPRequest) ptpm);
 			} else {
 				// Invio nudo e crudo
 				bus.write(m);
 				// non c'e' modo di sapere se e' arrivato; siamo ottimisti.
-				return true;
+				retval = true;
 			}
-		} 
+		}
+		return retval;
 	}
 
 	

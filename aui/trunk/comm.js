@@ -46,6 +46,14 @@ var xmlhttpTimeout;
  * Quale funzione chiamare al termine della richiesta.
  */
 var httpCallbackFunction;
+/**
+ * La funzione da chiamare dopo la prossima richiesta.
+ */
+var nextHttpCallbackFunction = null;
+/**
+ * Il comando da dare nella prossima richiesta.
+ */
+var nextHttpCommand = null;
 
 /**
  * Quale funzione chiamare al termine della richiesta getAll.
@@ -86,23 +94,35 @@ function httpDataReceived() {
 			// La richiesta e' completa. Possiamo bloccare il timeout.
 			window.clearTimeout(xmlhttpTimeout);
 			xmlhttpTimeout = false;
-			if (xmlhttp.status == 200) {
-				httpCallbackFunction(xmlhttp.responseText, false);
-			} else {
-				httpCallbackFunction(false, 
-					"Errore di comunicazione: " + xmlhttp.statusText);
+			try {
+				if (xmlhttp.status == 200) {
+					httpCallbackFunction(xmlhttp.responseText, false);
+				} else {
+					httpCallbackFunction(false, 
+						"Errore di comunicazione: " + xmlhttp.statusText);
+				}
+			} catch (e) { // xmlhttp.status potrebbe non essere leggibile
+				httpCallbackFunction(false, "Errore di comunicazione.");
 			}
 		} else { // E' il timeout che ci ha bloccato
 			httpCallbackFunction(false, 
 					"Errore: timeout nella connessione!");
 		}
+		// Passiamo alla prossima richiesta
+		if (nextHttpCallbackFunction) {
+			query(nextHttpCommand, nextHttpCallbackFunction);
+			nextHttpCallbackFunction = false;
+		}
 	} // Altrimenti aspettiamo che xmlhttp arrivi allo stato 4
 }
 
 /**
- * Effettua una richiesta al server.
+ * Effettua una richiesta al server, o la mette in coda se la connessione e'
+ * occupata.
  *
  * <p>Eventuali messaggi di errore vengono mostrati nell'area di stato.</p>
+ *
+ * <p>La coda e' molto semplice, contiene due soli elementi.</p>
  *
  * @param command il comando da inviare.
  *
@@ -116,7 +136,14 @@ function query(command, callbackFunction) {
 	try {
 		if (xmlhttpTimeout) {
 			// C'e' gia' una richiesta in corso.
-			callbackFunction(false, "Connessione occupata");
+			if (nextHttpCallbackFunction) {
+				// C'e' gia' una seconda richiesta in attesa.
+				callbackFunction(false, "Connessione occupata");
+			} else {
+				// Mettiamo questa richiesta in attesa
+				nextHttpCallbackFunction = callbackFunction;
+				nextHttpCommand = command;
+			}
 		} else {
 			httpCallbackFunction = callbackFunction;
 			xmlhttpTimeout = window.setTimeout("httpRequestTimeout()", 
@@ -180,7 +207,7 @@ function getAllCallback(goodNews, badNews) {
 	if (goodNews) {
 		callback(goodNews);
 	} else { // Bad news :-(
-		statusMessage(badNews);
+		// statusMessage(badNews); // Non ci interessa: ne faremo tante!
 		callback(false);
 	}
 }

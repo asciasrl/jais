@@ -1,11 +1,25 @@
+/**
+ * Copyright (C) 2008 ASCIA S.r.l.
+ */
 package it.ascia.bentel;
 
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.LinkedList;
 
+/**
+ * Interfaccia di comunicazione con la centralina Bentel Kyo8.
+ * 
+ * <p>La decodifica dei valori ricevuti (allarmi, errori, ecc.) 
+ * e' lasciata ai singoli metodi getter.</p>
+ * 
+ * @author sergio, arrigo
+ */
 public class JBisKyoUnit {
 	/**
 	 * Array per tradurre i codici di errore numerici in stringhe.
 	 */
-	 static final String errorMessages[] = {
+	 private static final String errorMessages[] = {
 		 "Operazione andata a buon fine", // 0
 		 "Codice utente non valido", // 1 
 		 "Errore apertura porta seriale", // 2
@@ -19,6 +33,45 @@ public class JBisKyoUnit {
 		 "Errore chiusura sessione di programmazione", // 10
 		 "Codice utente non abilitato"}; // 11
 	/**
+	 * Codici di warning.
+	 * 
+	 * <p>Gli indici delle stringhe nell'array corrispondono al bit del byte
+	 * che elenca i warning.</p>
+	 */
+	private static final String warningMessages[] = {
+		"Mancanza rete", // 0
+		"Scomparsa BPI", // 1
+		"Warning Fusibile", // 2
+		"Batteria bassa", // 3
+		"", // 4: non contemplato dal manuale
+		"Guasto linea telefonica", // 5
+		"Codici Default"}; // 6
+	
+	/**
+	 * Descrizioni degli altri sabotaggi.
+	 * 
+	 * <p>Gli indici delle stringhe nell'array corrispondono al bit del byte
+	 * che elenca i warning - 4.</p>
+	 * 
+	 * @see otherSabotages
+	 */
+	private static final String otherSabotagesMessages[] = {
+		"Sabotaggio di zona", // 4
+		"Chiave falsa", // 5
+		"Sabotaggio BPI", // 6
+		"Sabotaggio sistema"}; // 7
+	
+	/**
+	 * Numero di zone gestite dalla centralina.
+	 */
+	public final int ZONES_NUM = 8;
+	
+	/**
+	 * Numero di aree gestite dalla centralina.
+	 */
+	public final int AREAS_NUM = 4;
+	
+	/**
 	 *  Numero porta seriale (1 - COM1 ... 4 - COM4).
 	 */
 	private byte seriale;
@@ -26,7 +79,61 @@ public class JBisKyoUnit {
 	/** 
 	 * Numero di ritentativi in caso di errore di comunicazione (result = 3).
 	 */
-	private byte tentativi; 
+	private byte tentativi;
+	
+	/**
+	 * Allarmi di zona attivi.
+	 * 
+	 * <p>Questo byte contiene lo stato degli allarmi di zona, tale e quale 
+	 * viene ricevuto dalla centralina.</p>
+	 * 
+	 * @see updateStatus
+	 */
+	private byte zoneAlarms;
+	
+	/**
+	 * Sabotaggi di zona rilevati.
+	 * 
+	 * <p>Questo byte contiene lo stato dei sabotaggi di zona, tale e quale 
+	 * viene ricevuto dalla centralina.</p>
+	 * 
+	 * @see updateStatus
+	 */
+	private byte zoneSabotages;
+	
+	/**
+	 * Warning rilevati.
+	 * 
+	 * <p>Questo byte contiene lo stato dei warning, tale e quale
+	 * viene ricevuto dalla centralina, ma con i bit non significativi posti a 
+	 * 0.</p>
+	 * 
+	 * @see updateStatus
+	 */
+	private byte warnings;
+	
+	/**
+	 * Allarmi di area attivi.
+	 * 
+	 * <p>Questo byte contiene lo stato degli allarmi di area, tale e quale 
+	 * viene ricevuto dalla centralina, ma con i bit non significativi posti a 
+	 * 0.</p>
+	 * 
+	 * @see updateStatus
+	 */
+	private byte areaAlarms;
+	
+	/**
+	 * Altri sabotaggi rilevati.
+	 * 
+	 * <p>Questo byte contiene lo stato dei sabotaggi rilevati, tale e quale 
+	 * viene ricevuto dalla centralina, ma con i bit non significativi posti a 
+	 * 0.</p>
+	 * 
+	 * @see updateStatus
+	 */
+	private byte otherSabotages;
+	
 	
 	private String PIN;
 	
@@ -42,16 +149,185 @@ public class JBisKyoUnit {
 	 * @param t Numero di ritentativi in caso di errore di comunicazione (result = 3)
 	 * @param p PIN di accesso alle funzioni con password
 	 */
-	JBisKyoUnit(int s,int t,String p) throws Exception
+	JBisKyoUnit(int s,int t,String p) throws JBisException
 	{
 		seriale = (byte)s;
 		tentativi = (byte)t;
 		PIN = p;
 		if (!openLibrary()) {
-			throw new Exception("Impossibile aprire la DLL");
+			throw new JBisException("Impossibile aprire la DLL");
 		}
 	}
 	
+	/**
+	 * Aggiorna lo stato della centralina.
+	 * 
+	 * <p>Dopo aver chiamato questo metodo, si possono ottenere informazioni
+	 * aggiornate sullo stato (warning, allarmi, ecc.)</p>
+	 */
+	public void updateStatus() throws JBisException {
+		byte[] data = Leggi(0x304);
+		zoneAlarms = data[0];
+		zoneSabotages = data[1];
+		warnings = (byte)(data[2] & 0x7f); // Contano solo i bit 0-6
+		areaAlarms = (byte)(data[3] & 0xf); // Contano solo i bit 0-3
+		otherSabotages = (byte)(data[4] & 0xf0); // Contano solo i bit 4-7
+	}
+	
+	/**
+	 * Verifica la presenza di allarmi (zone e/o aree).
+	 * 
+	 * @return true se c'e' almeno un allarme attivo di qualunque tipo.
+	 */
+	public boolean hasAlarms() {
+		return (hasZoneAlarms() || hasAreaAlarms());
+	}
+	
+	/**
+	 * Verifica la presenza di allarmi di zona.
+	 * @return true se c'e' almeno un allarme di zona attivo.
+	 */
+	public boolean hasZoneAlarms() {
+		return (zoneAlarms != 0);		
+	}
+	
+	/**
+	 * Verifica la presenza di un allarme in una zona.
+	 * 
+	 * @param zone numero zona da verificare (1 -- 8).
+	 * 
+	 * @return true se la zona indicata e' in allarme.
+	 */
+	public boolean hasZoneAlarm(int zone) {
+		int bit = zone - 1;
+		if ((bit >= 0) && (bit <= 7)) {
+			return ((zoneAlarms & (1 << bit)) != 0);
+		} else {
+			System.err.println("Richiesto allarme per zona non valida: " + 
+					zone);
+			return false;
+		}
+	}
+	
+	/**
+	 * Verifica la presenza di sabotaggi (zona o altro).
+	 * 
+	 * @return true se sono stati rilevati sabotaggi.
+	 */
+	public boolean hasSabotages() {
+		return (hasZoneSabotages() || hasOtherSabotages());
+	}
+	
+	/**
+	 * Verifica la presenza di sabotaggi di zona.
+	 * @return true se c'e' almeno un sabotaggio di zona attivo.
+	 */
+	public boolean hasZoneSabotages() {
+		return (zoneSabotages != 0);		
+	}
+	
+	/**
+	 * Verifica la presenza di un sabotaggio di una zona.
+	 * 
+	 * @param zone numero zona da verificare (1 -- ZONES_NUM).
+	 * 
+	 * @return true se nella zona indicata e' stato rilevato un sabotaggio.
+	 */
+	public boolean hasZoneSabotage(int zone) {
+		int bit = zone - 1;
+		if ((bit >= 0) && (bit <= 7)) {
+			return ((zoneSabotages & (1 << bit)) != 0);
+		} else {
+			System.err.println("Richiesto stato sabotaggio per zona non "
+					+ "valida: " + zone);
+			return false;
+		}
+	}
+	
+	
+	/**
+	 * Verifica la presenza di warning.
+	 * 
+	 * @return true se c'e' almeno un warning attivo.
+	 */
+	public boolean hasWarnings() {
+		return (warnings != 0);		
+	}
+	
+	/**
+	 * Ritorna i warning rilevati, sotto forma di lista di stringhe.
+	 * 
+	 * @return una lista di warning (stringhe)
+	 */
+	public LinkedList getWarnings() {
+		LinkedList retval = new LinkedList();
+		int i;
+		for (i=0; i < warningMessages.length; i++) {
+			if ((warnings & (1 << i)) != 0) {
+				retval.add(warningMessages[i]);
+			}
+		}
+		return retval;
+	}
+	
+	/**
+	 * Verifica la presenza di allarmi di area.
+	 * @return true se c'e' almeno un allarme di zona attivo.
+	 */
+	public boolean hasAreaAlarms() {
+		return (areaAlarms != 0);		
+	}
+	
+	/**
+	 * Verifica la presenza di un allarme in un'area.
+	 * 
+	 * @param area numero area da verificare (1 -- AREAS_NUM).
+	 * 
+	 * @return true se l'area indicata e' in allarme.
+	 */
+	public boolean hasAreaAlarm(int area) {
+		int bit = area - 1;
+		if ((bit >= 0) && (bit <= 3)) {
+			return ((areaAlarms & (1 << bit)) != 0);
+		} else {
+			System.err.println("Richiesto allarme per area non valida: " + 
+					area);
+			return false;
+		}
+	}
+	
+	/**
+	 * Verifica la presenza di sabotaggi ulteriori.
+	 * 
+	 * @return true se c'e' almeno un sabotaggio (non di zona) attivo.
+	 */
+	public boolean hasOtherSabotages() {
+		return (otherSabotages != 0);		
+	}
+	
+	/**
+	 * Ritorna i sabotaggi ulteriori rilevati, sotto forma di lista di stringhe.
+	 * 
+	 * @return una lista di sabotaggi (stringhe)
+	 */
+	public LinkedList getOtherSabotages() {
+		LinkedList retval = new LinkedList();
+		int i;
+		for (i=0; i < otherSabotagesMessages.length; i++) {
+			// I bit iniziano dal n. 4
+			if ((otherSabotages & (1 << (i + 4))) != 0) {
+				retval.add(otherSabotagesMessages[i]);
+			}
+		}
+		return retval;
+	}
+	
+	/**
+	 * Converte un codice di errore numerico in un messaggio testuale.
+	 * 
+	 * @param err codice di errore.
+	 * @return una stringa che descrive l'errore.
+	 */
 	protected static String strerror(int err) {
 		if ((err > 0) && (err < errorMessages.length)) {
 			return errorMessages[err];
@@ -67,30 +343,61 @@ public class JBisKyoUnit {
     	JBisKyoUnit b;
 		try {
 			b = new JBisKyoUnit(1,1,"0025");
-			byte[] data;
-	        //while (true) {
-	        	data = b.Leggi(0x0304);
-	        
-		        //data = b.Leggi(0x00000383);
-		                
-				for (int i = 0; i < 5; i++) {
-					System.out.print(" 0x"+(data[i] & 0xff));
-					//System.out.print(" 0x"+data[i]);
+			b.updateStatus();
+			if (b.hasAlarms()) {
+				System.out.println("Allarmi:");
+				if (b.hasZoneAlarms()) {
+					System.out.println(" Zone:");
+					for (int i = 1; i <= b.ZONES_NUM; i++) {
+						if (b.hasZoneAlarm(i)) {
+							System.out.println("  " + i);
+						}
+					}
 				}
-				System.out.println("");
-				/*try {
-					Thread.sleep(500);
-				} catch (InterruptedException e) {}
-				*/
-	        //}
+				if (b.hasAreaAlarms()) {
+					System.out.println(" Aree:");
+					for (int i = 1; i <= b.AREAS_NUM; i++) {
+						if (b.hasAreaAlarm(i)) {
+							System.out.println("  " + i);
+						}
+					}
+				}
+			} // Allarmi
+			if (b.hasSabotages()) {
+				System.out.println("Sabotaggi:");
+				if (b.hasZoneSabotages()) {
+					System.out.println(" zone:");
+					for (int i = 1; i <= b.ZONES_NUM; i++) {
+						if (b.hasZoneSabotage(i)) {
+							System.out.println("  " + i);
+						}
+					}
+				}
+				if (b.hasOtherSabotages()) {
+					System.out.println(" altro:");
+					LinkedList l = b.getOtherSabotages();
+					Iterator it = l.iterator();
+					while (it.hasNext()) {
+						System.out.println("  " + it.next());
+					}
+				}
+			} // Sabotaggi
+			if (b.hasWarnings()) {
+				System.out.println("Warning:");
+				LinkedList l = b.getWarnings();
+				Iterator it = l.iterator();
+				while (it.hasNext()) {
+					System.out.println(" " + it.next());
+				}
+			} // Warning
 			b.close();
-		} catch (Exception e) {
+		} catch (JBisException e) {
 			System.err.println(e.getMessage());
 			System.exit(-1);
 		}
 	}
 
-    byte[] Leggi(int comando) {
+    byte[] Leggi(int comando) throws JBisException {
 		Integer[] res1 = new Integer[1];
 		res1[0] = Integer.valueOf(comando);
 		System.out.printf("Comando: 0x%h\r\n",res1);
@@ -98,10 +405,11 @@ public class JBisKyoUnit {
     	data = new byte[512];
     	byte result = PanelConnection(comando, seriale, tentativi, PIN, data);
     	System.out.println("result: " + result);
-    	if (result > 0) {
+    	if (result != 0) {
     		Byte[] res = new Byte[1];
     		res[0] = Byte.valueOf(result);
-    		System.out.printf("Errore %d (%s)\r\n",result, strerror(result));
+    		throw new JBisException("Errore " + result + "(" + strerror(result) +
+    			")");
     		//data = new byte[0];
     	}
     	return data;

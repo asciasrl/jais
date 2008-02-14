@@ -9,11 +9,27 @@ extern "C" {
 #endif
 /*
  * Class:     it_ascia_bentel_JBisKyoUnit
+ * Method:    openLibrary
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_it_ascia_bentel_JBisKyoUnit_openLibrary
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     it_ascia_bentel_JBisKyoUnit
  * Method:    PanelConnection
  * Signature: (IBBLjava/lang/String;[B)B
  */
 JNIEXPORT jbyte JNICALL Java_it_ascia_bentel_JBisKyoUnit_PanelConnection
   (JNIEnv *, jclass, jint, jbyte, jbyte, jstring, jbyteArray);
+
+/*
+ * Class:     it_ascia_bentel_JBisKyoUnit
+ * Method:    close
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_it_ascia_bentel_JBisKyoUnit_close
+  (JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }

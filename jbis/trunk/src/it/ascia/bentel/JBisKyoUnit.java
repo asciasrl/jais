@@ -2,12 +2,39 @@ package it.ascia.bentel;
 
 
 public class JBisKyoUnit {
-
-	byte seriale;  // Numero porta seriale (1 - COM1 ... 4 - COM4)
+	/**
+	 * Array per tradurre i codici di errore numerici in stringhe.
+	 */
+	 static final String errorMessages[] = {
+		 "Operazione andata a buon fine", // 0
+		 "Codice utente non valido", // 1 
+		 "Errore apertura porta seriale", // 2
+		 "Errore di comunicazione", // 3
+		 "Comando sconosciuto", // 4
+		 "Tipo centrale non riconosciuto", // 5
+		 "Versione firmware non riconosciuto", // 6
+		 "Aree inserite, impossibile aprire sessione di programmazione", // 7
+		 "Sessione di programmazione già aperta", // 8
+		 "Dati forniti per la scrittura non validi", // 9
+		 "Errore chiusura sessione di programmazione", // 10
+		 "Codice utente non abilitato"}; // 11
+	/**
+	 *  Numero porta seriale (1 - COM1 ... 4 - COM4).
+	 */
+	private byte seriale;
 	
-	byte tentativi; // Numero di ritentativi in caso di errore di comunicazione (result = 3)
+	/** 
+	 * Numero di ritentativi in caso di errore di comunicazione (result = 3).
+	 */
+	private byte tentativi; 
 	
-	String PIN; 
+	private String PIN;
+	
+	/**
+	 * Apre la DLL.
+	 * @return true se tutto e' andato bene.
+	 */
+	private native boolean openLibrary();
 	
 	/**
 	 * 
@@ -15,34 +42,52 @@ public class JBisKyoUnit {
 	 * @param t Numero di ritentativi in caso di errore di comunicazione (result = 3)
 	 * @param p PIN di accesso alle funzioni con password
 	 */
-	JBisKyoUnit(int s,int t,String p)
+	JBisKyoUnit(int s,int t,String p) throws Exception
 	{
 		seriale = (byte)s;
 		tentativi = (byte)t;
 		PIN = p;
+		if (!openLibrary()) {
+			throw new Exception("Impossibile aprire la DLL");
+		}
+	}
+	
+	protected static String strerror(int err) {
+		if ((err > 0) && (err < errorMessages.length)) {
+			return errorMessages[err];
+		} else {
+			return "Errore sconosciuto.";
+		}
 	}
 	
 	public static void main(String[] args) {
 
         System.out.println("Bentel GW (C) Ascia S.r.l. 2007-2008");
         
-    	JBisKyoUnit b = new JBisKyoUnit(1,1,"0025");
-    	byte[] data;
-        //while (true) {
-        	data = b.Leggi(0x0304);
-        
-	        //data = b.Leggi(0x00000383);
-	                
-			for (int i = 0; i < 5; i++) {
-				System.out.print(" 0x"+(data[i] & 0xff));
-				//System.out.print(" 0x"+data[i]);
-			}
-			System.out.println("");
-			/*try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {}
-			*/
-        //}
+    	JBisKyoUnit b;
+		try {
+			b = new JBisKyoUnit(1,1,"0025");
+			byte[] data;
+	        //while (true) {
+	        	data = b.Leggi(0x0304);
+	        
+		        //data = b.Leggi(0x00000383);
+		                
+				for (int i = 0; i < 5; i++) {
+					System.out.print(" 0x"+(data[i] & 0xff));
+					//System.out.print(" 0x"+data[i]);
+				}
+				System.out.println("");
+				/*try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {}
+				*/
+	        //}
+			b.close();
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+			System.exit(-1);
+		}
 	}
 
     byte[] Leggi(int comando) {
@@ -52,10 +97,11 @@ public class JBisKyoUnit {
     	byte[] data;
     	data = new byte[512];
     	byte result = PanelConnection(comando, seriale, tentativi, PIN, data);
+    	System.out.println("result: " + result);
     	if (result > 0) {
     		Byte[] res = new Byte[1];
     		res[0] = Byte.valueOf(result);
-    		System.out.printf("Errore %d\r\n",res);
+    		System.out.printf("Errore %d (%s)\r\n",result, strerror(result));
     		//data = new byte[0];
     	}
     	return data;
@@ -91,4 +137,12 @@ public class JBisKyoUnit {
      */
     private static native byte PanelConnection(int comando, byte seriale, byte tentativi, String PIN, byte[] data);
 
+    /**
+	 * Chiude la DLL.
+	 * 
+	 * <p>Questa funzione deve essere chiamata prima della chiusura del programma.</p>
+	 * 
+	 * @return true se tutto e' andato bene.
+	 */
+	public native void close();
 }

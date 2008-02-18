@@ -8,9 +8,7 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="jeds/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/jetty-6.1.7.jar"/>
-	<classpathentry kind="lib" path="lib/jetty-util-6.1.7.jar"/>
-	<classpathentry kind="lib" path="lib/servlet-api-2.5-6.1.7.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jais"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

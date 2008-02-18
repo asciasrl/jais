@@ -15,12 +15,12 @@ import it.ascia.eds.device.*;
 import it.ascia.eds.msg.*;
 
 /**
- * Interfaccia verso il bus EDS
+ * Interfaccia verso il bus EDS.
  * 
  * @author arrigo
  *
  */
-public abstract class Bus {
+public abstract class Bus implements it.ascia.ais.Bus {
 	/**
 	 * Quanto tempo aspettare la risposta dopo l'invio di un messaggio.
 	 * 
@@ -229,9 +229,9 @@ public abstract class Bus {
      * 
      * @param address l'indirizzo da cercare.
      * 
-     * @return il Device oppure null se il Device non Ã¨ nella lista.
+     * @return il Device oppure null se il Device non è nella lista.
      */
-    public Device getDevice(int address) {
+    public it.ascia.ais.Device getDevice(int address) {
     	return (Device)devices.get(new Integer(address));
     }
     
@@ -254,7 +254,7 @@ public abstract class Bus {
     /**
      * Ritorna tutti i Device collegati.
      */
-    public Device[] getDevices() {
+    public it.ascia.ais.Device[] getDevices() {
     	Collection values = devices.values();
     	Device retval[] = new Device[values.size()];
     	Iterator it = values.iterator();

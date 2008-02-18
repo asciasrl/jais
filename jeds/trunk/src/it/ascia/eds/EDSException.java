@@ -3,11 +3,13 @@
  */
 package it.ascia.eds;
 
+import it.ascia.ais.AISException;
+
 /**
  * 
  * @author arrigo
  */
-public class EDSException extends Exception {
+public class EDSException extends AISException {
 	public EDSException(String message) {
 		super(message);
 	}

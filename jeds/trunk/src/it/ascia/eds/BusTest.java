@@ -4,6 +4,9 @@
  */
 package it.ascia.eds;
 
+import it.ascia.ais.AISException;
+import it.ascia.ais.BusController;
+import it.ascia.ais.HTTPServer;
 import it.ascia.eds.device.BMC;
 import it.ascia.eds.device.BMCChronoTerm;
 import it.ascia.eds.device.BMCComputer;
@@ -155,7 +158,7 @@ public class BusTest {
 		try {
 			server = new HTTPServer(8080, new BusController(bus), 
 					"/home/arrigo/public_html/auiFixed");
-		} catch (EDSException e) {
+		} catch (AISException e) {
 			System.err.println(e.getMessage());
 			System.exit(-1);
 		}

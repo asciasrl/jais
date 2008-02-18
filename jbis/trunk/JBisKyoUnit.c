@@ -49,15 +49,16 @@ JNIEXPORT jbyte JNICALL Java_it_ascia_bentel_JBisKyoUnit_PanelConnection
 	// printf("Comando=%d PIN=%s\r\n", comando, PIN);
 	
 	// //API Ref :SetByteArrayRegion(JNIEnv *env, jbyteArray array, jsize startelement, jsize length, jbyte *buffer)
-	const char data[512];
+	char data[1024];
 	risultato = PanelConnection(comando,seriale,tentativi,PIN,4,data);
-	(*env)->SetByteArrayRegion(env, jdata, 0, 512, data);
+	(*env)->SetByteArrayRegion(env, jdata, 0, 1024, data);
     (*env)->ReleaseStringUTFChars(env, jPIN, PIN);
 
 	int i;
 	printf("C side result:");
 	for (i=0; i < 5; i++) {
-	  printf(" 0x%0x",data[i]);
+	  // printf(" 0x%02x",data[i]);
+		printf(" %ud",data[i]);
 	}
 	printf("\r\n");
    	return risultato;

@@ -7,6 +7,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef it_ascia_bentel_JBisKyoUnit_LOG_SIZE
+#define it_ascia_bentel_JBisKyoUnit_LOG_SIZE 128L
+#undef it_ascia_bentel_JBisKyoUnit_MAX_LOG_SIZE
+#define it_ascia_bentel_JBisKyoUnit_MAX_LOG_SIZE 100L
 /*
  * Class:     it_ascia_bentel_JBisKyoUnit
  * Method:    openLibrary

@@ -3,11 +3,13 @@
  */
 package it.ascia.bentel;
 
+import it.ascia.ais.AISException;
+
 /**
  * Eccezione di JBis.
  * @author arrigo
  */
-public class JBisException extends Exception {
+public class JBisException extends AISException {
 	/**
 	 * Costruttore.
 	 * @param arg0 messaggio di errore

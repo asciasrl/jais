@@ -32,7 +32,8 @@ public class Event {
 	 */
 	public Event(byte []logData, int address) {
 		int tsAddress = address + 2;
-		number = (logData[address] << 8) + logData[address + 1];
+		number = ((logData[address] & 0xff) << 8) + 
+			(logData[address + 1] & 0xff);
 		timestamp = new byte[TIMESTAMP_LENGTH];
 		timestamp[0] = logData[tsAddress + 2]; // anno
 		timestamp[1] = logData[tsAddress + 1]; // mese

@@ -83,8 +83,9 @@ public class BMCIR extends BMC {
 	}
 
 	// Attenzione: chiama sempre updateStatus() !
-	public String getStatus(String port, String busName) {
+	public String getStatus(String port) {
 		String retval = "";
+		String busName = bus.getName();
 		int i;
 		String compactName = busName + "." + getAddress();
 		updateStatus();

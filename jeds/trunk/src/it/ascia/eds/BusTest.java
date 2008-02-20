@@ -26,6 +26,7 @@ public class BusTest {
 	static BufferedReader stdin;
 	static BMCComputer bmcComputer;
 	static HTTPServer server;
+	static BusController busController;
 	
 	/**
 	 * Java avra' tanti pregi, ma l'input da stdin e' difficile.
@@ -64,18 +65,21 @@ public class BusTest {
 		}
 		return retval;
 	}
-	static void testBMCStandardIO() {
-		int address = 1;
-		int porta, valore;
+	
+	static void makeVirtualBMC(int address) {
 		// Lo creiamo noi il BMC!
 		try {
 			BMCStandardIO bmc = new BMCStandardIO(address, 88, bus, "BMCFinto"); 
 			bus.addDevice(bmc);
-			bmc.makeSimulated();
+			bmc.makeSimulated(busController);
 		} catch (EDSException e) {
 			System.err.println(e.getMessage());
 			System.exit(-1);
 		}
+	}
+	
+	static void testBMCStandardIO(int address) {
+		int porta, valore;
  		// Prova su BMC modello 88, indirizzo 3
  		BMCStandardIO bmc = (BMCStandardIO)bus.getDevice(address);
  		System.out.println();
@@ -125,7 +129,7 @@ public class BusTest {
  				bmc.updateStatus();
  		 		System.out.println("Stato del BMC dopo la richiesta: ");
  		 		bmc.printStatus();
- 		 		System.out.println(bmc.getStatus("*", null));
+ 		 		System.out.println(bmc.getStatus("*"));
  			} // if output >= 0
 		}
 	}
@@ -146,7 +150,7 @@ public class BusTest {
  				bmc.updateStatus();
  		 		System.out.println("Stato del BMC dopo la richiesta: ");
  		 		bmc.printStatus();
- 		 		System.out.println(bmc.getStatus("*", null));
+ 		 		System.out.println(bmc.getStatus("*"));
  			} // if output >= 0
 		}
 		bmc.printStatus();
@@ -154,9 +158,10 @@ public class BusTest {
 		bmc.printStatus();
 	}
 	
-	static void testServer() {
+	static void startServer() {
+		busController = new BusController(bus);
 		try {
-			server = new HTTPServer(8080, new BusController(bus), 
+			server = new HTTPServer(8080, busController, 
 					"/home/arrigo/public_html/auiFixed");
 		} catch (AISException e) {
 			System.err.println(e.getMessage());
@@ -179,12 +184,13 @@ public class BusTest {
 		    defaultPort = args[0];
 		}
 	 	try {
-	 		bus = new TCPSerialBus(defaultPort, 2001);
+	 		bus = new TCPSerialBus(defaultPort, 2001, "0");
 	 		// bus = new SerialBus(defaultPort);
 	 	} catch (EDSException e) {
 	 		System.err.println(e.getMessage());
 	 		System.exit(-1);
 	 	}
+	 	startServer();
 	 	bmcComputer = new BMCComputer(0, bus);
 	 	bus.setBMCComputer(bmcComputer);
 	 	// File di configurazione
@@ -212,10 +218,11 @@ public class BusTest {
 	 	}
 	 	// Dimmer avanzato
 	 	bmcComputer.discoverBMC(255);
+	 	// BMC virtuale
+	 	makeVirtualBMC(1);
 	 	// testBMCStandardIO();
 	 	// testBMCDimmer();
 	 	// testBMCChronoTerm();
-	 	testServer();
 	 	// La palla all'utente
 	 	System.out.println("Running ...");
 		int dest = 1;

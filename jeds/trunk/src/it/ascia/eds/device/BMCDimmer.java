@@ -236,9 +236,10 @@ public class BMCDimmer extends BMC {
 		return retval;
 	}
 
-	public String getStatus(String port, String busName) {
+	public String getStatus(String port) {
 		int i;
 		String retval = "";
+		String busName = bus.getName();
 		String compactName = busName + "." + getAddress();
 		if (hasDirtyCache()) {
 			updateStatus();

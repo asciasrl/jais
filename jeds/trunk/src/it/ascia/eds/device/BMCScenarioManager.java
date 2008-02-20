@@ -97,7 +97,8 @@ public class BMCScenarioManager extends BMC {
 	}
 
 	// Attenzione: chiama sempre updateStatus() !
-	public String getStatus(String port, String busName) {
+	public String getStatus(String port) {
+		String busName = bus.getName();
 		String retval = "";
 		int i;
 		String compactName = busName + "." + getAddress();

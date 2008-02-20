@@ -25,6 +25,67 @@ public class Event {
 	private byte[] timestamp;
 	
 	/**
+	 * Ritorna una rappresentazione testuale del numero di evento indicato.
+	 * 
+	 * @param n numero dell'evento.
+	 */
+	private static String numberToString(int n) {
+		if (n < 0) {
+			return "Numero non valido (" + n + ")";
+		} else if (n <= 4) {
+			return "Allarme area " + (n + 1);
+		} else if (n <= 11) {
+			return "Allarme zona " + (n - 3);
+		} else if (n <= 15) {
+			return "Inattivita' area " + (n - 11);
+		} else if (n <= 19) {
+			return "Negligenza area " + (n - 15);
+		} else if (n <= 27) {
+			return "Esclusione zona " + (n - 19);
+		} else if (n <= 35) {
+			return "Reinclusione zona " + (n - 27);
+		} else if (n <= 59) {
+			return "Riconosciuto codice " + (n - 35);
+		} else if (n <= 187) {
+			return "Riconosciuta chiave " + (n - 59);
+		} else if (n <= 195) {
+			return "Auto esclusione zona " + (n - 187);
+		} else if (n <= 199) {
+			return "Inserimento area " + (n - 195);
+		} else if (n <= 203) {
+			return "Disinserimento area " + (n - 199);
+		} else if (n <= 207) {
+			return "Richiesta inserimento area " + (n - 203);
+		} else if (n <= 211) {
+			return "Richiesta disinserimento area " + (n - 207);
+		} else if (n <= 215) {
+			return "Reset memoria area " + (n - 211);
+		} else if (n <= 219) {
+			return "Disinserimento sotto costrizione area " + (n - 215);
+		} else if (n <= 227) {
+			return "Chiamata fallita " + (n - 219);
+		} else if (n <= 235) {
+			return "Sabotaggio zona " + (n - 227);
+		} else if (n <= 243) {
+			return "Ripristino zona " + (n - 235);
+		}
+		// Questi sono trovati per confronto con il software ufficiale
+		switch (n) {
+		case 246:
+			return "Sabotaggio sistema";
+		case 254:
+			return "Guasto linea telefonica";
+		case 260:
+			return "Ripristino linea telefonica";
+		case 267:
+			return "Perdita datario";
+		case 32896:
+			return "Programmazione";
+		}
+		return "Sconosciuto (" + n + ")";
+	}
+	
+	/**
 	 * Costruttore a partire dai dati di log.
 	 * 
 	 * @param logData log (dati grezzi) 
@@ -86,7 +147,7 @@ public class Event {
 	 * Ritorna una descrizione dell'evento in forma testuale.
 	 */
 	public String getInfo() {
-		return getTimestamp() + "  " + getNumber();
+		return getTimestamp() + "  " + numberToString(getNumber());
 	}
 
 	/**

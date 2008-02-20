@@ -390,7 +390,6 @@ public class JBisKyoUnit implements Runnable {
 		}
 		eventLog.clear();
 		for (event = 0; event < eventsNumber; event++) {
-			boolean isNew = false, isNewest = false;
 			// L'indirizzo deve circolare con il buffer
 			if ((event + firstEvent) < LOG_SIZE) {
 				eventAddress = 2 + (event + firstEvent) * 7;

@@ -210,7 +210,7 @@ public class JBisKyoUnit implements Runnable {
 	 * aggiornate sullo stato (warning, allarmi, ecc.)</p>
 	 */
 	public void updateStatus() throws JBisException {
-		byte[] data = Leggi(0x304);
+		byte[] data = sendCommand(0x304, null);
 		zoneAlarms = data[0];
 		zoneSabotages = data[1];
 		warnings = (byte)(data[2] & 0x7f); // Contano solo i bit 0-6
@@ -374,7 +374,7 @@ public class JBisKyoUnit implements Runnable {
 	 */
 	public void updateLog() throws JBisException {
 		logger.debug("Lettura log centralina...");
-		byte[] data = Leggi(0x30d);
+		byte[] data = sendCommand(0x30d, null);
 		int eventsNumber, firstEvent, event, eventAddress;
 		// data[0] se 0 indica che il buffer ha circolato.
 		// data[1] e' il numero della prossima entry che sara' inserita.
@@ -408,6 +408,26 @@ public class JBisKyoUnit implements Runnable {
 	}
 	
 	/**
+	 * Attiva o disattiva un'uscita.
+	 * 
+	 * @param port numero dell'uscita
+	 * @param value true per attivare, false per disattivare
+	 * 
+	 * @throws JBisException in caso di errore
+	 */
+	public void setOutput(int port, boolean value) throws JBisException {
+		int command;
+		byte data[] = new byte[1];
+		data[0] = (byte)(port & 0xff);
+		if (value) {
+			command = 0x387;
+		} else {
+			command = 0x388;
+		}
+		sendCommand(command, data);
+	}
+	
+	/**
 	 * Converte un codice di errore numerico in un messaggio testuale.
 	 * 
 	 * @param err codice di errore.
@@ -421,16 +441,28 @@ public class JBisKyoUnit implements Runnable {
 		}
 	}
 	
-	byte[] Leggi(int comando) throws JBisException {
+	/**
+	 * Invia un comando alla centralina.
+	 * 
+	 * @param command numero del comando.
+	 * 
+	 * @param data array contenente i parametri, conterra' i dati ritornati. Se
+	 * null, non verra' passato nessun parametro.
+	 * 
+	 * @return l'array data popolata con i dati ritornati (o una nuova array se
+	 * data == null)
+	 * 
+	 * @throws JBisException in caso di errore.
+	 */
+	private byte[] sendCommand(int command, byte data[]) throws JBisException {
     	if (!dllReady) {
     		throw new JBisException("DLL Chiusa.");
     	}
 		Integer[] res1 = new Integer[1];
-		res1[0] = Integer.valueOf(comando);
+		res1[0] = Integer.valueOf(command);
 		// System.out.printf("Comando: 0x%h\r\n",res1);
-    	byte[] data;
-    	data = new byte[1024];
-    	byte result = PanelConnection(comando, seriale, tentativi, PIN, data);
+    	if (data == null) data = new byte[1024];
+    	byte result = PanelConnection(command, seriale, tentativi, PIN, data);
     	// System.out.println("result: " + result);
     	if (result != 0) {
     		Byte[] res = new Byte[1];
@@ -468,10 +500,11 @@ public class JBisKyoUnit implements Runnable {
      * @param tentativi numero di tentativi da effettuare in caso di errore
      * @param PIN codice PIN
      * @param PINLength lunghezza della stringa che contiene il PIN
-     * @param data dati da inviare
+     * @param data dati da inviare, conterra' i dati ricevuti
      * @return vedi sopra.
      */
-    private static synchronized native byte PanelConnection(int comando, byte seriale, byte tentativi, String PIN, byte[] data);
+    private static synchronized native byte PanelConnection(int comando, 
+    		byte seriale, byte tentativi, String PIN, byte[] data);
 
     /**
 	 * Chiude la DLL.

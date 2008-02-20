@@ -5,7 +5,9 @@ package it.ascia.bentel;
 
 import it.ascia.ais.AlarmReceiver;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -16,12 +18,62 @@ import org.apache.log4j.PropertyConfigurator;
  *
  */
 public class JBisKyoTest implements AlarmReceiver{
-
+	static BufferedReader stdin;
+	static JBisKyoUnit b;
+	
+	/**
+	 * Java avra' tanti pregi, ma l'input da stdin e' difficile.
+	 */
+	static int inputInteger(String message) {
+		int retval = 0;
+		boolean entered = false;
+		while (!entered) {
+			try {
+				System.out.print(message);
+				retval = Integer.parseInt(stdin.readLine());
+				entered = true;
+			} catch (NumberFormatException e) {
+				// Inserito un input invalido. Lo ignoriamo.
+			} catch (IOException e) {
+			}
+		}
+		return retval;
+	}
+	
+	/**
+	 * Test del comando setOutput;
+	 */
+	private static void testSetOutput() {
+		int port = 0;
+		while (port >= 0) {
+			port = inputInteger("Numero della porta (<0 esce): ");
+			if (port >= 0) {
+				System.out.print("On ");
+				try {
+					b.setOutput(port, true);
+				} catch (JBisException e1) {
+					System.err.println(e1.getMessage());
+				}
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					System.err.println(e.getMessage());
+				}
+				System.out.print(" Off");
+				try {
+					b.setOutput(port, false);
+				} catch (JBisException e) {
+					System.err.println(e.getMessage());
+				}
+			}
+		}
+	}
+	
 	public static void main(String[] args) {
 		PropertyConfigurator.configure("conf/log4j.conf");
-		JBisKyoUnit b;
+		stdin = new BufferedReader(new InputStreamReader(System.in));
 		try {
-			b = new JBisKyoUnit(1,1,"0025", new JBisKyoTest());
+			b = new JBisKyoUnit(1,1,"0001", new JBisKyoTest());
 			/*b.updateStatus();
 			if (b.hasAlarms()) {
 				System.out.println("Allarmi:");
@@ -71,15 +123,9 @@ public class JBisKyoTest implements AlarmReceiver{
 			} // Warning */
 			System.out.println();
 			System.out.println("Lettura log...");
-			b.updateLog();
+			// b.updateLog();
 			b.start();
-			System.out.println("Premi ENTER per uscire.");
-			try {
-				System.in.read();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			testSetOutput();
 			b.stop();
 		} catch (JBisException e) {
 			System.err.println(e.getMessage());

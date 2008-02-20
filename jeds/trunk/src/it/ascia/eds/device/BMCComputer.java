@@ -19,11 +19,13 @@ import it.ascia.eds.EDSException;
 /**
  * Il rappresentante di questo computer sul bus EDS.
  * 
- * Le sue funzioni sono:
- *   * tenere un log di tutti i messaggi ricevuti
- *   * spedire messaggi sul bus
+ * <p>Le sue funzioni sono:</p>
+ * <ul>
+ * <li>tenere un log di tutti i messaggi ricevuti;</li>
+ * <li>spedire messaggi sul bus.</li>
+ * </ul>
  * 
- * Ci deve essere un solo oggetto di questa classe per ciascun bus.
+ * <p>Ci deve essere un solo oggetto di questa classe per ciascun bus.</p>
  * 
  * @author arrigo
  */
@@ -120,10 +122,10 @@ public class BMCComputer extends BMC {
 	/**
 	 * Invia un messaggio point-to-point e attende risposta.
 	 *
-	 * Se la risposta non arriva dopo un certo tempo, essa viene ri-inviata un
-     * tot di volte.
+	 * <p>Se la risposta non arriva dopo un certo tempo, essa viene ri-inviata 
+	 * un tot di volte.</p>
      * 
-     * Il messaggio di risposta viene riconosciuto da dispatchMessage().
+     * <p>Il messaggio di risposta viene riconosciuto da dispatchMessage().</p>
 	 */
 	private boolean sendPTPRequest(PTPRequest m) {
     	int waitings, tries;
@@ -169,8 +171,8 @@ public class BMCComputer extends BMC {
 	/**
 	 * Invia un messaggio sul bus.
 	 * 
-	 * Se il messaggio richiede una risposta, questa viene attesa seguendo i
-	 * timeout stabiliti.
+	 * <p>Se il messaggio richiede una risposta, questa viene attesa seguendo i
+	 * timeout stabiliti.</p>
 	 * 
 	 * @return true se l'invio e' andato a buon fine; nel caso di richieste,
 	 * ritorna true se e' arrivata una risposta.
@@ -200,14 +202,15 @@ public class BMCComputer extends BMC {
 	/**
      * "Scopre" il BMC indicato inviandogli un messaggio di richiesta modello.
      * 
-     * Se il BMC e' gia' in lista, vengono utilizzate le informazioni gia' note.
+     * <p>Se il BMC e' gia' in lista, vengono utilizzate le informazioni gia'
+     * note.</p>
      * 
-     * Se il BMC non era gia' in lista, allora verrà inserito dal metodo messageReceived().
+     * <p>Se il BMC non era gia' in lista, allora verra' inserito dal metodo 
+     * messageReceived().</p>
      * 
      * @param address l'indirizzo del BMC da "scoprire".
      * 
      * @return il BMC se trovato o registrato, oppure null.
-     *  
      */
     public BMC discoverBMC(int address) {
     	BMC retval;
@@ -227,8 +230,9 @@ public class BMCComputer extends BMC {
     /**
      * Rileva le associazioni delle uscite con comandi broadcast.
      * 
-     * Questo metodo manda molti messaggi! Il metodo messageReceived() del BMC
-     * deve interpretare i messaggi di risposta 
+     * <p>Questo metodo manda molti messaggi! Il metodo messageReceived() del 
+     * BMC deve interpretare i messaggi di risposta.</p>
+     *  
      * {@link RispostaAssociazioneUscitaMessage}.
      */
     public void discoverBroadcastBindings(BMC bmc){
@@ -249,7 +253,7 @@ public class BMCComputer extends BMC {
 	}
 
 	// Niente da dichiarare.
-	public String getStatus(String port, String busName) {
+	public String getStatus(String port) {
 		return "";
 	}
 

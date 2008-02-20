@@ -3,6 +3,7 @@
  */
 package it.ascia.eds.device;
 
+import it.ascia.ais.VirtualDeviceListener;
 import it.ascia.eds.Bus;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.AcknowledgeMessage;
@@ -33,12 +34,16 @@ public class BMCStandardIO extends BMC {
 	 */
 	protected int outPortsNum;
 	/**
-	 * Questo BMC è fisicamente presente sul bus?
+	 * Questo BMC e' fisicamente presente sul bus?
 	 * 
-	 * <p>Se questo attributo è false, allora bisogna simulare l'esistenza di
+	 * <p>Se questo attributo e' false, allora bisogna simulare l'esistenza di
 	 * questo BMC.</p>
 	 */
 	private boolean isReal;
+	/**
+	 * Se questo BMC e' virtuale, chi informare quando lo stato cambia.
+	 */
+	private VirtualDeviceListener myListener;
 	/**
 	 * Numero di ingressi digitali.
 	 */
@@ -79,7 +84,7 @@ public class BMCStandardIO extends BMC {
 			dirty = new boolean[outPortsNum];
 		}
 		for (int i = 0; i < outPortsNum; i++) {
-			dirty[i] = isReal;
+			dirty[i] = true;
 		}
 	}
 	
@@ -94,7 +99,9 @@ public class BMCStandardIO extends BMC {
 				// effettuata.
 				dirty[uscita] = true;
 			} else {
-				// Siamo noi che decidiamo: mandiamo l'ack.
+				// Siamo noi che decidiamo: avvisiamo il listener e mandiamo
+				// l'ack
+				alertListener(uscita);
 				logger.debug("Impostata la porta " + uscita + " a " +
 						cmd.isActivation());
 				AcknowledgeMessage ack = new AcknowledgeMessage(cmd);
@@ -113,10 +120,12 @@ public class BMCStandardIO extends BMC {
 						dirty[ports[i]] = true;
 					} else {
 						// Decidiamo noi che cosa succede
-						outPorts[ports[i]] ^= true;
+						int portNum = ports[i];
+						outPorts[portNum] ^= true;
+						alertListener(portNum);
 						logger.debug("La porta " + ports[i] +
 						" risponde a un comando broadcast e diventa: " + 
-							outPorts[ports[i]]);
+							outPorts[portNum]);
 					}
 				} // cicla sulle porte interessate
 			} // if ports.length > 0
@@ -132,6 +141,7 @@ public class BMCStandardIO extends BMC {
 			} else {
 				// Decidiamo noi cosa succede
 				outPorts[port] ^= true;
+				alertListener(port);
 				logger.debug("La porta " + port +
 					" risponde alla variazione di un ingresso e diventa: " +
 					outPorts[port]);
@@ -240,7 +250,7 @@ public class BMCStandardIO extends BMC {
 	}
 	
 	/**
-	 * Imposta il valore di un'uscita.
+	 * Manda un messaggio per impostare il valore di un'uscita.
 	 * 
 	 * <p>Se questo oggetto corrisponde a un BMC "vero", allora manda un 
 	 * messaggio con mittente il BMCComputer. Altrimenti, l'uscita viene
@@ -261,6 +271,7 @@ public class BMCStandardIO extends BMC {
 				retval = bus.sendMessage(m);
 			} else { // The easy way
 				outPorts[port] = value;
+				alertListener(port);
 				retval = true;
 			}
 		} else {
@@ -316,8 +327,9 @@ public class BMCStandardIO extends BMC {
 		return retval;
 	}
 	
-	public String getStatus(String port, String busName) {
+	public String getStatus(String port) {
 		String retval = "";
+		String busName = bus.getName();
 		int i;
 		String compactName = busName + "." + getAddress();
 		if (hasDirtyCache()) {
@@ -386,6 +398,9 @@ public class BMCStandardIO extends BMC {
 		}
 	}
 
+	/**
+	 * Imposta il valore di una porta.
+	 */
 	public void setPort(String port, String value) throws EDSException {
 		int portNumber;
 		boolean boolValue;
@@ -404,13 +419,34 @@ public class BMCStandardIO extends BMC {
 	}
 	
 	/**
+	 * Avvisa il VirtualDeviceListener che una porta e' cambiata.
+	 * 
+	 * <p>Questa funzione deve essere chiamata solo dai BMC virtuali, dopo
+	 * che il valore della porta viene cambiato.</p>
+	 * 
+	 * @param port numero della porta
+	 */
+	private void alertListener(int port) {
+		String newValue;
+		if (outPorts[port]) {
+			newValue = "on";
+		} else {
+			newValue = "off";
+		}
+		myListener.statusChanged(this, getOutputName(port), newValue);
+	}
+	
+	/**
 	 * Cambia la modalita' di funzionamento del BMC in "simulazione".
 	 * 
 	 * <p>Dopo la chiamata di questo metodo, il BMC si comportera' come un BMC
 	 * simulato, cioe' rispondera' "di propria iniziativa" ai messaggi che
 	 * riceve.</p>
+	 * 
+	 * @param myController il VirtualDeviceListener a cui si comunicheranno
 	 */
-	public void makeSimulated() {
+	public void makeSimulated(VirtualDeviceListener listener) {
+		myListener = listener;
 		isReal = false;
 		// Togliamo tutti gli eventuali "dirty"
 		for (int i = 0; i < dirty.length; i++) {

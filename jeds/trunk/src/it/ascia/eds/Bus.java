@@ -24,35 +24,35 @@ public abstract class Bus implements it.ascia.ais.Bus {
 	/**
 	 * Quanto tempo aspettare la risposta dopo l'invio di un messaggio.
 	 * 
-	 * Nel caso peggiore (1200 bps), la trasmissione di un messaggio richiede 
+	 * <p>Nel caso peggiore (1200 bps), la trasmissione di un messaggio richiede 
 	 * 8 / 120 = 660 msec. In quello migliore (9600 bps), la trasmissione 
-	 * richiede 82 msec. Questa costante deve tener conto del caso migliore.
+	 * richiede 82 msec. Questa costante deve tener conto del caso migliore.</p>
 	 */
 	public static final int PING_WAIT = 200;
 	/**
 	 * Quante volte aspettare PING_WAIT prima di ritrasmettere.
 	 * 
-	 * Questo indica quante volte si attende PING_WAIT millisecondi, prima di
-	 * riprovare a inviare un messaggio. Condizione da rispettare è che 
+	 * <p>Questo indica quante volte si attende PING_WAIT millisecondi, prima di
+	 * riprovare a inviare un messaggio. Condizione da rispettare e' che 
 	 * PING_WAIT * WAIT_RETRIES sia maggiore del tempo più lungo previsto per 
-	 * il round-trip di un messaggio.
+	 * il round-trip di un messaggio.</p>
 	 * 
-	 * All'attesa deve essere aggiunto un ritardo casuale.
+	 * <p>All'attesa deve essere aggiunto un ritardo casuale.</p>
 	 */
 	public static final int WAIT_RETRIES = 6;
 	/**
 	 * Quante volte provare a reinviare un messaggio che richiede una risposta.
 	 * 
-	 * Quando l'attesa supera PING_WAIT * WAIT_RETRIES, questa costante decide
-	 * quanti tentativi di ri-invio effettuare.
+	 * <p>Quando l'attesa supera PING_WAIT * WAIT_RETRIES, questa costante 
+	 * decide quanti tentativi di ri-invio effettuare.</p>
 	 */
 	public static final int ACKMESSAGE_SEND_RETRIES = 2;
 	/**
 	 * Quante volte provare a reinviare un messaggio di richiesta stato 
 	 * senza risposta.
 	 * 
-	 * Quando l'attesa supera PING_WAIT * WAIT_RETRIES, questa costante decide
-	 * quanti tentativi di ri-invio effettuare.
+	 * <p>Quando l'attesa supera PING_WAIT * WAIT_RETRIES, questa costante 
+	 * decide quanti tentativi di ri-invio effettuare.</p>
 	 */
 	protected static final int STATUSREQ_SEND_RETRIES = 3;
 	/**
@@ -76,12 +76,22 @@ public abstract class Bus implements it.ascia.ais.Bus {
      * Il nostro logger.
      */
     protected Logger logger;
+    /**
+     * Il nostro nome.
+     */
+    private String name;
     
-    public Bus() {
+    /**
+     * Costruttore.
+     * @param name il nome del bus, che sara' la parte iniziale degli indirizzi
+     * di tutti i Device collegati a questo bus.
+     */
+    public Bus(String name) {
         devices = new HashMap();
         bmcComputer = null;
 		mp = new MessageParser();
 		logger = Logger.getLogger(getClass());
+		this.name = name;
     }
     
     /**
@@ -112,6 +122,13 @@ public abstract class Bus implements it.ascia.ais.Bus {
      * Chiude la connessione al bus.
      */
     public abstract void close();
+    
+    /**
+     * Ritorna il nome di questo bus.
+     */
+    public String getName() {
+    	return name;
+    }
     
     /**
      * Imposta il BMCComputer del bus.

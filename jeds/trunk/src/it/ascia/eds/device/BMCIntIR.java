@@ -61,7 +61,8 @@ public class BMCIntIR extends BMC {
 		return getName() + ": BMC Int IR (modello " + model + ")";
 	}
 
-	public String getStatus(String port, String busName) { // TODO
+	public String getStatus(String port) { // TODO
+		String busName = bus.getName();
 		String compactName = busName + "." + getAddress();
 		return compactName + ":" + getInputCompactName(0) +
 			"=" + (irInput? "ON" : "OFF") + "\n";

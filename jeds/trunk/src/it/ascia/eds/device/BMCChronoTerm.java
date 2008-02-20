@@ -272,8 +272,9 @@ public class BMCChronoTerm extends BMC {
 	}
 
 	// Attenzione:
-	public String getStatus(String port, String busName) {
+	public String getStatus(String port) {
 		String retval = "";
+		String busName = bus.getName();
 		String compactName = busName + "." + getAddress();
 		if (dirtySetPoint) {
 			updateSetPoint();

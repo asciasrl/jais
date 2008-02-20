@@ -49,7 +49,8 @@ public class SerialBus extends Bus implements SerialPortEventListener {
      * 
      * @throws un'Exception se incontra un errore
      */
-    public SerialBus(String portName) throws EDSException {
+    public SerialBus(String portName, String busName) throws EDSException {
+    	super(busName);
         boolean portFound = false;
         
     	portList = CommPortIdentifier.getPortIdentifiers();

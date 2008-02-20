@@ -1,6 +1,5 @@
 package it.ascia.eds.device;
 
-import it.ascia.ais.AISException;
 import it.ascia.eds.msg.Message;
 
 /**

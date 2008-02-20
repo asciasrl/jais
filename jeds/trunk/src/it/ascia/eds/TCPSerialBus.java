@@ -128,7 +128,9 @@ public class TCPSerialBus extends Bus {
      * 
      * @throws un'Exception se incontra un errore
      */
-    public TCPSerialBus(String hostName, int port) throws EDSException {    	
+    public TCPSerialBus(String hostName, int port, String busName) 
+    	throws EDSException {
+    	super(busName);
     	this.tcpPort = port;
 		try {
 			logger.info("Connessione a " + hostName + ":" + port);

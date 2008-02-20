@@ -11,6 +11,8 @@ extern "C" {
 #define it_ascia_bentel_JBisKyoUnit_LOG_SIZE 128L
 #undef it_ascia_bentel_JBisKyoUnit_MAX_LOG_SIZE
 #define it_ascia_bentel_JBisKyoUnit_MAX_LOG_SIZE 100L
+#undef it_ascia_bentel_JBisKyoUnit_POLL_PERIOD
+#define it_ascia_bentel_JBisKyoUnit_POLL_PERIOD 3000L
 /*
  * Class:     it_ascia_bentel_JBisKyoUnit
  * Method:    openLibrary

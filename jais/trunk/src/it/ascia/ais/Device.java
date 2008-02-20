@@ -10,16 +10,21 @@ package it.ascia.ais;
  */
 public interface Device {
 	/**
+	 * Ritorna l'indirizzo del Device, cosi' come visto da AUI.
+	 */
+	public int getAddress();
+	
+	/**
 	 * Ritorna lo stato del device in formato utile per AUI.
 	 * 
-	 * Lo stato deve essere aggiornato.
+	 * <p>Lo stato deve essere aggiornato.</p>
 	 * 
 	 * @param port il nome della porta da restituire, o "*" per indicarle
 	 * tutte.
 	 * @param busName il nome del bus, da visualizzare davanti al proprio
 	 * indirizzo.
 	 */
-	public String getStatus(String port, String busName);
+	public String getStatus(String port);
 	
 	/**
 	 * Imposta il valore di una porta.

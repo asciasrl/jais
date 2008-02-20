@@ -22,4 +22,11 @@ public interface Bus {
      * Ritorna tutti i Device collegati.
      */
     public Device[] getDevices();
+    
+    /**
+     * Ritorna il nome del bus.
+     * 
+     * <p>Questo nome e' parte dell'indirizzo dei Device collegati al bus.</p>
+     */
+    public String getName();
 }

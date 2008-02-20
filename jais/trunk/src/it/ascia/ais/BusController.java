@@ -11,12 +11,17 @@ import it.ascia.ais.AISException;
 /**
  * Il controller di uno o piu' bus.
  * 
- * <p>Il suo lavoro e' di rispondere ai comandi di AUI, attraverso il metodo
- * receiveRequest().</p>
+ * <p>Il suo lavoro e':</p>
+ * <ul>
+ * <li>rispondere ai comandi di AUI, attraverso il metodo receiveRequest();</li>
+ * <li>reagire agli allarmi comunicati dalla centralina;</li>
+ * <li>reagire alle variazioni di stato dei dispositivi "finti" (ad es. BMC
+ * standard I/O).</li>
+ * </ul>
  * 
  * @author arrigo
  */
-public class BusController {
+public class BusController implements AlarmReceiver, VirtualDeviceListener {
 	/**
 	 * Il nostro interprete di indirizzi.
 	 */
@@ -44,7 +49,7 @@ public class BusController {
 		addressParser = new BusAddressParser();
 		addressParser.registerBus(bus, 0);
 		this.bus = bus;
-		this.busName = "0";
+		this.busName = bus.getName();
 	}
 	
 	/**
@@ -61,8 +66,7 @@ public class BusController {
 				Device[] devices = address.getDevices();
 				retval = "";
 				for (int i = 0; i < devices.length; i++) {
-					retval += devices[i].getStatus(address.getPorts(),
-							address.getBusName());
+					retval += devices[i].getStatus(address.getPorts());
 				}
 				if (retval.length() == 0) {
 					retval = "ERROR: address " + address.getAddress() + 
@@ -76,7 +80,7 @@ public class BusController {
 			retval = "";
 			Device[] devices = bus.getDevices();
 			for (int i = 0; i < devices.length; i++) {
-				retval += devices[i].getStatus("*", busName);
+				retval += devices[i].getStatus("*");
 			}
 		} else if (command.equals("set")) {
 			// Comando "set"
@@ -97,5 +101,27 @@ public class BusController {
 			retval = "ERROR: Unknown command \"" + command + "\".";
 		}
 		return retval;
+	}
+
+	/**
+	 * Reagisce a un allarme.
+	 * 
+	 * <p>Questo metodo viene invocato dall'oggetto centralina.</p>
+	 */
+	public void alarmReceived(String alarm) {
+		// Esempio: accendiamo un dimmer
+		logger.info("Ricevuto allarme");
+		receiveRequest("set", "0.5:Out1", "100");
+	}
+
+	/**
+	 * Reagisce al cambiamento di stato di un Device virtuale.
+	 */
+	public void statusChanged(Device device, String port, String newValue) {
+		// Esempio: accendiamo un dimmer
+		if (device.getAddress() == 1) {
+			logger.info("Comando da BMC virtuale");
+			receiveRequest("set", "0.5:Out2", "100");
+		}
 	}
 }

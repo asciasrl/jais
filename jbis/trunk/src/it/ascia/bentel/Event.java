@@ -18,7 +18,7 @@ public class Event {
 	 */
 	private int number;
 	/**
-	 * Timestamp, così come scritto nell'evento, ma riordinato.
+	 * Timestamp, cosï¿½ come scritto nell'evento, ma riordinato.
 	 * 
 	 * <p>I byte sono, nell'ordine: anno - 2000, mese, giorno, ore, minuti.</p> 
 	 */
@@ -88,7 +88,7 @@ public class Event {
 	/**
 	 * Costruttore a partire dai dati di log.
 	 * 
-	 * @param logData log (dati grezzi) 
+	 * @param logData evento ricevuto dalla centralina (dati grezzi) 
 	 * @param address indirizzo del primo byte dentro data che descrive l'evento
 	 */
 	public Event(byte []logData, int address) {
@@ -110,6 +110,30 @@ public class Event {
 	 */
 	public int getNumber() {
 		return number;
+	}
+	
+	/**
+	 * Verifica se l'evento e' un allarme.
+	 * 
+	 * @return true se l'evento e' un allarme.
+	 */
+	public boolean isAlarm() {
+		return (getNumber() <= 11);
+	}
+	
+	/**
+	 * Ritorna una descrizione dell'allarme.
+	 * 
+	 * @return una descrizione dell'allarme.
+	 */
+	public String getAlarm() {
+		int n = getNumber();
+		if (n <= 4) {
+			return "area " + (n + 1);
+		} else if (n <= 11) {
+			return "zona " + (n - 3);
+		}
+		return "questo non e' un allarme!";
 	}
 	
 	/**

@@ -39,10 +39,6 @@ public class BMCComputer extends BMC {
 	 */
 	private LinkedList inbox;
 	/**
-	 * Queue dei messaggi in uscita (cioè che devono essere inviati).
-	 */
-	private LinkedList outbox;
-	/**
      * Il messaggio di tipo ACK che stiamo mandando, per il quale aspettiamo
      * una risposta.
      */
@@ -57,7 +53,6 @@ public class BMCComputer extends BMC {
 	public BMCComputer(int address, Bus bus) {
 		super(address, -1, bus, "Computer");
 		inbox = new LinkedList();
-		outbox = new LinkedList();
 		messageToBeAnswered = null;
 	}
 	
@@ -137,10 +132,10 @@ public class BMCComputer extends BMC {
     			tries++) {
     			bus.write(m);
     			for (waitings = 0; 
-    				(waitings < bus.WAIT_RETRIES) && (!received); 
+    				(waitings < Bus.WAIT_RETRIES) && (!received); 
     				waitings++) {
     					int delay = (int)
-    						(bus.PING_WAIT * (1 + Math.random() * 0.2));
+    						(Bus.PING_WAIT * (1 + Math.random() * 0.2));
     					Thread.sleep(delay);
     					received = (messageToBeAnswered.wasAnswered());
     			}
@@ -161,7 +156,7 @@ public class BMCComputer extends BMC {
 		for (int i = 0; i < tries; i++) {
 			m.randomizeHeaders();
 			try {
-				Thread.sleep(bus.WAIT_RETRIES * bus.PING_WAIT);
+				Thread.sleep(Bus.WAIT_RETRIES * Bus.PING_WAIT);
 			} catch (InterruptedException e) {
 			}
 			bus.write(m);

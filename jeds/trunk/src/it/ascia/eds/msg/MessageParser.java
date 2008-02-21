@@ -1,7 +1,5 @@
 package it.ascia.eds.msg;
 
-import java.util.Date;
-
 import org.apache.log4j.Logger;
 
 /**
@@ -135,8 +133,8 @@ public class MessageParser {
 			return new ComandoUscitaDimmerMessage(message);
 		case Message.MSG_RISPOSTA_STATO_DIMMER: 
 			return new RispostaStatoDimmerMessage(message);
-		case Message.MSG_IMPOSTA_PARAMETRO_DIMMER: 
-			return new ImpostaParametroDimmerMessage(message);
+		case Message.MSG_IMPOSTA_PARAMETRO: 
+			return new ImpostaParametroMessage(message);
 		case Message.MSG_RICHIESTA_STATO_TERMOSTATO:
 			return new RichiestaStatoTermostatoMessage(message);
 		case Message.MSG_TEMPERATURA: 

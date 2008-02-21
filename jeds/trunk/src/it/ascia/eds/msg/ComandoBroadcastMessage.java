@@ -3,8 +3,6 @@
  */
 package it.ascia.eds.msg;
 
-import java.util.Random;
-
 /**
  * Comando broadcast.
  * 

@@ -4,9 +4,9 @@
 package it.ascia.eds.msg;
 
 /**
- * Messaggio di richiesta stato per cronotermostato.
+ * Messaggio di richiesta stato per cronotermostato o sonda termica.
  * 
- * Codice EDS: 200.
+ * <p>Codice EDS: 200.</p>
  */
 public class RichiestaStatoTermostatoMessage extends PTPRequest
 	implements MessageInterface {
@@ -40,7 +40,7 @@ public class RichiestaStatoTermostatoMessage extends PTPRequest
 	/**
 	 * Ritorna il numero massimo di tentativi di invio da effettuare.
 	 * 
-	 * Per richiedere uno stato non bisogna insistere.
+	 * <p>Per richiedere uno stato non bisogna insistere.</p>
 	 */
 	public int getMaxSendTries() {
 		return 2;

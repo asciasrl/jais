@@ -5,8 +5,6 @@ package it.ascia.eds.msg;
 
 import it.ascia.eds.EDSException;
 
-import java.util.Random;
-
 /**
  * Comando broadcast di inizio o chiusura programmazione.
  * 

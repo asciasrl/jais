@@ -84,9 +84,17 @@ implements MessageInterface {
 	 */
 	public final static int MSG_RISPOSTA_STATO_DIMMER = 53;
 	/**
-	 * Settaggio parametri di configurazione dimmer.
+	 * Settaggio parametri di configurazione dimmer o sonda termica.
 	 */
-	public final static int MSG_IMPOSTA_PARAMETRO_DIMMER = 54;
+	public final static int MSG_IMPOSTA_PARAMETRO = 54;
+	/**
+	 * Richiesta parametri di configurazione dimmer o sonda termica.
+	 */
+	public final static int MSG_RICHIESTA_PARAMETRO = 55;
+	/**
+	 * Risposta a richiesta parametri di configurazione.
+	 */
+	public final static int MSG_RISPOSTA_PARAMETRO = 56;
 	/**
 	 * Richiesta dello stato di un cronotermostato.
 	 *

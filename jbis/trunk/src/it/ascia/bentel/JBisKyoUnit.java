@@ -442,6 +442,18 @@ public class JBisKyoUnit implements Runnable {
 	}
 	
 	/**
+	 * Invia un comando di reset allarmi.
+	 */
+	public void resetAlarm() {
+		try {
+			sendCommand(0x383, null);
+		} catch (JBisException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/**
 	 * Invia un comando alla centralina.
 	 * 
 	 * @param command numero del comando.

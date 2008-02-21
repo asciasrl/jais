@@ -4,6 +4,7 @@
 package it.ascia.eds.device;
 
 import java.util.*;
+import org.apache.log4j.Logger;
 
 import it.ascia.eds.msg.BroadcastMessage;
 import it.ascia.eds.msg.Message;
@@ -130,13 +131,15 @@ public class BMCComputer extends BMC {
     		for (tries = 0;
     			(tries < m.getMaxSendTries()) && (!received); 
     			tries++) {
+    			if (tries > 0) {
+    				logger.trace("Write, tries="+tries+" "+m.toHexString());    			
+    			}
     			bus.write(m);
+				int delay = (int)(Bus.PING_WAIT * (1 + Math.random() * 0.2));
     			for (waitings = 0; 
-    				(waitings < Bus.WAIT_RETRIES) && (!received); 
+    				(waitings < delay) && (!received); 
     				waitings++) {
-    					int delay = (int)
-    						(Bus.PING_WAIT * (1 + Math.random() * 0.2));
-    					Thread.sleep(delay);
+    					Thread.sleep(1);
     					received = (messageToBeAnswered.wasAnswered());
     			}
     		}

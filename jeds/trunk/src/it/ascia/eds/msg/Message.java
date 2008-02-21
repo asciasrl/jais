@@ -205,9 +205,6 @@ implements MessageInterface {
 
 	public String toString() {
 		StringBuffer s = new StringBuffer();
-		if (rawmessage == null) {
-			rawmessage = getRawMessage();
-		}
 		s.append(toHexString() + "\r\n");
 		s.append("Tipo Messaggio: "+getTipoMessaggio()+"\r\n");
 		s.append(getInformazioni());
@@ -220,6 +217,9 @@ implements MessageInterface {
 	public String toHexString()
 	{
 		StringBuffer s = new StringBuffer();
+		if (rawmessage == null) {
+			rawmessage = getRawMessage();
+		}
 		s.append("STX:"+b2h(rawmessage[0])+" ");
 		s.append("DST:"+b2h(rawmessage[1])+" ");
 		s.append("MIT:"+b2h(rawmessage[2])+" ");

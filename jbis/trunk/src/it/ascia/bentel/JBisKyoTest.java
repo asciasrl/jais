@@ -73,7 +73,8 @@ public class JBisKyoTest implements AlarmReceiver{
 		PropertyConfigurator.configure("conf/log4j.conf");
 		stdin = new BufferedReader(new InputStreamReader(System.in));
 		try {
-			b = new JBisKyoUnit(1,1,"0001", new JBisKyoTest());
+			b = new JBisKyoUnit(1,1,"0025", new JBisKyoTest());
+			b.resetAlarm();
 			/*b.updateStatus();
 			if (b.hasAlarms()) {
 				System.out.println("Allarmi:");

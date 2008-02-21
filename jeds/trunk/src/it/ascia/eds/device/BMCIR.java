@@ -3,8 +3,6 @@
  */
 package it.ascia.eds.device;
 
-import java.util.Vector;
-
 import it.ascia.eds.Bus;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.Message;

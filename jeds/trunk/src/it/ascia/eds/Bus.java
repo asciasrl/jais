@@ -34,7 +34,7 @@ public abstract class Bus implements it.ascia.ais.Bus {
 	 * 
 	 * <p>Questo indica quante volte si attende PING_WAIT millisecondi, prima di
 	 * riprovare a inviare un messaggio. Condizione da rispettare e' che 
-	 * PING_WAIT * WAIT_RETRIES sia maggiore del tempo più lungo previsto per 
+	 * PING_WAIT * WAIT_RETRIES sia maggiore del tempo piu' lungo previsto per 
 	 * il round-trip di un messaggio.</p>
 	 * 
 	 * <p>All'attesa deve essere aggiunto un ritardo casuale.</p>
@@ -112,7 +112,7 @@ public abstract class Bus implements it.ascia.ais.Bus {
 	/**
      * Invia un messaggio sul bus.
      * 
-     * Eventuali errori di trasmissione vengono ignorati.
+     * <p>Eventuali errori di trasmissione vengono ignorati.</p>
      * 
      * @param m the message to send
      */
@@ -141,9 +141,9 @@ public abstract class Bus implements it.ascia.ais.Bus {
     /**
      * Ritorna l'indirizzo del BMCComputer del bus.
      * 
-     * Questo metodo è utile per i BMC, quando devono richiedere informazioni sul
-     * proprio stato. I messaggi che inviano devono partire "a nome" del
-     * BMCComputer.
+     * <p>Questo metodo e' utile per i BMC, quando devono richiedere 
+     * informazioni sul proprio stato. I messaggi che inviano devono partire 
+     * "a nome" del BMCComputer.</p>
      */
     public int getBMCComputerAddress() {
     	return bmcComputer.getAddress();
@@ -152,10 +152,10 @@ public abstract class Bus implements it.ascia.ais.Bus {
     /**
      * Legge e interpreta i dati in arrivo.
      * 
-     * Questa funzione deve essere chiamata dalla sottoclasse, quando ci
-     * sono dati pronti da leggere con readByte().
+     * <p>Questa funzione deve essere chiamata dalla sottoclasse, quando ci
+     * sono dati pronti da leggere con readByte().</p>
      * 
-     * I messaggi decodificati vengono passati a dispatchMessage().
+     * <p>I messaggi decodificati vengono passati a dispatchMessage().</p>
      */
     protected void readData() {
     	while (hasData()) {
@@ -181,13 +181,13 @@ public abstract class Bus implements it.ascia.ais.Bus {
     /**
      * Invia un messaggio a tutti i BMC destinatari e al mittente.
      * 
-     * Questo metodo deve essere chiamato dalla sottoclasse, per ogni messaggio 
-     * che viene ricevuto.
+     * <p>Questo metodo deve essere chiamato dalla sottoclasse, per ogni 
+     * messaggio che viene ricevuto.</p>
      * 
-     * Stampa un messaggio su stderr se il messaggio è per un BMC che non è in 
-     * lista, né in fase di ping.
+     * <p>Stampa un messaggio su stderr se il messaggio e' per un BMC che non e'
+     * in lista, ne' in fase di ping.</p>
      * 
-     * Il BMCComputer riceve tutti i messaggi.
+     * <p>Il BMCComputer riceve tutti i messaggi.</p>
      * 
      * @param m il messaggio da inviare
      */

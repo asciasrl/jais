@@ -194,6 +194,12 @@ public abstract class BMC implements Device {
 			}
 			bmc = new BMCScenarioManager(bmcAddress, model, bus, name);
 			break;
+		case 121:
+			if (name == null) {
+				name = "TemperatureSensor" + bmcAddress; 
+			}
+			bmc = new BMCTemperatureSensor(bmcAddress, model, bus, name);
+			break;
 		case 127:
 			if (name == null) {
 				name = "ChronoTerm" + bmcAddress;

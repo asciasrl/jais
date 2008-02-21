@@ -3,8 +3,6 @@
  */
 package it.ascia.eds.device;
 
-import java.util.Arrays;
-
 import it.ascia.eds.Bus;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.CronotermMessage;
@@ -179,7 +177,7 @@ public class BMCChronoTerm extends BMC {
 		case Message.MSG_TEMPERATURA: {
 			// Questo messaggio contiene il nostro stato
 			TemperatureMessage tm = (TemperatureMessage) m;
-			temperature = tm.getTemperature();
+			temperature = tm.getChronoTermTemperature();
 			dirtyTemperature = false;
 			switch (tm.getMode()) {
 			case TemperatureMessage.MODE_ANTI_FREEZE:

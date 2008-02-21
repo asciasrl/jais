@@ -4,19 +4,23 @@
 package it.ascia.eds.msg;
 
 /**
- * Lettura dello stato del cronotermostato.
+ * Lettura dello stato del cronotermostato o della sonda termica.
  *
- * Questo messaggio viene mandato dal cronotermostato quando cambia qualcosa,
- * oppure quando viene richiesto un aggiornamento dello stato attraverso l'invio
- * di un messaggio RichiestaStatoTermostatoMessage.
+ * <p>Questo messaggio viene mandato dal cronotermostato o dalla sonda termica
+ * quando cambia qualcosa, oppure quando viene richiesto un aggiornamento dello 
+ * stato attraverso l'invio di un messaggio RichiestaStatoTermostatoMessage.</p>
  * 
- * Codice EDS: 201.
+ * <p>Codice EDS: 201.</p>
  */
 public class TemperatureMessage	extends PTPMessage implements MessageInterface {
 	/**
-	 * Modalita' antigelo.
+	 * Modalita' antigelo (cronotermostato).
 	 */
 	public static final int MODE_ANTI_FREEZE = 0;
+	/**
+	 * Modalita' OFF (sonda termica).
+	 */
+	public static final int MODE_OFF = 0;
 	/**
 	 * Modalita' crono.
 	 */
@@ -26,7 +30,7 @@ public class TemperatureMessage	extends PTPMessage implements MessageInterface {
 	 */
 	public static final int MODE_MANUAL = 2;
 	/**
-	 * Modalita' temporizzato.
+	 * Modalita' temporizzato (cronotermostato).
 	 */
 	public static final int MODE_TIME = 3;
 
@@ -39,10 +43,22 @@ public class TemperatureMessage	extends PTPMessage implements MessageInterface {
 	}
 	
 	/**
-	 * Ritorna la temperatura.
+	 * Ritorna la temperatura del cronotermostato.
 	 */
-	public double getTemperature() {
+	public double getChronoTermTemperature() {
 		return (Byte1 & 0xff) + ((Byte2 & 0xF0) >> 4) / 10.0;
+	}
+	
+	/**
+	 * Ritorna la temperatura della sonda termica.
+	 */
+	public double getSensorTemperature() {
+		double temp = (Byte1 & 0x7f) + ((Byte2 & 0xF0) >> 4) / 10.0;
+		if ((Byte1 & 0x80) == 0) {
+			return temp;
+		} else {
+			return -temp;
+		}
 	}
 	
 	/**
@@ -73,7 +89,7 @@ public class TemperatureMessage	extends PTPMessage implements MessageInterface {
 		s.append("Mittente: "+Mittente+"\r\n");
 		s.append("Destinatario: "+Destinatario+"\r\n");
 		s.append("Allarme minima temp.: " + getAlarm() + "\r\n");
-		s.append("Temperatura: "+ getTemperature());
+		s.append("Temperatura: "+ getChronoTermTemperature());
 		if (tempOverSetPoint()) {
 			s.append(" sopra");
 		} else {

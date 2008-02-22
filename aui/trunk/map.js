@@ -13,6 +13,26 @@ var currentMapPosition = {x:0, y:0};
  * Ultima posizione della mappa.
  */
 var lastMapPosition = {x:0, y:0};
+/**
+ * Dimensione della mappa.
+ */
+var mapSize;
+
+
+/**
+ * Imposta la mappa correntemente visualizzata.
+ *
+ * <p>Imposta le variabili globali di questo file con le caratteristiche
+ * della mappa indicata.</p>
+ *
+ * @param element elemento &lt;div&gt; che contiene la mappa
+ */
+function setCurrentMap(element) {
+	currentMap = element;
+	mapSize = {width:element.style.width.slice(0, -2), 
+			height:element.style.height.slice(0, -2)};
+	refreshServicesLayer();
+}
 
 /**
  * Sposta la mappa in base alla posizione del mouse.
@@ -22,32 +42,46 @@ var lastMapPosition = {x:0, y:0};
 function dragMap(mousePos) {
 	// statusMessage("Mouse:" + mousePos.x + ',' + mousePos.y);
   	// statusObject.innerHTML += ' Da:'+dragObject.offsetLeft+','+dragObject.offsetTop;
+	var new_top = mousePos.y - mouseOffset.y + lastMapPosition.y;
+	var new_left = mousePos.x - mouseOffset.x + lastMapPosition.x;
+	// statusObject.innerHTML += ' D '+(mousePos.x - mouseOffset.x)+','+(mousePos.y - mouseOffset.y);
+	currentMap = dragObject;
+	drawMapAt(new_left, new_top);
+	return false;
+}
 
-	new_top = mousePos.y - mouseOffset.y + lastMapPosition.y;
-	new_left = mousePos.x - mouseOffset.x + lastMapPosition.x;
-	// statusObject.innerHTML += ' A:'+new_top+','+new_left;
+/**
+ * Disegna la mappa ingrandita alla posizione indicata.
+ *
+ * <p>Se la posizione non e' valida, viene corretta in modo che una parte della
+ * mappa sia sempre visibile.</p>
+ *
+ * <p>Richiede che mapSize e currentMap siano inizializzati.</p>
+ *
+ * @param new_left nuovo attributo "left" da imporre all'immagine
+ * @param new_top nuovo attributo "top" da imporre all'immagine
+ */
+function drawMapAt(new_left, new_top) {
+// statusMessage(' A:'+new_left+' / ' + mapSize.width + ' ,'+new_top);
 	// troppo a destra
-	if (-new_left + 240 > dragObject.width) {
-		new_left = 240 - dragObject.width;
+	if (-new_left + 240 > mapSize.width) {
+		new_left = 240 - mapSize.width;
 	}
 	// troppo a sinistra
-	if (-new_left < 0) {
+	if (new_left > 0) {
 		new_left = 0;
 	}
 	// troppo in basso
-	if (-new_top + 240 > dragObject.height) {
-		new_top = 240 - dragObject.height;
+	if (-new_top + 240 > mapSize.height) {
+		new_top = 240 - mapSize.height;
 	}
 	// troppo in alto
-	if (-new_top < 0) {
+	if (new_top > 0) {
 		new_top = 0;
 	}
-	dragObject.style.top =  new_top + 'px';
-	dragObject.style.left =  new_left + 'px';
+	currentMap.style.top =  new_top + 'px';
+	currentMap.style.left =  new_left + 'px';
 	currentMapPosition = {x:new_left, y:new_top};
-	// statusObject.innerHTML += ' D '+(mousePos.x - mouseOffset.x)+','+(mousePos.y - mouseOffset.y);
-
-	return false;
 }
 
 /**

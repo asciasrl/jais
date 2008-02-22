@@ -203,11 +203,11 @@ var click_timer;
  */
 function clicca(da,a,ret) {
 	if (dragging) return;
-	if (first_click) {
+	if (first_click) { // Primo click, ce ne sara' un altro?
 		first_click = false;
 		//setHeader("1° "+da+">"+a);
 		click_timer = setTimeout("clicca1('"+da+"','"+a+"')",double_click_time);
-	} else {
+	} else { // Doppio click
 		first_click = true;
 		clearTimeout(click_timer);
 		//setHeader("2° "+da+">"+ret);
@@ -228,8 +228,7 @@ function clicca1(da,a) {
 	if (da_el && a_el) {
 		da_el.style.display='none';
 		a_el.style.display='';
-		currentMap = a_el;
-		refreshServicesLayer();
+		setCurrentMap(a_el);
 		//setHeader(a_el.getProperty('header'));
 	} else {
 		window.alert("da="+da+" ("+da_el+") a="+a+" ("+a_el+")");
@@ -249,7 +248,7 @@ function clicca1(da,a) {
  * @see ingrandisci1()
  */
 function ingrandisci(ev,da,a,ret) {
-	if (first_click) {
+	if (first_click) { // Primo click. Ne arrivera' un altro?
 		//setHeader("1° "+da+">"+a);
 		first_click = false;
 		// var target = ev.target || ev.srcElement; // Firefox vs. IE
@@ -259,7 +258,7 @@ function ingrandisci(ev,da,a,ret) {
 		var relativeY = ev.clientY - targetPos.y; 
 		click_timer = setTimeout("ingrandisci1("+ relativeX + "," + relativeY + 
 			",'" + da + "','" + a + "')", double_click_time);
-	} else {
+	} else { // Doppio click
 		//setHeader("2° "+da+">"+ret);
 		first_click = true;
 		clearTimeout(click_timer);
@@ -280,9 +279,7 @@ function ingrandisci1(X,Y,da,a) {
 	//ev = window.event;
 	var da_el = document.getElementById(da);
 	var a_el = document.getElementById(a);
-	currentMap = a_el;
-	refreshServicesLayer();
-	//setHeader(a_el.getProperty('header'));
+	setCurrentMap(a_el);
   
 	// somma gli offset della gerarchia
 /*
@@ -308,44 +305,19 @@ function ingrandisci1(X,Y,da,a) {
   new_y = a_el.clientHeight * click_y / da_el.clientHeight;
 */
 	// Ricaviamo le dimensioni degli elementi
-	var a_width = a_el.style.width.slice(0, a_el.style.width.length - 2);
-	var a_height = a_el.style.width.slice(0, a_el.style.height.length - 2);
 	var da_width = da_el.style.width.slice(0, da_el.style.width.length - 2);
 	var da_height = da_el.style.width.slice(0, da_el.style.height.length - 2);
-	new_x = a_width * X / da_width;
-	new_y = a_height * Y / da_height;
-
+	var new_x = mapSize.width * X / da_width;
+	var new_y = mapSize.height * Y / da_height;
 	if (debug) alert('new_x='+new_x+' new_y='+new_y);
-  
 	// prova a mettere il nuovo punto esattamente nel centro
-	new_left = new_x - 240 / 2; // FIXME: parametrizza questo "240"
-	new_top = new_y - 240 / 2;
-  
-	// troppo a destra
-	if (new_left + 240 > a_el.width) {
-		new_left = a_el.width - 240;
-	}
-	// troppo a sinistra
-	if (!(new_left > 0)) { // Filtriamo NaN
-		new_left = 0;
-	}
-	// troppo in basso
-	if (new_top + 240 > a_el.height) {
-		new_top = a_el.height - 240;
-	}
-	// troppo in alto
-	if (!(new_top > 0)) { // Filtriamo NaN
-		new_top = 0;
-	}
-
-	if (debug) alert('left='+new_left+' top='+new_top);
-  
-	// scambia visualizzazione
+	var new_left = -new_x + 240 / 2; // FIXME: parametrizza questo "240"
+	var new_top = -new_y + 240 / 2;
+  	drawMapAt(new_left, new_top);
+  	lastMapPosition = currentMapPosition;
+  	// scambia visualizzazione
 	da_el.style.display='none';
 	a_el.style.display='';
-	a_el.style.left = '-' + new_left + 'px';
-	a_el.style.top = '-' + new_top + 'px';
-    lastMapPosition = xurrentMapPosition = {x:-new_left, y:-new_top};  
   //alert('ev.x='+ev.x+' ev.y='+ev.y+' dx='+dx+' dy='+dy);
 }
 

@@ -177,10 +177,10 @@ function creaLayerServizi($piano, $big) {
 					if ($big) {
 						$id = "id=\"$idLuce\"";
 						if ($luce["type"] == ILL_LUCE) {
-							$lit = "lit=\"off\" onClick=\"lightClicked(this)\"";
+							$lit = "lit=\"off\" onClick=\"lightClicked(event, this)\"";
 							$text="OFF";
 						} else {
-							$lit = "lit=\"0\" onClick=\"dimmerClicked(this)\"";
+							$lit = "lit=\"0\" onClick=\"dimmerClicked(event, this)\"";
 							$text="0%";
 						}
 						$busaddress = "busaddress=\"" . $luce["address"] . "\"";
@@ -206,7 +206,7 @@ function creaLayerServizi($piano, $big) {
 					if ($big) {
 						$id = "id=\"$idPresa\"";
 						$active = "power=\"off\" busaddress=\"" . $presa["address"] . 
-							"\" onClick=\"powerClicked(this)\"";
+							"\" onClick=\"powerClicked(event, this)\"";
 						$idPrese[] = $idPresa;
 						$text = "OFF";
 					} else {
@@ -231,7 +231,7 @@ function creaLayerServizi($piano, $big) {
 					if ($big) {
 						$id = "id=\"$idClima\"";
 						$active = "power=\"off\" busaddress=\"" . 
-							$clima["address"] . "\" onClick=\"thermoClicked(this)\"";
+							$clima["address"] . "\" onClick=\"thermoClicked(event, this)\"";
 						$idClimi[] = $idClima;
 						$text = "20&deg;C";
 					} else {

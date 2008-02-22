@@ -104,9 +104,27 @@ public class JBisListener implements SerialPortEventListener {
 			// logger.trace("" + (b & 0xff));
 			bufferIndex++;
 			if (bufferIndex == buffer.length) {
-				// Abbiamo un evento pronto da leggere!
-				processNewEvent();
-				bufferIndex = 0;
+				// Abbiamo un evento pronto da leggere?
+				// Controlliamo il checksum
+				int j;
+				byte c = 0;
+				for (j = 0; j < 7; j++) {
+					c += buffer[j];
+				}
+				if (buffer[7] == c) {
+					// Dati corretti.
+					processNewEvent();
+					bufferIndex = 0;
+				} else {
+					logger.warn("Checksum errato.");
+					// Quando la centralina si accende, manda due byte pari a 0.
+					// Se questo e' il caso, la soluzione e' scartare il primo 
+					// byte del buffer.
+					for (j = 1; j < buffer.length; j++) {
+						buffer[j-1] = buffer[j];
+					}
+					bufferIndex--;
+				}
 			}
 		}
 	}

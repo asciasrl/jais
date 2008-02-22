@@ -174,8 +174,8 @@ public class BusTest {
 	 *            porta seriale
 	 */
 	public static void main(String[] args) {
-	    // String defaultPort = "ascia.homeip.net";
-		String defaultPort = "COM1";
+	    String defaultPort = "ascia.homeip.net";
+		// String defaultPort = "COM1";
 	    // Inizializzazione logger
 	    PropertyConfigurator.configure("conf/log4j.conf");
  		stdin = new BufferedReader(new InputStreamReader(System.in));
@@ -184,8 +184,8 @@ public class BusTest {
 		    defaultPort = args[0];
 		}
 	 	try {
-	 		// bus = new TCPSerialBus(defaultPort, 2001, "0");
-	 		bus = new SerialBus(defaultPort, "0");
+	 		bus = new TCPSerialBus(defaultPort, 2001, "0");
+	 		// bus = new SerialBus(defaultPort, "0");
 	 	} catch (EDSException e) {
 	 		System.err.println(e.getMessage());
 	 		System.exit(-1);

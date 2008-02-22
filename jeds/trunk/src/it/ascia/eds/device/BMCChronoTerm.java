@@ -233,12 +233,16 @@ public class BMCChronoTerm extends BMC {
 	
 	/**
 	 * Imposta il set-point.
+	 * 
+	 * @param temperature temperatura di set-point da impostare
+	 * 
+	 * @return true se il BMC ha risposto (ACK)
 	 */
-	public void setSetPoint(double temperature) {
+	public boolean setSetPoint(double temperature) {
 		ImpostaSetPointMessage m;
 		m = new ImpostaSetPointMessage(getAddress(), 
 				bus.getBMCComputerAddress(), temperature);
-		bus.sendMessage(m);
+		return bus.sendMessage(m);
 	}
 	
 	/**
@@ -247,13 +251,15 @@ public class BMCChronoTerm extends BMC {
 	 * <p>Invia un messaggio mettendo il BMCComputer come mittente.</p>
 	 * 
 	 * @param state una delle costanti statiche di questa classe.
+	 * 
+	 * @return true se il BMC ha risposto (ACK)
 	 */
-	public void setState(int state) {
+	public boolean setState(int state) {
 		VariazioneIngressoMessage m;
 		m = new VariazioneIngressoMessage(getAddress(), 
 				bus.getBMCComputerAddress(),
 				state);
-		bus.sendMessage(m);
+		return bus.sendMessage(m);
 	}
 	
 	/**
@@ -324,6 +330,7 @@ public class BMCChronoTerm extends BMC {
 	 * @param value valore da impostare.
 	 */
 	public void setPort(String port, String value) throws EDSException {
+		boolean success = false;
 		if (port.equals(port_setpoint)) {
 			// Impostiamo il setpoint
 			double setPoint;
@@ -332,7 +339,7 @@ public class BMCChronoTerm extends BMC {
 			} catch (NumberFormatException e) {
 				throw new EDSException("Invalid temperature: " + value);
 			}
-			setSetPoint(setPoint);
+			success = setSetPoint(setPoint);
 		} else if (port.equals(port_state)) {
 			// Impostiamo lo stato
 			int requiredState = -1;
@@ -349,13 +356,16 @@ public class BMCChronoTerm extends BMC {
 				}
 			} // catch
 			if (requiredState != -1) {
-				setState(requiredState);
+				success = setState(requiredState);
 			} else {
 				throw new EDSException("Invalid state: " + value);
 			}
 		} else {
 			// Non impostiamo niente: la richiesta e' errata.
 			throw new EDSException("Invalid port: " + port);
+		}
+		if (!success) {
+			throw new EDSException("Il device non risponde");
 		}
 	}
 }

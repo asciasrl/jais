@@ -86,8 +86,14 @@ $frameIlluminazione = Array(
 			"type" => ILL_DIMMER,
 			"x" => 100,
 			"y" => 340,
-			"label" => "Luce dimmerizzata",
-			"address" => "0.5:Out1")));
+			"label" => "Dimmer allarme",
+			"address" => "0.5:Out1"),
+		"p1a-dimmer2" => Array(
+			"type" => ILL_DIMMER,
+			"x" => 300,
+			"y" => 340,
+			"label" => "Dimmer BMC virtuale",
+			"address" => "0.5:Out2")));
 
 /**
  * Prese comandate presenti nel sistema.

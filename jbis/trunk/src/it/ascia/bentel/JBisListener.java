@@ -229,6 +229,7 @@ public class JBisListener implements SerialPortEventListener {
 	 * programma.</p>
 	 */
 	public void close() {
+		logger.info("Chisura...");
 		serialPort.close();
 	}
 }

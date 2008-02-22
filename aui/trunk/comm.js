@@ -72,6 +72,16 @@ var getAllUserCallback = false;
 var setPortUserCallback = false;
 
 /**
+ * Porta da _non_ aggiornare, perche' sta per essere cambiata.
+ *
+ * <p>Questa variabile deve essere impostata con la porta che si sta per 
+ * modificare.  Se il comando in esecuzione e' un get, esso non
+ * dovra' restituire il valore di questa porta, perche' essa sara' modificata
+ * subito dopo.</p>
+ */
+var portBeingSet = false; 
+
+/**
  * Interrompe una connessione che sta durando troppo.
  *
  * <p>Questo metodo viene chiamato da un timeout.</p>
@@ -161,6 +171,8 @@ function query(command, callbackFunction) {
 /**
  * Ricava il valore di una porta dalla risposta del server.
  *
+ * <p>Se la porta e' pari a portBeingSet, questa funzione ritorna false.</p>
+ *
  * @param port il nome della porta di cui si vuole il valore.
  * @param answer il testo ritornato dal server.
  *
@@ -171,6 +183,10 @@ function parseServerAnswer(port, answer) {
 	var found = false;
 	var lines = answer.split("\n");
 	var i;
+	if (port == portBeingSet) {
+		// Stiamo per modificare questa porta.
+		return false;
+	}
 	for(i = 0; (!found) && (i < lines.length); i++) {
 		var line = lines[i];
 		if (line.indexOf(port) == 0) {
@@ -235,6 +251,7 @@ function setPortCallback(goodNews, badNews) {
 	// E' possibile che la callback faccia una nuova setPort. Permettiamoglielo.
 	var callback = setPortUserCallback; 
 	setPortUserCallback = false;
+	portBeingSet = false;
 	if (goodNews) {
 		if (goodNews.indexOf("OK") == 0) {
 			callback(true);
@@ -256,15 +273,18 @@ function setPortCallback(goodNews, badNews) {
  * @param value il valore da impostare.
  * @param callBack funzione callBack. Deve accettare un solo parametro, che 
  * sara' true se il comando e' riuscito.
+ * @param id id dell'oggetto che stiamo modificando, per escluderlo da un
+ * eventuale getAll in esecuzione in questo momento.
  *
  * @return true se il comando e' riuscito.
  */
-function setPort(port, value, callBack) {
+function setPort(port, value, callBack, id) {
 	if (setPortUserCallback) {
 		// C'e' una richiesta setPort gia' in esecuzione
 		callBack(false);
 	} else {
 		setPortUserCallback = callBack;
+		portBeingSet = port;
 		query(CMD_SET + "?name=" + port + "&value=" + value, setPortCallback);
 	}
 }

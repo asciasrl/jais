@@ -78,30 +78,34 @@ function onOffIcon(divElement, attributeName, iconOn, iconOff) {
 /**
  * L'utente ha fatto click su una luce.
  */
-function lightClicked(lightDiv) {
+function lightClicked(event, lightDiv) {
 	onOffIcon(lightDiv, "lit",  IMG_LIGHT_ON, IMG_LIGHT_OFF);
+	event.stopPropagation();
 }
 
 /**
  * L'utente ha fatto click su un dimmer.
  */
-function dimmerClicked(dimmerDiv) {
+function dimmerClicked(event, dimmerDiv) {
 	// onOffIcon(dimmerDiv, "lit", "images/luce_on.png", "images/luce_off.png");
 	showDimmer(dimmerDiv);
+	event.stopPropagation();
 }
 
 /**
  * L'utente ha fatto click su una presa comandata.
  */
-function powerClicked(powerDiv) {
+function powerClicked(event, powerDiv) {
 	onOffIcon(powerDiv, "power", IMG_POWER_ON, IMG_POWER_OFF);
+	event.stopPropagation();
 }
 
 /**
  * L'utente ha fatto click su un termostato.
  */
-function thermoClicked(thermoDiv) {
+function thermoClicked(event, thermoDiv) {
 	onOffIcon(thermoDiv, "power", IMG_THERMO_ON, IMG_THERMO_OFF);
+	event.stopPropagation();
 }
 
 /**
@@ -118,7 +122,8 @@ function refreshElements(status, ids, attributeName, iconOn, iconOff) {
 	for (i = 0; i < ids.length; i++) {
 		var element = document.getElementById(ids[i]);
 		var attrs = element.attributes;
-		var value = parseServerAnswer(attrs.getNamedItem("busaddress").value, 
+		var value = 
+			parseServerAnswer(attrs.getNamedItem("busaddress").value, 
 			status);
 		if (value) {
 			var icon = element.firstChild.firstChild;
@@ -137,8 +142,8 @@ function refreshElements(status, ids, attributeName, iconOn, iconOff) {
 				icon.src = iconOn;
 				text.nodeValue = value + "%";
 			}
-		}
-	}
+		} // Se l'elemento e' tra i dati del server
+	} // Cicla sugli elementi
 }
 
 /**

@@ -245,9 +245,11 @@ public class BMCTemperatureSensor extends BMC {
 	 * Imposta la temperatura di allarme, inviando un messaggio al BMC.
 	 * 
 	 * @param temp temperatura da impostare.
+	 * 
+	 * @return true se il BMC ha risposto.
 	 */
-	public void setAlarmTemperature(int temp) {
-		bus.sendMessage(new ImpostaParametroMessage(getAddress(), 
+	public boolean setAlarmTemperature(int temp) {
+		return bus.sendMessage(new ImpostaParametroMessage(getAddress(), 
 				bus.getBMCComputerAddress(), 
 				RichiestaParametroMessage.PARAM_TERM_ALARM_TEMPERATURE,
 				temp,
@@ -258,9 +260,11 @@ public class BMCTemperatureSensor extends BMC {
 	 * Imposta il tempo di invio automatico, inviando un messaggio al BMC.
 	 * 
 	 * @param time tempo da impostare, in secondi.
+	 * 
+	 * @return true se il BMC ha risposto.
 	 */
-	public void setAutoSendTime(int time) {
-		bus.sendMessage(new ImpostaParametroMessage(getAddress(), 
+	public boolean setAutoSendTime(int time) {
+		return bus.sendMessage(new ImpostaParametroMessage(getAddress(), 
 				bus.getBMCComputerAddress(), 
 				RichiestaParametroMessage.PARAM_TERM_ALARM_TEMPERATURE,
 				time,
@@ -304,6 +308,7 @@ public class BMCTemperatureSensor extends BMC {
 	 * @see it.ascia.ais.Device#setPort(java.lang.String, java.lang.String)
 	 */
 	public void setPort(String port, String value) throws AISException {
+		boolean success = false;
 		if (port.equals(port_alarmTemp)) {
 			// Impostiamo la temperatura di allarme
 			int alarmTemp;
@@ -312,7 +317,7 @@ public class BMCTemperatureSensor extends BMC {
 			} catch (NumberFormatException e) {
 				throw new EDSException("Invalid alarm temperature: " + value);
 			}
-			setAlarmTemperature(alarmTemp);
+			success = setAlarmTemperature(alarmTemp);
 		} else if (port.equals(port_autoSendTime)) {
 			// Impostiamo il periodo di auto-invio
 			int time;
@@ -324,10 +329,13 @@ public class BMCTemperatureSensor extends BMC {
 			if (time <= 0) {
 				throw new EDSException("Illegal value: " + value);
 			}
-			setAutoSendTime(time);
+			success = setAutoSendTime(time);
 		} else {
 			// Non impostiamo niente: la richiesta e' errata.
 			throw new EDSException("Invalid port: " + port);
+		}
+		if (!success) {
+			throw new EDSException("Il device non risponde");
 		}
 	}
 	

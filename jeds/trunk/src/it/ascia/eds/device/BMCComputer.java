@@ -123,7 +123,7 @@ public class BMCComputer extends BMC {
      * 
      * <p>Il messaggio di risposta viene riconosciuto da dispatchMessage().</p>
 	 */
-	private boolean sendPTPRequest(PTPRequest m) {
+	private synchronized boolean sendPTPRequest(PTPRequest m) {
     	int waitings, tries;
     	boolean received = false;
     	messageToBeAnswered = m;

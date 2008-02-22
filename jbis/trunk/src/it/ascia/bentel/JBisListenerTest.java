@@ -20,7 +20,7 @@ public class JBisListenerTest implements AlarmReceiver {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String defaultPort = "/dev/ttyUSB0";
+		String defaultPort = "COM1";
 		JBisListener centralina;
 	    // Inizializzazione logger
 	    PropertyConfigurator.configure("conf/log4j.conf");

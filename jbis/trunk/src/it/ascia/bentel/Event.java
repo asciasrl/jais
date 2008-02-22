@@ -32,7 +32,7 @@ public class Event {
 	private static String numberToString(int n) {
 		if (n < 0) {
 			return "Numero non valido (" + n + ")";
-		} else if (n <= 4) {
+		} else if (n <= 3) {
 			return "Allarme area " + (n + 1);
 		} else if (n <= 11) {
 			return "Allarme zona " + (n - 3);
@@ -128,7 +128,7 @@ public class Event {
 	 */
 	public String getAlarm() {
 		int n = getNumber();
-		if (n <= 4) {
+		if (n <= 3) {
 			return "area " + (n + 1);
 		} else if (n <= 11) {
 			return "zona " + (n - 3);

@@ -7,7 +7,12 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="jbis/BIS"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/jais"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jais">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="jais/lib"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="/jais/lib/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="/jais/lib/RXTXcomm.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

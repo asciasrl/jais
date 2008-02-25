@@ -77,7 +77,7 @@ public abstract class Bus implements it.ascia.ais.Bus {
      */
     protected Logger logger;
     /**
-     * Il nostro nome.
+     * Il nostro nome secondo AUI.
      */
     private String name;
     
@@ -246,7 +246,7 @@ public abstract class Bus implements it.ascia.ais.Bus {
      * 
      * @param address l'indirizzo da cercare.
      * 
-     * @return il Device oppure null se il Device non è nella lista.
+     * @return il Device oppure null se il Device non ï¿½ nella lista.
      */
     public it.ascia.ais.Device getDevice(int address) {
     	return (Device)devices.get(new Integer(address));

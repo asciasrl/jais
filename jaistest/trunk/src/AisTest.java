@@ -26,7 +26,7 @@ public class AisTest {
 	static BufferedReader stdin;
 	static BMCComputer bmcComputer;
 	static HTTPServer server;
-	static BusController busController;
+	static MyController busController;
 	static JBisListener alarm;
 	
 	static void makeVirtualBMC(int address) {
@@ -42,7 +42,7 @@ public class AisTest {
 	}
 	
 	static void startServer() {
-		busController = new BusController(bus);
+		busController = new MyController(bus);
 		try {
 			server = new HTTPServer(8080, busController, 
 					"/home/arrigo/public_html/auiFixed");

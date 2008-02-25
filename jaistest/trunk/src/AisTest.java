@@ -105,6 +105,8 @@ public class AisTest {
 	 		// bus = new SerialBus(defaultPort, "0");
 	 	} catch (JBisException e) {
 	 		System.err.println(e.getMessage());
+	 		server.close();
+	 		bus.close();
 	 		System.exit(-1);
 	 	}
 	 	bmcComputer = new BMCComputer(0, bus);
@@ -114,6 +116,9 @@ public class AisTest {
 			cfgFile = new ConfigurationFile("../jeds/conf/tavola20071207.xml");
 		} catch (EDSException e) {
 			System.err.println(e.getMessage());
+			server.close();
+			alarm.close();
+			bus.close();
 			System.exit(-1);
 		}
 		cfgFile.createBMCs(bus);

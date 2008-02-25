@@ -71,21 +71,23 @@ public class BusAddress {
 	}
 	
 	/**
-	 * Ritorna il nome del bus.
+	 * Ritorna la parte dell'indirizzo che corrisponde al nome del/dei bus.
 	 */
 	public String getBusName() {
 		return busName;
 	}
 
 	/**
-	 * Ritorna l'indirizzo del device.
+	 * Ritorna la parte dell'indirizzo che corrisponde all'indirizzo del/dei
+	 * device sul bus.
 	 */
 	public String getDeviceAddress() {
 		return deviceAddress;
 	}
 
 	/**
-	 * Ritorna le porte specificate nell'indirizzo.
+	 * Ritorna la parte dell'indirizzo che corrisponde alle porte del/dei 
+	 * device.
 	 */
 	public String getPorts() {
 		return ports;
@@ -97,11 +99,6 @@ public class BusAddress {
 	public Device[] getDevices() {
 		int i = 0;
 		Device retval[] = new Device[devices.size()];
-		Iterator it = devices.iterator();
-		while (it.hasNext()) {
-			retval[i] = (Device)it.next();
-			i++;
-		}
-		return retval;
+		return (Device[]) devices.toArray(retval);
 	}
 }

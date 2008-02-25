@@ -29,7 +29,7 @@ public class BusAddressParser {
 	/**
 	 * Bus registrati.
 	 * 
-	 * I bus qui dentro sono accessibili dal loro nome (stringa).
+	 * <p>I bus qui dentro sono accessibili dal loro nome (stringa).</p>
 	 */
 	private Map busses;
 	
@@ -47,7 +47,7 @@ public class BusAddressParser {
 	}
 	
 	/**
-	 * Ritorna un Bus a partire da "nome.numero".
+	 * Ritorna un Bus a partire dal nome.
 	 * 
 	 * @return il bus o null se non e' registrato nessun bus con quel nome.
 	 */

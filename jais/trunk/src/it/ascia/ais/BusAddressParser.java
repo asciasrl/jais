@@ -16,11 +16,11 @@ import java.util.Set;
 /**
  * Parser di indirizzi.
  * 
- * Questa classe e' necessaria perche' gli indirizzi nel formato dato dal
- * protocollo possono fare riferimento a piu' bus.
+ * <p>Questa classe e' necessaria perche' gli indirizzi nel formato dato dal
+ * protocollo possono fare riferimento a piu' bus.</p>
  * 
- * Questa classe deve essere istruita su quali bus esistono, quindi puo' creare
- * oggetti di tipo BusAddress a partire dagli indirizzi.
+ * <p>Questa classe deve essere istruita su quali bus esistono, quindi puo' 
+ * creare oggetti di tipo BusAddress a partire dagli indirizzi.</p>
  * 
  * @author arrigo
  *
@@ -38,34 +38,16 @@ public class BusAddressParser {
 	}
 	
 	/**
-	 * Aggiunge un bus identificato dal solo numero.
-	 * 
-	 * Attenzione: tutti i bus devono avere un tipo, oppure non deve averlo
-	 * nessuno.
+	 * Aggiunge un bus.
 	 * 
 	 * @param bus il bus da aggiungere.
-	 * @param busNumber il numero del bus.
 	 */
-	public void registerBus(Bus bus, int busNumber) {
-		busses.put(new Integer(busNumber).toString(), bus);
+	public void registerBus(Bus bus) {
+		busses.put(bus.getName(), bus);
 	}
 	
 	/**
-	 * Aggiunge un bus identificato da nome e tipo.
-	 * 
- 	 * Attenzione: tutti i bus devono avere un tipo, oppure non deve averlo
-	 * nessuno.
-	 * 
-	 * @param bus il bus da aggiungere.
-	 * @param name il tipo associato al bus.
-	 * @param busNumber il numero del bus.
-	 */
-	public void registerBus(Bus bus, String name, int busNumber) {
-		busses.put(name + "." + busNumber, bus);
-	}
-	
-	/**
-	 * Ritorna un Bus a partire dal nome.
+	 * Ritorna un Bus a partire da "nome.numero".
 	 * 
 	 * @return il bus o null se non e' registrato nessun bus con quel nome.
 	 */

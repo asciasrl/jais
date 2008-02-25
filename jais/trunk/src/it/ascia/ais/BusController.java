@@ -31,10 +31,6 @@ public class BusController implements AlarmReceiver, VirtualDeviceListener {
 	 */
 	private Bus bus;
 	/**
-	 * Il nome del nostro bus.
-	 */
-	private String busName;
-	/**
 	 * Il nostro logger.
 	 */
 	private Logger logger;
@@ -47,9 +43,8 @@ public class BusController implements AlarmReceiver, VirtualDeviceListener {
 	public BusController(Bus bus) {
 		this.logger = Logger.getLogger(getClass());
 		addressParser = new BusAddressParser();
-		addressParser.registerBus(bus, 0);
+		addressParser.registerBus(bus);
 		this.bus = bus;
-		this.busName = bus.getName();
 	}
 	
 	/**

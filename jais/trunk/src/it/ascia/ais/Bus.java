@@ -6,6 +6,9 @@ package it.ascia.ais;
 /**
  * Bus domotico.
  * 
+ * <p>A livello di protocollo, un bus e' identificato da un tipo e un numero,
+ * nella forma "tipo.numero".</p>
+ * 
  * @author arrigo
  */
 public interface Bus {
@@ -14,7 +17,7 @@ public interface Bus {
      * 
      * @param address l'indirizzo da cercare.
      * 
-     * @return il Device oppure null se il Device non è nella lista.
+     * @return il Device oppure null se il Device non ï¿½ nella lista.
      */
 	Device getDevice(int deviceAddress);
 
@@ -24,7 +27,7 @@ public interface Bus {
     public Device[] getDevices();
     
     /**
-     * Ritorna il nome del bus.
+     * Ritorna il nome del bus, nella forma "tipo.numero".
      * 
      * <p>Questo nome e' parte dell'indirizzo dei Device collegati al bus.</p>
      */

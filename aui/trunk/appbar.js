@@ -44,11 +44,11 @@ const MAX_ICON_SPEED = 240;
 /**
  * A che pixel si trovava l'appbar all'ultima selezione.
  */
-var lastAppBarPosition = 40;
+var lastAppBarPosition = APPBAR_START_POSITION;
 /**
  * A che pixel si trova l'appbar (durante lo scorrimento).
  */
-var currentAppBarPosition = 40;
+var currentAppBarPosition = APPBAR_START_POSITION;
 /**
  * Numero dell'icona attualmente centrata.
  */
@@ -72,9 +72,25 @@ var appBarGoing = false;
  */
 var targetAppBarPosition = 0;
 /**
+ * Ultimo valore di dX.
+ *
+ * <p>Questa variabile serve a rilevare se abbiamo fatto "salti" durante
+ * lo scrolling, precisamente se abbiamo saltato il nostro obbiettivo. Questo
+ * avviene se dX ha segno opposto a lastDx</p>
+ */
+var lastDx = 0;
+/**
  * DEBUG: dove scrivere messaggi di stato.
  */
 var statusObject = document.getElementById('header');
+/**
+ * Istante in cui e' stata effettuata l'ultima iterazione dello scorrimento
+ * della barra.
+ *
+ * <p>Questa variabile serve per mantenere la velocita' costante anche se il
+ * periodo di refresh richiesto non viene rispettato.</p>
+ */
+var lastAppBarScrollTime = 0;
 
 /**
  * Imposta la dimensione e l'opacita' di un'icona.
@@ -263,10 +279,34 @@ function centralIconDeltaX() {
 }
 
 /**
+ * Attiva il servizio rappresentato dall'icona piu' vicina al centro.
+ */
+function activateCenteredIcon() {
+	var selectedIconNumber = 
+		Math.round(getCenteredAppBarIconNumber(currentAppBarPosition));
+	if (selectedIconNumber == 0) {
+		selectedIconNumber = appbar_num;
+	}
+	var selectedService = SERVICES[selectedIconNumber - 1];
+	iconSelected(selectedService);
+}
+
+/**
  * Anima le icone, calcolando le accelerazioni.
  */
 function appbar_timer() {
 	if ((!dragging) && (!centralIconLocked)) {
+		var currentTime = new Date().getTime();
+		var measuredRefreshPeriod;
+		if (lastAppBarScrollTime != 0) {
+			// "Saltiamo" se l'ultima iterazione e' stata fatta troppo tempo fa
+			measuredRefreshPeriod = currentTime - lastAppBarScrollTime;
+			currentAppBarPosition += currentAppBarSpeed * (measuredRefreshPeriod - REFRESH_PERIOD) / 1000;
+		} else {
+			measuredRefreshPeriod = REFRESH_PERIOD;
+		}
+		// statusMessage(measuredRefreshPeriod);
+		lastAppBarScrollTime = currentTime;
 		var dX = centralIconDeltaX();
 		var speedSign = 0;
 		if (currentAppBarSpeed == 0) {
@@ -286,18 +326,17 @@ function appbar_timer() {
 			// Siamo molto veloci: freniamo e continuiamo a scorrere
 			currentAppBarSpeed -= FRICTION * REFRESH_PERIOD * speedSign / 1000;
 		} else {
+			// Abbiamo saltato l'icona centrale?
+			if ((dX * lastDx) < 0) { // Si'! Compensiamo.
+				currentAppBarPosition += dX;
+				dX = 0; // Per i prossimi check.
+			}
 			// Andiamo verso l'icona centrale?
-			if ((dX * speedSign) >= 0) {
+			if ((dX * speedSign) >= 0) { 
 				// Valutiamo la possibilita' di decelerare
 				if (Math.abs(dX) <= ICON_LOCK_DISTANCE) {
 					// Ci avviciniamo lentamente all'icona, che attiviamo
-					var selectedIconNumber = 
-						Math.round(getCenteredAppBarIconNumber(currentAppBarPosition));
-					if (selectedIconNumber == 0) {
-						selectedIconNumber = appbar_num;
-					}
-					var selectedService = SERVICES[selectedIconNumber - 1];
-					iconSelected(selectedService);
+					activateCenteredIcon();
 					if (dX > 0) {
 						currentAppBarSpeed = ICON_APPROACHING_SPEED;
 					} else {
@@ -310,7 +349,9 @@ function appbar_timer() {
 						// Siamo arrivati!
 						centralIconLocked = true;
 						going = false;
-					}
+						lastAppBarScrollTime = 0;
+						dX = 0; // Trucco :-)
+					} 
 				} else {
 					// Portiamoci a velocita' di crociera, accelerando se
 					// necessario 
@@ -331,6 +372,7 @@ function appbar_timer() {
 			currentAppBarSpeed * (REFRESH_PERIOD / 1000));
 		appbar_scroll(new_left);
 		lastAppBarPosition = currentAppBarPosition;
+		lastDx = dX;
 	}
 	// Andremo a fare un'altra iterazione solo se necessario. 
 	if (!centralIconLocked) {
@@ -439,4 +481,5 @@ function iconSelected(serviceName) {
 }
 
 appbar_scroll(currentAppBarPosition);
+activateCenteredIcon();
 makeDraggable(document.getElementById('appbar'));

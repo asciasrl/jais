@@ -1,6 +1,16 @@
 <?php
 
 /**
+ * Larghezza della "viewport" dell'iPod Touch.
+ */
+define("IPOD_VIEWPORT_WIDTH", 320);
+
+/**
+ * Altezza della "viewport" dell'iPod Touch.
+ */
+define("IPOD_VIEWPORT_HEIGHT", 356);
+
+/**
  * Lista dei servizi.
  */
 $apps = array('audio','clima','energia','illuminazione','serramenti','sicurezza','video');
@@ -16,6 +26,11 @@ define("IMG_THERMO_ON", "images/clima_on.png");
 define("IMG_THERMO_OFF", "images/clima_off.png");
 
 /**
+ * Posizione iniziale della appBar [pixel].
+ */
+define(APPBAR_START_POSITION, 360);
+
+/**
  * Altezza della status bar [pixel].
  */
 define("STATUS_BAR_HEIGHT", 22);
@@ -29,7 +44,7 @@ define("STATUS_BAR_OPACITY", 0.60);
  * Immagine che mostra i piani.
  */
 $pianiFile = "images/assonometria320x370.png"; // images/piani-all.png";
-$pianiSize = Array("w" => 320, "h" => 370); // Array("w" => 240, "h" => 240);
+$pianiSize = Array("w" => IPOD_VIEWPORT_WIDTH, "h" => 370); // Array("w" => 240, "h" => 240);
 
 /**
  * Lista dei piani.
@@ -39,7 +54,7 @@ $piani = Array(
 		"id" => "piano-01A",
 		"header" => "Piano 1A",
 		"mapFile" => "images/planimetria.png",
-		"mapSize" => Array("w" => 320, "h" => 299),
+		"mapSize" => Array("w" => IPOD_VIEWPORT_WIDTH, "h" => 299),
 		"bigMapFile" => "images/planimetria-big.png",
 		"bigMapSize" => Array("w" => 800, "h" => 748)));
 
@@ -157,8 +172,9 @@ $frameClima = Array(
  * 
  * @param $piano il piano.
  * @param $big true se stiamo facendo i layer della mappa grande.
+ * @param $clickable true se i servizi devono reagire a click
  */
-function creaLayerServizi($piano, $big) {
+function creaLayerServizi($piano, $big, $clickable) {
 	global $apps, $frameIlluminazione, $frameEnergia, $frameClima;
 	global $idLuci, $idPrese, $idClimi;
 	if ($big) {
@@ -167,8 +183,9 @@ function creaLayerServizi($piano, $big) {
 		// Assumiamo che la mappa piccola e' uguale alla grande rimpicciolita
 		$scale = $piano["mapSize"]["w"] / $piano["bigMapSize"]["w"];
 	}
+	$fontSize = ($scale * 100) . "%";
 	foreach ($apps as $s):
-		if ($big) {
+		if ($clickable) {
 			$idPiano = $piano["id"] . "-big-" . $s; 
 		} else {
 			$idPiano = $piano["id"] . "-" . $s;
@@ -178,9 +195,12 @@ function creaLayerServizi($piano, $big) {
 <?php
 		switch($s) {
 		case "illuminazione":
+			$temp = getimagesize(IMG_LIGHT_OFF);
+			$imgWidth = $temp[0] * $scale;
+			$imgHeight = $temp[1] * $scale;
 			if (isset($frameIlluminazione[$piano["id"]])) {
 				foreach ($frameIlluminazione[$piano["id"]] as $idLuce => $luce) {
-					if ($big) {
+					if ($clickable) {
 						$id = "id=\"$idLuce\"";
 						if ($luce["type"] == ILL_LUCE) {
 							$lit = "lit=\"off\" onClick=\"lightClicked(event, this)\"";
@@ -199,17 +219,20 @@ function creaLayerServizi($piano, $big) {
 					echo("<div $id style=\"position:absolute; left: " .
 						$luce["x"] * $scale . "px; top: " . $luce["y"] * $scale. "px; color: white;\" " .
 						"$busaddress $lit name=\"" . $luce["label"] . "\"><div style=\"position: absolute;\"><img src=\"".IMG_LIGHT_OFF.
-						"\" alt=\"" . $luce["label"] .
-						"\" /></div><div style=\"position: absolute;\">$text</div></div>");
+						"\" alt=\"" . $luce["label"] . "\" width=\"$imgWidth\"
+						height=\"$imgHeight\" /></div><div style=\"position: absolute; font-size: $fontSize;\">$text</div></div>");
 				} // foreach luce
 			} else {
 				echo("Non ci sono luci per questo piano!");
 			}
 			break;
 		case "energia":
+			$temp = getimagesize(IMG_POWER_OFF);
+			$imgWidth = $temp[0] * $scale;
+			$imgHeight = $temp[1] * $scale;
 			if (isset($frameEnergia[$piano["id"]])) {
 				foreach ($frameEnergia[$piano["id"]] as $idPresa => $presa) {
-					if ($big) {
+					if ($clickable) {
 						$id = "id=\"$idPresa\"";
 						$active = "power=\"off\" busaddress=\"" . $presa["address"] . 
 							"\" onClick=\"powerClicked(event, this)\"";
@@ -225,16 +248,19 @@ function creaLayerServizi($piano, $big) {
 						$presa["y"] * $scale. "px; color: white;\" $active name=\"" . 
 							$presa["label"] . "\"><div style=\"position: absolute;\"><img src=\"".
 							IMG_POWER_OFF."\" alt=\"" . $presa["label"] .
-							"\" /></div><div style=\"position: absolute;\">$text</div></div>");
+							"\" width=\"$imgWidth\" height=\"$imgHeight\" /></div><div style=\"position: absolute; font-size: $fontSize;\">$text</div></div>");
 				} // foreach presa
 			} else {
 				echo("Non ci sono prese comandate su questo piano!");
 			}
 			break;
 		case "clima":
+			$temp = getimagesize(IMG_THERMO_OFF);
+			$imgWidth = $temp[0] * $scale;
+			$imgHeight = $temp[1] * $scale;
 			if (isset($frameClima[$piano["id"]])) {
 				foreach ($frameClima[$piano["id"]] as $idClima => $clima) {
-					if ($big) {
+					if ($clickable) {
 						$id = "id=\"$idClima\"";
 						$active = "power=\"off\" busaddress=\"" . 
 							$clima["address"] . "\" onClick=\"thermoClicked(event, this)\"";
@@ -250,7 +276,7 @@ function creaLayerServizi($piano, $big) {
 						$clima["y"] * $scale . "px; color: white;\" $active name=\"" . 
 							$clima["label"] . "\"><div style=\"position: absolute;\"><img src=\"".
 							IMG_THERMO_OFF."\" alt=\"" . $clima["label"] .
-							"\"/></div><div style=\"position: absolute;\">$text</div></div>");
+							"\" width=\"$imgWidth\" height=\"$imgHeight\"/></div><div style=\"position: absolute; font-size: $fontSize;\">$text</div></div>");
 				} // foreach clima
 			} else {
 				echo("Non ci sono termostati su questo piano!");
@@ -280,9 +306,9 @@ function arrayJavascript($arr) {
 
  
 
-<div id="header-out" style="display: none; position: absolute; z-index: 30; width: 320px; height: 40px; filter:alpha(opacity='60'); opacity: <?php echo(STATUS_BAR_OPACITY); ?>;">
+<div id="header-out" style="display: none; position: absolute; z-index: 30; width: <?php echo (IPOD_VIEWPORT_WIDTH); ?>px; height: 40px; filter:alpha(opacity='60'); opacity: <?php echo(STATUS_BAR_OPACITY); ?>;">
 <div style="position: absolute;"><img src="images/barratesti.png" /></div>
-<div id="header" style="position: absolute; margin-top: 9px; height: <php echo(STATUS_BAR_HEIGHT); ?>px; width: 320px; text-align: center;"><b>barra di stato</b></div>
+<div id="header" style="position: absolute; margin-top: 9px; height: <php echo(STATUS_BAR_HEIGHT); ?>px; width: <?php echo (IPOD_VIEWPORT_WIDTH); ?>px; text-align: center;"><b>barra di stato</b></div>
 </div>
 <div id="screensaver" title="AUI screensaver - clicca per accedere" onclick="vai('login');"><img
 	alt="AUI" src="images/newlogo_02_320x380.png" /></div>
@@ -343,20 +369,21 @@ function arrayJavascript($arr) {
 </table>
 </div>
 <div id="navigazione" style="display: none;">
-  <div id="mappa-out" style="width: 320px; height: 380px;">
+  <div id="mappa-out" style="width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px; height: <?php echo(IPOD_VIEWPORT_HEIGHT - 80); ?>px;">
 	<div id="mappa"
-		style="position: absolute; width: 320px; height: 380px; overflow: hidden;">
+		style="position: absolute; width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px; height: 276px; overflow: hidden;">
 		<div id="piani-all" 
 			style="position: absolute; width: <?php echo ($pianiSize["w"]); ?>px; height: <?php echo($pianiSize["h"]); ?>px; overflow: hidden;">
 			<img 
 				header="ASCIA Building"
 				title="AUI edificio - clicca su un appartamento" 
 				style="position: absolute;"
-				onclick="clicca1('piani-all','piano-01A');"
+				onclick="clicca1('piani-all','piano-01A<?php if ($mobile) echo("-big") ?>');"
 				src="<?php echo($pianiFile); ?>" alt="" />
 		</div>
 <?php
 foreach ($piani as $piano):
+	if (!$mobile) {
  ?>
 		<div id="<?php echo($piano["id"]); ?>" 
 			style="position: absolute; width: <?php echo($piano["mapSize"]["w"]); ?>px; height: <?php echo($piano["mapSize"]["h"]); ?>px; overflow: hidden; display: none;"
@@ -366,7 +393,7 @@ foreach ($piani as $piano):
 				title="AUI mappa appartamento - clicca per ingrandire - doppio click per ritornare"
 				style="position: absolute;"
 				src="<?php echo($piano["mapFile"]); ?>" alt="" />
-			<?php creaLayerServizi($piano, false); ?>
+			<?php creaLayerServizi($piano, false, false); ?>
 		</div>
 		<div id="<?php echo($piano["id"] . "-big"); ?>"
 			style="position: absolute;
@@ -381,23 +408,42 @@ foreach ($piani as $piano):
 				src="<?php echo($piano["bigMapFile"]); ?>" alt="" 
 				width="<?php echo($piano["bigMapSize"]["w"]); ?>"
 				height="<?php echo($piano["bigMapSize"]["h"]); ?>" />
-			<?php creaLayerServizi($piano, true); ?>
+			<?php creaLayerServizi($piano, true, true); ?>
 		</div>
 <?php
+	} else { // iPod
+?>
+	<div id="<?php echo($piano["id"] . "-big"); ?>"
+		style="position: absolute;
+			display: none; 
+			width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px;
+			height: 276px;"
+		onclick="clicca('<?php echo($piano["id"] . "-big"); ?>','<?php echo($piano["id"] . "-big"); ?>','<?php echo($piano["id"]); ?>');">
+		<img
+			header="<?php echo($piano["header"]); ?>"
+			title="AUI appartamento - doppio click per ritornare"
+			style="position: absolute;"
+			src="<?php echo($piano["bigMapFile"]); ?>" alt="" 
+			width="<?php echo($piano["mapSize"]["w"]); ?>"
+			height="<?php echo($piano["mapSize"]["h"]); ?>" />
+		<?php creaLayerServizi($piano, false, true); ?>
+	</div>
+<?php
+	} // if iPod
 endforeach; // $piani as $piano
  ?>
 	</div> 
 	<!-- fine mappa -->
 	<div id="dimmer"
-		style="position: absolute; width: 320px; height: 380px; 
+		style="position: absolute; width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px; height: 276px; 
 			overflow: hidden; display: none;" onclick="hideDimmer()">
-		<div style="position: absolute; width: 320px; height: 380px; background-color: black; filter:alpha(opacity='80'); opacity: 0.8;">&nbsp;</div>
+		<div style="position: absolute; width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px; height: 276px; background-color: black; filter:alpha(opacity='80'); opacity: 0.8;">&nbsp;</div>
 		<div id="dimmer-sfondo" style="position: absolute; width: 80px; 
 			height: 300px; margin-top: 40px; margin-left: 120px;"
 			onclick="dimmerSliderClicked(event)" >
 			<img src="images/dimmer-sfondo.png"	style="position: absolute;" />
 			<div id="dimmer-tasto" style="position: absolute; 
-				margin-left: 12px; top: 217px;"><img  src="images/dimmer-tasto.png" />
+				margin-left: 12px; top: 217px;"><div style="position: absolute;"><img  src="images/dimmer-tasto.png" /></div><div id="dimmer-tasto-testo" style="position: absolute; text-align: center; width: 60px; top: 20px; bottom: auto;"></div>
 				</div>
 		</div> <!--  dimmer-sfondo -->
 	</div><!--  dimmer -->
@@ -418,6 +464,7 @@ endforeach; // $piani as $piano
 	const IMG_THERMO_OFF = "<?php echo(IMG_THERMO_OFF); ?>";
 	const STATUS_BAR_HEIGHT = "<?php echo(STATUS_BAR_HEIGHT); ?>";
 	const STATUS_BAR_OPACITY = "<?php echo(STATUS_BAR_OPACITY); ?>";
+	const APPBAR_START_POSITION = <?php echo(APPBAR_START_POSITION); ?>;
 </script>
 <script type="" language="javascript" src="statusbar.js"></script>
 <script type="" language="javascript" src="aui.js"></script>

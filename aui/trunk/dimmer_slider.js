@@ -84,6 +84,13 @@ var dimmerAddress;
 var dimmerValueElement;
 
 /**
+ * Elemento nel quale scrivere il valore percentuale.
+ *
+ * <p>Questo &lt;div&gt; si trova dentro il cursore.</p>
+ */
+var dimmerCursorText = document.getElementById("dimmer-tasto-testo");
+
+/**
  * Icona del dimmer sulla mappa.
  */
 var dimmerIconOnMap;
@@ -148,7 +155,7 @@ function showDimmer(divOnMap) {
 	currentDimmerValue = dimmerValueElement.value;
 	currentDimmerCursorTop = dimmerValue2Cursor(currentDimmerValue); 
 	dimmerCursorLayer.style.top = currentDimmerCursorTop + "px";
-	statusMessage(dimmerName + ": " + dimmerValueElement.value);
+	statusMessage(dimmerName);
 	if (!dimmerSetInterval) {
 		// Lanciamo il contatore
 		dimmerSetInterval = 
@@ -203,7 +210,7 @@ function dragDimmerCursor(mousePos, forceUpdate) {
 	var y = mousePos.y;
 	var newValue = dimmerCursor2Value(y);
 	var newTop = dimmerValue2Cursor(newValue);
-	statusMessage(dimmerName + ": " + newValue);
+	dimmerCursorText.textContent = newValue + "%";
 	// Il massimo e il minimo valore sono anti-jerkiness, perche' e' brutto
 	// se il cursore non arriva in fondo.
 	if (forceUpdate || 

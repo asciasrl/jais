@@ -259,9 +259,13 @@ public class BMCStandardIO extends BMC {
 	public boolean[] getOutputs() {
 		return outPorts;
 	}
-
+	
 	/**
-	 * Manda un messaggio per impostare il valore di un'uscita.
+	 * Manda un messaggio di "variazione ingresso" per impostare il valore di 
+	 * un'uscita.
+	 * 
+	 * <p>Questo metodo deve essere usato quando si vuole simulare la pressione
+	 * di un interruttore da parte dell'utente.</p>
 	 * 
 	 * <p>
 	 * Se questo oggetto corrisponde a un BMC "vero", allora manda un messaggio
@@ -274,6 +278,44 @@ public class BMCStandardIO extends BMC {
 	 * @param value
 	 *            valore (true: acceso)
 	 * @return true se l'oggetto ha risposto (ACK)
+	 * 
+	 * @see setOutPort
+	 */
+	public boolean setOutputVariation(int port, boolean value) {
+		boolean retval = false;
+		if ((port >= 0) && (port < outPortsNum)) {
+			if (isReal) {
+				VariazioneIngressoMessage m;
+				m = new VariazioneIngressoMessage(getAddress(), 
+						bus.getBMCComputerAddress(), value, port, 1);
+				retval = bus.sendMessage(m);
+			} else { // The easy way
+				outPorts[port] = value;
+				alertListener(port);
+				retval = true;
+			}
+		} else {
+			logger.error("Numero porta non valido: " + port);
+		}
+		return retval;
+	}
+
+	/**
+	 * Manda un messaggio per impostare direttamente il valore di un'uscita.
+	 * 
+	 * <p>
+	 * Se questo oggetto corrisponde a un BMC "vero", allora manda un messaggio
+	 * con mittente il BMCComputer. Altrimenti, l'uscita viene impostata
+	 * direttamente.
+	 * </p>
+	 * 
+	 * @param port
+	 *            numero della porta
+	 * @param value
+	 *            valore (true: acceso)
+	 * @return true se l'oggetto ha risposto (ACK)
+	 * 
+	 * @see askOutputVariation
 	 */
 	public boolean setOutPort(int port, boolean value) {
 		boolean retval = false;
@@ -434,7 +476,7 @@ public class BMCStandardIO extends BMC {
 		if (portNumber == -1) {
 			throw new EDSException("Porta non valida: " + port);
 		}
-		success = setOutPort(portNumber, boolValue);
+		success = setOutputVariation(portNumber, boolValue);
 		if (!success) {
 			throw new EDSException("Il device non risponde.");
 		}

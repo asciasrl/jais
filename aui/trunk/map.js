@@ -64,16 +64,16 @@ function dragMap(mousePos) {
 function drawMapAt(new_left, new_top) {
 // statusMessage(' A:'+new_left+' / ' + mapSize.width + ' ,'+new_top);
 	// troppo a destra
-	if (-new_left + 240 > mapSize.width) {
-		new_left = 240 - mapSize.width;
+	if (-new_left + MAP_AREA_WIDTH > mapSize.width) {
+		new_left = MAP_AREA_WIDTH - mapSize.width;
 	}
 	// troppo a sinistra
 	if (new_left > 0) {
 		new_left = 0;
 	}
 	// troppo in basso
-	if (-new_top + 240 > mapSize.height) {
-		new_top = 240 - mapSize.height;
+	if (-new_top + MAP_AREA_HEIGHT > mapSize.height) {
+		new_top = MAP_AREA_HEIGHT - mapSize.height;
 	}
 	// troppo in alto
 	if (new_top > 0) {
@@ -81,7 +81,7 @@ function drawMapAt(new_left, new_top) {
 	}
 	currentMap.style.top =  new_top + 'px';
 	currentMap.style.left =  new_left + 'px';
-	currentMapPosition = {x:new_left, y:new_top};
+	currentMapPosition = {x:new_left, y:new_top};	
 }
 
 /**

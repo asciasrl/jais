@@ -3,32 +3,6 @@
  */
  
 /**
- * Altezza dell'immagine del cursore del dimmer.
- *
- * <p>Questa grandezza serve a centrare il cursore del mouse e il cursore del
- * dimmer. Deve essere pari alla meta' dell'altezza dell'immagine che
- * rappresenta il cursore.</p>
- */
-const DIMMER_CURSOR_MIDDLE = 30;
-/**
- * Massima altezza del cursore del dimmer.
- *
- * <p>Nota: la massima altezza e' minore della minima: il livello del dimmer
- * aumenta verso l'alto!</p>
- */
-const DIMMER_TOP_MIN = 23;
-
-/**
- * Minima altezza cursore del dimmer.
- *
- * <p>Nota: questa deve essere l'altezza minima del bordo superiore del
- * cursore!</p>
- *
- * @see DIMMER_TOP_MIN
- */
-const DIMMER_TOP_MAX = 217;
-
-/**
  * Minima variazione per cui il cursore viene spostato. [pixel]
  *
  * <p>Questo parametro riduce la fluidita' ma aumenta la velocita' di risposta
@@ -46,6 +20,16 @@ const DIMMER_JERKINESS = 5;
 const DIMMER_SET_INTERVAL = 500;
 
 /**
+ * Coordinata y dello slider.
+ */
+var dimmerSliderTop;
+
+/**
+ * Coordinata X dello slider.
+ */
+var dimmerSliderLeft;
+
+/**
  * Valore attuale del dimmer.
  */
 var currentDimmerValue = 0;
@@ -59,9 +43,14 @@ var currentDimmerValue = 0;
 var currentDimmerCursorTop = DIMMER_TOP_MIN;
   
 /**
- * Layer che contiene il controllo dimmer.
+ * Layer che contiene il controllo dimmer e lo sfondo scuro.
  */
 var dimmerLayer = document.getElementById("dimmer");
+
+/**
+ * Layer che contiene lo slider del dimmer.
+ */
+var dimmerSliderLayer = document.getElementById("dimmer-slider");
 
 /**
  * Layer che contiene il solo cursore del dimmer.
@@ -145,6 +134,43 @@ function dimmerCursor2Value(cursorTop) {
  * @address indirizzo del dimmer sul bus
  */
 function showDimmer(divOnMap) {
+	var maxTop, maxLeft, minTop, minLeft;
+	var iconTop = parseInt(divOnMap.style.top.slice(0, -2));
+	var iconLeft = parseInt(divOnMap.style.left.slice(0, -2));
+	// Se siamo su fisso, vogliamo che lo slider appaia nello schermo
+	if (MOBILE) {
+		maxTop = mapSize.y - DIMMER_SLIDER_TOTAL_HEIGHT;
+		maxLeft = mapSize.x - DIMMER_SLIDER_WIDTH;
+		minTop = 0;
+		minLeft = 0;
+	} else {
+		maxTop = -currentMapPosition.y + MAP_AREA_HEIGHT - 
+			DIMMER_SLIDER_TOTAL_HEIGHT;
+		maxLeft = -currentMapPosition.x + MAP_AREA_WIDTH - 
+			DIMMER_SLIDER_WIDTH;
+		minTop = -currentMapPosition.y;
+		minLeft = -currentMapPosition.x;
+	}
+	dimmerSliderTop = iconTop -	DIMMER_SLIDER_TOTAL_HEIGHT / 2;
+	dimmerSliderLeft = iconLeft - DIMMER_SLIDER_WIDTH / 4; // un pochino sopra
+	// Non usciamo dall'area della mappa
+	if (dimmerSliderTop < minTop) {
+		dimmerSliderTop = minTop;
+	} else if (dimmerSliderTop > maxTop) {
+		dimmerSliderTop = maxTop;
+	}
+	if (dimmerSliderLeft < minLeft) {
+		dimmerSliderLeft = minLeft;
+	} else if (dimmerSliderLeft > maxLeft) {
+		dimmerSliderLeft = maxLeft;
+	}
+	dimmerSliderLayer.style.top = dimmerSliderTop + "px";
+	dimmerSliderLayer.style.left = dimmerSliderLeft + "px";
+	// Lo sfondo scuretto deve coprire tutta la mappa
+	dimmerLayer.style.left = currentMapPosition.x;
+	dimmerLayer.style.top = currentMapPosition.y;
+	dimmerLayer.style.width = mapSize.width + "px";
+	dimmerLayer.style.height = mapSize.height + "px";
 	dimmerLayer.style.display = "";
 	dimmerName = divOnMap.attributes.getNamedItem("name").value;
 	var attributes = divOnMap.attributes;

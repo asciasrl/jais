@@ -11,6 +11,11 @@ define("IPOD_VIEWPORT_WIDTH", 320);
 define("IPOD_VIEWPORT_HEIGHT", 356);
 
 /**
+ * Altezza dell'area in cui si visualizza la mappa.
+ */
+define("IPOD_MAP_AREA_HEIGHT", 276); 
+
+/**
  * Lista dei servizi.
  */
 $apps = array('audio','clima','energia','illuminazione','serramenti','sicurezza','video');
@@ -39,6 +44,46 @@ define("STATUS_BAR_HEIGHT", 22);
  * Opacita' di default della status bar [0 .. 1].
  */
 define("STATUS_BAR_OPACITY", 0.60);
+
+/**
+ * Altezza della "parte utile" dello slider del dimmer [pixel].
+ *
+ * <p>Questa deve essere l'altezza dentro la quale si puo' spostare il cursore
+ * del dimmer.</p>
+ */
+define("DIMMER_SLIDER_HEIGHT", 100);
+
+/**
+ * Altezza della "parte stondata" degli estremi dello slider del dimmer [pixel].
+ *
+ * <p>Gli estremi del dimmer hanno gli angoli arrotondati. Questa e' l'altezza
+ * di tali angoli, che stanno disegnati dentro l'immagine degli estremi dello
+ * slider.</p>
+ */
+define("DIMMER_SLIDER_CORNER_HEIGHT", 7);
+
+/**
+ * Immagine che contiene la parte superiore dello slider del dimmer.
+ */
+define("IMG_DIMMER_SLIDER_TOP", "images/dimmer-top.png");
+
+/**
+ * Immagine che contiene la parte inferiore dello slider del dimmer.
+ */
+define("IMG_DIMMER_SLIDER_BOTTOM", "images/dimmer-bottom.png");
+
+/**
+ * Immagine che contiene un segmento della parte centrale dello slider del 
+ * dimmer.
+ *
+ * <p>Lo "sfondo" dello slider del dimmer sara' questa immagine ripetuta.</p>
+ */
+define("IMG_DIMMER_SLIDER_MIDDLE", "images/dimmer-sfondo.png");
+
+/**
+ * Cursore del dimmer.
+ */
+define("IMG_DIMMER_CURSOR", "images/dimmer-tasto.png");
 
 /**
  * Immagine che mostra i piani.
@@ -371,7 +416,7 @@ function arrayJavascript($arr) {
 <div id="navigazione" style="display: none;">
   <div id="mappa-out" style="width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px; height: <?php echo(IPOD_VIEWPORT_HEIGHT - 80); ?>px;">
 	<div id="mappa"
-		style="position: absolute; width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px; height: 276px; overflow: hidden;">
+		style="position: absolute; width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px; height: <?php echo(IPOD_MAP_AREA_HEIGHT); ?>px; overflow: hidden;">
 		<div id="piani-all" 
 			style="position: absolute; width: <?php echo ($pianiSize["w"]); ?>px; height: <?php echo($pianiSize["h"]); ?>px; overflow: hidden;">
 			<img 
@@ -417,7 +462,7 @@ foreach ($piani as $piano):
 		style="position: absolute;
 			display: none; 
 			width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px;
-			height: 276px;"
+			height: <?php echo(IPOD_MAP_AREA_HEIGHT); ?>px;"
 		onclick="clicca('<?php echo($piano["id"] . "-big"); ?>','<?php echo($piano["id"] . "-big"); ?>','<?php echo($piano["id"]); ?>');">
 		<img
 			header="<?php echo($piano["header"]); ?>"
@@ -432,27 +477,40 @@ foreach ($piani as $piano):
 	} // if iPod
 endforeach; // $piani as $piano
  ?>
+ 		<div id="dimmer"
+			style="position: absolute; width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px; height: <?php echo(IPOD_MAP_AREA_HEIGHT); ?>px; 
+				overflow: hidden; display: none;" onclick="hideDimmer()">
+<?php
+
+$temp = getimagesize(IMG_DIMMER_SLIDER_TOP);
+$dimmerWidth = $temp[0];
+$dimmerTopHeight = $temp[1];
+$temp = getImageSize(IMG_DIMMER_SLIDER_BOTTOM);
+$dimmerBottomHeight = $temp[1];
+$temp = getImageSize(IMG_DIMMER_CURSOR);
+$dimmerCursorHeight = $temp[1];
+?>
+			<div style="position: absolute; width: 100%; height: 100%; background-color: black; filter:alpha(opacity='80'); opacity: 0.8;">&nbsp;</div>
+			<div id="dimmer-slider" style="position: absolute; width: <?php echo($dimmerWidth); ?>px;"
+					onclick="dimmerSliderClicked(event)" >
+				<div style="position: absolute; height: <?php echo ($dimmerTopHeight); ?>px;"><img src="<?php echo(IMG_DIMMER_SLIDER_TOP); ?>" alt="" /></div>
+				<div style="position: absolute; top: <?php echo($dimmerTopHeight); ?>px; width: <?php echo ($dimmerWidth); ?>px; height: <?php echo (DIMMER_SLIDER_HEIGHT - 2 * DIMMER_SLIDER_CORNER_HEIGHT); ?>px; background-image: URL(<?php echo(IMG_DIMMER_SLIDER_MIDDLE); ?>);"></div>
+				<div style="position: absolute; top: <?php echo($dimmerTopHeight + DIMMER_SLIDER_HEIGHT - 2 * DIMMER_SLIDER_CORNER_HEIGHT); ?>px;"><img src="<?php echo(IMG_DIMMER_SLIDER_BOTTOM); ?>" /></div>
+				<div id="dimmer-tasto" style="position: absolute; 
+					margin-left: 12px; top: 217px;"><div style="position: absolute;"><img  src="<?php echo(IMG_DIMMER_CURSOR); ?>" /></div><div id="dimmer-tasto-testo" style="position: absolute; text-align: center; width: 60px; top: 20px; bottom: auto;"></div>
+					</div>
+			</div> <!--  dimmer-sfondo -->
+		</div><!--  dimmer -->
+ 
 	</div> 
 	<!-- fine mappa -->
-	<div id="dimmer"
-		style="position: absolute; width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px; height: 276px; 
-			overflow: hidden; display: none;" onclick="hideDimmer()">
-		<div style="position: absolute; width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px; height: 276px; background-color: black; filter:alpha(opacity='80'); opacity: 0.8;">&nbsp;</div>
-		<div id="dimmer-sfondo" style="position: absolute; width: 80px; 
-			height: 300px; margin-top: 40px; margin-left: 120px;"
-			onclick="dimmerSliderClicked(event)" >
-			<img src="images/dimmer-sfondo.png"	style="position: absolute;" />
-			<div id="dimmer-tasto" style="position: absolute; 
-				margin-left: 12px; top: 217px;"><div style="position: absolute;"><img  src="images/dimmer-tasto.png" /></div><div id="dimmer-tasto-testo" style="position: absolute; text-align: center; width: 60px; top: 20px; bottom: auto;"></div>
-				</div>
-		</div> <!--  dimmer-sfondo -->
-	</div><!--  dimmer -->
   </div>
   <div id="appbar-out">
 <?php include('appbar.php'); ?>
   </div>
 </div>
 <script type="" language="javascript">
+	const MOBILE = <?php if($mobile) echo "true"; else echo "false"; ?>;
 	const ID_LUCI = <?php arrayJavascript($idLuci); ?>;
 	const ID_PRESE = <?php arrayJavascript($idPrese); ?>;
 	const ID_CLIMI = <?php arrayJavascript($idClimi); ?>;
@@ -465,6 +523,14 @@ endforeach; // $piani as $piano
 	const STATUS_BAR_HEIGHT = "<?php echo(STATUS_BAR_HEIGHT); ?>";
 	const STATUS_BAR_OPACITY = "<?php echo(STATUS_BAR_OPACITY); ?>";
 	const APPBAR_START_POSITION = <?php echo(APPBAR_START_POSITION); ?>;
+	const DIMMER_SLIDER_HEIGHT = <?php echo(DIMMER_SLIDER_HEIGHT); ?>;
+	const DIMMER_TOP_MIN = <?php echo($dimmerTopHeight - DIMMER_SLIDER_CORNER_HEIGHT); ?>;
+	const DIMMER_TOP_MAX = <?php echo($dimmerTopHeight - DIMMER_SLIDER_CORNER_HEIGHT + DIMMER_SLIDER_HEIGHT - $dimmerCursorHeight); ?>;
+	const DIMMER_CURSOR_MIDDLE = <?php echo($dimmerCursorHeight / 2); ?>;
+	const DIMMER_SLIDER_TOTAL_HEIGHT = <?php echo ($dimmerTopHeight + DIMMER_SLIDER_HEIGHT - 2 * DIMMER_SLIDER_CORNER_HEIGHT + $dimmerBottomHeight); ?>;
+	const DIMMER_SLIDER_WIDTH = <?php echo($dimmerWidth); ?>;
+	const MAP_AREA_WIDTH = <?php echo(IPOD_VIEWPORT_WIDTH); ?>;
+	const MAP_AREA_HEIGHT = <?php echo(IPOD_MAP_AREA_HEIGHT); ?>;
 </script>
 <script type="" language="javascript" src="statusbar.js"></script>
 <script type="" language="javascript" src="aui.js"></script>

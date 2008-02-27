@@ -117,7 +117,7 @@ function mouseMove(ev){
 			case 'appbar':
 				dragAppBar(mousePos);
 				break;
-			case 'dimmer-sfondo':
+			case 'dimmer-slider':
 				dragDimmerCursor(mousePos);
 				break;
 		}
@@ -141,7 +141,7 @@ function mouseUp(ev){
 			case 'appbar':
 				dragAppBarStop(mouseCoords(ev, dragObjectPosition), d.getTime());
 				break;
-			case 'dimmer-sfondo':
+			case 'dimmer-slider':
 				dragDimmerStop(mouseCoords(ev, dragObjectPosition));
 		}
 	}
@@ -323,4 +323,4 @@ function ingrandisci1(X,Y,da,a) {
 
 makeDraggable(document.getElementById('piano-01A-big'));
 makeDraggable(document.getElementById('appbar'));
-makeDraggable(document.getElementById('dimmer-sfondo'));
+makeDraggable(document.getElementById('dimmer-slider'));

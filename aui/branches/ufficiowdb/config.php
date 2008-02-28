@@ -76,4 +76,9 @@ define("STATUS_BAR_HEIGHT", 22);
  */
 define("STATUS_BAR_OPACITY", 0.60);
 
+// -----------------------------------------------------------------------
+// Costanti per uso interno
+define("ILL_LUCE", 0);
+define("ILL_DIMMER", 1);
+
 ?>

@@ -20,7 +20,6 @@ function appbar_show() {
 		if (i == selectedAppbarIconNumber + 1) {
 			opacity = 100;
 			size = 80;
-			statusMessage("app-" + i + ", " + size + ", " + opacity);
 		} else {
 			opacity = 50;
 			size = 65;

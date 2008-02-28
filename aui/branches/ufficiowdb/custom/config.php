@@ -12,17 +12,17 @@
  * <p>Se la appBar non scorre, questo numero deve indicare la posizione della
  * icona da selezionare all'avvio di AUI.</p>
  */
-define(APPBAR_START_POSITION, 360);
+define(APPBAR_START_POSITION, 40);
 
 /**
  * True se la appbar non deve fare lo scrolling.
  */
-define("APPBAR_SIMPLE", false);
+define("APPBAR_SIMPLE", true);
 
 /**
  * Lista dei servizi.
  */
-$apps = array('audio','clima','energia','illuminazione','serramenti','sicurezza','video');
+$apps = array('illuminazione','clima','sicurezza','video');
 
 /**
  * Altezza della "parte utile" dello slider del dimmer [pixel].
@@ -35,8 +35,8 @@ define("DIMMER_SLIDER_HEIGHT", 100);
 /**
  * Immagine che mostra i piani.
  */
-$pianiFile = "custom/images/assonometria320x370.png"; // images/piani-all.png";
-$pianiSize = Array("w" => IPOD_VIEWPORT_WIDTH, "h" => 370); // Array("w" => 240, "h" => 240);
+$pianiFile = "custom/images/piani.png"; // images/piani-all.png";
+$pianiSize = Array("w" => IPOD_VIEWPORT_WIDTH, "h" => IPOD_VIEWPORT_HEIGHT);
 
 /**
  * Lista dei piani.
@@ -45,23 +45,11 @@ $piani = Array(
 	Array(
 		"id" => "piano-01A",
 		"header" => "Piano 1A",
-		"mapFile" => "custom/images/planimetria.png",
-		"mapSize" => Array("w" => IPOD_VIEWPORT_WIDTH, "h" => 299),
-		"bigMapFile" => "custom/images/planimetria-big.png",
-		"bigMapSize" => Array("w" => 800, "h" => 748)));
+		"mapFile" => "custom/images/pianta-small.png",
+		"mapSize" => Array("w" => IPOD_VIEWPORT_WIDTH, "h" => 276),
+		"bigMapFile" => "custom/images/pianta.png",
+		"bigMapSize" => Array("w" => 640, "h" => 552)));
 
-/* Vecchi piani
-$piani = Array(
-	Array(
-		"id" => "piano-01A",
-		"header" => "Piano 1A",
-		"mapFile" => "images/piano-01A.png",
-		"bigMapFile" => "images/piano-01A-big.png",
-		"bigMapSize" => Array("w" => 720, "h" => 720)));
-*/
-
-	define("ILL_LUCE", 0);
-	define("ILL_DIMMER", 1);
 
 /**
  * Luci presenti nel sistema.

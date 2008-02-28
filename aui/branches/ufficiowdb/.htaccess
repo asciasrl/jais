@@ -1,0 +1,11 @@
+# Attivare questi moduli di Apache:
+# - rewrite_module
+# - proxy_module
+# - proxy_http_module
+#
+# Verificare il parametro AllowOverride (va posto ad All)
+
+RewriteEngine On
+
+RewriteRule jeds/(.*) http://localhost:8080/jeds/$1 [P,L]
+

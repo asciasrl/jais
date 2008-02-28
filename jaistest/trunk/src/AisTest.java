@@ -42,7 +42,7 @@ public class AisTest {
 	}
 	
 	static void startServer() {
-		busController = new MyController(bus);
+		busController = new MyController(bus, null);
 		try {
 			server = new HTTPServer(8080, busController, 
 					"/home/arrigo/public_html/auiFixed");

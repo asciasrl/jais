@@ -38,23 +38,33 @@ VirtualDeviceListener {
 	 * Il nostro logger.
 	 */
 	private Logger logger;
+	/**
+	 * Il nostro PIN.
+	 */
+	private String pin;
 	
 	/**
 	 * Costruttore.
 	 * 
 	 * @param bus il bus che controlliamo.
+	 * @param pin il pin da richiedere; se null, qualunque pin verra' accettato.
 	 */
-	public MyController(Bus bus) {
+	public MyController(Bus bus, String pin) {
 		this.logger = Logger.getLogger(getClass());
 		addressParser = new BusAddressParser();
 		addressParser.registerBus(bus);
 		this.bus = bus;
+		this.pin = pin;
 	}
 	
 	/**
-	 * Il cuore del controllore: riceve la richiesta e produce una risposta.
+	 * Si auto-invia una richiesta.
+	 * 
+	 * <p>Questo metodo e' per uso interno: esegue una richiesta senza
+	 * controllare il pin.</p>
 	 */
-	public String receiveRequest(String command, String name, String value) {
+	private String receiveAuthenticatedRequest(String command, String name,
+			String value) {
 		String retval;
 		logger.trace("Comando: \"" + command + "\" \"" + name + "\" \"" +
 				value + "\"");
@@ -101,6 +111,19 @@ VirtualDeviceListener {
 		}
 		return retval;
 	}
+	
+	/**
+	 * Il cuore del controllore: riceve la richiesta e produce una risposta.
+	 */
+	public String receiveRequest(String command, String name, String value,
+			String pin) {
+		if ((this.pin != null) && (!this.pin.equals(pin))) {
+			logger.warn("Richiesta con PIN errato: \"" + command + "\" \"" +
+					name + "\" \"" + value + "\"");
+			return "ERROR: PIN errato.";
+		}
+		return receiveAuthenticatedRequest(command, name, value);
+	}
 
 	/**
 	 * Reagisce a un allarme.
@@ -110,7 +133,7 @@ VirtualDeviceListener {
 	public void alarmReceived(String alarm) {
 		// Esempio: accendiamo un dimmer
 		logger.info("Ricevuto allarme");
-		receiveRequest("set", "0.5:Out1", "100");
+		receiveAuthenticatedRequest("set", "0.5:Out1", "100");
 	}
 
 	/**
@@ -120,7 +143,7 @@ VirtualDeviceListener {
 		// Esempio: accendiamo un dimmer
 		if (device.getAddress() == 1) {
 			logger.info("Comando da BMC virtuale");
-			receiveRequest("set", "0.5:Out2", "100");
+			receiveAuthenticatedRequest("set", "0.5:Out2", "100");
 		}
 	}
 }

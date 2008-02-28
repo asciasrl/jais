@@ -8,11 +8,6 @@
 const KEYPAD_LOCK_TIME = 1000;
 
 /**
- * Il pin da inserire.
- */
-const CORRECT_PIN = "";
-
-/**
  * L'oggetto che contiene il tastierino.
  */
 var keypadObject = document.getElementById("keypad");
@@ -47,12 +42,30 @@ function keypadRestore(text) {
 
 /**
  * Mostra un messaggio di errore sul keypad per breve tempo.
+ *
+ * @param message messaggio da mostrare (facoltativo).
  */
-function keypadError() {
+function keypadError(message) {
 	var temp = keypadScreen.value;
-	keypadScreen.value = "ERROR";
+	keypadScreen.value = message || "ERROR";
 	keypadDisabled = true;
 	setTimeout("keypadRestore('" + temp + "')", KEYPAD_LOCK_TIME);
+}
+
+/**
+ * Riceve la risposta del getAll che serve a testare la comunicazione.
+ */
+function keypadCallback(value) {
+	if (value == false) {
+		keypadError("COM ERR");
+	} else {
+		if (value.indexOf("ERROR") == 0) {
+			keypadError();
+		} else {
+			vai('navigazione');
+			keypadDisabled = false;
+		}
+	}
 }
 
 /**
@@ -90,11 +103,8 @@ function keypadButton(button) {
 		vai('screensaver');
 		break;
 	case 'ok':
-		if (pin == CORRECT_PIN) {
-			vai('navigazione');
-		} else {
-			keypadError();
-		}
+		keypadDisabled = true;
+		getAll(keypadCallback);
 		break;
 	}
 }

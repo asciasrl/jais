@@ -1,3 +1,8 @@
+<?php
+/**
+ * Copyright (C) 2008 ASCIA S.r.l.
+ */
+?>
 <script language="javascript">
 const SERVICES = [<?php
 foreach ($apps as $a):
@@ -7,9 +12,11 @@ endforeach; ?>];
 appbar_num=<?php echo(count($apps)); ?>;
 </script><?php
 
-// ripete le prime 5 per creare l'effetto di circolarita'
-for ($i = 0; $i < 5; $i++) {
-  $apps[] = $apps[$i]; 
+if (!APPBAR_SIMPLE) {
+	// ripete le prime 5 per creare l'effetto di circolarita'
+	for ($i = 0; $i < 5; $i++) {
+		$apps[] = $apps[$i]; 
+	}
 }
 ?>
 

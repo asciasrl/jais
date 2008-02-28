@@ -1,14 +1,6 @@
 <?php
-
-/**
- * Larghezza della "viewport" dell'iPod Touch.
- */
-define("IPOD_VIEWPORT_WIDTH", 320);
-
-/**
- * Altezza della "viewport" dell'iPod Touch.
- */
-define("IPOD_VIEWPORT_HEIGHT", 356);
+require_once("config.php");
+require_once("custom/config.php");
 
 /**
  * Stiamo su un iPod/iPhone?

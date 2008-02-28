@@ -210,9 +210,10 @@ function arrayJavascript($arr) {
 <div id="navigazione" style="display: none;">
   <div id="mappa-out" style="width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px; height: <?php echo(IPOD_VIEWPORT_HEIGHT - 80); ?>px;">
 	<div id="mappa"
-		style="position: absolute; width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px; height: <?php echo(IPOD_MAP_AREA_HEIGHT); ?>px; overflow: hidden;">
+		style="position: absolute; width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px; height: <?php echo(IPOD_VIEWPORT_HEIGHT); ?>px; overflow: hidden;">
 		<div id="piani-all" 
-			style="position: absolute; width: <?php echo ($pianiSize["w"]); ?>px; height: <?php echo($pianiSize["h"]); ?>px; overflow: hidden;">
+			style="position: absolute; width: <?php echo ($pianiSize["w"]); ?>px; height: <?php echo($pianiSize["h"]); ?>px; overflow: hidden;"
+			noappbar="noappbar">
 			<img 
 				header="ASCIA Building"
 				title="AUI edificio - clicca su un appartamento" 
@@ -257,7 +258,7 @@ foreach ($piani as $piano):
 			display: none; 
 			width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px;
 			height: <?php echo(IPOD_MAP_AREA_HEIGHT); ?>px;"
-		onclick="clicca('<?php echo($piano["id"] . "-big"); ?>','<?php echo($piano["id"] . "-big"); ?>','<?php echo($piano["id"]); ?>');">
+		onclick="clicca('<?php echo($piano["id"] . "-big"); ?>','<?php echo($piano["id"] . "-big"); ?>','piani-all');">
 		<img
 			header="<?php echo($piano["header"]); ?>"
 			title="AUI appartamento - doppio click per ritornare"
@@ -299,7 +300,7 @@ $dimmerCursorHeight = $temp[1];
 	</div> 
 	<!-- fine mappa -->
   </div>
-  <div id="appbar-out">
+  <div id="appbar-out" style="display: none;">
 <?php include('appbar.php'); ?>
   </div>
 </div>

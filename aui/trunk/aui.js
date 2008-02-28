@@ -35,6 +35,10 @@ var lastDragTimeStamp = 0;
  * Servizio attivo.
  */
 var activeService = "";
+/**
+ * Div che contiene l'appbar.
+ */
+var appbarObject = document.getElementById("appbar-out");
 
 /**
  * Posizione del mouse relativa all'oggetto.
@@ -218,6 +222,9 @@ function clicca(da,a,ret) {
 /**
  * Riceve un click e scambia due layer.
  *
+ * <p>Se il layer di destinazione ha l'attributo "noappbar" impostato, allora
+ * l'appbar viene nascosta. In caso contrario, viene mostrata.</p>
+ *
  * @param da id dell'oggetto da far sparire
  * @param a id dell'oggetto da far apparire
  */
@@ -226,6 +233,12 @@ function clicca1(da,a) {
 	da_el = document.getElementById(da);
 	a_el = document.getElementById(a);
 	if (da_el && a_el) {
+		// Mostra o nasconde l'appbar
+		if (a_el.attributes.getNamedItem("noappbar")) {
+			appbarObject.style.display = "none";
+		} else {
+			appbarObject.style.display = "";
+		}
 		da_el.style.display='none';
 		a_el.style.display='';
 		setCurrentMap(a_el);
@@ -268,6 +281,9 @@ function ingrandisci(ev,da,a,ret) {
 
 /**
  * Scambia due div, mostrando il secondo alla posizione indicata.
+ *
+ *<p>Se il layer di destinazione ha l'attributo "noappbar" impostato, allora
+ * l'appbar viene nascosta. In caso contrario, viene mostrata.</p>
  *
  * @param X coordinata X relativa all'oggetto che ha ricevuto il click.
  * @param Y coordinata Y relativa all'oggetto che ha ricevuto il click.
@@ -318,6 +334,12 @@ function ingrandisci1(X,Y,da,a) {
   	// scambia visualizzazione
 	da_el.style.display='none';
 	a_el.style.display='';
+	// Mostra o nasconde l'appbar
+	if (a_el.attributes.getNamedItem("noappbar")) {
+		appbarObject.style.display = "none";
+	} else {
+		appbarObject.style.display = "";
+	}
   //alert('ev.x='+ev.x+' ev.y='+ev.y+' dx='+dx+' dy='+dy);
 }
 

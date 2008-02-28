@@ -56,6 +56,14 @@ define("IMG_DIMMER_SLIDER_MIDDLE", "images/dimmer-sfondo.png");
  */
 define("IMG_DIMMER_CURSOR", "images/dimmer-tasto.png");
 
+
+// ---------------------------------------------------------
+// Costanti per uso interno
+
+define("ILL_LUCE", 0);
+define("ILL_DIMMER", 1);
+
+
 /**
  * Icone varie.
  */
@@ -75,5 +83,6 @@ define("STATUS_BAR_HEIGHT", 22);
  * Opacita' di default della status bar [0 .. 1].
  */
 define("STATUS_BAR_OPACITY", 0.60);
+
 
 ?>

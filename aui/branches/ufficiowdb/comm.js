@@ -155,6 +155,12 @@ function query(command, callbackFunction) {
 				nextHttpCommand = command;
 			}
 		} else {
+			// Aggiungiamo il PIN al comando
+			if (command.indexOf("?") == -1) {
+				command += "?pin=" + pin;
+			} else {
+				command += "&pin=" + pin;
+			}
 			httpCallbackFunction = callbackFunction;
 			xmlhttpTimeout = window.setTimeout("httpRequestTimeout()", 
 				REQUEST_TIMEOUT);

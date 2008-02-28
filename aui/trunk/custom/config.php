@@ -60,9 +60,6 @@ $piani = Array(
 		"bigMapSize" => Array("w" => 720, "h" => 720)));
 */
 
-	define("ILL_LUCE", 0);
-	define("ILL_DIMMER", 1);
-
 /**
  * Luci presenti nel sistema.
  * 

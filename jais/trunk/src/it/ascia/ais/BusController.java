@@ -16,6 +16,8 @@ public interface BusController {
 	 * @param command comando
 	 * @param name indirizzo del/dei device interessati
 	 * @param value parametri del comando (puo' essere null)
+	 * @param pin pin
 	 */
-	public String receiveRequest(String command, String name, String value);
+	public String receiveRequest(String command, String name, String value,
+			String pin);
 }

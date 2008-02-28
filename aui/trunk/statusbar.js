@@ -28,6 +28,10 @@ var currentStatusBarStatus = 0;
  * <p>Vale false se la barra e' nascosta completamente.</p>
  */
 var statusBarTimeout = false;
+/**
+ * &lt;div&gt; che contiene la status bar.
+ */
+var statusObject = document.getElementById("header");
 
 
 /**

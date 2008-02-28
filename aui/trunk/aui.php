@@ -1,216 +1,10 @@
 <?php
-
 /**
- * Larghezza della "viewport" dell'iPod Touch.
+ * Copyright (C) 2008 ASCIA S.r.l.
  */
-define("IPOD_VIEWPORT_WIDTH", 320);
 
-/**
- * Altezza della "viewport" dell'iPod Touch.
- */
-define("IPOD_VIEWPORT_HEIGHT", 356);
-
-/**
- * Altezza dell'area in cui si visualizza la mappa.
- */
-define("IPOD_MAP_AREA_HEIGHT", 276); 
-
-/**
- * Lista dei servizi.
- */
-$apps = array('audio','clima','energia','illuminazione','serramenti','sicurezza','video');
-
-/**
- * Icone varie.
- */
-define("IMG_LIGHT_ON", "images/light-on.jpg");
-define("IMG_LIGHT_OFF", "images/light-off2.jpg");
-define("IMG_POWER_ON", "images/energia_on.png");
-define("IMG_POWER_OFF", "images/energia_off.png");
-define("IMG_THERMO_ON", "images/clima_on.png");
-define("IMG_THERMO_OFF", "images/clima_off.png");
-
-/**
- * Posizione iniziale della appBar [pixel].
- */
-define(APPBAR_START_POSITION, 360);
-
-/**
- * Altezza della status bar [pixel].
- */
-define("STATUS_BAR_HEIGHT", 22);
-
-/**
- * Opacita' di default della status bar [0 .. 1].
- */
-define("STATUS_BAR_OPACITY", 0.60);
-
-/**
- * Altezza della "parte utile" dello slider del dimmer [pixel].
- *
- * <p>Questa deve essere l'altezza dentro la quale si puo' spostare il cursore
- * del dimmer.</p>
- */
-define("DIMMER_SLIDER_HEIGHT", 100);
-
-/**
- * Altezza della "parte stondata" degli estremi dello slider del dimmer [pixel].
- *
- * <p>Gli estremi del dimmer hanno gli angoli arrotondati. Questa e' l'altezza
- * di tali angoli, che stanno disegnati dentro l'immagine degli estremi dello
- * slider.</p>
- */
-define("DIMMER_SLIDER_CORNER_HEIGHT", 7);
-
-/**
- * Immagine che contiene la parte superiore dello slider del dimmer.
- */
-define("IMG_DIMMER_SLIDER_TOP", "images/dimmer-top.png");
-
-/**
- * Immagine che contiene la parte inferiore dello slider del dimmer.
- */
-define("IMG_DIMMER_SLIDER_BOTTOM", "images/dimmer-bottom.png");
-
-/**
- * Immagine che contiene un segmento della parte centrale dello slider del 
- * dimmer.
- *
- * <p>Lo "sfondo" dello slider del dimmer sara' questa immagine ripetuta.</p>
- */
-define("IMG_DIMMER_SLIDER_MIDDLE", "images/dimmer-sfondo.png");
-
-/**
- * Cursore del dimmer.
- */
-define("IMG_DIMMER_CURSOR", "images/dimmer-tasto.png");
-
-/**
- * Immagine che mostra i piani.
- */
-$pianiFile = "images/assonometria320x370.png"; // images/piani-all.png";
-$pianiSize = Array("w" => IPOD_VIEWPORT_WIDTH, "h" => 370); // Array("w" => 240, "h" => 240);
-
-/**
- * Lista dei piani.
- */
-$piani = Array(
-	Array(
-		"id" => "piano-01A",
-		"header" => "Piano 1A",
-		"mapFile" => "images/planimetria.png",
-		"mapSize" => Array("w" => IPOD_VIEWPORT_WIDTH, "h" => 299),
-		"bigMapFile" => "images/planimetria-big.png",
-		"bigMapSize" => Array("w" => 800, "h" => 748)));
-
-/* Vecchi piani
-$piani = Array(
-	Array(
-		"id" => "piano-01A",
-		"header" => "Piano 1A",
-		"mapFile" => "images/piano-01A.png",
-		"bigMapFile" => "images/piano-01A-big.png",
-		"bigMapSize" => Array("w" => 720, "h" => 720)));
-*/
-
-	define("ILL_LUCE", 0);
-	define("ILL_DIMMER", 1);
-
-/**
- * Luci presenti nel sistema.
- * 
- * <p>Questa array di ID verra' popolata in fase di creazione delle luci.</p>
- */
-$idLuci = Array();
-
-/**
- * Frame: illuminazione.
- * 
- * <p>Gli indici sono gli ID dei piani.</p>
- */
-$frameIlluminazione = Array(
-	"piano-01A" => Array(
-		"p1a-luce1" => Array(
-			"type" => ILL_LUCE,
-			"x" => 100,
-			"y" => 100,
-			"label" => "Applique",
-			"address" => "0.3:Out1"),
-		"p1a-luce2" => Array(
-			"type" => ILL_LUCE,
-			"x" => 300,
-			"y" => 100,
-			"label" => "Luce pitosforo",
-			"address" => "0.3:Out2"),
-		"p1a-dimmer1" => Array(
-			"type" => ILL_DIMMER,
-			"x" => 100,
-			"y" => 340,
-			"label" => "Dimmer allarme",
-			"address" => "0.5:Out1"),
-		"p1a-dimmer2" => Array(
-			"type" => ILL_DIMMER,
-			"x" => 300,
-			"y" => 340,
-			"label" => "Dimmer BMC virtuale",
-			"address" => "0.5:Out2")));
-
-/**
- * Prese comandate presenti nel sistema.
- * 
- * <p>Questa array di ID verra' popolata in fase di creazione delle prese
- * comandate.</p>
- */
-$idPrese = Array();
-
-/**
- * Frame: energia.
- * 
- * <p>Gli indici sono gli ID dei piani.</p>
- */
-$frameEnergia = Array(
-	"piano-01A" => Array(
-		"p1a-presa1" => Array(
-			"x" => 200,
-			"y" => 200,
-			"label" => "Presa 1",
-			"address" => "0.3:Out3"),
-		"p1a-presa2" => Array(
-			"x" => 400,
-			"y" => 200,
-			"label" => "Presa pitosforo",
-			"address" => "0.3:Out4"),
-		"p1a-presa3" => Array(
-			"x" => 200,
-			"y" => 400,
-			"label" => "Presa lavatrice",
-			"address" => "0.5:Out5")));
-
-/**
- * Termostati presenti nel sistema.
- * 
- * <p>Questa array di ID verra' popolata in fase di creazione delle prese
- * comandate.</p>
- */
-$idClimi = Array();
-
-/**
- * Frame: clima.
- * 
- * <p>Gli indici sono gli ID dei piani.</p>
- */
-$frameClima = Array(
-	"piano-01A" => Array(
-		"p1a-clima1" => Array(
-			"x" => 300,
-			"y" => 200,
-			"label" => "Termostato a vapore",
-			"address" => "0.3:Out6"),
-		"p1a-clima2" => Array(
-			"x" => 400,
-			"y" => 400,
-			"label" => "Bruciatore",
-			"address" => "0.3:Out7")));
+require_once("config.php");
+require_once("custom/config.php");
 
 /**
  * Crea un layer per ciascun servizio.
@@ -353,7 +147,7 @@ function arrayJavascript($arr) {
 
 <div id="header-out" style="display: none; position: absolute; z-index: 30; width: <?php echo (IPOD_VIEWPORT_WIDTH); ?>px; height: 40px; filter:alpha(opacity='60'); opacity: <?php echo(STATUS_BAR_OPACITY); ?>;">
 <div style="position: absolute;"><img src="images/barratesti.png" /></div>
-<div id="header" style="position: absolute; margin-top: 9px; height: <php echo(STATUS_BAR_HEIGHT); ?>px; width: <?php echo (IPOD_VIEWPORT_WIDTH); ?>px; text-align: center;"><b>barra di stato</b></div>
+<div id="header" style="position: absolute; margin-top: 9px; height: <?php echo(STATUS_BAR_HEIGHT); ?>px; width: <?php echo (IPOD_VIEWPORT_WIDTH); ?>px; text-align: center;"><b>barra di stato</b></div>
 </div>
 <div id="screensaver" title="AUI screensaver - clicca per accedere" onclick="vai('login');"><img
 	alt="AUI" src="images/newlogo_02_320x380.png" /></div>
@@ -536,7 +330,8 @@ $dimmerCursorHeight = $temp[1];
 <script type="" language="javascript" src="aui.js"></script>
 <script type="" language="javascript" src="comm.js"></script>
 <script type="" language="javascript" src="map.js"></script>
-<script type="" language="javascript" src="appbar.js"></script>
+<script type="" language="javascript" src="appbar_common.js"></script>
+<script type="" language="javascript" src="appbar<?php if (APPBAR_SIMPLE) echo("_simple"); ?>.js"></script>
 <script type="" language="javascript" src="services.js"></script>
 <script type="" language="javascript" src="dimmer_slider.js"></script>
 <script type="" language="javascript" src="keypad.js"></script>

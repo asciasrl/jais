@@ -17,10 +17,12 @@ import it.ascia.eds.msg.*;
 /**
  * Interfaccia verso il bus EDS.
  * 
+ * <p>JAIS vede questo come un Connector, i cui Device sono BMC.</p>
+ * 
  * @author arrigo
  *
  */
-public abstract class Bus implements it.ascia.ais.Bus {
+public abstract class Bus implements it.ascia.ais.Connector {
 	/**
 	 * Quanto tempo aspettare la risposta dopo l'invio di un messaggio.
 	 * 

@@ -42,16 +42,35 @@ public class BMCIntIR extends BMC {
 		// TODO
 	}
 	
+	/**
+	 * Proxy per generateEvent.
+	 * 
+	 * <p>Informa il listener che l'input a IR ha cambiato valore.</p>
+	 */
+	private void alertListener() {
+		String value;
+		if (irInput) {
+			value = "ON";
+		} else {
+			value = "OFF";
+		}
+		generateEvent(getInputCompactName(0), value);
+	}
+	
 	public void messageSent(Message m) {
 		switch (m.getMessageType()) {
 		case Message.MSG_RISPOSTA_STATO: {
 			RispostaStatoMessage r;
 			r = (RispostaStatoMessage)m;
+			boolean oldInput = irInput;
 			// Il RispostaStatoMessage da' sempre 8 valori. Dobbiamo
 			// prendere solo quelli effettivamente presenti sul BMC
 			boolean temp[];
 			temp = r.getInputs();
 			irInput = temp[0];
+			if (oldInput != irInput) {
+				alertListener();
+			}
 		}
 		break;
 		}

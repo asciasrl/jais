@@ -13,6 +13,9 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
+import it.ascia.ais.Connector;
+import it.ascia.ais.DeviceEvent;
+import it.ascia.ais.DeviceListener;
 import it.ascia.eds.*;
 import it.ascia.eds.msg.Message;
 import it.ascia.eds.msg.PTPRequest;
@@ -84,17 +87,20 @@ public abstract class BMC implements Device {
 	 */
 	private Set broadcastBindingsByPort[];
 	/**
+	 * Il nostro deviceListener.
+	 */
+	private DeviceListener deviceListener;
+	/**
 	 * Il nostro logger.
 	 */
 	protected Logger logger;
 	
 	/**
-	 * Costruttore. Deve essere usato dalle sottoclassi.
+	 * Costruttore.
 	 * 
 	 * @param address l'indirizzo di questo BMC
 	 * @param model il modello di questo BMC
 	 * @param name il nome di questo BMC (dal file di configurazione)
-	 * 
 	 */
 	public BMC(int address, int model, Bus bus, String name) {
 		this.bus = bus;
@@ -461,5 +467,27 @@ public abstract class BMC implements Device {
 		Set ports = broadcastBindingsBySignal[message];
 		return ports.contains(new Integer(outputPort));
 	}
+
+	public void setDeviceListener(DeviceListener listener) {
+		deviceListener = listener;
+	}
 	
+	public Connector getConnector() {
+		return bus;
+	}
+	
+	/**
+	 * Genera un evento di tipo DeviceEvent per il listener di questo BMC.
+	 * 
+	 * <p>Se nessun listener e' registrato, non genera nessun evento.</p>
+	 * 
+	 * @param port nome della porta che ha cambiato valore.
+	 * @param value nuovo valore assunto dalla porta.
+	 */
+	protected void generateEvent(String port, String value) {
+		if (deviceListener != null) {
+			DeviceEvent event = new DeviceEvent(this, port, value);
+			deviceListener.statusChanged(event);
+		}
+	}	
 }

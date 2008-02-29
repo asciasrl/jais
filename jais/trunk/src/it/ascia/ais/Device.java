@@ -4,7 +4,7 @@
 package it.ascia.ais;
 
 /**
- * Device generico connesso a un bus generico.
+ * Device generico connesso a un Connector generico.
  * 
  * @author arrigo
  */
@@ -15,14 +15,17 @@ public interface Device {
 	public int getAddress();
 	
 	/**
+	 * Ritorna il Connector di questo device.
+	 */
+	public Connector getConnector();
+	
+	/**
 	 * Ritorna lo stato del device in formato utile per AUI.
 	 * 
 	 * <p>Lo stato deve essere aggiornato.</p>
 	 * 
 	 * @param port il nome della porta da restituire, o "*" per indicarle
 	 * tutte.
-	 * @param busName il nome del bus, da visualizzare davanti al proprio
-	 * indirizzo.
 	 */
 	public String getStatus(String port);
 	
@@ -35,4 +38,11 @@ public interface Device {
 	 * @throws un'eccezione se qualcosa va male.
 	 */
 	public void setPort(String port, String value) throws AISException;
+	
+	/**
+     * Imposta un DeviceListener che ricevera' gli eventi di questo Device.
+     * 
+     * @param listener il DeviceListener che ricevera' gli eventi.
+     */
+    public void setDeviceListener(DeviceListener listener);
 }

@@ -3,7 +3,7 @@
  */
 package it.ascia.ais;
 
-import it.ascia.ais.Bus;
+import it.ascia.ais.Connector;
 import it.ascia.ais.AISException;
 
 import java.util.HashMap;
@@ -27,7 +27,7 @@ import java.util.Set;
  */
 public class BusAddressParser {
 	/**
-	 * Bus registrati.
+	 * Connector registrati.
 	 * 
 	 * <p>I bus qui dentro sono accessibili dal loro nome (stringa).</p>
 	 */
@@ -40,19 +40,19 @@ public class BusAddressParser {
 	/**
 	 * Aggiunge un bus.
 	 * 
-	 * @param bus il bus da aggiungere.
+	 * @param connector il bus da aggiungere.
 	 */
-	public void registerBus(Bus bus) {
-		busses.put(bus.getName(), bus);
+	public void registerBus(Connector connector) {
+		busses.put(connector.getName(), connector);
 	}
 	
 	/**
-	 * Ritorna un Bus a partire dal nome.
+	 * Ritorna un Connector a partire dal nome.
 	 * 
 	 * @return il bus o null se non e' registrato nessun bus con quel nome.
 	 */
-	public Bus getBus(String name) throws AISException {
-		return (Bus)busses.get(name);
+	public Connector getBus(String name) throws AISException {
+		return (Connector)busses.get(name);
 	}
 	
 	/**
@@ -67,7 +67,7 @@ public class BusAddressParser {
 	public BusAddress parseAddress(String address) throws AISException {
 		String ports, temp[], temp2, busName, deviceString;
 		int index, deviceAddress;
-		Bus bus;
+		Connector connector;
 		Device device;
 		BusAddress retval = null;
 		// Prima cosa: trovare i ":" per dividere porte e device.
@@ -91,13 +91,13 @@ public class BusAddressParser {
 		}
 		// L'indirizzo e' valido -- ora bisogna vedere a cosa punta
 		busName = temp2.substring(0, index);
-		bus = getBus(busName);
-		if (bus == null) {
-			throw new AISException("Bus \"" + busName + 
+		connector = getBus(busName);
+		if (connector == null) {
+			throw new AISException("Connector \"" + busName + 
 					"\" inesistente o non registrato.");
 		}
 		retval = new BusAddress(address, busName, deviceString, ports);
-		device = bus.getDevice(deviceAddress);
+		device = connector.getDevice(deviceAddress);
 		if (device == null) {
 			throw new AISException("Il device " + deviceAddress + " non " +
 					"esiste nel bus " + busName);

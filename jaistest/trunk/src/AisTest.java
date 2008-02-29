@@ -1,7 +1,8 @@
 
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.BusController;
+import it.ascia.ais.Bus;
+import it.ascia.ais.Controller;
 import it.ascia.ais.Device;
 import it.ascia.ais.HTTPServer;
 import it.ascia.bentel.JBisException;
@@ -21,7 +22,7 @@ import org.apache.log4j.PropertyConfigurator;
  * @author arrigo
  * 
  */
-public class AisTest {
+public class AisTest extends MyController {
 	static it.ascia.eds.Bus bus;
 	static BufferedReader stdin;
 	static BMCComputer bmcComputer;
@@ -113,7 +114,7 @@ public class AisTest {
 	 	bus.setBMCComputer(bmcComputer);
 	 	// File di configurazione
 	 	try {
-			cfgFile = new ConfigurationFile("../jeds/conf/tavola20071207.xml");
+			cfgFile = new ConfigurationFile("conf/tavola20071207.xml");
 		} catch (EDSException e) {
 			System.err.println(e.getMessage());
 			server.close();
@@ -149,5 +150,9 @@ public class AisTest {
 		alarm.close();
 		server.close();
 		bus.close();
+	}
+	
+	public AisTest(Bus bus, String name) {
+		super(bus, name);
 	}
 }

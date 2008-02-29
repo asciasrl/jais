@@ -7,7 +7,7 @@ import it.ascia.ais.Bus;
 import it.ascia.ais.AISException;
 import it.ascia.ais.BusAddress;
 import it.ascia.ais.BusAddressParser;
-import it.ascia.ais.BusController;
+import it.ascia.ais.Controller;
 import it.ascia.ais.Device;
 import it.ascia.ais.VirtualDeviceListener;
 
@@ -24,7 +24,7 @@ import it.ascia.ais.VirtualDeviceListener;
  * 
  * @author arrigo
  */
-public class MyController implements BusController, AlarmReceiver, 
+public class MyController implements Controller, AlarmReceiver, 
 VirtualDeviceListener {
 	/**
 	 * Il nostro interprete di indirizzi.
@@ -118,7 +118,7 @@ VirtualDeviceListener {
 	public String receiveRequest(String command, String name, String value,
 			String pin) {
 		if ((this.pin != null) && (!this.pin.equals(pin))) {
-			logger.warn("Richiesta con PIN errato: \"" + command + "\" \"" +
+			logger.warn("Richiesta con PIN errato:  \"" + command + "\" \"" +
 					name + "\" \"" + value + "\"");
 			return "ERROR: PIN errato.";
 		}

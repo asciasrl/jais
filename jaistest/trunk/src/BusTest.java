@@ -1,7 +1,7 @@
 
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.BusController;
+import it.ascia.ais.Controller;
 import it.ascia.ais.HTTPServer;
 import it.ascia.eds.Bus;
 import it.ascia.eds.ConfigurationFile;
@@ -13,7 +13,6 @@ import it.ascia.eds.device.BMCComputer;
 import it.ascia.eds.device.BMCDimmer;
 import it.ascia.eds.device.BMCStandardIO;
 
-import java.io.*;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -21,50 +20,12 @@ import org.apache.log4j.PropertyConfigurator;
  * @author arrigo
  * 
  */
-public class BusTest {
+public class BusTest extends MyController {
 	static Bus bus;
-	static BufferedReader stdin;
 	static BMCComputer bmcComputer;
 	static HTTPServer server;
-	static MyController busController;
+	static BusTest busController;
 	
-	/**
-	 * Java avra' tanti pregi, ma l'input da stdin e' difficile.
-	 */
-	static int inputInteger(String message) {
-		int retval = 0;
-		boolean entered = false;
-		while (!entered) {
-			try {
-				System.out.print(message);
-				retval = Integer.parseInt(stdin.readLine());
-				entered = true;
-			} catch (NumberFormatException e) {
-				// Inserito un input invalido. Lo ignoriamo.
-			} catch (IOException e) {
-			}
-		}
-		return retval;
-	}
-	
-	/**
-	 * Java avra' tanti pregi, ma l'input da stdin e' difficile.
-	 */
-	static double inputDouble(String message) {
-		double retval = 0;
-		boolean entered = false;
-		while (!entered) {
-			try {
-				System.out.print(message);
-				retval = Double.parseDouble(stdin.readLine());
-				entered = true;
-			} catch (NumberFormatException e) {
-				// Inserito un input invalido. Lo ignoriamo.
-			} catch (IOException e) {
-			}
-		}
-		return retval;
-	}
 	
 	static void makeVirtualBMC(int address) {
 		// Lo creiamo noi il BMC!
@@ -88,11 +49,11 @@ public class BusTest {
  		bmcComputer.discoverBroadcastBindings(bmc);
  		porta = 0;
  		while ((porta >= 0) && (porta < 8)) {
- 			porta = inputInteger("Porta (<0 esce): ");
+ 			porta = Stdio.inputInteger("Porta (<0 esce): ");
  			if (porta >= 0) {
  				valore = -1;
  				while ((valore != 0) && (valore != 1)) {
- 					valore = inputInteger("Valore (0 o 1): ");
+ 					valore = Stdio.inputInteger("Valore (0 o 1): ");
  				}
  				bmc.setOutPort(porta, (valore == 1));
  				try {
@@ -118,11 +79,11 @@ public class BusTest {
  		bmcComputer.discoverBroadcastBindings(bmc);
 		while ((output >= 0) && (output < 2)) {
 			bmc.printStatus();
- 			output = inputInteger("output (<0 esce): ");
+ 			output = Stdio.inputInteger("output (<0 esce): ");
  			if (output >= 0) {
  				value = -101;
  				while ((value < -100) || (value > 100)) {
- 					value = inputInteger("Valore (0 - 100): ");
+ 					value = Stdio.inputInteger("Valore (0 - 100): ");
  				}
  				bmc.setOutputRealTime(output, value);
  				bmc.printStatus();
@@ -143,7 +104,7 @@ public class BusTest {
 		System.out.println("Prova Cronotermostato");
 		while (setPoint >= 0.0) {
 			bmc.printStatus();
- 			setPoint = inputDouble("set point (<0 esce): ");
+ 			setPoint = Stdio.inputDouble("set point (<0 esce): ");
  			if (setPoint >= 0.0) {
  				bmc.setSetPoint(setPoint);
  				bmc.printStatus();
@@ -159,7 +120,7 @@ public class BusTest {
 	}
 	
 	static void startServer() {
-		busController = new MyController(bus, null);
+		busController = new BusTest(bus, "1");
 		try {
 			server = new HTTPServer(8080, busController, 
 					"/home/arrigo/public_html/auiFixed");
@@ -178,7 +139,6 @@ public class BusTest {
 		// String defaultPort = "COM1";
 	    // Inizializzazione logger
 	    PropertyConfigurator.configure("conf/log4j.conf");
- 		stdin = new BufferedReader(new InputStreamReader(System.in));
 		ConfigurationFile cfgFile = null;
 	 	if (args.length > 0) {
 		    defaultPort = args[0];
@@ -227,7 +187,7 @@ public class BusTest {
 	 	System.out.println("Running ...");
 		int dest = 1;
 		while (dest > 0) {
-			dest = inputInteger("Indirizzo da pingare:");
+			dest = Stdio.inputInteger("Indirizzo da pingare:");
 				if (dest > 0) {
 					BMC bmc = bmcComputer.discoverBMC(dest); 
 					if ( bmc != null) {
@@ -239,5 +199,9 @@ public class BusTest {
 		}
 		server.close();
 		bus.close();
+	}
+	
+	public BusTest(Bus bus, String pin) {
+		super(bus, pin);
 	}
 }

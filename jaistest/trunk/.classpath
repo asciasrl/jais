@@ -6,5 +6,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/jbis"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jeds"/>
 	<classpathentry kind="lib" path="/jais/lib/log4j-1.2.15.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/auiserver"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

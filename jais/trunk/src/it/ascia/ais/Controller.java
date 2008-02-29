@@ -8,7 +8,7 @@ package it.ascia.ais;
  * 
  * @author arrigo
  */
-public interface BusController {
+public interface Controller {
 
 	/**
 	 * Il cuore del controllore: riceve la richiesta e produce una risposta.

@@ -3,16 +3,17 @@
 import org.apache.log4j.Logger;
 
 import it.ascia.ais.AlarmReceiver;
-import it.ascia.ais.Bus;
+import it.ascia.ais.Connector;
 import it.ascia.ais.AISException;
 import it.ascia.ais.BusAddress;
 import it.ascia.ais.BusAddressParser;
 import it.ascia.ais.Controller;
 import it.ascia.ais.Device;
-import it.ascia.ais.VirtualDeviceListener;
+import it.ascia.ais.DeviceEvent;
+import it.ascia.ais.DeviceListener;
 
 /**
- * Il controller di uno o piu' bus.
+ * Il controller di uno o piu' connector.
  * 
  * <p>Il suo lavoro e':</p>
  * <ul>
@@ -24,16 +25,15 @@ import it.ascia.ais.VirtualDeviceListener;
  * 
  * @author arrigo
  */
-public class MyController implements Controller, AlarmReceiver, 
-VirtualDeviceListener {
+public class MyController implements Controller, DeviceListener, AlarmReceiver {
 	/**
 	 * Il nostro interprete di indirizzi.
 	 */
 	private BusAddressParser addressParser;
 	/**
-	 * Il nostro bus.
+	 * Il nostro connector.
 	 */
-	private Bus bus;
+	private Connector connector;
 	/**
 	 * Il nostro logger.
 	 */
@@ -46,15 +46,25 @@ VirtualDeviceListener {
 	/**
 	 * Costruttore.
 	 * 
-	 * @param bus il bus che controlliamo.
+	 * @param connector il connector che controlliamo.
 	 * @param pin il pin da richiedere; se null, qualunque pin verra' accettato.
 	 */
-	public MyController(Bus bus, String pin) {
+	public MyController(Connector connector, String pin) {
 		this.logger = Logger.getLogger(getClass());
 		addressParser = new BusAddressParser();
-		addressParser.registerBus(bus);
-		this.bus = bus;
+		addressParser.registerBus(connector);
+		this.connector = connector;
 		this.pin = pin;
+	}
+
+	/**
+	 * Associa se stesso a tutti i device del Connector.
+	 */
+	public void setDevicesListener() {
+		Device devices[] = connector.getDevices();
+		for (int i = 0; i < devices.length; i++) {
+			devices[i].setDeviceListener(this);
+		}
 	}
 	
 	/**
@@ -87,7 +97,7 @@ VirtualDeviceListener {
 		} else if (command.equals("getAll")) {
 			// Comando "getAll"
 			retval = "";
-			Device[] devices = bus.getDevices();
+			Device[] devices = connector.getDevices();
 			for (int i = 0; i < devices.length; i++) {
 				retval += devices[i].getStatus("*");
 			}
@@ -136,11 +146,10 @@ VirtualDeviceListener {
 		receiveAuthenticatedRequest("set", "0.5:Out1", "100");
 	}
 
-	/**
-	 * Reagisce al cambiamento di stato di un Device virtuale.
-	 */
-	public void statusChanged(Device device, String port, String newValue) {
+	public void statusChanged(DeviceEvent event) {
+		logger.trace(event.getInfo());
 		// Esempio: accendiamo un dimmer
+		Device device = event.getDevice();
 		if (device.getAddress() == 1) {
 			logger.info("Comando da BMC virtuale");
 			receiveAuthenticatedRequest("set", "0.5:Out2", "100");

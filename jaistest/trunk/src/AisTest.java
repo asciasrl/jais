@@ -1,8 +1,7 @@
 
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Bus;
-import it.ascia.ais.Controller;
+import it.ascia.ais.Connector;
 import it.ascia.ais.Device;
 import it.ascia.ais.HTTPServer;
 import it.ascia.bentel.JBisException;
@@ -24,7 +23,6 @@ import org.apache.log4j.PropertyConfigurator;
  */
 public class AisTest extends MyController {
 	static it.ascia.eds.Bus bus;
-	static BufferedReader stdin;
 	static BMCComputer bmcComputer;
 	static HTTPServer server;
 	static MyController busController;
@@ -60,23 +58,17 @@ public class AisTest extends MyController {
  		System.out.println();
  		System.out.println("Prova BMC Standard I/O");
  		porta = "0";
- 		try {
- 			while ((porta != null) && !porta.equals("")) {
- 				System.out.println("Nome della porta (\"\" esce): ");
- 				porta = stdin.readLine();
- 				if ((porta != null) && !porta.equals("")) {
- 					System.out.println("Valore: ");
- 					valore = stdin.readLine();
- 					try {
- 						bmc.setPort(porta, valore);
- 					} catch (AISException e) {
- 						System.err.println(e.getMessage());
- 					}
- 				}
- 			} // While porta valida
- 		} catch (IOException e) {
- 			System.err.println(e.getMessage());
- 		}
+		while ((porta != null) && !porta.equals("")) {
+			porta = Stdio.inputString("Nome della porta (\"\" esce): ");
+			if ((porta != null) && !porta.equals("")) {
+				valore = Stdio.inputString("Valore: ");
+				try {
+					bmc.setPort(porta, valore);
+				} catch (AISException e) {
+					System.err.println(e.getMessage());
+				}
+			}
+		} // while porta valida
 	}
 	
 	/**
@@ -88,7 +80,6 @@ public class AisTest extends MyController {
 		// String defaultPort = "COM1";
 	    // Inizializzazione logger
 	    PropertyConfigurator.configure("conf/log4j.conf");
- 		stdin = new BufferedReader(new InputStreamReader(System.in));
 		ConfigurationFile cfgFile = null;
 	 	if (args.length > 0) {
 		    defaultPort = args[0];
@@ -145,6 +136,7 @@ public class AisTest extends MyController {
 	 	// testBMCStandardIO();
 	 	// testBMCDimmer();
 	 	// testBMCChronoTerm();
+	 	busController.setDevicesListener();
 	 	// La palla all'utente
 	 	testDevice(1);
 		alarm.close();
@@ -152,7 +144,7 @@ public class AisTest extends MyController {
 		bus.close();
 	}
 	
-	public AisTest(Bus bus, String name) {
-		super(bus, name);
+	public AisTest(Connector connector, String name) {
+		super(connector, name);
 	}
 }

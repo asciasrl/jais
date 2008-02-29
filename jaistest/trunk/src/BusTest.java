@@ -183,6 +183,7 @@ public class BusTest extends MyController {
 	 	// testBMCStandardIO();
 	 	// testBMCDimmer();
 	 	// testBMCChronoTerm();
+	 	busController.setDevicesListener();
 	 	// La palla all'utente
 	 	System.out.println("Running ...");
 		int dest = 1;

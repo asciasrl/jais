@@ -131,10 +131,20 @@ public class BMCTemperatureSensor extends BMC {
 			// Aggiorniamo i parametri interni e li contrassegnamo "dirty"
 			ImpostaParametroMessage mesg = (ImpostaParametroMessage) m;
 			if (mesg.hasAutoSendTime()) {
+				int oldTime = autoSendTime;
 				autoSendTime = mesg.getAutoSendTime();
+				if (oldTime != autoSendTime) {
+					generateEvent(port_autoSendTime, 
+							String.valueOf(autoSendTime));
+				}
 				dirtyAutoSendTime = true;
 			} else if (mesg.hasAlarmTemperature()) {
+				int oldTemp = alarmTemperature;
 				alarmTemperature = mesg.getAlarmTemperature();
+				if (oldTemp != alarmTemperature) {
+					generateEvent(port_alarmTemp, 
+							String.valueOf(alarmTemperature));
+				}
 				dirtyAlarmTemperature = true;
 			} else {
 				logger.warn("Ricevuto messaggio di impostazione per un " +
@@ -154,10 +164,20 @@ public class BMCTemperatureSensor extends BMC {
 			RispostaParametroMessage mesg =
 				(RispostaParametroMessage) m;
 			if (mesg.hasAlarmTemperature()) {
+				int oldTemp = alarmTemperature;
 				alarmTemperature = mesg.getAlarmTemperature();
+				if (oldTemp != alarmTemperature) {
+					generateEvent(port_alarmTemp,
+							String.valueOf(alarmTemperature));
+				}
 				dirtyAlarmTemperature = false;
 			} else if (mesg.hasAutoSendTime()) {
+				int oldTime = autoSendTime;
 				autoSendTime = mesg.getAutoSendTime();
+				if (oldTime != autoSendTime) {
+					generateEvent(port_autoSendTime,
+							String.valueOf(autoSendTime));
+				}
 				dirtyAutoSendTime = false;
 			} else {
 				logger.warn("Ricevuto messaggio di lettura parametro " +
@@ -167,7 +187,12 @@ public class BMCTemperatureSensor extends BMC {
 		}
 		case Message.MSG_TEMPERATURA: {
 			TemperatureMessage mesg = (TemperatureMessage) m;
+			double oldTemp = temperature;
+			int oldMode = mode;
 			temperature = mesg.getSensorTemperature();
+			if (oldTemp != temperature) {
+				generateEvent(port_temperature, String.valueOf(temperature));
+			}
 			dirtyTemperature = false;
 			dirtyMode = false;
 			// Questo switch e' ridondante, ma ci permette di verificare che il
@@ -186,6 +211,9 @@ public class BMCTemperatureSensor extends BMC {
 				logger.warn("Modalita' di funzionamento non valida: " + 
 						mesg.getMode());
 				dirtyMode = true;
+			}
+			if (oldMode != mode) {
+				generateEvent(port_mode, getModeAsString());
 			}
 			break;
 			}

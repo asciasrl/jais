@@ -3,7 +3,7 @@
  */
 package it.ascia.eds.device;
 
-import it.ascia.ais.VirtualDeviceListener;
+import it.ascia.ais.DeviceListener;
 import it.ascia.eds.Bus;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.AcknowledgeMessage;
@@ -46,10 +46,6 @@ public class BMCStandardIO extends BMC {
 	 * </p>
 	 */
 	private boolean isReal;
-	/**
-	 * Se questo BMC e' virtuale, chi informare quando lo stato cambia.
-	 */
-	private VirtualDeviceListener myListener;
 	/**
 	 * Numero di ingressi digitali.
 	 */
@@ -102,6 +98,7 @@ public class BMCStandardIO extends BMC {
 		case Message.MSG_COMANDO_USCITA: {
 			ComandoUscitaMessage cmd = (ComandoUscitaMessage) m;
 			int uscita = cmd.getOutputPortNumber();
+			boolean oldValue = outPorts[uscita];
 			outPorts[uscita] = cmd.isActivation();
 			if (isReal) {
 				// L'attuazione viene richiesta, non sappiamo se sara'
@@ -110,11 +107,13 @@ public class BMCStandardIO extends BMC {
 			} else {
 				// Siamo noi che decidiamo: avvisiamo il listener e mandiamo
 				// l'ack
-				alertListener(uscita);
 				logger.debug("Impostata la porta " + uscita + " a "
 						+ cmd.isActivation());
 				AcknowledgeMessage ack = new AcknowledgeMessage(cmd);
 				bus.sendMessage(ack);
+			}
+			if (outPorts[uscita] != oldValue) {
+				alertListener(uscita, true);
 			}
 		}
 			break;
@@ -131,7 +130,7 @@ public class BMCStandardIO extends BMC {
 						// Decidiamo noi che cosa succede
 						int portNum = ports[i];
 						outPorts[portNum] ^= true;
-						alertListener(portNum);
+						alertListener(portNum, true);
 						logger
 								.debug("La porta "
 										+ ports[i]
@@ -147,20 +146,18 @@ public class BMCStandardIO extends BMC {
 			VariazioneIngressoMessage vmsg = (VariazioneIngressoMessage) m;
 			int port = vmsg.getOutputNumber();
 			if (isReal) {
-				// Non sappiamo che succede
+				// Non sappiamo che succede. Ipotizziamo un toggle.
+				outPorts[port] ^= true;
 				dirty[port] = true;
 			} else {
 				// Decidiamo noi cosa succede
 				outPorts[port] ^= true;
-				alertListener(port);
-				logger
-						.debug("La porta "
-								+ port
-								+ " risponde alla variazione di un ingresso e diventa: "
-								+ outPorts[port]);
+				logger.debug("La porta " + port	+ " risponde alla variazione " +
+						"di un ingresso e diventa: " + outPorts[port]);
 			}
+			alertListener(port, true);
 		}
-			break;
+		break;
 		case Message.MSG_RICHIESTA_MODELLO: {
 			// Ci chiedono chi siamo...
 			if (!isReal) {
@@ -217,16 +214,24 @@ public class BMCStandardIO extends BMC {
 				r = (RispostaStatoMessage) m;
 				// Il RispostaStatoMessage da' sempre 8 valori. Dobbiamo
 				// prendere solo quelli effettivamente presenti sul BMC
-				boolean temp[];
+				boolean temp[], mustAlert;
 				int i;
 				temp = r.getOutputs();
 				for (i = 0; i < outPortsNum; i++) {
+					mustAlert = (outPorts[i] != temp[i]);
 					outPorts[i] = temp[i];
+					if (mustAlert) {
+						alertListener(i, true);
+					}
 					dirty[i] = false;
 				}
 				temp = r.getInputs();
 				for (i = 0; i < inPortsNum; i++) {
+					mustAlert = (inPorts[i] != temp[i]);
 					inPorts[i] = temp[i];
+					if (mustAlert) {
+						alertListener(i, false);
+					}
 				}
 			}
 				break;
@@ -273,6 +278,9 @@ public class BMCStandardIO extends BMC {
 	 * direttamente.
 	 * </p>
 	 * 
+	 * <p>Il valore dell'uscita viene impostato se la trasmissione ha successo
+	 * (o se il BMC e' virtuale).</p>
+	 * 
 	 * @param port
 	 *            numero della porta
 	 * @param value
@@ -289,10 +297,16 @@ public class BMCStandardIO extends BMC {
 				m = new VariazioneIngressoMessage(getAddress(), 
 						bus.getBMCComputerAddress(), value, port, 1);
 				retval = bus.sendMessage(m);
+				dirty[port] = true;
 			} else { // The easy way
-				outPorts[port] = value;
-				alertListener(port);
 				retval = true;
+			}
+			if (retval) {
+				boolean oldValue = outPorts[port];
+				outPorts[port] = value;
+				if (oldValue != value) {
+					alertListener(port, true);
+				}
 			}
 		} else {
 			logger.error("Numero porta non valido: " + port);
@@ -328,8 +342,10 @@ public class BMCStandardIO extends BMC {
 				retval = bus.sendMessage(m);
 			} else { // The easy way
 				outPorts[port] = value;
-				alertListener(port);
 				retval = true;
+			}
+			if (retval) {
+				alertListener(port, true);
 			}
 		} else {
 			logger.error("Numero porta non valido: " + port);
@@ -483,24 +499,32 @@ public class BMCStandardIO extends BMC {
 	}
 
 	/**
-	 * Avvisa il VirtualDeviceListener che una porta e' cambiata.
+	 * Avvisa il DeviceListener che una porta e' cambiata.
 	 * 
 	 * <p>
-	 * Questa funzione deve essere chiamata solo dai BMC virtuali, dopo che il
-	 * valore della porta viene cambiato.
+	 * Questa funzione deve essere chiamata dopo che il	valore della porta viene
+	 * cambiato.
 	 * </p>
 	 * 
-	 * @param port
-	 *            numero della porta
+	 * @param port numero della porta
+	 * @param isOutput true se si tratta di un'uscita, false se e' un ingresso.
 	 */
-	private void alertListener(int port) {
-		String newValue;
-		if (outPorts[port]) {
+	private void alertListener(int port, boolean isOutput) {
+		String newValue, portName;
+		boolean val;
+		if (isOutput) {
+			val = outPorts[port];
+			portName = getOutputCompactName(port);
+		} else {
+			val = inPorts[port];
+			portName = getInputCompactName(port);
+		}
+		if (val) {
 			newValue = "on";
 		} else {
 			newValue = "off";
 		}
-		myListener.statusChanged(this, getOutputName(port), newValue);
+		generateEvent(portName, newValue);
 	}
 
 	/**
@@ -513,10 +537,9 @@ public class BMCStandardIO extends BMC {
 	 * </p>
 	 * 
 	 * @param myController
-	 *            il VirtualDeviceListener a cui si comunicheranno
+	 *            il DeviceListener a cui si comunicheranno
 	 */
-	public void makeSimulated(VirtualDeviceListener listener) {
-		myListener = listener;
+	public void makeSimulated(DeviceListener listener) {
 		isReal = false;
 		// Togliamo tutti gli eventuali "dirty"
 		for (int i = 0; i < dirty.length; i++) {

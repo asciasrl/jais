@@ -69,6 +69,35 @@ public class BMCScenarioManager extends BMC {
 		// TODO
 	}
 	
+	/**
+	 * Avvisa il DeviceListener che una porta e' cambiata.
+	 * 
+	 * <p>
+	 * Questa funzione deve essere chiamata dopo che il	valore della porta viene
+	 * cambiato.
+	 * </p>
+	 * 
+	 * @param port numero della porta
+	 * @param isOutput true se si tratta di un'uscita, false se e' un ingresso.
+	 */
+	private void alertListener(int port, boolean isOutput) {
+		String newValue, portName;
+		boolean val;
+		if (isOutput) {
+			val = outPorts[port];
+			portName = getOutputCompactName(port);
+		} else {
+			val = inPorts[port];
+			portName = getInputCompactName(port);
+		}
+		if (val) {
+			newValue = "on";
+		} else {
+			newValue = "off";
+		}
+		generateEvent(portName, newValue);
+	}
+	
 	public void messageSent(Message m) {
 		switch (m.getMessageType()) {
 		case Message.MSG_RISPOSTA_STATO: {
@@ -76,15 +105,23 @@ public class BMCScenarioManager extends BMC {
 			r = (RispostaStatoMessage)m;
 			// Il RispostaStatoMessage da' sempre 8 valori. Dobbiamo
 			// prendere solo quelli effettivamente presenti sul BMC
-			boolean temp[];
+			boolean temp[], oldValue;
 			int i;
 			temp = r.getOutputs();
 			for (i = 0; i < outPortsNum; i++) {
+				oldValue = outPorts[i];
 				outPorts[i] = temp[i];
+				if (oldValue != outPorts[i]) {
+					alertListener(i, true);
+				}
 			}
 			temp = r.getInputs();
 			for (i = 0; i < inPortsNum; i++) {
+				oldValue = inPorts[i];
 				inPorts[i] = temp[i];
+				if (oldValue != inPorts[i]) {
+					alertListener(i, false);
+				}
 			}
 		}
 		break;

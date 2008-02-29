@@ -34,6 +34,26 @@ public class BMCIR extends BMC {
 	int irInput;
 	
 	/**
+	 * Avvisa il DeviceListener che un ingresso e' cambiato.
+	 * 
+	 * <p>
+	 * Questa funzione deve essere chiamata dopo che il	valore della porta viene
+	 * cambiato.
+	 * </p>
+	 * 
+	 * @param port numero della porta
+	 */
+	private void alertListener(int port) {
+		String portName, newValue;
+		portName = getInputCompactName(port);
+		if (inPorts[port]) {
+			newValue = "on";
+		} else {
+			newValue = "off";
+		}
+		generateEvent(portName, newValue);
+	}
+	/**
 	 * Costruttore
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
@@ -68,7 +88,11 @@ public class BMCIR extends BMC {
 			int i;
 			temp = r.getInputs();
 			for (i = 0; i < inPortsNum; i++) {
+				boolean oldValue = inPorts[i];
 				inPorts[i] = temp[i];
+				if (oldValue != inPorts[i]) {
+					alertListener(i);
+				}
 			}
 		}
 		break;

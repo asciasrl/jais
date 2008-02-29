@@ -3,6 +3,8 @@
  */
 package it.ascia.eds.device;
 
+import com.sun.media.sound.MidiUtils.TempoCache;
+
 import it.ascia.eds.Bus;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.CronotermMessage;
@@ -158,14 +160,22 @@ public class BMCChronoTerm extends BMC {
 			// vedremo un acknowledge.
 			VariazioneIngressoMessage var = 
 				(VariazioneIngressoMessage) m;
+			int oldState = state;
 			state = var.getChronoTermState();
+			if (oldState != state) {
+				generateEvent(port_state, String.valueOf(state));
+			}
 			dirtyState = true;
 		}
 		break;
 		case Message.MSG_IMPOSTA_SET_POINT: {
 			// Si vuole cambiare il set point
 			ImpostaSetPointMessage set = (ImpostaSetPointMessage) m;
+			double oldSetPoint = setPoint;
 			setPoint = set.getSetPoint();
+			if (oldSetPoint != setPoint) {
+				generateEvent(port_setpoint, String.valueOf(setPoint));
+			}
 			dirtySetPoint = true;
 		}
 		break;
@@ -177,7 +187,13 @@ public class BMCChronoTerm extends BMC {
 		case Message.MSG_TEMPERATURA: {
 			// Questo messaggio contiene il nostro stato
 			TemperatureMessage tm = (TemperatureMessage) m;
+			int oldState = state;
+			double oldTemp = temperature;
 			temperature = tm.getChronoTermTemperature();
+			if (temperature != oldTemp) {
+				generateEvent(port_temperature, 
+						String.valueOf(temperature));
+			}
 			dirtyTemperature = false;
 			switch (tm.getMode()) {
 			case TemperatureMessage.MODE_ANTI_FREEZE:
@@ -193,13 +209,20 @@ public class BMCChronoTerm extends BMC {
 				state = STATE_CHRONO; // FIXME: che significa?
 				break;
 			}
+			if (state != oldState) {
+				generateEvent(port_state, getStateAsString());
+			}
 			dirtyState = false;
 		}
 		break;
 		case Message.MSG_LETTURA_SET_POINT: {
 			// Vediamo qual e' il nostro set-point.
 			CronotermMessage ctm = (CronotermMessage) m;
+			double oldSetPoint = setPoint;
 			setPoint = ctm.getSetPoint();
+			if (setPoint != oldSetPoint) {
+				generateEvent(port_setpoint, String.valueOf(setPoint));
+			}
 			dirtySetPoint = false;
 		}
 		break;

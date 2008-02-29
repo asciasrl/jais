@@ -104,39 +104,60 @@ public class BMCDimmer extends BMC {
 		}
 	}
 	
+	/**
+	 * Proxy per generateEvent.
+	 * 
+	 * @param portNumber numero della porta che ha cambiato valore.
+	 */
+	private void alertListener(int portNumber) {
+		generateEvent(getOutputCompactName(portNumber), 
+				String.valueOf(outPorts[portNumber]));
+	}
+	
 	/* (non-Javadoc)
 	 * @see it.ascia.eds.device.BMC#receiveMessage(it.ascia.eds.msg.Message)
 	 */
 	public void messageReceived(Message m) {
 		int uscita, valore;
-		ComandoUscitaDimmerMessage cmdDimmer;
-		ComandoUscitaMessage cmd;
 		ComandoBroadcastMessage bmsg;
 		VariazioneIngressoMessage vmsg;
 		int[] ports;
 //		logger.debug("Ricevuto un messaggio di tipo " + m.getTipoMessaggio());
 		switch (m.getMessageType()) {
-		case Message.MSG_COMANDO_USCITA_DIMMER:
+		case Message.MSG_COMANDO_USCITA_DIMMER: {
 			// L'attuazione viene richiesta, non sappiamo se sara' 
 			// effettuata
-			cmdDimmer = (ComandoUscitaDimmerMessage) m;
+			ComandoUscitaDimmerMessage cmdDimmer = 
+				(ComandoUscitaDimmerMessage) m;
+			int oldValue;
 			uscita = cmdDimmer.getOutputPortNumber();
 			valore = cmdDimmer.getValue();
-			dirty[uscita] = true;
+			oldValue = outPorts[uscita];
 			outPorts[uscita] = valore;
-			break;
-		case Message.MSG_COMANDO_USCITA:
+			if (oldValue != valore) {
+				alertListener(uscita);
+			}
+			dirty[uscita] = true;
+		}
+		break;
+		case Message.MSG_COMANDO_USCITA: {
 			// L'attuazione viene richiesta, non sappiamo se sara' 
 			// effettuata.
-			cmd = (ComandoUscitaMessage) m;
+			ComandoUscitaMessage cmd = (ComandoUscitaMessage) m;
+			int oldValue;
 			uscita = cmd.getOutputPortNumber();
+			oldValue = outPorts[uscita];
 			valore = cmd.getPercentage();
 			if (!cmd.isActivation()) {
 				valore = 0;
 			}
-			dirty[uscita] = true;
 			outPorts[uscita] = valore;
-			break;
+			if (oldValue != valore) {
+				alertListener(uscita);
+			}
+			dirty[uscita] = true;
+		}
+		break;
 		case Message.MSG_COMANDO_BROADCAST:
 			// Messaggio broadcast: potrebbe interessare alcune porte.
 			bmsg = (ComandoBroadcastMessage) m;
@@ -151,6 +172,8 @@ public class BMCDimmer extends BMC {
 			// Qualcuno ha premuto un interruttore, e la cosa ci interessa.
 			vmsg = (VariazioneIngressoMessage) m;
 			dirty[vmsg.getOutputNumber()] = true;
+			// FIXME: come facciamo a generare un evento? Ci serve il nuovo
+			// valore!
 			break;
 		}
 	}
@@ -167,7 +190,11 @@ public class BMCDimmer extends BMC {
 			int i;
 			temp = r.getOutputs();
 			for (i = 0; i < outPortsNum; i++) {
+				int oldValue = outPorts[i];
 				outPorts[i] = temp[i];
+				if (oldValue != outPorts[i]) {
+					alertListener(i);
+				}
 				dirty[i] = false;
 			}
 			break;

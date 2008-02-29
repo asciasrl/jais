@@ -16,7 +16,7 @@ import java.io.InputStreamReader;
  */
 public class Stdio {
 
-	static BufferedReader stdin = 
+	private static BufferedReader stdin = 
 		new BufferedReader(new InputStreamReader(System.in));;
 	
 	/**
@@ -63,5 +63,14 @@ public class Stdio {
 			}
 		}
 		return retval;
+	}
+	
+	static String inputString(String message) {
+		System.out.print(message);
+		try {
+			return stdin.readLine();
+		} catch (IOException e) {
+			return "";
+		}
 	}
 }

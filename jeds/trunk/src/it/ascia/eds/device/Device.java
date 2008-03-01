@@ -29,5 +29,5 @@ public interface Device extends it.ascia.ais.Device {
 	/**
 	 * Ritorna l'indirizzo del device sul bus.
 	 */
-	public int getAddress();
+	public String getAddress();
 }

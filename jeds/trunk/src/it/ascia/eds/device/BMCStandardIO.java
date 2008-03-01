@@ -164,7 +164,7 @@ public class BMCStandardIO extends BMC {
 				// ...dobbiamo rispondere!
 				RispostaModelloMessage answer;
 				answer = new RispostaModelloMessage(m.getSender(),
-						getAddress(), model, 1);
+						getIntAddress(), model, 1);
 				bus.sendMessage(answer);
 			}
 		}
@@ -294,7 +294,7 @@ public class BMCStandardIO extends BMC {
 		if ((port >= 0) && (port < outPortsNum)) {
 			if (isReal) {
 				VariazioneIngressoMessage m;
-				m = new VariazioneIngressoMessage(getAddress(), 
+				m = new VariazioneIngressoMessage(getIntAddress(), 
 						bus.getBMCComputerAddress(), value, port, 1);
 				retval = bus.sendMessage(m);
 				dirty[port] = true;
@@ -337,7 +337,7 @@ public class BMCStandardIO extends BMC {
 		if ((port >= 0) && (port < outPortsNum)) {
 			if (isReal) {
 				ComandoUscitaMessage m;
-				m = new ComandoUscitaMessage(getAddress(), bus
+				m = new ComandoUscitaMessage(getIntAddress(), bus
 						.getBMCComputerAddress(), 0, port, 0, intValue);
 				retval = bus.sendMessage(m);
 			} else { // The easy way

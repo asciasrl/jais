@@ -124,7 +124,14 @@ public abstract class BMC implements Device {
 	/**
 	 * Ritorna l'indirizzo di questo BMC.
 	 */
-	public int getAddress() {
+	public String getAddress() {
+		return String.valueOf(address);
+	}
+	
+	/**
+	 * Ritorna l'indirizzo (int) di questo BMC sul bus EDS.
+	 */
+	public int getIntAddress() {
 		return address;
 	}
 	
@@ -264,8 +271,8 @@ public abstract class BMC implements Device {
 	 */
 	public void updateStatus() {
 		PTPRequest m;
-		m = new RichiestaStatoMessage(getAddress(), bus.getBMCComputerAddress(),
-				0);
+		m = new RichiestaStatoMessage(getIntAddress(), 
+				bus.getBMCComputerAddress(), 0);
 		bus.sendMessage(m);
 	}
 	

@@ -99,6 +99,7 @@ public class JBisKyoUnit implements Connector, Runnable {
 			throw new JBisException("Impossibile aprire la DLL");
 		}
 		dllReady = true;
+		device = new JBisKyoDevice(this);
 	}
 	
 	

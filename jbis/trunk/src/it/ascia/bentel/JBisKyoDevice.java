@@ -165,9 +165,11 @@ public class JBisKyoDevice implements Device {
 	 */
 	private Logger logger;
 	
-	public JBisKyoDevice() {
+	public JBisKyoDevice(JBisKyoUnit connector) {
 		logger = Logger.getLogger(getClass());
 		eventLog = new LinkedList();
+		this.connector = connector;
+		listener = null;
 	}
 	
 	/**
@@ -180,19 +182,21 @@ public class JBisKyoDevice implements Device {
 	 */
 	private void alertListener(byte oldAlarms, byte newAlarms, 
 			String portNames[]) {
-		int i;
-		for (i = 0; i < 8; i++) {
-			int b = 1 << i;
-			if ((oldAlarms & b) != (newAlarms & b)) {
-				DeviceEvent event;
-				String newValue;
-				if ((newAlarms & b) != 0) {
-					newValue = "ON";
-				} else {
-					newValue = "OFF";
+		if (listener != null) {
+			int i;
+			for (i = 0; i < 8; i++) {
+				int b = 1 << i;
+				if ((oldAlarms & b) != (newAlarms & b)) {
+					DeviceEvent event;
+					String newValue;
+					if ((newAlarms & b) != 0) {
+						newValue = "ON";
+					} else {
+						newValue = "OFF";
+					}
+					event = new DeviceEvent(this, portNames[i], newValue);
+					listener.statusChanged(event);
 				}
-				event = new DeviceEvent(this, portNames[i], newValue);
-				listener.statusChanged(event);
 			}
 		}
 	}
@@ -480,7 +484,7 @@ public class JBisKyoDevice implements Device {
 		String retval = "";
 		String compactName = connector.getName() + "." + getAddress();
 		int i;
-		for (i = 0; i < 8; i++) {
+		for (i = 0; i < portNames.length; i++) {
 			String thisPort = portNames[i];
 			if (portName.equals("*") || portName.equals(thisPort)) {
 				retval += compactName + ":" + thisPort + "=";

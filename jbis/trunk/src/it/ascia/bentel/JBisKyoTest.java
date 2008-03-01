@@ -76,8 +76,9 @@ public class JBisKyoTest implements DeviceListener {
 		PropertyConfigurator.configure("conf/log4j.conf");
 		stdin = new BufferedReader(new InputStreamReader(System.in));
 		try {
-			b = new JBisKyoUnit(1,1,"0025", "jbis");
+			b = new JBisKyoUnit(1,4,"0025", "jbis");
 			d = (JBisKyoDevice)b.getDevice(0);
+			d.setDeviceListener(new JBisKyoTest());
 			/*b.updateStatus();
 			if (b.hasAlarms()) {
 				System.out.println("Allarmi:");

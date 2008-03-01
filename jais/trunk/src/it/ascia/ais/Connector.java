@@ -18,18 +18,15 @@ package it.ascia.ais;
  */
 public interface Connector {
 	/**
-     * Ritorna un Device a partire dall'indirizzo.
+     * Ritorna tutti i Device collegati che rispondono a un certo indirizzo.
+     * 
+     * <p>Questa funzione deve gestire anche wildcard.</p>
      * 
      * @param address l'indirizzo da cercare.
      * 
-     * @return il Device oppure null se il Device non e' nella lista.
+     * @return un'array di Device, eventualmente di lunghezza zero.
      */
-	Device getDevice(String deviceAddress);
-
-	/**
-     * Ritorna tutti i Device collegati.
-     */
-    public Device[] getDevices();
+    public Device[] getDevices(String deviceAddress);
     
     /**
      * Ritorna il nome del Connector, nella forma "tipo.numero".

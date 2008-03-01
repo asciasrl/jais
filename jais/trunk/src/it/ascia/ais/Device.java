@@ -12,7 +12,7 @@ public interface Device {
 	/**
 	 * Ritorna l'indirizzo del Device, cosi' come visto da AUI.
 	 */
-	public int getAddress();
+	public String getAddress();
 	
 	/**
 	 * Ritorna il Connector di questo device.

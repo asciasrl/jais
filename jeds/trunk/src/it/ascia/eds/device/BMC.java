@@ -14,6 +14,7 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 
 import it.ascia.ais.Connector;
+import it.ascia.ais.Device;
 import it.ascia.ais.DeviceEvent;
 import it.ascia.ais.DeviceListener;
 import it.ascia.eds.*;

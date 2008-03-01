@@ -4,7 +4,6 @@
 package it.ascia.eds.device;
 
 import java.util.*;
-import org.apache.log4j.Logger;
 
 import it.ascia.eds.msg.BroadcastMessage;
 import it.ascia.eds.msg.Message;
@@ -204,16 +203,19 @@ public class BMCComputer extends BMC {
      * @return il BMC se trovato o registrato, oppure null.
      */
     public BMC discoverBMC(int address) {
-    	BMC retval;
+    	BMC retval, temp[];
     	// Gia' abbiamo il BMC in lista?
-    	retval = (BMC)bus.getDevice(String.valueOf(address));
-    	if (retval == null) {
+    	temp = (BMC[])bus.getDevices(String.valueOf(address));
+    	if (temp.length == 0) {
     		if (sendPTPRequest(new RichiestaModelloMessage(address, 
     				getIntAddress()))) {
-    			retval = (BMC)bus.getDevice(String.valueOf(address));
+    			temp = (BMC[])bus.getDevices(String.valueOf(address));
+    			retval = temp[0];
     		} else {
     			retval = null;
     		}
+    	} else {
+    		retval = temp[0];
     	}
     	return retval;
     }

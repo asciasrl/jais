@@ -120,7 +120,8 @@ public class BusTest extends MyController {
 	}
 	
 	static void startServer() {
-		busController = new BusTest(bus, "1");
+		busController = new BusTest("1");
+		busController.addConnector(bus);
 		try {
 			server = new HTTPServer(8080, busController, 
 					"/home/arrigo/public_html/auiFixed");
@@ -202,7 +203,7 @@ public class BusTest extends MyController {
 		bus.close();
 	}
 	
-	public BusTest(Bus bus, String pin) {
-		super(bus, pin);
+	public BusTest(String pin) {
+		super(pin);
 	}
 }

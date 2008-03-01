@@ -42,7 +42,9 @@ public class AisTest extends MyController {
 	}
 	
 	static void startServer() {
-		busController = new MyController(bus, null);
+		busController = new MyController(null);
+		busController.addConnector(bus);
+		busController.addConnector(alarm);
 		try {
 			server = new HTTPServer(8080, busController, 
 					"/home/arrigo/public_html/auiFixed");
@@ -92,9 +94,8 @@ public class AisTest extends MyController {
 	 		System.err.println(e.getMessage());
 	 		System.exit(-1);
 	 	}
-	 	startServer();
 	 	try {
-	 		alarm = new JBisKyoUnit(0, 4, "0025", "bentel");
+	 		alarm = new JBisKyoUnit(1, 4, "0025", "bentel");
 	 		// bus = new SerialBus(defaultPort, "0");
 	 	} catch (JBisException e) {
 	 		System.err.println(e.getMessage());
@@ -102,6 +103,8 @@ public class AisTest extends MyController {
 	 		bus.close();
 	 		System.exit(-1);
 	 	}
+	 	startServer();
+	 	alarm.start();
 	 	bmcComputer = new BMCComputer(0, bus);
 	 	bus.setBMCComputer(bmcComputer);
 	 	// File di configurazione
@@ -145,7 +148,7 @@ public class AisTest extends MyController {
 		bus.close();
 	}
 	
-	public AisTest(Connector connector, String name) {
-		super(connector, name);
+	public AisTest(String name) {
+		super(name);
 	}
 }

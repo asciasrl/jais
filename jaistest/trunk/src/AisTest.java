@@ -57,7 +57,7 @@ public class AisTest extends MyController {
 	static void testDevice(int address) {
 		String porta, valore;
  		// Prova su BMC modello 88, indirizzo 3
- 		Device bmc = bus.getDevice(address);
+ 		Device bmc = bus.getDevice(String.valueOf(address));
  		System.out.println();
  		System.out.println("Prova BMC Standard I/O");
  		porta = "0";
@@ -140,7 +140,12 @@ public class AisTest extends MyController {
 	 	// testBMCStandardIO();
 	 	// testBMCDimmer();
 	 	// testBMCChronoTerm();
-	 	busController.setDevicesListener();
+	 	try {
+			busController.setDevicesListener();
+		} catch (AISException e) {
+			System.err.println(e.getMessage());
+			System.exit(-1);
+		}
 	 	// La palla all'utente
 	 	testDevice(1);
 		alarm.stop();

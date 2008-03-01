@@ -42,7 +42,8 @@ public class BusTest extends MyController {
 	static void testBMCStandardIO(int address) {
 		int porta, valore;
  		// Prova su BMC modello 88, indirizzo 3
- 		BMCStandardIO bmc = (BMCStandardIO)bus.getDevice(address);
+ 		BMCStandardIO bmc = 
+ 			(BMCStandardIO)bus.getDevice(String.valueOf(address));
  		System.out.println();
  		System.out.println("Prova BMC Standard I/O");
  		System.out.println("Discovery...");
@@ -69,7 +70,7 @@ public class BusTest extends MyController {
 	}
 	
 	static void testBMCDimmer() {
-		int address = 5;
+		String address = "5";
 		int output = 0, value = 0;
  		// Prova su BMC modello 88, indirizzo 3
 		BMCDimmer bmc = (BMCDimmer)bus.getDevice(address);
@@ -96,7 +97,7 @@ public class BusTest extends MyController {
 	}
 	
 	static void testBMCChronoTerm() {
-		int address = 7;
+		String address = "7";
 		double setPoint = 0;
  		// Prova su BMC modello 127, indirizzo 7
 		BMCChronoTerm bmc = (BMCChronoTerm)bus.getDevice(address);
@@ -184,7 +185,12 @@ public class BusTest extends MyController {
 	 	// testBMCStandardIO();
 	 	// testBMCDimmer();
 	 	// testBMCChronoTerm();
-	 	busController.setDevicesListener();
+	 	try {
+			busController.setDevicesListener();
+		} catch (AISException e) {
+			System.err.println(e.getMessage());
+			System.exit(-1);
+		}
 	 	// La palla all'utente
 	 	System.out.println("Running ...");
 		int dest = 1;

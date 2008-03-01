@@ -225,8 +225,8 @@ public class JBisKyoUnit implements Connector, Runnable {
 		}
 	}
 
-	public Device getDevice(int deviceAddress) {
-		if (deviceAddress == 0) {
+	public Device getDevice(String deviceAddress) {
+		if (deviceAddress.equals("0")) {
 			return device;
 		} else {
 			return null;

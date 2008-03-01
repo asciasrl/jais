@@ -225,17 +225,14 @@ public class JBisKyoUnit implements Connector, Runnable {
 		}
 	}
 
-	public Device getDevice(String deviceAddress) {
-		if (deviceAddress.equals("0")) {
-			return device;
+	public Device[] getDevices(String address) {
+		Device retval[];
+		if (address.equals("0") || address.equals("*")) {
+			retval = new Device[1];
+			retval[0] = device;
 		} else {
-			return null;
+			retval = new Device[0];
 		}
-	}
-
-	public Device[] getDevices() {
-		Device retval[] = new Device[1];
-		retval[0] = device;
 		return retval;
 	}
 

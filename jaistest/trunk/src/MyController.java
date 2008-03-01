@@ -1,12 +1,6 @@
 /**
  * Copyright (C) 2008 ASCIA S.r.l.
  */
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.log4j.Logger;
 
 import it.ascia.ais.Connector;
@@ -31,10 +25,6 @@ import it.ascia.ais.DeviceListener;
  */
 public class MyController extends Controller implements DeviceListener {
 	/**
-	 * I nostri connector.
-	 */
-	private Set connectors;
-	/**
 	 * Il nostro logger.
 	 */
 	private Logger logger;
@@ -52,7 +42,6 @@ public class MyController extends Controller implements DeviceListener {
 	public MyController(String pin) {
 		this.logger = Logger.getLogger(getClass());
 		this.pin = pin;
-		connectors = new HashSet();
 	}
 	
 	public void addConnector(Connector connector) {

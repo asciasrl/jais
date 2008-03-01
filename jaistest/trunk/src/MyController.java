@@ -2,7 +2,6 @@
 
 import org.apache.log4j.Logger;
 
-import it.ascia.ais.AlarmReceiver;
 import it.ascia.ais.Connector;
 import it.ascia.ais.AISException;
 import it.ascia.ais.BusAddress;
@@ -25,7 +24,7 @@ import it.ascia.ais.DeviceListener;
  * 
  * @author arrigo
  */
-public class MyController implements Controller, DeviceListener, AlarmReceiver {
+public class MyController implements Controller, DeviceListener {
 	/**
 	 * Il nostro interprete di indirizzi.
 	 */
@@ -133,17 +132,6 @@ public class MyController implements Controller, DeviceListener, AlarmReceiver {
 			return "ERROR: PIN errato.";
 		}
 		return receiveAuthenticatedRequest(command, name, value);
-	}
-
-	/**
-	 * Reagisce a un allarme.
-	 * 
-	 * <p>Questo metodo viene invocato dall'oggetto centralina.</p>
-	 */
-	public void alarmReceived(String alarm) {
-		// Esempio: accendiamo un dimmer
-		logger.info("Ricevuto allarme");
-		receiveAuthenticatedRequest("set", "0.5:Out1", "100");
 	}
 
 	public void statusChanged(DeviceEvent event) {

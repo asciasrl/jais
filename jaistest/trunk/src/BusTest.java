@@ -1,7 +1,6 @@
 
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Controller;
 import it.ascia.ais.HTTPServer;
 import it.ascia.eds.Bus;
 import it.ascia.eds.ConfigurationFile;
@@ -43,7 +42,7 @@ public class BusTest extends MyController {
 		int porta, valore;
  		// Prova su BMC modello 88, indirizzo 3
  		BMCStandardIO bmc = 
- 			(BMCStandardIO)bus.getDevice(String.valueOf(address));
+ 			(BMCStandardIO)bus.getDevices(String.valueOf(address))[0];
  		System.out.println();
  		System.out.println("Prova BMC Standard I/O");
  		System.out.println("Discovery...");
@@ -73,7 +72,7 @@ public class BusTest extends MyController {
 		String address = "5";
 		int output = 0, value = 0;
  		// Prova su BMC modello 88, indirizzo 3
-		BMCDimmer bmc = (BMCDimmer)bus.getDevice(address);
+		BMCDimmer bmc = (BMCDimmer)bus.getDevices(address)[0];
 		System.out.println();
 		System.out.println("Prova Dimmer");
 		System.out.println("Discovery...");
@@ -100,7 +99,7 @@ public class BusTest extends MyController {
 		String address = "7";
 		double setPoint = 0;
  		// Prova su BMC modello 127, indirizzo 7
-		BMCChronoTerm bmc = (BMCChronoTerm)bus.getDevice(address);
+		BMCChronoTerm bmc = (BMCChronoTerm)bus.getDevices(address)[0];
 		System.out.println();
 		System.out.println("Prova Cronotermostato");
 		while (setPoint >= 0.0) {

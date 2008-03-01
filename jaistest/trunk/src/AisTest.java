@@ -1,20 +1,16 @@
 
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Connector;
 import it.ascia.ais.Device;
 import it.ascia.ais.HTTPServer;
 import it.ascia.bentel.JBisException;
 import it.ascia.bentel.JBisKyoUnit;
-import it.ascia.bentel.JBisListener;
 import it.ascia.eds.ConfigurationFile;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.TCPSerialBus;
 import it.ascia.eds.device.BMC;
 import it.ascia.eds.device.BMCComputer;
 import it.ascia.eds.device.BMCStandardIO;
-
-import java.io.*;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -57,7 +53,7 @@ public class AisTest extends MyController {
 	static void testDevice(int address) {
 		String porta, valore;
  		// Prova su BMC modello 88, indirizzo 3
- 		Device bmc = bus.getDevice(String.valueOf(address));
+ 		Device bmc = bus.getDevices(String.valueOf(address))[0];
  		System.out.println();
  		System.out.println("Prova BMC Standard I/O");
  		porta = "0";

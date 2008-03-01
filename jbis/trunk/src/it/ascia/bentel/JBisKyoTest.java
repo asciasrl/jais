@@ -3,7 +3,8 @@
  */
 package it.ascia.bentel;
 
-import it.ascia.ais.AlarmReceiver;
+import it.ascia.ais.DeviceEvent;
+import it.ascia.ais.DeviceListener;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,9 +18,10 @@ import org.apache.log4j.PropertyConfigurator;
  * @author arrigo
  *
  */
-public class JBisKyoTest implements AlarmReceiver{
+public class JBisKyoTest implements DeviceListener {
 	static BufferedReader stdin;
 	static JBisKyoUnit b;
+	static JBisKyoDevice d;
 	
 	/**
 	 * Java avra' tanti pregi, ma l'input da stdin e' difficile.
@@ -50,7 +52,7 @@ public class JBisKyoTest implements AlarmReceiver{
 			if (port >= 0) {
 				System.out.print("On ");
 				try {
-					b.setOutput(port, true);
+					d.setOutput(port, true);
 				} catch (JBisException e1) {
 					System.err.println(e1.getMessage());
 				}
@@ -61,10 +63,11 @@ public class JBisKyoTest implements AlarmReceiver{
 				}
 				System.out.print(" Off");
 				try {
-					b.setOutput(port, false);
+					d.setOutput(port, false);
 				} catch (JBisException e) {
 					System.err.println(e.getMessage());
 				}
+				System.out.println(d.getStatus("*"));
 			}
 		}
 	}
@@ -73,8 +76,8 @@ public class JBisKyoTest implements AlarmReceiver{
 		PropertyConfigurator.configure("conf/log4j.conf");
 		stdin = new BufferedReader(new InputStreamReader(System.in));
 		try {
-			b = new JBisKyoUnit(1,1,"0025", new JBisKyoTest());
-			b.resetAlarm();
+			b = new JBisKyoUnit(1,1,"0025", "jbis");
+			d = (JBisKyoDevice)b.getDevice(0);
 			/*b.updateStatus();
 			if (b.hasAlarms()) {
 				System.out.println("Allarmi:");
@@ -134,8 +137,8 @@ public class JBisKyoTest implements AlarmReceiver{
 		}
 	}
 
-	public void alarmReceived(String alarm) {
-		System.err.println("ALLARME: " + alarm);
+	public void statusChanged(DeviceEvent event) {
+		System.err.println(event.getInfo());		
 	}
 
 	

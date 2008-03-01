@@ -3,8 +3,6 @@
  */
 package it.ascia.bentel;
 
-import it.ascia.ais.AlarmReceiver;
-
 import java.io.IOException;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -12,9 +10,10 @@ import org.apache.log4j.PropertyConfigurator;
 /**
  * Test per JBisListener.
  * 
+ * FIXME: JBisListener non funziona, quindi non funziona neanche questa classe.
  * @author arrigo
  */
-public class JBisListenerTest implements AlarmReceiver {
+public class JBisListenerTest {
 
 	/**
 	 * @param args
@@ -28,7 +27,7 @@ public class JBisListenerTest implements AlarmReceiver {
 		    defaultPort = args[0];
 		}
 	 	try {
-	 		centralina = new JBisListener(defaultPort, new JBisListenerTest());
+	 		centralina = new JBisListener(defaultPort/*, new JBisListenerTest()*/); // FIXME
 	 		System.out.println("Premi ENTER per terminare.");
 	 		System.in.read();
 	 		centralina.close();

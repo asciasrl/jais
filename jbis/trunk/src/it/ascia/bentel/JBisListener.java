@@ -3,8 +3,6 @@
  */
 package it.ascia.bentel;
 
-import it.ascia.ais.AlarmReceiver;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
@@ -25,6 +23,9 @@ import gnu.io.UnsupportedCommOperationException;
  * 
  * <p>Questa classe e' in grado solo di ricevere i messaggi di log che la
  * centralina manda sulla porta seriale.</p>
+ * 
+ * FIXME: questa classe non funziona. Deve essere trasformata in Connector +
+ * Device.
  * 
  * @author arrigo
  *
@@ -67,8 +68,10 @@ public class JBisListener implements SerialPortEventListener {
 	private LinkedList eventLog;
 	/**
 	 * Chi avvisare quando si verifica un allarme.
+	 * 
+	 * FIXME
 	 */
-	private AlarmReceiver alarmReceiver;
+	// private AlarmReceiver alarmReceiver;
 	
 	/**
 	 * Crea un nuovo evento a partire dai dati nel buffer. Inserisce l'evento
@@ -80,7 +83,7 @@ public class JBisListener implements SerialPortEventListener {
 		Event event = new Event(buffer, 0);
 		logger.debug(event.getInfo());
 		if (event.isAlarm()) {
-			alarmReceiver.alarmReceived(event.getAlarm());
+			// alarmReceiver.alarmReceived(event.getAlarm()); FIXME
 		}
 		// Gestione registro
 		eventLog.addFirst(event);
@@ -135,7 +138,7 @@ public class JBisListener implements SerialPortEventListener {
 	 * @param portName nome della porta seriale (ad es. "COM1")
 	 * @param ar oggetto che sara' informato quando si verificano allarmi
 	 */
-	public JBisListener(String portName, AlarmReceiver ar) 
+	public JBisListener(String portName/*, AlarmReceiver ar FIXME */) 
 	throws JBisException {
 		boolean portFound = false;
 		Enumeration	portList;
@@ -144,7 +147,7 @@ public class JBisListener implements SerialPortEventListener {
 	    buffer = new byte[8];
 	    bufferIndex = 0;
 	    eventLog = new LinkedList();
-	    alarmReceiver = ar;
+	    // alarmReceiver = ar; FIXME
     	portList = CommPortIdentifier.getPortIdentifiers();
     	while (!portFound && portList.hasMoreElements()) {
     	    portId = (CommPortIdentifier) portList.nextElement();

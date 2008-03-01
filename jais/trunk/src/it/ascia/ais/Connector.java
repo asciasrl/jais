@@ -24,7 +24,7 @@ public interface Connector {
      * 
      * @return il Device oppure null se il Device non e' nella lista.
      */
-	Device getDevice(int deviceAddress);
+	Device getDevice(String deviceAddress);
 
 	/**
      * Ritorna tutti i Device collegati.

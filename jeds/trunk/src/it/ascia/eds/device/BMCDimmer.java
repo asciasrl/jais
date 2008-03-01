@@ -247,8 +247,8 @@ public class BMCDimmer extends BMC {
 		PTPRequest m;
 		// Il protocollo permette di scegliere più uscite. Qui chiediamo solo le
 		// prime due.
-		m = new RichiestaStatoMessage(getAddress(), bus.getBMCComputerAddress(),
-				3);
+		m = new RichiestaStatoMessage(getIntAddress(), 
+				bus.getBMCComputerAddress(), 3);
 		bus.sendMessage(m);
 	}
 
@@ -296,7 +296,7 @@ public class BMCDimmer extends BMC {
 		if ((output >= 0) && (output <= outPortsNum)) {
 			if ((value >= 0) && (value <= 100)) {
 				ComandoUscitaMessage m;
-				m = new ComandoUscitaMessage(getAddress(), 
+				m = new ComandoUscitaMessage(getIntAddress(), 
 						bus.getBMCComputerAddress(), 0, output, value, 
 						(value > 0)? 1 : 0);
 				retval = bus.sendMessage(m);
@@ -323,7 +323,7 @@ public class BMCDimmer extends BMC {
 		if ((output >= 0) && (output <= outPortsNum)) {
 			if ((value >= 0) && (value <= 100)) {
 				ComandoUscitaDimmerMessage m;
-				m = new ComandoUscitaDimmerMessage(getAddress(), 
+				m = new ComandoUscitaDimmerMessage(getIntAddress(), 
 						bus.getBMCComputerAddress(), output, value);
 				bus.sendMessage(m);
 			} else {

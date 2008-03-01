@@ -56,13 +56,6 @@ public class BMCComputer extends BMC {
 		inbox = new LinkedList();
 		messageToBeAnswered = null;
 	}
-	
-	/* (non-Javadoc)
-	 * @see it.ascia.eds.device.Device#getAddress()
-	 */
-	public int getAddress() {
-		return this.address;
-	}
 
 	/* (non-Javadoc)
 	 * @see it.ascia.eds.device.Device#receiveMessage(it.ascia.eds.msg.Message)
@@ -213,11 +206,11 @@ public class BMCComputer extends BMC {
     public BMC discoverBMC(int address) {
     	BMC retval;
     	// Gia' abbiamo il BMC in lista?
-    	retval = (BMC)bus.getDevice(address);
+    	retval = (BMC)bus.getDevice(String.valueOf(address));
     	if (retval == null) {
     		if (sendPTPRequest(new RichiestaModelloMessage(address, 
-    				getAddress()))) {
-    			retval = (BMC)bus.getDevice(address);
+    				getIntAddress()))) {
+    			retval = (BMC)bus.getDevice(String.valueOf(address));
     		} else {
     			retval = null;
     		}
@@ -239,8 +232,8 @@ public class BMCComputer extends BMC {
     	for (outPort = 0; outPort < bmc.getOutPortsNumber(); outPort++) {
     		for (casella = 0; casella < bmc.getCaselleNumber(); casella++) {
     			RichiestaAssociazioneUscitaMessage m;
-    			m = new RichiestaAssociazioneUscitaMessage(bmc.getAddress(),
-    					getAddress(), outPort, casella);
+    			m = new RichiestaAssociazioneUscitaMessage(bmc.getIntAddress(),
+    					getIntAddress(), outPort, casella);
     			sendPTPRequest(m);
     		}
     	}

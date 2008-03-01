@@ -224,7 +224,7 @@ public class BMCTemperatureSensor extends BMC {
 	 * Aggiorna lo stato del sensore (temperatura, modalita' di funzionamento).
 	 */
 	public void updateTermStatus() {
-		bus.sendMessage(new RichiestaStatoTermostatoMessage(getAddress(), 
+		bus.sendMessage(new RichiestaStatoTermostatoMessage(getIntAddress(), 
 				bus.getBMCComputerAddress()));
 	}
 	
@@ -234,7 +234,7 @@ public class BMCTemperatureSensor extends BMC {
 	 * <p>Invia un messaggio al BMC richiedendo il valore del parametro.</p>
 	 */
 	public void updateAlarmTemperature() {
-		bus.sendMessage(new RichiestaParametroMessage(getAddress(), 
+		bus.sendMessage(new RichiestaParametroMessage(getIntAddress(), 
 				bus.getBMCComputerAddress(), 
 				RichiestaParametroMessage.PARAM_TERM_ALARM_TEMPERATURE));
 	}
@@ -245,7 +245,7 @@ public class BMCTemperatureSensor extends BMC {
 	 * <p>Invia un messaggio al BMC richiedendo il valore del parametro.</p>
 	 */
 	public void updateAutoSendTime() {
-		bus.sendMessage(new RichiestaParametroMessage(getAddress(), 
+		bus.sendMessage(new RichiestaParametroMessage(getIntAddress(), 
 				bus.getBMCComputerAddress(), 
 				RichiestaParametroMessage.PARAM_TERM_AUTO_SEND_TIME));
 	}
@@ -277,7 +277,7 @@ public class BMCTemperatureSensor extends BMC {
 	 * @return true se il BMC ha risposto.
 	 */
 	public boolean setAlarmTemperature(int temp) {
-		return bus.sendMessage(new ImpostaParametroMessage(getAddress(), 
+		return bus.sendMessage(new ImpostaParametroMessage(getIntAddress(), 
 				bus.getBMCComputerAddress(), 
 				RichiestaParametroMessage.PARAM_TERM_ALARM_TEMPERATURE,
 				temp,
@@ -292,7 +292,7 @@ public class BMCTemperatureSensor extends BMC {
 	 * @return true se il BMC ha risposto.
 	 */
 	public boolean setAutoSendTime(int time) {
-		return bus.sendMessage(new ImpostaParametroMessage(getAddress(), 
+		return bus.sendMessage(new ImpostaParametroMessage(getIntAddress(), 
 				bus.getBMCComputerAddress(), 
 				RichiestaParametroMessage.PARAM_TERM_ALARM_TEMPERATURE,
 				time,

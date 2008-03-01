@@ -148,7 +148,7 @@ public abstract class Bus implements it.ascia.ais.Connector {
      * "a nome" del BMCComputer.</p>
      */
     public int getBMCComputerAddress() {
-    	return bmcComputer.getAddress();
+    	return bmcComputer.getIntAddress();
     }
     
     /**
@@ -221,7 +221,8 @@ public abstract class Bus implements it.ascia.ais.Connector {
     					rcpt + " che non conosco:");*/
     		}
     		// Lo mandiamo anche al BMCComputer, se non era per lui
-    		if ((bmcComputer != null) && (rcpt != bmcComputer.getAddress())) { 
+    		if ((bmcComputer != null) && 
+    				(rcpt != bmcComputer.getIntAddress())) { 
     	   		bmcComputer.messageReceived(m);
     		}
     	}
@@ -250,8 +251,12 @@ public abstract class Bus implements it.ascia.ais.Connector {
      * 
      * @return il Device oppure null se il Device non � nella lista.
      */
-    public it.ascia.ais.Device getDevice(int address) {
-    	return (Device)devices.get(new Integer(address));
+    public it.ascia.ais.Device getDevice(String address) {
+    	try {
+    		return (Device)devices.get(Integer.valueOf(address));
+    	} catch (NumberFormatException e) {
+    		return null;
+    	}
     }
     
     /**
@@ -262,7 +267,7 @@ public abstract class Bus implements it.ascia.ais.Connector {
      * @throws un'EDSException se esiste gia' un device con lo stesso indirizzo.
      */
     public void addDevice(Device device) throws EDSException {
-    	int deviceAddress = device.getAddress();
+    	String deviceAddress = device.getAddress();
     	if (getDevice(deviceAddress) != null) {
     		throw new EDSException("Un BMC con indirizzo " + deviceAddress +
     				" esiste gia'.");

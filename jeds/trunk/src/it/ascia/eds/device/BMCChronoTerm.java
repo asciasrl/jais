@@ -237,7 +237,7 @@ public class BMCChronoTerm extends BMC {
 	 * Aggiorna lo stato del termostato.
 	 */
 	public void updateTermStatus() {
-		bus.sendMessage(new RichiestaStatoTermostatoMessage(getAddress(), 
+		bus.sendMessage(new RichiestaStatoTermostatoMessage(getIntAddress(), 
 				bus.getBMCComputerAddress()));
 	}
 	
@@ -245,7 +245,7 @@ public class BMCChronoTerm extends BMC {
 	 * Aggiorna il set point corrente.
 	 */
 	public void updateSetPoint() {
-		bus.sendMessage(new RichiestaSetPointMessage(getAddress(), 
+		bus.sendMessage(new RichiestaSetPointMessage(getIntAddress(), 
 			bus.getBMCComputerAddress()));
 	}
 	
@@ -263,7 +263,7 @@ public class BMCChronoTerm extends BMC {
 	 */
 	public boolean setSetPoint(double temperature) {
 		ImpostaSetPointMessage m;
-		m = new ImpostaSetPointMessage(getAddress(), 
+		m = new ImpostaSetPointMessage(getIntAddress(), 
 				bus.getBMCComputerAddress(), temperature);
 		return bus.sendMessage(m);
 	}
@@ -279,7 +279,7 @@ public class BMCChronoTerm extends BMC {
 	 */
 	public boolean setState(int state) {
 		VariazioneIngressoMessage m;
-		m = new VariazioneIngressoMessage(getAddress(), 
+		m = new VariazioneIngressoMessage(getIntAddress(), 
 				bus.getBMCComputerAddress(),
 				state);
 		return bus.sendMessage(m);

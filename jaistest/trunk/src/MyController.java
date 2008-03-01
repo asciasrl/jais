@@ -1,4 +1,10 @@
-
+/**
+ * Copyright (C) 2008 ASCIA S.r.l.
+ */
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -30,9 +36,9 @@ public class MyController implements Controller, DeviceListener {
 	 */
 	private BusAddressParser addressParser;
 	/**
-	 * Il nostro connector.
+	 * I nostri connector.
 	 */
-	private Connector connector;
+	private Set connectors;
 	/**
 	 * Il nostro logger.
 	 */
@@ -48,21 +54,29 @@ public class MyController implements Controller, DeviceListener {
 	 * @param connector il connector che controlliamo.
 	 * @param pin il pin da richiedere; se null, qualunque pin verra' accettato.
 	 */
-	public MyController(Connector connector, String pin) {
+	public MyController(String pin) {
 		this.logger = Logger.getLogger(getClass());
 		addressParser = new BusAddressParser();
-		addressParser.registerBus(connector);
-		this.connector = connector;
 		this.pin = pin;
+		connectors = new HashSet();
+	}
+	
+	public void addConnector(Connector connector) {
+		connectors.add(connector);
+		addressParser.registerBus(connector);
 	}
 
 	/**
-	 * Associa se stesso a tutti i device del Connector.
+	 * Associa se stesso a tutti i device di tutti i connector.
 	 */
 	public void setDevicesListener() {
-		Device devices[] = connector.getDevices();
-		for (int i = 0; i < devices.length; i++) {
-			devices[i].setDeviceListener(this);
+		Iterator it = connectors.iterator();
+		while (it.hasNext()) {
+			Device devices[] = ((Connector)it.next()).getDevices();
+			for (int i = 0; i < devices.length; i++) {
+				devices[i].setDeviceListener(this);
+				logger.info(String.valueOf(devices[i].getAddress()));
+			}
 		}
 	}
 	
@@ -95,10 +109,13 @@ public class MyController implements Controller, DeviceListener {
 			}
 		} else if (command.equals("getAll")) {
 			// Comando "getAll"
+			Iterator it = connectors.iterator();
 			retval = "";
-			Device[] devices = connector.getDevices();
-			for (int i = 0; i < devices.length; i++) {
-				retval += devices[i].getStatus("*");
+			while (it.hasNext()) {
+				Device[] devices = ((Connector)it.next()).getDevices();
+				for (int i = 0; i < devices.length; i++) {
+					retval += devices[i].getStatus("*");
+				}
 			}
 		} else if (command.equals("set")) {
 			// Comando "set"

@@ -5,6 +5,7 @@ import it.ascia.ais.Connector;
 import it.ascia.ais.Device;
 import it.ascia.ais.HTTPServer;
 import it.ascia.bentel.JBisException;
+import it.ascia.bentel.JBisKyoUnit;
 import it.ascia.bentel.JBisListener;
 import it.ascia.eds.ConfigurationFile;
 import it.ascia.eds.EDSException;
@@ -26,7 +27,7 @@ public class AisTest extends MyController {
 	static BMCComputer bmcComputer;
 	static HTTPServer server;
 	static MyController busController;
-	static JBisListener alarm;
+	static JBisKyoUnit alarm;
 	
 	static void makeVirtualBMC(int address) {
 		// Lo creiamo noi il BMC!
@@ -93,7 +94,7 @@ public class AisTest extends MyController {
 	 	}
 	 	startServer();
 	 	try {
-	 		alarm = new JBisListener("/dev/ttyUSB0", busController);
+	 		alarm = new JBisKyoUnit(0, 4, "0025", "bentel");
 	 		// bus = new SerialBus(defaultPort, "0");
 	 	} catch (JBisException e) {
 	 		System.err.println(e.getMessage());
@@ -109,7 +110,7 @@ public class AisTest extends MyController {
 		} catch (EDSException e) {
 			System.err.println(e.getMessage());
 			server.close();
-			alarm.close();
+			alarm.stop();
 			bus.close();
 			System.exit(-1);
 		}
@@ -139,7 +140,7 @@ public class AisTest extends MyController {
 	 	busController.setDevicesListener();
 	 	// La palla all'utente
 	 	testDevice(1);
-		alarm.close();
+		alarm.stop();
 		server.close();
 		bus.close();
 	}

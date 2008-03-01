@@ -83,8 +83,12 @@ public class BMCIntIR extends BMC {
 	public String getStatus(String port) { // TODO
 		String busName = bus.getName();
 		String compactName = busName + "." + getAddress();
-		return compactName + ":" + getInputCompactName(0) +
+		if (port.equals("*") || port.equals(getInputCompactName(0))) {
+			return compactName + ":" + getInputCompactName(0) +
 			"=" + (irInput? "ON" : "OFF") + "\n";
+		} else {
+			return "";
+		}
 	}
 
 	/**

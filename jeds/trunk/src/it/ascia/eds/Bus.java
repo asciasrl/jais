@@ -7,10 +7,13 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import it.ascia.ais.Device;
 import it.ascia.eds.device.*;
 import it.ascia.eds.msg.*;
 
@@ -67,7 +70,7 @@ public abstract class Bus implements it.ascia.ais.Connector {
 	 */
 	protected MessageParser mp;
 	/**
-	 * I device presenti nel bus.
+	 * I BMC presenti nel bus.
 	 */
     private Map devices;
     /**
@@ -201,19 +204,19 @@ public abstract class Bus implements it.ascia.ais.Connector {
     		// Mandiamo il messaggio a tutti
     		Iterator it = devices.values().iterator();
     		while (it.hasNext()) {
-    			Device bmc = (Device)it.next();
+    			BMC bmc = (BMC)it.next();
     			bmc.messageReceived(m);
     		}
     	} else { 
     		// Non e' un messaggio broadcast: va mandato al destinatario...
-    		Device bmc = (Device)devices.get(new Integer(rcpt));
+    		BMC bmc = (BMC)devices.get(new Integer(rcpt));
     		if (bmc != null) {
     			bmc.messageReceived(m);
     		} else {
     			/*logger.error("Ricevuto un messaggio per il BMC " + 
     					rcpt + " che non conosco:");*/    		}
     		// ...e al mittente
-    		bmc = (Device)devices.get(new Integer(sender));
+    		bmc = (BMC)devices.get(new Integer(sender));
     		if (bmc != null) {
     			bmc.messageSent(m);
     		} else {
@@ -243,21 +246,6 @@ public abstract class Bus implements it.ascia.ais.Connector {
     		return false;
     	}
     }
-
-    /**
-     * Ritorna un Device a partire dall'indirizzo.
-     * 
-     * @param address l'indirizzo da cercare.
-     * 
-     * @return il Device oppure null se il Device non � nella lista.
-     */
-    public it.ascia.ais.Device getDevice(String address) {
-    	try {
-    		return (Device)devices.get(Integer.valueOf(address));
-    	} catch (NumberFormatException e) {
-    		return null;
-    	}
-    }
     
     /**
      * Aggiunge un Device collegato al bus.
@@ -266,27 +254,28 @@ public abstract class Bus implements it.ascia.ais.Connector {
      * 
      * @throws un'EDSException se esiste gia' un device con lo stesso indirizzo.
      */
-    public void addDevice(Device device) throws EDSException {
+    public void addDevice(BMC device) throws EDSException {
     	String deviceAddress = device.getAddress();
-    	if (getDevice(deviceAddress) != null) {
+    	if (getDevices(deviceAddress).length != 0) {
     		throw new EDSException("Un BMC con indirizzo " + deviceAddress +
     				" esiste gia'.");
     	}
     	devices.put(new Integer(deviceAddress), device);
     }
     
-    /**
-     * Ritorna tutti i Device collegati.
-     */
-    public it.ascia.ais.Device[] getDevices() {
+    public Device[] getDevices(String address) {
     	Collection values = devices.values();
-    	Device retval[] = new Device[values.size()];
-    	Iterator it = values.iterator();
-    	int i = 0;
-    	while (it.hasNext()) {
-    		retval[i] = (Device)it.next();
-    		i++;
+    	if (address.equals("*")) {
+    		return (BMC[]) values.toArray(new BMC[values.size()]);
     	}
-    	return retval;
+    	List devices = new LinkedList();
+    	Iterator it = values.iterator();
+    	while (it.hasNext()) {
+    		BMC device =  (BMC)it.next();
+    		if (device.getAddress().equals(address)) {
+    			devices.add(device);
+    		}
+    	}
+    	return (BMC[]) devices.toArray(new BMC[devices.size()]);
     }
 }

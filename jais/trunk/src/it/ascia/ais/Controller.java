@@ -6,8 +6,6 @@ package it.ascia.ais;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -86,7 +84,7 @@ public abstract class Controller {
 		String connectorName = null;
 		String deviceAddress = null;
 		Connector connector = null;
-		Device device, retval[];
+		Device retval[];
 		Iterator it;
 		if (address.equals("*")) {
 			// Interroghiamo tutti i connettori che conosciamo
@@ -95,7 +93,7 @@ public abstract class Controller {
 			it = connectors.values().iterator();
 			while (it.hasNext()) {
 				connector = (Connector)it.next();
-				temp = connector.getDevices();
+				temp = connector.getDevices("*");
 				for (int i = 0; i < temp.length; i++) {
 					devices.add(temp[i]);
 				}
@@ -124,17 +122,15 @@ public abstract class Controller {
 							address + "\"");
 				}
 				deviceAddress = address.substring(connectorName.length() + 1);
-				device = connector.getDevice(deviceAddress);
+				retval = connector.getDevices(deviceAddress);
 			} catch (StringIndexOutOfBoundsException e) {
 				throw new AISException("Impossibile distinguere connector e " +
 						"device nell'indirizzo \"" + address + "\"");
 			}
-			if (device == null) {
+			if (retval.length == 0) {
 				throw new AISException("Il device " + deviceAddress + " non " +
 						"esiste nel connector " + connectorName);
 			}
-			retval = new Device[1];
-			retval[0] = device;
 		}
 		return retval;
 	}

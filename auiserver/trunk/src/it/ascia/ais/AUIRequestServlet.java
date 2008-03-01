@@ -42,7 +42,7 @@ public class AUIRequestServlet extends HttpServlet {
 		response.setContentType("text/plain");
 		// Va sempre tutto bene (gli errori li scriviamo dentro)
 		response.setStatus(HttpServletResponse.SC_OK);
-		if (request.getMethod().toUpperCase() == "GET") {
+		if (request.getMethod().toUpperCase().equals("GET")) {
 			String name = request.getParameter("name");
 			String uri = request.getRequestURI();
 			// Per sicurezza: non vogliamo null che girano

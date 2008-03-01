@@ -77,7 +77,7 @@ public class JBisKyoTest implements DeviceListener {
 		stdin = new BufferedReader(new InputStreamReader(System.in));
 		try {
 			b = new JBisKyoUnit(1,4,"0025", "jbis");
-			d = (JBisKyoDevice)b.getDevice(0);
+			d = (JBisKyoDevice)b.getDevice("0");
 			d.setDeviceListener(new JBisKyoTest());
 			/*b.updateStatus();
 			if (b.hasAlarms()) {

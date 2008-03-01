@@ -459,9 +459,9 @@ public class JBisKyoDevice implements Device {
 	/* (non-Javadoc)
 	 * @see it.ascia.ais.Device#getAddress()
 	 */
-	public int getAddress() {
+	public String getAddress() {
 		// Su ogni JBisKyoUnit ci siamo solo noi.
-		return 0;
+		return "0";
 	}
 
 	/* (non-Javadoc)

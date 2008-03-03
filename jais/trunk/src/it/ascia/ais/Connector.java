@@ -22,7 +22,7 @@ public interface Connector {
      * 
      * <p>Questa funzione deve gestire anche wildcard.</p>
      * 
-     * @param address l'indirizzo da cercare.
+     * @param deviceAddress l'indirizzo da cercare.
      * 
      * @return un'array di Device, eventualmente di lunghezza zero.
      */

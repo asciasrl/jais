@@ -55,7 +55,6 @@ public class MyController extends Controller implements DeviceListener {
 		Device devices[] = findDevices("*");
 		for (int i = 0; i < devices.length; i++) {
 			devices[i].setDeviceListener(this);
-			logger.info(String.valueOf(devices[i].getAddress()));
 		}
 	}
 	

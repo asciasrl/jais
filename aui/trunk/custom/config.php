@@ -157,4 +157,26 @@ $frameClima = Array(
 			"address" => "0.3:Out7")));
 
 
+/**
+ * Tapparelle collegate al sistema.
+ * 
+ * <p>Questa array di ID verra' popolata in fase di creazione delle 
+ * tapparelle.</p>
+ */
+$idSerramenti = Array();
+
+/**
+ * Frame: serramenti.
+ * 
+ * <p>Gli indici sono gli ID dei piani.</p>
+ */
+$frameSerramenti = Array(
+	"piano-01A" => Array(
+		"p1a-serr1" => Array(
+			"x" => 360,
+			"y" => 200,
+			"label" => "Tapparella verde",
+			"addressopen" => "0.3:Out1",
+			"addressclose" => "0.3:Out2")));
+
 ?>

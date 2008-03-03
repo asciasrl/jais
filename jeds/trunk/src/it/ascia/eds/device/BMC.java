@@ -81,7 +81,7 @@ public abstract class BMC implements Device {
 	 * Binding tra porte di output e messaggi broadcast.
 	 * 
 	 * <p>Questo e' un'array di Set di Integer. Contiene gli stessi valori di
-	 * {@link broadcastBindingsBySignal} ma indicizzati per numero di porta.</p>
+	 * {@link #broadcastBindingsBySignal} ma indicizzati per numero di porta.</p>
 	 * 
 	 * <p>L'ordine di binding e' importante. La superclasse utilizzata deve
 	 * tenerne conto.</p>

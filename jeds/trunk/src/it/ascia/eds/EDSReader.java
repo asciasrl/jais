@@ -32,8 +32,6 @@ public class EDSReader
      * Method declaration
      *
      * @param args
-     *
-     * @see
      */
     public static void main(String[] args) {
 	    String		      defaultPort = "/dev/ttyUSB0";
@@ -47,8 +45,6 @@ public class EDSReader
     /**
      * Constructor declaration
      *
-     *
-     * @see
      */
     public EDSReader(String portName) {
         boolean		      portFound = false;
@@ -107,8 +103,6 @@ public class EDSReader
 
     /**
      * Method declaration
-     *
-     * @see
      */
     public void run() {
 		try {

@@ -3,7 +3,6 @@
  */
 package it.ascia.eds.device;
 
-import com.sun.media.sound.MidiUtils.TempoCache;
 
 import it.ascia.eds.Bus;
 import it.ascia.eds.EDSException;

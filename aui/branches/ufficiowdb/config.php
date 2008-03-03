@@ -67,12 +67,15 @@ define("ILL_DIMMER", 1);
 /**
  * Icone varie.
  */
-define("IMG_LIGHT_ON", "images/light-on.jpg");
-define("IMG_LIGHT_OFF", "images/light-off2.jpg");
+define("IMG_LIGHT_ON", "images/light-on.png");
+define("IMG_LIGHT_OFF", "images/light-off.png");
 define("IMG_POWER_ON", "images/energia_on.png");
 define("IMG_POWER_OFF", "images/energia_off.png");
 define("IMG_THERMO_ON", "images/clima_on.png");
 define("IMG_THERMO_OFF", "images/clima_off.png");
+define("IMG_BLIND_STILL", "images/clima_off.png");
+define("IMG_BLIND_OPENING", "images/light-on.png");
+define("IMG_BLIND_CLOSING", "images/light-off.png");
 
 /**
  * Altezza della status bar [pixel].

@@ -22,7 +22,7 @@ define("APPBAR_SIMPLE", true);
 /**
  * Lista dei servizi.
  */
-$apps = array('illuminazione','clima','sicurezza','video');
+$apps = array('illuminazione','serramenti','sicurezza','video');
 
 /**
  * Altezza della "parte utile" dello slider del dimmer [pixel].
@@ -128,7 +128,7 @@ $idPrese = Array();
  * 
  * <p>Gli indici sono gli ID dei piani.</p>
  */
-$frameEnergia = Array(
+$frameEnergia = Array( /*
 	"piano-01A" => Array(
 		"p1a-presa1" => Array(
 			"x" => 200,
@@ -144,7 +144,7 @@ $frameEnergia = Array(
 			"x" => 200,
 			"y" => 400,
 			"label" => "Presa lavatrice",
-			"address" => "0.5:Out5")));
+			"address" => "0.5:Out5"))*/);
 
 /**
  * Termostati presenti nel sistema.
@@ -159,8 +159,8 @@ $idClimi = Array();
  * 
  * <p>Gli indici sono gli ID dei piani.</p>
  */
-$frameClima = Array(
-	"piano-01A" => Array(
+$frameClima =  Array(
+	"piano-01A" => Array(/*
 		"p1a-clima1" => Array(
 			"x" => 300,
 			"y" => 200,
@@ -170,7 +170,46 @@ $frameClima = Array(
 			"x" => 400,
 			"y" => 400,
 			"label" => "Bruciatore",
-			"address" => "0.3:Out7")));
+			"address" => "0.3:Out7")*/));
 
+/**
+ * Tapparelle collegate al sistema.
+ * 
+ * <p>Questa array di ID verra' popolata in fase di creazione delle 
+ * tapparelle.</p>
+ */
+$idSerramenti = Array();
+
+/**
+ * Frame: serramenti.
+ * 
+ * <p>Gli indici sono gli ID dei piani.</p>
+ */
+$frameSerramenti = Array(
+	"piano-01A" => Array(
+		"p1a-serr1" => Array(
+			"x" => 250,
+			"y" => 40,
+			"label" => "Tapparella 1",
+			"addressopen" => "0.1:Out1",
+			"addressclose" => "0.1:Out2"),
+	"p1a-serr2" => Array(
+			"x" => 330,
+			"y" => 40,
+			"label" => "Tapparella 2",
+			"addressopen" => "0.1:Out3",
+			"addressclose" => "0.1:Out4"),
+	"p1a-serr3" => Array(
+			"x" => 250,
+			"y" => 80,
+			"label" => "Tapparella 3",
+			"addressopen" => "0.1:Out5",
+			"addressclose" => "0.1:Out6"),
+	"p1a-serr4" => Array(
+			"x" => 330,
+			"y" => 80,
+			"label" => "Tapparella 4",
+			"addressopen" => "0.1:Out5",
+			"addressclose" => "0.1:Out6")));
 
 ?>

@@ -7,5 +7,5 @@
 
 RewriteEngine On
 
-RewriteRule jeds/(.*) http://localhost:8080/jeds/$1 [P,L]
+RewriteRule jais/(.*) http://localhost:8080/jais/$1 [P,L]
 

@@ -6,15 +6,15 @@
 /**
  * Indirizzo per comandi "get".
  */
-const CMD_GET = "jeds/get";
+const CMD_GET = "jais/get";
 /**
  * Indirizzo per comandi "set".
  */
-const CMD_SET = "jeds/set";
+const CMD_SET = "jais/set";
 /**
  * Indirizzo per comandi "getAll".
  */
-const CMD_GETALL = "jeds/getAll";
+const CMD_GETALL = "jais/getAll";
 
 /**
  * Timeout forzato per una richiesta [msec].

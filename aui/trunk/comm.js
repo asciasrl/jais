@@ -279,12 +279,10 @@ function setPortCallback(goodNews, badNews) {
  * @param value il valore da impostare.
  * @param callBack funzione callBack. Deve accettare un solo parametro, che 
  * sara' true se il comando e' riuscito.
- * @param id id dell'oggetto che stiamo modificando, per escluderlo da un
- * eventuale getAll in esecuzione in questo momento.
  *
  * @return true se il comando e' riuscito.
  */
-function setPort(port, value, callBack, id) {
+function setPort(port, value, callBack) {
 	if (setPortUserCallback) {
 		// C'e' una richiesta setPort gia' in esecuzione
 		callBack(false);

@@ -31,6 +31,13 @@ public class JBisKyoDevice implements Device {
 	 */
 	private static final int MAX_LOG_SIZE = 100;
 	/**
+	 * Massima eta' dei dati ricevuti dalla centrale, perche' si debbano
+	 * considerare "vecchi" [msec].
+	 * 
+	 * @see #statusTime
+	 */
+	private static final long OLD_DATA_AGE = 10000; // 10 sec
+	/**
 	 * Codici di warning.
 	 * 
 	 * <p>Gli indici delle stringhe nell'array corrispondono al bit del byte
@@ -90,11 +97,18 @@ public class JBisKyoDevice implements Device {
 	/**
 	 * Numero di zone gestite dalla centralina.
 	 */
-	public final int ZONES_NUM = 8;
+	public static final int ZONES_NUM = 8;
 	/**
 	 * Numero di aree gestite dalla centralina.
 	 */
-	public final int AREAS_NUM = 4;
+	public static final int AREAS_NUM = 4;
+	/**
+	 * Istante nel quale abbiamo fatto l'ultima lettura.
+	 * 
+	 * @see #OLD_DATA_AGE
+	 */
+	private long statusTime;
+	
 	/**
 	 * Allarmi di zona attivi.
 	 * 
@@ -170,6 +184,7 @@ public class JBisKyoDevice implements Device {
 		eventLog = new LinkedList();
 		this.connector = connector;
 		listener = null;
+		statusTime = 0;
 	}
 	
 	/**
@@ -237,6 +252,7 @@ public class JBisKyoDevice implements Device {
 		if (oldValue != otherSabotages) {
 			alertListener(oldValue, otherSabotages, other_sabotages_ports);
 		}
+		statusTime = System.currentTimeMillis();
 	}
 	
 	/**
@@ -502,12 +518,17 @@ public class JBisKyoDevice implements Device {
 	 * @see it.ascia.ais.Device#getStatus(java.lang.String)
 	 */
 	public String getStatus(String port) {
-		String retval = "";
-		retval += getPort(port, zoneAlarms, zone_alarms_ports);
-		retval += getPort(port, zoneSabotages, zone_sabotages_ports);
-		retval += getPort(port, areaAlarms, area_alarms_ports);
-		retval += getPort(port, warnings, warnings_ports);
-		retval += getPort(port, otherSabotages, other_sabotages_ports);
+		String retval;
+		if ((System.currentTimeMillis() - statusTime) < OLD_DATA_AGE) {
+			retval = getPort(port, zoneAlarms, zone_alarms_ports);
+			retval += getPort(port, zoneSabotages, zone_sabotages_ports);
+			retval += getPort(port, areaAlarms, area_alarms_ports);
+			retval += getPort(port, warnings, warnings_ports);
+			retval += getPort(port, otherSabotages, other_sabotages_ports);
+		} else {
+			// I dati sono troppo vecchi
+			retval = "ERROR: data is too old!";
+		}
 		return retval;
 	}
 

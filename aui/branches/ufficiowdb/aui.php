@@ -14,8 +14,9 @@ require_once("custom/config.php");
  * @param $clickable true se i servizi devono reagire a click
  */
 function creaLayerServizi($piano, $big, $clickable) {
-	global $apps, $frameIlluminazione, $frameEnergia, $frameClima;
-	global $idLuci, $idPrese, $idClimi;
+	global $apps, $frameIlluminazione, $frameEnergia, $frameClima, 
+		$frameSerramenti;
+	global $idLuci, $idPrese, $idClimi, $idSerramenti;
 	if ($big) {
 		$scale = 1;
 	} else {
@@ -119,6 +120,36 @@ function creaLayerServizi($piano, $big, $clickable) {
 				} // foreach clima
 			} else {
 				echo("Non ci sono termostati su questo piano!");
+			}
+			break;
+		case "serramenti":
+			$temp = getimagesize(IMG_BLIND_STILL);
+			$imgWidth = $temp[0] * $scale;
+			$imgHeight = $temp[1] * $scale;
+			if (isset($frameSerramenti[$piano["id"]])) {
+				foreach ($frameSerramenti[$piano["id"]] as 
+					$idSerramento => $serramento) {
+					if ($clickable) {
+						$id = "id=\"$idSerramento\"";
+						$active = "status=\"still\" addressopen=\"" . 
+							$serramento["addressopen"] . 
+							"\" addressclose =\"" . $serramento["addressclose"].
+							"\" onClick=\"blindClicked(event, this)\"";
+						$idSerramenti[] = $idSerramento;
+						$text = $serramento["label"];
+					} else {
+						$id = "";
+						$active = "";
+						$text = "";
+					}
+					echo("<div $id style=\"position:absolute; left: " .
+						$serramento["x"] * $scale. "px; top: " . 
+						$serramento["y"] * $scale . "px; color: white;\" $active name=\"" . 
+							$serramento["label"] . "\"><div style=\"position: absolute;\"><img src=\"".
+							IMG_BLIND_STILL."\" alt=\"".$serramento["label"]."\" width=\"$imgWidth\" height=\"$imgHeight\"/></div><div style=\"position: absolute; font-size: $fontSize;\"></div></div>");
+				} // foreach serramento
+			} else {
+				echo("Non ci sono serramenti su questo piano!");
 			}
 			break;
 		default:
@@ -309,12 +340,16 @@ $dimmerCursorHeight = $temp[1];
 	const ID_LUCI = <?php arrayJavascript($idLuci); ?>;
 	const ID_PRESE = <?php arrayJavascript($idPrese); ?>;
 	const ID_CLIMI = <?php arrayJavascript($idClimi); ?>;
+	const ID_SERRAMENTI = <?php arrayJavascript($idSerramenti); ?>;
 	const IMG_LIGHT_ON = "<?php echo(IMG_LIGHT_ON); ?>";
 	const IMG_LIGHT_OFF = "<?php echo(IMG_LIGHT_OFF); ?>";
 	const IMG_POWER_ON = "<?php echo(IMG_POWER_ON); ?>";
 	const IMG_POWER_OFF = "<?php echo(IMG_POWER_OFF); ?>";
 	const IMG_THERMO_ON = "<?php echo(IMG_THERMO_ON); ?>";
 	const IMG_THERMO_OFF = "<?php echo(IMG_THERMO_OFF); ?>";
+	const IMG_BLIND_STILL = "<?php echo(IMG_BLIND_STILL); ?>";
+	const IMG_BLIND_OPENING = "<?php echo(IMG_BLIND_OPENING); ?>";
+	const IMG_BLIND_CLOSING = "<?php echo(IMG_BLIND_CLOSING); ?>";
 	const STATUS_BAR_HEIGHT = "<?php echo(STATUS_BAR_HEIGHT); ?>";
 	const STATUS_BAR_OPACITY = "<?php echo(STATUS_BAR_OPACITY); ?>";
 	const APPBAR_START_POSITION = <?php echo(APPBAR_START_POSITION); ?>;

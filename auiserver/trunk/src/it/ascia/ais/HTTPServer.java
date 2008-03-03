@@ -61,7 +61,7 @@ public class HTTPServer {
 		server = new Server(port);
 		// La nostra AUIRequestServlet e il suo contesto.
 		auiRequestServlet = new AUIRequestServlet(controller);
-		requestsContext = new Context(contexts, "/jeds", Context.SESSIONS);
+		requestsContext = new Context(contexts, "/jais", Context.SESSIONS);
 		holder = new ServletHolder(auiRequestServlet);
 		requestsContext.addServlet(holder, "/*");
 		// La fileServlet e il suo contesto

@@ -50,7 +50,7 @@ public class JBisKyoDevice implements Device {
 	 * <p>Gli indici delle stringhe nell'array corrispondono al bit del byte
 	 * che elenca i warning - 4.</p>
 	 * 
-	 * @see otherSabotages
+	 * @see #otherSabotages
 	 */
 	private static final String otherSabotagesMessages[] = {
 		"Sabotaggio di zona", // 4
@@ -101,7 +101,7 @@ public class JBisKyoDevice implements Device {
 	 * <p>Questo byte contiene lo stato degli allarmi di zona, tale e quale 
 	 * viene ricevuto dalla centralina.</p>
 	 * 
-	 * @see updateStatus
+	 * @see #updateStatus
 	 */
 	private byte zoneAlarms;
 	
@@ -111,7 +111,7 @@ public class JBisKyoDevice implements Device {
 	 * <p>Questo byte contiene lo stato dei sabotaggi di zona, tale e quale 
 	 * viene ricevuto dalla centralina.</p>
 	 * 
-	 * @see updateStatus
+	 * @see #updateStatus
 	 */
 	private byte zoneSabotages;
 	
@@ -122,7 +122,7 @@ public class JBisKyoDevice implements Device {
 	 * viene ricevuto dalla centralina, ma con i bit non significativi posti a 
 	 * 0.</p>
 	 * 
-	 * @see updateStatus
+	 * @see #updateStatus
 	 */
 	private byte warnings;
 	
@@ -133,7 +133,7 @@ public class JBisKyoDevice implements Device {
 	 * viene ricevuto dalla centralina, ma con i bit non significativi posti a 
 	 * 0.</p>
 	 * 
-	 * @see updateStatus
+	 * @see #updateStatus
 	 */
 	private byte areaAlarms;
 	
@@ -144,7 +144,7 @@ public class JBisKyoDevice implements Device {
 	 * viene ricevuto dalla centralina, ma con i bit non significativi posti a 
 	 * 0.</p>
 	 * 
-	 * @see updateStatus
+	 * @see #updateStatus
 	 */
 	private byte otherSabotages;
 	/**

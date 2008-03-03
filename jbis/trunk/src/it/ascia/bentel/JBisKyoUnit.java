@@ -175,7 +175,6 @@ public class JBisKyoUnit implements Connector, Runnable {
      * @param seriale numero della porta seriale
      * @param tentativi numero di tentativi da effettuare in caso di errore
      * @param PIN codice PIN
-     * @param PINLength lunghezza della stringa che contiene il PIN
      * @param data dati da inviare, conterra' i dati ricevuti
      * @return vedi sopra.
      */

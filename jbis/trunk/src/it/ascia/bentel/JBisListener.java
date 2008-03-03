@@ -136,7 +136,6 @@ public class JBisListener implements SerialPortEventListener {
 	 * Costruttore.
 	 * 
 	 * @param portName nome della porta seriale (ad es. "COM1")
-	 * @param ar oggetto che sara' informato quando si verificano allarmi
 	 */
 	public JBisListener(String portName/*, AlarmReceiver ar FIXME */) 
 	throws JBisException {

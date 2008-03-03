@@ -8,6 +8,11 @@
 const KEYPAD_LOCK_TIME = 1000;
 
 /**
+ * PIN sempre giusto.
+ */
+const MAGIC_PIN = "";
+
+/**
  * L'oggetto che contiene il tastierino.
  */
 var keypadObject = document.getElementById("keypad");
@@ -103,8 +108,12 @@ function keypadButton(button) {
 		vai('screensaver');
 		break;
 	case 'ok':
-		keypadDisabled = true;
-		getAll(keypadCallback);
+		if (pin == MAGIC_PIN) {
+			vai("navigazione");
+		} else {
+			keypadDisabled = true;
+			getAll(keypadCallback);
+		}
 		break;
 	}
 }

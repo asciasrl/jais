@@ -36,7 +36,6 @@ public class MyController extends Controller implements DeviceListener {
 	/**
 	 * Costruttore.
 	 * 
-	 * @param connector il connector che controlliamo.
 	 * @param pin il pin da richiedere; se null, qualunque pin verra' accettato.
 	 */
 	public MyController(String pin) {

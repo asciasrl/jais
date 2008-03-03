@@ -21,7 +21,7 @@ public class ImpostaParametroMessage extends PTPRequest
 	 */
 	public final static int PARM_TYPE_TEMPERATURE = 0;
 	/**
-	 * Tempo. Può variare da 1 secondo a 127 minuti.
+	 * Tempo. Puo' variare da 1 secondo a 127 minuti.
 	 * 
 	 * <p>Il bit piu' significativo viene posto a 1 se il tempo e' in secondi,
 	 * a 0 se il tempo e' in minuti.</p>
@@ -80,7 +80,7 @@ public class ImpostaParametroMessage extends PTPRequest
 	 * 
 	 * @return true se questo messaggio contiene tale campo.
 	 * 
-	 * @see getAutoSendTime()
+	 * @see #getAutoSendTime()
 	 */
 	public boolean hasAutoSendTime() {
 		return (Byte1 == RichiestaParametroMessage.PARAM_TERM_AUTO_SEND_TIME);
@@ -108,7 +108,7 @@ public class ImpostaParametroMessage extends PTPRequest
 	 * 
 	 * @return true se questo messaggio contiene tale campo.
 	 * 
-	 * @see getAlarmTemperature()
+	 * @see #getAlarmTemperature()
 	 */
 	public boolean hasAlarmTemperature() {
 		return (Byte1 == RichiestaParametroMessage.PARAM_TERM_ALARM_TEMPERATURE);
@@ -142,7 +142,7 @@ public class ImpostaParametroMessage extends PTPRequest
 			case 3:
 				s.append("Dimmer:\r\n Ritardo variazione: "+Byte2+"\r\n");
 				s.append("Sonda termica:\r\n Temperatura di allarme: " + 
-						getAlarmTemperature() +	"°C\r\n");
+						getAlarmTemperature() +	"gradi C\r\n");
 				break;
 			case 11:
 				s.append("Dimmer:\r\n Minimo: "+Byte2+"\r\n");

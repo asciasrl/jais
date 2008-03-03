@@ -37,7 +37,7 @@ public class RispostaParametroMessage extends PTPMessage
 	 * 
 	 * @return true se questo messaggio contiene tale campo.
 	 * 
-	 * @see getAutoSendTime()
+	 * @see #getAutoSendTime()
 	 */
 	public boolean hasAutoSendTime() {
 		return (Byte1 == RichiestaParametroMessage.PARAM_TERM_AUTO_SEND_TIME);
@@ -65,7 +65,7 @@ public class RispostaParametroMessage extends PTPMessage
 	 * 
 	 * @return true se questo messaggio contiene tale campo.
 	 * 
-	 * @see getAlarmTemperature()
+	 * @see #getAlarmTemperature()
 	 */
 	public boolean hasAlarmTemperature() {
 		return (Byte1 == 
@@ -107,7 +107,7 @@ public class RispostaParametroMessage extends PTPMessage
 			case 3:
 				s.append("Dimmer:\r\n Ritardo variazione: "+Byte2+"\r\n");
 				s.append("Sonda termica:\r\n Temperatura di allarme: " + 
-						getAlarmTemperature() +	"°C\r\n");
+						getAlarmTemperature() +	"gradi C\r\n");
 				break;
 			case 11:
 				s.append("Dimmer:\r\n Minimo: "+Byte2+"\r\n");

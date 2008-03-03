@@ -102,7 +102,7 @@ public abstract class Bus implements it.ascia.ais.Connector {
     /**
      * Verifica se ci sono dati pronti da leggere.
      * 
-     * @returns true se ci sono dati leggibili da readByte()
+     * @return true se ci sono dati leggibili da readByte()
      */
     protected abstract boolean hasData();
     
@@ -110,7 +110,7 @@ public abstract class Bus implements it.ascia.ais.Connector {
      * Ritorna il prossimo byte ricevuto.
      * @throws IOException 
      * 
-     * @returns il dato ricevuto.
+     * @return il dato ricevuto.
      */
     protected abstract byte readByte() throws IOException;
     

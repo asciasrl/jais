@@ -68,7 +68,8 @@ public class BMCStandardIO extends BMC {
 	 * 
 	 * <p>
 	 * Il BMC funzionera' come la controparte virtuale di un BMC reale. Per
-	 * renderlo un BMC simulato bisogna chiamare il metodo {@link makeSimulated}.
+	 * renderlo un BMC simulato bisogna chiamare il metodo 
+	 * {@link #makeSimulated}.
 	 * </p>
 	 * 
 	 * @param address
@@ -287,7 +288,7 @@ public class BMCStandardIO extends BMC {
 	 *            valore (true: acceso)
 	 * @return true se l'oggetto ha risposto (ACK)
 	 * 
-	 * @see setOutPort
+	 * @see #setOutPort
 	 */
 	public boolean setOutputVariation(int port, boolean value) {
 		boolean retval = false;
@@ -329,7 +330,7 @@ public class BMCStandardIO extends BMC {
 	 *            valore (true: acceso)
 	 * @return true se l'oggetto ha risposto (ACK)
 	 * 
-	 * @see askOutputVariation
+	 * @see #setOutputVariation
 	 */
 	public boolean setOutPort(int port, boolean value) {
 		boolean retval = false;
@@ -536,7 +537,7 @@ public class BMCStandardIO extends BMC {
 	 * riceve.
 	 * </p>
 	 * 
-	 * @param myController
+	 * @param listener
 	 *            il DeviceListener a cui si comunicheranno
 	 */
 	public void makeSimulated(DeviceListener listener) {

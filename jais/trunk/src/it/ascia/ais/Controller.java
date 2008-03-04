@@ -87,50 +87,52 @@ public abstract class Controller {
 		Device retval[];
 		Iterator it;
 		if (address.equals("*")) {
-			// Interroghiamo tutti i connettori che conosciamo
-			Set devices = new HashSet();
-			Device temp[] = null;
-			it = connectors.values().iterator();
-			while (it.hasNext()) {
-				connector = (Connector)it.next();
-				temp = connector.getDevices("*");
-				for (int i = 0; i < temp.length; i++) {
-					devices.add(temp[i]);
+			// "*" e' una scorciatoia per "*.*"
+			address = "*.*";
+		}
+		retval = new Device[0];
+		it = connectors.keySet().iterator();
+		while (it.hasNext()) {
+			connectorName = (String)it.next();
+			if ((address.indexOf("*.") == 0) || 
+					(address.indexOf(connectorName + ".") == 0)) {
+				// Questo connector ci interessa!
+				int deviceNameIndex;
+				connector = (Connector)connectors.get(connectorName);
+				// Dove inizia l'indirizzo del Device?
+				if (address.indexOf("*") == 0) {
+					 // L'indirizzo ha la forma "*.nome"
+					deviceNameIndex = 2;
+				} else {
+					// L'indirizzo ha la forma "connector.nome"
+					deviceNameIndex = connectorName.length() + 1;
 				}
-			}
-			retval = (Device[])devices.toArray(temp);
-		} else {
-			// Ricerchiamo il connettore tra tutti quelli che conosciamo.
-			it = connectors.keySet().iterator();
-			while (it.hasNext() && (connector == null)) {
-				connectorName = (String)it.next();
-				if (address.indexOf(connectorName) == 0) {
-					// L'indirizzo comincia per questo!
-					connector = (Connector)connectors.get(connectorName);
-				}
-			}
-			if (connector == null) {
-				throw new AISException("Impossibile trovare il connector per " +
-						"l'indirizzo \"" + address + "\".");
-			}
-			try {
-				// Sanity check
-				if (address.charAt(connectorName.length()) != '.') {
-					throw new AISException("Il nome del connector \"" + 
-							connectorName +	
-							"\" non e' seguito da un '.' nell'indirizzo: \"" +
+				try {
+					Device temp[], temp2[];
+					deviceAddress = address.substring(deviceNameIndex);
+					temp = connector.getDevices(deviceAddress);
+					// Concateniamo temp e retval
+					temp2 = new Device[retval.length + temp.length];
+					System.arraycopy(retval, 0, temp2, 0, 
+							retval.length);
+					System.arraycopy(temp, 0, temp2, retval.length, 
+							temp.length);
+					retval = temp2;
+				} catch (StringIndexOutOfBoundsException e) {
+					throw new AISException("Impossibile distinguere " +
+							"connector e device nell'indirizzo \"" + 
 							address + "\"");
 				}
-				deviceAddress = address.substring(connectorName.length() + 1);
-				retval = connector.getDevices(deviceAddress);
-			} catch (StringIndexOutOfBoundsException e) {
-				throw new AISException("Impossibile distinguere connector e " +
-						"device nell'indirizzo \"" + address + "\"");
-			}
-			if (retval.length == 0) {
-				throw new AISException("Il device " + deviceAddress + " non " +
-						"esiste nel connector " + connectorName);
-			}
+			} // Se il connector ci interessa
+		} // Cicla sui connector
+		if (connector == null) {
+			// Nessun connector ci e' andato bene
+			throw new AISException("Impossibile trovare il connector per " +
+					"l'indirizzo \"" + address + "\".");
+		}
+		if (retval.length == 0) {
+			throw new AISException("Il device " + address + " non " +
+					"esiste");
 		}
 		return retval;
 	}

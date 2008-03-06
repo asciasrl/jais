@@ -131,7 +131,6 @@ function dimmerCursor2Value(cursorTop) {
  * Mostra il cursore del dimmer.
  *
  * @param divOnMap elemento div che contiene l'icona del dimmer
- * @address indirizzo del dimmer sul bus
  */
 function showDimmer(divOnMap) {
 	var maxTop, maxLeft, minTop, minLeft;

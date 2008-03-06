@@ -73,9 +73,9 @@ define("IMG_POWER_ON", "images/energia_on.png");
 define("IMG_POWER_OFF", "images/energia_off.png");
 define("IMG_THERMO_ON", "images/clima_on.png");
 define("IMG_THERMO_OFF", "images/clima_off.png");
-define("IMG_BLIND_STILL", "images/clima_off.png");
-define("IMG_BLIND_OPENING", "images/light-on.png");
-define("IMG_BLIND_CLOSING", "images/light-off.png");
+define("IMG_BLIND_STILL", "images/serranda_ferma.png");
+define("IMG_BLIND_OPENING", "images/serranda_sale.png");
+define("IMG_BLIND_CLOSING", "images/serranda_scende.png");
 
 /**
  * Altezza della status bar [pixel].

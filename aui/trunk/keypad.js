@@ -20,8 +20,8 @@ var keypadObject = document.getElementById("keypad");
 /**
  * Il controllo nel quale scriviamo gli asterischi.
  */
-var keypadScreen = document.getElementById("keypadScreen");
-keypadScreen.text = "";
+var keypadScreen = document.getElementById("keypadScreen").firstChild;
+keypadScreen.textContent = "";
 
 /**
  * True se il tastierino e' disabilitato.
@@ -41,7 +41,7 @@ var pin = "";
  * @param text il testo da scrivere sullo schermo del keypad.
  */
 function keypadRestore(text) {
-	keypadScreen.value = text;
+	keypadScreen.textContent = text;
 	keypadDisabled = false;
 }
 
@@ -51,8 +51,8 @@ function keypadRestore(text) {
  * @param message messaggio da mostrare (facoltativo).
  */
 function keypadError(message) {
-	var temp = keypadScreen.value;
-	keypadScreen.value = message || "ERROR";
+	var temp = keypadScreen.textContent;
+	keypadScreen.textContent = message || "ERROR";
 	keypadDisabled = true;
 	setTimeout("keypadRestore('" + temp + "')", KEYPAD_LOCK_TIME);
 }
@@ -93,16 +93,13 @@ function keypadButton(button) {
 	case 0:
 	case '*':
 	case '#':
-		keypadScreen.value += '*';
+		keypadScreen.textContent += '*';
 		pin += button;
 		break;
 	case 'back':
 		var l = pin.length;
-		keypadScreen.value = keypadScreen.value.slice(0, l - 1);
+		keypadScreen.textContent = keypadScreen.textContent.slice(0, l - 1);
 		pin = pin.slice(0, l - 1);
-		break;
-	case 'qwerty': // FIXME: che cosa deve fare?
-		keypadError();
 		break;
 	case 'x':
 		vai('screensaver');
@@ -114,6 +111,9 @@ function keypadButton(button) {
 			keypadDisabled = true;
 			getAll(keypadCallback);
 		}
+		break;
+	default: // FIXME: che cosa devono fare gli altri tasti?
+		keypadError();
 		break;
 	}
 }

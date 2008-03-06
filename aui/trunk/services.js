@@ -10,11 +10,6 @@
 var iconToToggle = false;
 
 /**
- * Icona della tapparella che stiamo modificando in questo momento.
- */
-var blindBeingControlled = false; 
-
-/**
  * Riceve le risposte delle richieste fatte da onOffIcon().
  *
  * <p>In caso di errore, ripristina l'icona "spento".</p>
@@ -114,24 +109,13 @@ function thermoClicked(event, thermoDiv) {
 }
 
 /**
- * Riceve le risposte delle richieste fatte da blindClicked().
- *
- * <p>In caso di errore, ripristina l'icona "fermo".</p>
- */
-function blindCallback(ok) {
-	if (!ok) {
-		blindBeingControlled.attributes.getNamedItem("status").value = "still";
-		blindBeingControlled.firstChild.firstChild.src = IMG_BLIND_STILL;
-	}
-	blindBeingControlled = false;
-}
-
-/**
  * L'utente ha fatto click su una tapparella.
  *
  * <p>Se la tapparella e' ferma, la apriamo. Altrimenti, la fermiamo.</p>
  */
 function blindClicked(event, blindDiv) {
+	showBlindControl(blindDiv);
+	/*
 	var status = blindDiv.attributes.getNamedItem("status");
 	var icon = blindDiv.firstChild.firstChild;
 	statusMessage(icon.alt);
@@ -159,6 +143,7 @@ function blindClicked(event, blindDiv) {
 		statusMessage("Riprova.");
 	}
 	event.stopPropagation();
+	*/
 }
 
 /**

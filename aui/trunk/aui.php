@@ -182,61 +182,55 @@ function arrayJavascript($arr) {
 </div>
 <div id="screensaver" title="AUI screensaver - clicca per accedere" onclick="vai('login');"><img
 	alt="AUI" src="images/newlogo_02_320x380.png" /></div>
-<div id="login" style="display: none;">
-<table id="keypad" title="AUI login - immetti codice personale e premi OK" summary="keypad" cellpadding="0" cellspacing="0"
-	border="0">
-	<tr>
-		<td colspan="4" style="text-align: center;"><input 
-		id="keypadScreen" type="text" size="8" disabled="disabled"><!-- <img alt="panel" width="240" height="70"
-			border="0" src="images/key-panel.png" /> --></td>
-	</tr>
-	<tr>
-		<td><img alt="1" width="60" height="48" border="0"
-			src="images/key01.png" onclick="keypadButton(1)" /></td>
-		<td><img alt="2" width="60" height="48" border="0"
-			src="images/key02.png" onclick="keypadButton(2)" /></td>
-		<td><img alt="3" width="60" height="48" border="0"
-			src="images/key03.png" onclick="keypadButton(3)" /></td>
-		<td><img alt="qwerty" width="60" height="48" border="0"
-			src="images/qwerty.png" onclick="keypadButton('qwerty')"/></td>
-	</tr>
-	<tr>
-		<td><img alt="4" width="60" height="48" border="0"
-			src="images/key04.png" onclick="keypadButton(4)" /></td>
-		<td><img alt="5" width="60" height="48" border="0"
-			src="images/key05.png" onclick="keypadButton(5)" /></td>
-		<td><img alt="6" width="60" height="48" border="0"
-			src="images/key06.png" onclick="keypadButton(6)" /></td>
-		<td><img onclick="keypadButton('x')" alt="annulla" width="60"
-			height="48" border="0" src="images/annulla.png" 
-			onclick="keypadButton('X')" /></td>
-	</tr>
-	<tr>
-		<td><img alt="7" width="60" height="48" border="0"
-			src="images/key07.png" onclick="keypadButton(7)" /></td>
-		<td><img alt="8" width="60" height="48" border="0"
-			src="images/key08.png" onclick="keypadButton(8)" /></td>
-		<td><img alt="9" width="60" height="48" border="0"
-			src="images/key09.png" onclick="keypadButton(9)" /></td>
-		<td><img alt="cancella" width="60" height="48" border="0"
-			src="images/back.png" onclick="keypadButton('back')" /></td>
-	</tr>
-	<tr>
-		<td><img alt="*" width="60" height="48" border="0"
-			src="images/key-asterisk.png" onclick="keypadButton('*')"/></td>
-		<td><img alt="0" width="60" height="48" border="0"
-			src="images/key00.png" onclick="keypadButton(0)" /></td>
-		<td><img alt="#" width="60" height="48" border="0"
-			src="images/key-sharp.png" onclick="keypadButton('#')" /></td>
-		<td><img onclick="keypadButton('ok');" title="OK" alt="ok" width="60"
-			height="48" border="0" src="images/ok.png" 
-			onclick="keypadButton('ok')" /></td>
-	</tr>
-	<tr>
-		<td colspan="4"><img alt="footer" width="240" height="58"
-			border="0" src="images/footer.png" /></td>
-	</tr>
-</table>
+<div id="login" style="display: none; background: URL(images/groundcalc.png); width: <?php echo (IPOD_VIEWPORT_WIDTH); ?>px; height: <?php echo (IPOD_VIEWPORT_HEIGHT); ?>px;">
+	<div id="keypadScreen" style="position: absolute; top: 48px; left: 36px; width: 260px; height: 47px; font-size: 60px; overflow: hidden; text-align: center;">&nbsp;</div> 
+	<div style="position: absolute; top: 108px; left: 30px;">
+		<table id="keypad" title="AUI login - immetti codice personale e premi OK" summary="keypad" cellpadding="0" cellspacing="0"
+			border="0">
+			<tr>
+				<td><img alt="1" width="68" height="60" border="0"
+					src="images/key_1.png" onclick="keypadButton(1)" /></td>
+				<td><img alt="2" width="68" height="60" border="0"
+					src="images/key_2.png" onclick="keypadButton(2)" /></td>
+				<td><img alt="3" width="68" height="60" border="0"
+					src="images/key_3.png" onclick="keypadButton(3)" /></td>
+				<td><img alt="on" width="68" height="60" border="0"
+					src="images/key_on.png" onclick="keypadButton('on')"/></td>
+			</tr>
+			<tr>
+				<td><img alt="4" width="68" height="60" border="0"
+					src="images/key_4.png" onclick="keypadButton(4)" /></td>
+				<td><img alt="5" width="68" height="60" border="0"
+					src="images/key_5.png" onclick="keypadButton(5)" /></td>
+				<td><img alt="6" width="68" height="60" border="0"
+					src="images/key_6.png" onclick="keypadButton(6)" /></td>
+				<td><img onclick="keypadButton('x')" alt="annulla" width="68"
+					height="60" border="0" src="images/key_x.png" 
+					onclick="keypadButton('X')" /></td>
+			</tr>
+			<tr>
+				<td><img alt="7" width="68" height="60" border="0"
+					src="images/key_7.png" onclick="keypadButton(7)" /></td>
+				<td><img alt="8" width="68" height="60" border="0"
+					src="images/key_8.png" onclick="keypadButton(8)" /></td>
+				<td><img alt="9" width="68" height="60" border="0"
+					src="images/key_9.png" onclick="keypadButton(9)" /></td>
+				<td><img alt="cancella" width="68" height="60" border="0"
+					src="images/key_back.png" onclick="keypadButton('back')" /></td>
+			</tr>
+			<tr>
+				<td><img alt="*" width="68" height="60" border="0"
+					src="images/key_asterisco.png" onclick="keypadButton('*')"/></td>
+				<td><img alt="0" width="68" height="60" border="0"
+					src="images/key_0.png" onclick="keypadButton(0)" /></td>
+				<td><img alt="#" width="68" height="60" border="0"
+					src="images/key_cancelletto.png" onclick="keypadButton('#')" /></td>
+				<td><img onclick="keypadButton('ok');" title="OK" alt="ok" width="68"
+					height="60" border="0" src="images/key_ok.png" 
+					onclick="keypadButton('ok')" /></td>
+			</tr>
+		</table>
+	</div>
 </div>
 <div id="navigazione" style="display: none;">
   <div id="mappa-out" style="width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px; height: <?php echo(IPOD_VIEWPORT_HEIGHT - 80); ?>px;">
@@ -303,7 +297,7 @@ foreach ($piani as $piano):
 	} // if iPod
 endforeach; // $piani as $piano
  ?>
- 		<div id="dimmer"
+		<div id="dimmer"
 			style="position: absolute; width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px; height: <?php echo(IPOD_MAP_AREA_HEIGHT); ?>px; 
 				overflow: hidden; display: none;" onclick="hideDimmer()">
 <?php
@@ -327,13 +321,19 @@ $dimmerCursorHeight = $temp[1];
 					</div>
 			</div> <!--  dimmer-sfondo -->
 		</div><!--  dimmer -->
- 
+		<div id="blind"
+			style="position: absolute; width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px; height: <?php echo(IPOD_MAP_AREA_HEIGHT); ?>px; 
+				overflow: hidden; display: none;" onclick="blindBackgroundClicked()">
+			<div style="position: absolute; width: 100%; height: 100%; background-color: black; filter:alpha(opacity='80'); opacity: 0.8;">&nbsp;</div>
+			<div id="blind-control" style="position: absolute; width: 80px; height: 180px; background-image: URL(images/serrande.png);"
+				onclick="blindControlClicked(event)"></div>
+		</div><!--  blind -->
 	</div> 
 	<!-- fine mappa -->
-  </div>
-  <div id="appbar-out" style="display: none;">
+	</div>
+	<div id="appbar-out" style="display: none;">
 <?php include('appbar.php'); ?>
-  </div>
+	</div>
 </div>
 <script type="" language="javascript">
 	const MOBILE = <?php if($mobile) echo "true"; else echo "false"; ?>;
@@ -370,6 +370,7 @@ $dimmerCursorHeight = $temp[1];
 <script type="" language="javascript" src="appbar<?php if (APPBAR_SIMPLE) echo("_simple"); ?>.js"></script>
 <script type="" language="javascript" src="services.js"></script>
 <script type="" language="javascript" src="dimmer_slider.js"></script>
+<script type="" language="javascript" src="blind.js"></script>
 <script type="" language="javascript" src="keypad.js"></script>
 <script type="" language="javascript">
 setInterval("refreshEverything()", 3000);

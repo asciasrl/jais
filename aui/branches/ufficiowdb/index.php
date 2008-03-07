@@ -19,11 +19,11 @@ $mobile = !((strpos($_SERVER['HTTP_USER_AGENT'], "iPod") === false) &&
 <?php
 if ($mobile) {
 ?>
-<meta name = "viewport" content = "width=device-width, maximum-scale=2" />
+<meta name = "viewport" content = "width=device-width, maximum-scale=4" />
 <style type="text/css">
 body {
 	margin: 0px;
-	-webkit-tap-highlight-color:rgba(0,0,0,0);
+	-webkit-tap-highlight-color:rgba(1,1,1,0.5);
 }
 </style>
 <?php

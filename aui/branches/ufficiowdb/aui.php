@@ -15,8 +15,8 @@ require_once("custom/config.php");
  */
 function creaLayerServizi($piano, $big, $clickable) {
 	global $apps, $frameIlluminazione, $frameEnergia, $frameClima, 
-		$frameSerramenti;
-	global $idLuci, $idPrese, $idClimi, $idSerramenti;
+		$frameSerramenti, $frameVideo;
+	global $idLuci, $idPrese, $idClimi, $idSerramenti, $idVideo;
 	if ($big) {
 		$scale = 1;
 	} else {
@@ -128,26 +128,56 @@ function creaLayerServizi($piano, $big, $clickable) {
 			$imgHeight = $temp[1] * $scale;
 			if (isset($frameSerramenti[$piano["id"]])) {
 				foreach ($frameSerramenti[$piano["id"]] as 
-					$idSerramento => $serramento) {
+					$idSerramento => $schermo) {
 					if ($clickable) {
 						$id = "id=\"$idSerramento\"";
 						$active = "status=\"still\" addressopen=\"" . 
-							$serramento["addressopen"] . 
-							"\" addressclose =\"" . $serramento["addressclose"].
+							$schermo["addressopen"] . 
+							"\" addressclose =\"" . $schermo["addressclose"].
 							"\" onClick=\"blindClicked(event, this)\"";
 						$idSerramenti[] = $idSerramento;
-						$text = $serramento["label"];
+						$text = $schermo["label"];
 					} else {
 						$id = "";
 						$active = "";
 						$text = "";
 					}
 					echo("<div $id style=\"position:absolute; left: " .
-						$serramento["x"] * $scale. "px; top: " . 
-						$serramento["y"] * $scale . "px; color: white;\" $active name=\"" . 
-							$serramento["label"] . "\"><div style=\"position: absolute;\"><img src=\"".
-							IMG_BLIND_STILL."\" alt=\"".$serramento["label"]."\" width=\"$imgWidth\" height=\"$imgHeight\"/></div><div style=\"position: absolute; font-size: $fontSize;\"></div></div>");
-				} // foreach serramento
+						$schermo["x"] * $scale. "px; top: " . 
+						$schermo["y"] * $scale . "px; color: white;\" $active name=\"" . 
+							$schermo["label"] . "\"><div style=\"position: absolute;\"><img src=\"".
+							IMG_BLIND_STILL."\" alt=\"".$schermo["label"]."\" width=\"$imgWidth\" height=\"$imgHeight\"/></div><div style=\"position: absolute; font-size: $fontSize;\"></div></div>");
+				} // foreach schermo
+			} else {
+				echo("Non ci sono serramenti su questo piano!");
+			}
+			break;
+		case "video":
+			$temp = getimagesize(IMG_BLIND_STILL);
+			$imgWidth = $temp[0] * $scale;
+			$imgHeight = $temp[1] * $scale;
+			if (isset($frameVideo[$piano["id"]])) {
+				foreach ($frameVideo[$piano["id"]] as 
+					$idSchermo => $schermo) {
+					if ($clickable) {
+						$id = "id=\"$idSchermo\"";
+						$active = "status=\"still\" addressopen=\"" . 
+							$schermo["addressopen"] . 
+							"\" addressclose =\"" . $schermo["addressclose"].
+							"\" onClick=\"blindClicked(event, this)\"";
+						$idVideo[] = $idSchermo;
+						$text = $schermo["label"];
+					} else {
+						$id = "";
+						$active = "";
+						$text = "";
+					}
+					echo("<div $id style=\"position:absolute; left: " .
+						$schermo["x"] * $scale. "px; top: " . 
+						$schermo["y"] * $scale . "px; color: white;\" $active name=\"" . 
+							$schermo["label"] . "\"><div style=\"position: absolute;\"><img src=\"".
+							IMG_BLIND_STILL."\" alt=\"".$schermo["label"]."\" width=\"$imgWidth\" height=\"$imgHeight\"/></div><div style=\"position: absolute; font-size: $fontSize;\"></div></div>");
+				} // foreach schermo
 			} else {
 				echo("Non ci sono serramenti su questo piano!");
 			}

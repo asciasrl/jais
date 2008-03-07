@@ -42,6 +42,10 @@ var appbarObject = document.getElementById("appbar-out");
 
 /**
  * Posizione del mouse relativa all'oggetto.
+ *
+ * @param ev evento che contiene un click o simile
+ * @param objectPosition la posizione dell'oggetto che ha ricevuto il click
+ * (calcolata da getPosition)
  */
 function mouseCoords(ev, objectPosition){
 	ev = ev || window.event;

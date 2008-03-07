@@ -131,7 +131,6 @@ function dimmerCursor2Value(cursorTop) {
  * Mostra il cursore del dimmer.
  *
  * @param divOnMap elemento div che contiene l'icona del dimmer
- * @address indirizzo del dimmer sul bus
  */
 function showDimmer(divOnMap) {
 	var maxTop, maxLeft, minTop, minLeft;
@@ -141,14 +140,14 @@ function showDimmer(divOnMap) {
 	if (MOBILE) {
 		maxTop = mapSize.y - DIMMER_SLIDER_TOTAL_HEIGHT;
 		maxLeft = mapSize.x - DIMMER_SLIDER_WIDTH;
-		minTop = 0;
+		minTop = STATUS_BAR_HEIGHT;
 		minLeft = 0;
 	} else {
 		maxTop = -currentMapPosition.y + MAP_AREA_HEIGHT - 
 			DIMMER_SLIDER_TOTAL_HEIGHT;
 		maxLeft = -currentMapPosition.x + MAP_AREA_WIDTH - 
 			DIMMER_SLIDER_WIDTH;
-		minTop = -currentMapPosition.y;
+		minTop = -currentMapPosition.y + STATUS_BAR_HEIGHT;
 		minLeft = -currentMapPosition.x;
 	}
 	dimmerSliderTop = iconTop -	DIMMER_SLIDER_TOTAL_HEIGHT / 2;

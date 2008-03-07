@@ -10,11 +10,6 @@
 var iconToToggle = false;
 
 /**
- * Icona della tapparella che stiamo modificando in questo momento.
- */
-var blindBeingControlled = false; 
-
-/**
  * Riceve le risposte delle richieste fatte da onOffIcon().
  *
  * <p>In caso di errore, ripristina l'icona "spento".</p>
@@ -113,53 +108,6 @@ function thermoClicked(event, thermoDiv) {
 	event.stopPropagation();
 }
 
-/**
- * Riceve le risposte delle richieste fatte da blindClicked().
- *
- * <p>In caso di errore, ripristina l'icona "fermo".</p>
- */
-function blindCallback(ok) {
-	if (!ok) {
-		blindBeingControlled.attributes.getNamedItem("status").value = "still";
-		blindBeingControlled.firstChild.firstChild.src = IMG_BLIND_STILL;
-	}
-	blindBeingControlled = false;
-}
-
-/**
- * L'utente ha fatto click su una tapparella.
- *
- * <p>Se la tapparella e' ferma, la apriamo. Altrimenti, la fermiamo.</p>
- */
-function blindClicked(event, blindDiv) {
-	var status = blindDiv.attributes.getNamedItem("status");
-	var icon = blindDiv.firstChild.firstChild;
-	statusMessage(icon.alt);
-	if (blindBeingControlled == false) {
-		// Non c'e' nessun'altra richiesta in corso per tapparelle
-		blindBeingControlled = blindDiv;
-		if (status.value == "still") {
-			// FIXME: dobbiamo permettere di fare sia open sia close.
-			var addressOpen = blindDiv.attributes.getNamedItem("addressopen").value;
-			status.value = "opening";
-			icon.src = IMG_BLIND_OPENING;
-			setPort(addressOpen, "ON", blindCallback);
-		} else if (status.value == "opening") {
-			var addressOpen = blindDiv.attributes.getNamedItem("addressopen").value;
-			status.value = "still";
-			icon.src = IMG_BLIND_STILL;
-			setPort(addressOpen, "OFF", blindCallback);
-		} else if (status.value == "closing") {
-			var addressClose = blindDiv.attributes.getNamedItem("addressclose").value;
-			status.value = "still";
-			icon.src = IMG_BLIND_STILL;
-			setPort(addressClose, "OFF", blindCallback);
-		}
-	} else {
-		statusMessage("Riprova.");
-	}
-	event.stopPropagation();
-}
 
 /**
  * Aggiorna lo stato di una serie di elementi.

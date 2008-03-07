@@ -134,9 +134,9 @@ public class MyController extends Controller implements DeviceListener {
 		logger.trace(event.getInfo());
 		// Esempio: accendiamo un dimmer
 		Device device = event.getDevice();
-		if (device.getAddress().equals("1")) {
-			logger.info("Comando da BMC virtuale");
-			receiveAuthenticatedRequest("set", "0.5:Out2", "100");
-		}
+//		if (device.getAddress().equals("1")) {
+//			logger.info("Comando da BMC virtuale");
+//			receiveAuthenticatedRequest("set", "0.5:Out2", "100");
+//		}
 	}
 }

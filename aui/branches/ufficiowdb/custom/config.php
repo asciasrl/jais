@@ -212,4 +212,26 @@ $frameSerramenti = Array(
 			"addressopen" => "0.1:Out5",
 			"addressclose" => "0.1:Out6")));
 
+/**
+ * Schermi e altre cose "video" collegate al sistema.
+ * 
+ * <p>Questa array di ID verra' popolata in fase di creazione degli elementi 
+ * del layer "video".</p>
+ */
+$idVideo = Array();
+
+/**
+ * Frame: video.
+ * 
+ * <p>Gli indici sono gli ID dei piani.</p>
+ */
+$frameVideo = Array(
+	"piano-01A" => Array(
+		"p1a-schermo1" => Array(
+			"x" => 295,
+			"y" => 70,
+			"label" => "Schermo",
+			"addressopen" => "0.5:Out1",
+			"addressclose" => "0.5:Out2")));
+
 ?>

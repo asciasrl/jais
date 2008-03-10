@@ -180,6 +180,7 @@ function showDimmer(divOnMap) {
 	currentDimmerValue = dimmerValueElement.value;
 	currentDimmerCursorTop = dimmerValue2Cursor(currentDimmerValue); 
 	dimmerCursorLayer.style.top = currentDimmerCursorTop + "px";
+	dimmerCursorText.textContent = currentDimmerValue + "%";
 	statusMessage(dimmerName);
 	if (!dimmerSetInterval) {
 		// Lanciamo il contatore

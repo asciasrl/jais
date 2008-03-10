@@ -17,12 +17,12 @@ define(APPBAR_START_POSITION, 40);
 /**
  * True se la appbar non deve fare lo scrolling.
  */
-define("APPBAR_SIMPLE", true);
+define("APPBAR_SIMPLE", false);
 
 /**
  * Lista dei servizi.
  */
-$apps = array('illuminazione','serramenti','sicurezza','video');
+$apps = array('illuminazione','serramenti','sicurezza','video', 'clima', 'audio', 'scenari');
 
 /**
  * Altezza della "parte utile" dello slider del dimmer [pixel].
@@ -232,9 +232,15 @@ $idAllarmi = Array();
  */
 $frameSicurezza = Array(
 	"piano-01A" => Array(
-		"p1a-allarme1" => Array(
+		"p1a-porta1" => Array(
+			"type" => SIC_PORTA, 
 			"x" => 165,
 			"y" => 282,
-			"label" => "Porta")));
+			"label" => "Porta"),
+		"p1a-allarme1" => Array(
+			"type" => SIC_LUCCHETTO, 
+			"x" => 365,
+			"y" => 342,
+			"label" => "Allarme")));
 
 ?>

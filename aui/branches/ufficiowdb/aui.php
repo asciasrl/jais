@@ -183,31 +183,54 @@ function creaLayerServizi($piano, $big, $clickable) {
 			}
 			break;
 		case "sicurezza":
-			$temp = getimagesize(IMG_LOCK_OPEN);
-			$imgWidth = $temp[0] * $scale;
-			$imgHeight = $temp[1] * $scale;
 			if (isset($frameSicurezza[$piano["id"]])) {
 				foreach ($frameSicurezza[$piano["id"]] as 
 					$idAllarme => $allarme) {
 					if ($clickable) {
 						$id = "id=\"$idAllarme\"";
-						$active = "status=\"open_ok\" onClick=\"alarmClicked(event, this)\"";
+						switch($allarme["type"]) {
+						case SIC_PORTA:
+							$active = "status=\"open\" alarm=\"off\" onClick=\"doorClicked(event, this)\"";
+							$img = IMG_DOOR_OPEN;
+							break;
+						case SIC_LUCCHETTO:
+							$active = "status=\"off\" onClick=\"lockClicked(event, this)\"";
+							$img = IMG_LOCK_OPEN;
+							break;
+						}
 						$idAllarmi[] = $idAllarme;
 						$text = $allarme["label"];
 					} else {
 						$id = "";
 						$active = "";
 						$text = "";
+						switch($allarme["type"]) {
+							case SIC_PORTA:
+								$img = IMG_DOOR_OPEN;
+							break;
+						case SIC_LUCCHETTO:
+							$img = IMG_LOCK_OPEN;
+							break;
+						}
 					}
+					$temp = getimagesize($img);
+					$imgWidth = $temp[0] * $scale;
+					$imgHeight = $temp[1] * $scale;
 					echo("<div $id style=\"position:absolute; left: " .
 						$allarme["x"] * $scale. "px; top: " . 
 						$allarme["y"] * $scale . "px; color: white;\" $active name=\"" . 
 							$allarme["label"] . "\"><div style=\"position: absolute;\"><img src=\"".
-							IMG_LOCK_OPEN."\" alt=\"".$allarme["label"]."\" width=\"$imgWidth\" height=\"$imgHeight\"/></div><div style=\"position: absolute; font-size: $fontSize;\"></div></div>");
+							$img."\" alt=\"".$allarme["label"]."\" width=\"$imgWidth\" height=\"$imgHeight\"/></div><div style=\"position: absolute; font-size: $fontSize;\"></div></div>");
 				} // foreach allarme
 			} else {
 				echo("Non ci sono allarmi su questo piano!");
 			}
+			break;
+		case "scenari": // TODO: farlo vero
+			// Riproduciamo l'immagine facendola grande quanto la mappa.
+			$imgWidth = $piano["bigMapSize"]["w"] * $scale;
+			$imgHeight = $piano["bigMapSize"]["h"] * $scale;
+			echo("<img src=\"" . IMG_SCENARIOS . "\" width=\"$imgWidth\" height=\"$imgHeight\" alt=\"\" />");
 			break;
 		default:
 		// echo("$s<br/>$s<br/>$s<br/>");
@@ -240,7 +263,7 @@ function arrayJavascript($arr) {
 <div id="screensaver" title="AUI screensaver - clicca per accedere" onclick="vai('login');"><img
 	alt="AUI" src="images/ascia_logo_home.png" /></div>
 <div id="login" style="display: none; background: URL(images/groundcalc.png); width: <?php echo (IPOD_VIEWPORT_WIDTH); ?>px; height: <?php echo (IPOD_VIEWPORT_HEIGHT); ?>px;">
-	<div id="keypadScreen" style="position: absolute; top: 48px; left: 36px; width: 260px; height: 47px; font-size: 60px; overflow: hidden; text-align: center;">&nbsp;</div> 
+	<div id="keypadScreen" style="position: absolute; top: 24px; left: 28px; width: 260px; height: 60px; font-size: 60px; overflow: hidden; text-align: center;">&nbsp;</div> 
 	<div style="position: absolute; top: 108px; left: 30px;">
 		<table id="keypad" title="AUI login - immetti codice personale e premi OK" summary="keypad" cellpadding="0" cellspacing="0"
 			border="0">
@@ -377,7 +400,9 @@ $dimmerCursorTextTopMargin = $dimmerCursorHeight / 3;
 				<div style="position: absolute; top: <?php echo($dimmerTopHeight); ?>px; width: <?php echo ($dimmerWidth); ?>px; height: <?php echo (DIMMER_SLIDER_HEIGHT - 2 * DIMMER_SLIDER_CORNER_HEIGHT ); ?>px; background-image: URL(<?php echo(IMG_DIMMER_SLIDER_MIDDLE); ?>);"></div>
 				<div style="position: absolute; top: <?php echo($dimmerTopHeight + DIMMER_SLIDER_HEIGHT - 2 * DIMMER_SLIDER_CORNER_HEIGHT ); ?>px;"><img src="<?php echo(IMG_DIMMER_SLIDER_BOTTOM); ?>" width="<?php echo($dimmerWidth); ?>" height="<?php echo($dimmerTopHeight); ?>" /></div>
 				<div id="dimmer-tasto" style="position: absolute; 
-					margin-left: <?php echo(DIMMER_SLIDER_BORDER_WIDTH ); ?>px;"><div style="position: absolute;"><img  src="<?php echo(IMG_DIMMER_CURSOR); ?> " width="<?php echo($dimmerCursorWidth); ?>" height="<?php echo($dimmerCursorHeight); ?>" /></div><div id="dimmer-tasto-testo" style="position: absolute; text-align: center; width: <?php echo($dimmerCursorWidth); ?>; top: <?php echo($dimmerCursorTextTopMargin); ?>px; bottom: auto; font-size: <?php echo($dimmerCursorTextSize); ?>px;"></div>
+					margin-left: <?php echo(DIMMER_SLIDER_BORDER_WIDTH ); ?>px;">
+					<div style="position: absolute;"><img  src="<?php echo(IMG_DIMMER_CURSOR); ?> " width="<?php echo($dimmerCursorWidth); ?>" height="<?php echo($dimmerCursorHeight); ?>" /></div>
+					<div id="dimmer-tasto-testo" style="position: absolute; text-align: center; width: <?php echo($dimmerCursorWidth); ?>px; top: <?php echo($dimmerCursorTextTopMargin); ?>px; bottom: auto; font-size: <?php echo($dimmerCursorTextSize); ?>px;"></div>
 					</div>
 			</div> <!--  dimmer-sfondo -->
 		</div><!--  dimmer -->
@@ -436,8 +461,11 @@ $blindControlHeight = $temp[1];
 	const MAP_AREA_WIDTH = <?php echo(IPOD_VIEWPORT_WIDTH); ?>;
 	const MAP_AREA_HEIGHT = <?php echo(IPOD_MAP_AREA_HEIGHT); ?>;
 	const IMG_LOCK_OPEN = "<?php echo(IMG_LOCK_OPEN); ?>";
-	const IMG_LOCK_CLOSE_OK = "<?php echo(IMG_LOCK_CLOSE_OK); ?>";
-	const IMG_LOCK_OPEN_ALARM = "<?php echo(IMG_LOCK_OPEN_ALARM); ?>";
+	const IMG_LOCK_CLOSE = "<?php echo(IMG_LOCK_CLOSE); ?>";
+	const IMG_DOOR_OPEN = "<?php echo(IMG_DOOR_OPEN); ?>";
+	const IMG_DOOR_CLOSE = "<?php echo(IMG_DOOR_CLOSE); ?>";
+	const IMG_DOOR_OPEN_ALARM = "<?php echo(IMG_DOOR_OPEN_ALARM); ?>";
+	const IMG_DOOR_CLOSE_OK = "<?php echo(IMG_DOOR_CLOSE_OK); ?>";
 </script>
 <script type="" language="javascript" src="statusbar.js"></script>
 <script type="" language="javascript" src="aui.js"></script>

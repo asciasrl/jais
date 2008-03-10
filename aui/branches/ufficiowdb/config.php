@@ -104,6 +104,8 @@ define("BLIND_DOWN_BOTTOM", 78);
 
 define("ILL_LUCE", 0);
 define("ILL_DIMMER", 1);
+define("SIC_LUCCHETTO", 0);
+define("SIC_PORTA", 1);
 
 
 /**
@@ -118,9 +120,13 @@ define("IMG_THERMO_OFF", "images/clima_off.png");
 define("IMG_BLIND_STILL", "images/serranda_ferma.png");
 define("IMG_BLIND_OPENING", "images/serranda_sale.png");
 define("IMG_BLIND_CLOSING", "images/serranda_scende.png");
-define("IMG_LOCK_OPEN", "images/allarm.png");
-define("IMG_LOCK_CLOSE_OK", "images/allarm_on.png");
-define("IMG_LOCK_OPEN_ALARM", "images/allarm_off.png");
+define("IMG_LOCK_OPEN", "images/allarm_off.png");
+define("IMG_LOCK_CLOSE", "images/allarm_on.png");
+define("IMG_DOOR_OPEN", "images/porta_aperta.png");
+define("IMG_DOOR_CLOSE", "images/porta_chiusa.png");
+define("IMG_DOOR_OPEN_ALARM", "images/porta_aperta_red.png");
+define("IMG_DOOR_CLOSE_OK", "images/porta_chiusa_green.png");
+define("IMG_SCENARIOS", "images/scenari_all.png");
 
 /**
  * Altezza della status bar [pixel].

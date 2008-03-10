@@ -26,7 +26,7 @@ public class ControllerWDB extends MyController {
 	static Bus bus;
 	static BMCComputer bmcComputer;
 	static HTTPServer server;
-	static BusTest busController;
+	static ControllerWDB busController;
 	
 	
 	static void makeVirtualBMC(int address) {
@@ -98,7 +98,7 @@ public class ControllerWDB extends MyController {
 	}
 	
 	static void startServer() {
-		busController = new BusTest(null);
+		busController = new ControllerWDB(null);
 		busController.addConnector(bus);
 		try {
 			server = new HTTPServer(8080, busController, 

@@ -234,4 +234,25 @@ $frameVideo = Array(
 			"addressopen" => "0.5:Out1",
 			"addressclose" => "0.5:Out2")));
 
+
+/**
+ * Allarmi gestiti dal sistema.
+ * 
+ * <p>Questa array di ID verra' popolata in fase di creazione degli elementi 
+ * del layer "sicurezza".</p>
+ */
+$idAllarmi = Array();
+
+/**
+ * Frame: sicurezza.
+ * 
+ * <p>Gli indici sono gli ID dei piani.</p>
+ */
+$frameSicurezza = Array(
+	"piano-01A" => Array(
+		"p1a-allarme1" => Array(
+			"x" => 165,
+			"y" => 282,
+			"label" => "Porta")));
+
 ?>

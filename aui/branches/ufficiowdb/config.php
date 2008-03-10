@@ -118,6 +118,9 @@ define("IMG_THERMO_OFF", "images/clima_off.png");
 define("IMG_BLIND_STILL", "images/serranda_ferma.png");
 define("IMG_BLIND_OPENING", "images/serranda_sale.png");
 define("IMG_BLIND_CLOSING", "images/serranda_scende.png");
+define("IMG_LOCK_OPEN", "images/allarm.png");
+define("IMG_LOCK_CLOSE_OK", "images/allarm_on.png");
+define("IMG_LOCK_OPEN_ALARM", "images/allarm_off.png");
 
 /**
  * Altezza della status bar [pixel].

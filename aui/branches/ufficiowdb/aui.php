@@ -15,8 +15,8 @@ require_once("custom/config.php");
  */
 function creaLayerServizi($piano, $big, $clickable) {
 	global $apps, $frameIlluminazione, $frameEnergia, $frameClima, 
-		$frameSerramenti, $frameVideo;
-	global $idLuci, $idPrese, $idClimi, $idSerramenti, $idVideo;
+		$frameSerramenti, $frameVideo, $frameSicurezza;
+	global $idLuci, $idPrese, $idClimi, $idSerramenti, $idVideo, $idAllarmi;
 	if ($big) {
 		$scale = 1;
 	} else {
@@ -179,7 +179,34 @@ function creaLayerServizi($piano, $big, $clickable) {
 							IMG_BLIND_STILL."\" alt=\"".$schermo["label"]."\" width=\"$imgWidth\" height=\"$imgHeight\"/></div><div style=\"position: absolute; font-size: $fontSize;\"></div></div>");
 				} // foreach schermo
 			} else {
-				echo("Non ci sono serramenti su questo piano!");
+				echo("Non ci sono schermi su questo piano!");
+			}
+			break;
+		case "sicurezza":
+			$temp = getimagesize(IMG_LOCK_OPEN);
+			$imgWidth = $temp[0] * $scale;
+			$imgHeight = $temp[1] * $scale;
+			if (isset($frameSicurezza[$piano["id"]])) {
+				foreach ($frameSicurezza[$piano["id"]] as 
+					$idAllarme => $allarme) {
+					if ($clickable) {
+						$id = "id=\"$idAllarme\"";
+						$active = "status=\"open_ok\" onClick=\"alarmClicked(event, this)\"";
+						$idAllarmi[] = $idAllarme;
+						$text = $allarme["label"];
+					} else {
+						$id = "";
+						$active = "";
+						$text = "";
+					}
+					echo("<div $id style=\"position:absolute; left: " .
+						$allarme["x"] * $scale. "px; top: " . 
+						$allarme["y"] * $scale . "px; color: white;\" $active name=\"" . 
+							$allarme["label"] . "\"><div style=\"position: absolute;\"><img src=\"".
+							IMG_LOCK_OPEN."\" alt=\"".$allarme["label"]."\" width=\"$imgWidth\" height=\"$imgHeight\"/></div><div style=\"position: absolute; font-size: $fontSize;\"></div></div>");
+				} // foreach allarme
+			} else {
+				echo("Non ci sono allarmi su questo piano!");
 			}
 			break;
 		default:
@@ -408,6 +435,9 @@ $blindControlHeight = $temp[1];
 	const BLIND_CONTROL_WIDTH = <?php echo($blindControlWidth); ?>;
 	const MAP_AREA_WIDTH = <?php echo(IPOD_VIEWPORT_WIDTH); ?>;
 	const MAP_AREA_HEIGHT = <?php echo(IPOD_MAP_AREA_HEIGHT); ?>;
+	const IMG_LOCK_OPEN = "<?php echo(IMG_LOCK_OPEN); ?>";
+	const IMG_LOCK_CLOSE_OK = "<?php echo(IMG_LOCK_CLOSE_OK); ?>";
+	const IMG_LOCK_OPEN_ALARM = "<?php echo(IMG_LOCK_OPEN_ALARM); ?>";
 </script>
 <script type="" language="javascript" src="statusbar.js"></script>
 <script type="" language="javascript" src="aui.js"></script>
@@ -419,6 +449,7 @@ $blindControlHeight = $temp[1];
 <script type="" language="javascript" src="dimmer_slider.js"></script>
 <script type="" language="javascript" src="blind.js"></script>
 <script type="" language="javascript" src="keypad.js"></script>
+<script type="" language="javascript" src="alarm.js"></script>
 <script type="" language="javascript">
 setInterval("refreshEverything()", 3000);
 </script>

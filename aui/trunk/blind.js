@@ -3,46 +3,6 @@
  */
 
 /**
- * Coordinata y del bordo superiore del bottone "up".
- */
-const BLIND_UP_TOP = 12;
-
-/**
- * Coordinata x del bordo sinistro dei bottoni "up".
- */
-const BLIND_LEFT = 22;
-
-/**
- * Coordinata y del bordo inferiore del bottone "up".
- */
-const BLIND_UP_BOTTOM = 80;
-
-/**
- * Coordinata x del bordo destro dei bottoni.
- */
-const BLIND_RIGHT = 74;
-
-/**
- * Coordinata y del bordo inferiore del bottone "down".
- */
-const BLIND_DOWN_TOP = 100;
-
-/**
- * Coordinata y del bordo inferiore del bottone "down".
- */
-const BLIND_DOWN_BOTTOM = 156;
-
-/**
- * Altezza del controllo tapparelle.
- */
-const BLIND_CONTROL_HEIGHT = 180;
-
-/**
- * Larghezza del controllo tapparelle.
- */
-const BLIND_CONTROL_WIDTH = 80;
-
-/**
  * Coordinata y del controllo.
  */
 var blindControlTop;
@@ -95,29 +55,23 @@ var blindControlPosition;
  *
  * <p>Se c'e' gia' una tapparella sotto controllo, mostra un messaggio.</p>
  *
- * @param divOnMap elemento div che contiene l'icona della tapparella
  */
-function showBlindControl(divOnMap) {
+function showBlindControl() {
 	var maxTop, maxLeft, minTop, minLeft;
-	var iconTop = parseInt(divOnMap.style.top.slice(0, -2));
-	var iconLeft = parseInt(divOnMap.style.left.slice(0, -2));
-	if (blindBeingControlled) {
-		// Stiamo gia' controllando un'altra tapparella.
-		statusMessage("Riprova.");
-		return;
-	}
+	var iconTop = parseInt(blindBeingControlled.style.top.slice(0, -2));
+	var iconLeft = parseInt(blindBeingControlled.style.left.slice(0, -2));
 	// Se siamo su fisso, vogliamo che lo slider appaia nello schermo
 	if (MOBILE) {
 		maxTop = mapSize.y - BLIND_CONTROL_HEIGHT;
 		maxLeft = mapSize.x - BLIND_CONTROL_WIDTH;
-		minTop = 0;
+		minTop = STATUS_BAR_HEIGHT;
 		minLeft = 0;
 	} else {
 		maxTop = -currentMapPosition.y + MAP_AREA_HEIGHT - 
 			BLIND_CONTROL_HEIGHT;
 		maxLeft = -currentMapPosition.x + MAP_AREA_WIDTH - 
 			BLIND_CONTROL_WIDTH;
-		minTop = -currentMapPosition.y;
+		minTop = -currentMapPosition.y + STATUS_BAR_HEIGHT;
 		minLeft = -currentMapPosition.x;
 	}
 	blindControlTop = iconTop -	BLIND_CONTROL_HEIGHT / 2;
@@ -141,13 +95,7 @@ function showBlindControl(divOnMap) {
 	blindLayer.style.width = mapSize.width + "px";
 	blindLayer.style.height = mapSize.height + "px";
 	blindLayer.style.display = "";
-	blindName = divOnMap.attributes.getNamedItem("name").value;
-	var attributes = divOnMap.attributes;
-	blindStatusElement = attributes.getNamedItem("status");
-	blindIconOnMap = divOnMap.firstChild.firstChild;
-	blindBeingControlled = divOnMap;
 	blindControlPosition = getPosition(blindControlLayer);
-	statusMessage(blindName);
 }
 
 /**
@@ -217,36 +165,77 @@ function blindControlClicked(event) {
 	if ((mousePos.x >= BLIND_LEFT) && (mousePos.x <= BLIND_RIGHT)) {
 		if ((mousePos.y >= BLIND_UP_TOP) && (mousePos.y <= BLIND_UP_BOTTOM)) {
 			// Premuto "UP"
-			switch(blindStatusElement.value) {
-			case "still":
-				openBlind();
-				break;
-			case "closing":
-				stopBlind(false);
-				break;
-			default:
-				blindBeingControlled = false;
-			}
+			openBlind();
 			hideBlindControl();
 		} else if ((mousePos.y >= BLIND_DOWN_TOP) && 
 			(mousePos.y <= BLIND_DOWN_BOTTOM)) {
 			// Premuto "DOWN"
-			switch(blindStatusElement.value) {
-			case "still":
-				closeBlind();
-				break;
-			case "opening":
-				stopBlind(true);
-				break;
-			default:
-				blindBeingControlled = false;
-			}
+			closeBlind();
 			hideBlindControl();
 		} // Altrimenti scartiamo il click e basta.
 	} 
 	// Blocchiamo l'evento.
 	event = event || window.event;
 	event.stopPropagation();
+}
+
+/**
+ * L'utente ha fatto click su una tapparella.
+ *
+ * <p>Se la tapparella si sta muovendo, la fermiamo. Altrimenti, apriamo il
+ * controllo.</p>
+ */
+function blindClicked(event, blindDiv) {
+	if (blindBeingControlled) {
+		// Stiamo gia' controllando un'altra tapparella.
+		statusMessage("Riprova.");
+		return;
+	}
+	blindBeingControlled = blindDiv;
+	var attributes = blindBeingControlled.attributes;
+	blindStatusElement = attributes.getNamedItem("status");
+	blindIconOnMap = blindBeingControlled.firstChild.firstChild;
+	blindName = blindBeingControlled.attributes.getNamedItem("name").value;
+	switch(blindStatusElement.value) {
+		case "opening":
+			stopBlind(true);
+			break;
+		case "closing":
+			stopBlind(false);
+			break;
+		default:
+			showBlindControl();
+	}
+	statusMessage(blindName);
+	/*
+	var status = blindDiv.attributes.getNamedItem("status");
+	var icon = blindDiv.firstChild.firstChild;
+	statusMessage(icon.alt);
+	if (blindBeingControlled == false) {
+		// Non c'e' nessun'altra richiesta in corso per tapparelle
+		blindBeingControlled = blindDiv;
+		if (status.value == "still") {
+			// FIXME: dobbiamo permettere di fare sia open sia close.
+			var addressOpen = blindDiv.attributes.getNamedItem("addressopen").value;
+			status.value = "opening";
+			icon.src = IMG_BLIND_OPENING;
+			setPort(addressOpen, "ON", blindCallback);
+		} else if (status.value == "opening") {
+			var addressOpen = blindDiv.attributes.getNamedItem("addressopen").value;
+			status.value = "still";
+			icon.src = IMG_BLIND_STILL;
+			setPort(addressOpen, "OFF", blindCallback);
+		} else if (status.value == "closing") {
+			var addressClose = blindDiv.attributes.getNamedItem("addressclose").value;
+			status.value = "still";
+			icon.src = IMG_BLIND_STILL;
+			setPort(addressClose, "OFF", blindCallback);
+		}
+	} else {
+		statusMessage("Riprova.");
+	}
+	event.stopPropagation();
+	*/
 }
 
 /**

@@ -31,7 +31,15 @@ define("IPOD_MAP_AREA_HEIGHT", 276);
  * di tali angoli, che stanno disegnati dentro l'immagine degli estremi dello
  * slider.</p>
  */
-define("DIMMER_SLIDER_CORNER_HEIGHT", 7);
+define("DIMMER_SLIDER_CORNER_HEIGHT", 5);
+
+/**
+ * Larghezza del bordo dello slider del dimmer.
+ *
+ * <p>Lo slider del dimmer ha un bordo che deve essere simmetrico rispetto
+ * all'asse verticale. La sua larghezza in pixel e' questa.</p>
+ */
+define("DIMMER_SLIDER_BORDER_WIDTH", 6);
 
 /**
  * Immagine che contiene la parte superiore dello slider del dimmer.
@@ -56,19 +64,55 @@ define("IMG_DIMMER_SLIDER_MIDDLE", "images/dimmer-sfondo.png");
  */
 define("IMG_DIMMER_CURSOR", "images/dimmer-tasto.png");
 
+/**
+ * Controllo delle tapparelle.
+ */
+define("IMG_BLIND_CONTROL", "images/serrande.png");
+
+/**
+ * Coordinata y del bordo superiore del bottone "up".
+ */
+define("BLIND_UP_TOP", 12);
+
+/**
+ * Coordinata x del bordo sinistro dei bottoni "up".
+ */
+define("BLIND_LEFT", 6);
+
+/**
+ * Coordinata y del bordo inferiore del bottone "up".
+ */
+define("BLIND_UP_BOTTOM", 42);
+
+/**
+ * Coordinata x del bordo destro dei bottoni.
+ */
+define("BLIND_RIGHT", 34);
+
+/**
+ * Coordinata y del bordo inferiore del bottone "down".
+ */
+define("BLIND_DOWN_TOP", 48);
+
+/**
+ * Coordinata y del bordo inferiore del bottone "down".
+ */
+define("BLIND_DOWN_BOTTOM", 78);
 
 // ---------------------------------------------------------
 // Costanti per uso interno
 
 define("ILL_LUCE", 0);
 define("ILL_DIMMER", 1);
+define("SIC_LUCCHETTO", 0);
+define("SIC_PORTA", 1);
 
 
 /**
  * Icone varie.
  */
-define("IMG_LIGHT_ON", "images/light-on.png");
-define("IMG_LIGHT_OFF", "images/light-off.png");
+define("IMG_LIGHT_ON", "images/luce_on.png");
+define("IMG_LIGHT_OFF", "images/luce_off.png");
 define("IMG_POWER_ON", "images/energia_on.png");
 define("IMG_POWER_OFF", "images/energia_off.png");
 define("IMG_THERMO_ON", "images/clima_on.png");
@@ -76,11 +120,18 @@ define("IMG_THERMO_OFF", "images/clima_off.png");
 define("IMG_BLIND_STILL", "images/serranda_ferma.png");
 define("IMG_BLIND_OPENING", "images/serranda_sale.png");
 define("IMG_BLIND_CLOSING", "images/serranda_scende.png");
+define("IMG_LOCK_OPEN", "images/allarm_off.png");
+define("IMG_LOCK_CLOSE", "images/allarm_on.png");
+define("IMG_DOOR_OPEN", "images/porta_aperta.png");
+define("IMG_DOOR_CLOSE", "images/porta_chiusa.png");
+define("IMG_DOOR_OPEN_ALARM", "images/porta_aperta_red.png");
+define("IMG_DOOR_CLOSE_OK", "images/porta_chiusa_green.png");
+define("IMG_SCENARIOS", "images/scenari_all.png");
 
 /**
  * Altezza della status bar [pixel].
  */
-define("STATUS_BAR_HEIGHT", 22);
+define("STATUS_BAR_HEIGHT", 40);
 
 /**
  * Opacita' di default della status bar [0 .. 1].

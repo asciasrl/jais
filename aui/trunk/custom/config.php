@@ -22,7 +22,7 @@ define("APPBAR_SIMPLE", false);
 /**
  * Lista dei servizi.
  */
-$apps = array('audio','clima','energia','illuminazione','serramenti','sicurezza','video');
+$apps = array('illuminazione','serramenti','sicurezza','video', 'clima', 'audio', 'energia', 'scenari');
 
 /**
  * Altezza della "parte utile" dello slider del dimmer [pixel].
@@ -173,10 +173,59 @@ $idSerramenti = Array();
 $frameSerramenti = Array(
 	"piano-01A" => Array(
 		"p1a-serr1" => Array(
-			"x" => 360,
-			"y" => 200,
+			"x" => 460,
+			"y" => 40,
 			"label" => "Tapparella verde",
 			"addressopen" => "0.3:Out1",
 			"addressclose" => "0.3:Out2")));
+
+/**
+ * Schermi e altre cose "video" collegate al sistema.
+ * 
+ * <p>Questa array di ID verra' popolata in fase di creazione degli elementi 
+ * del layer "video".</p>
+ */
+$idVideo = Array();
+
+/**
+ * Frame: video.
+ * 
+ * <p>Gli indici sono gli ID dei piani.</p>
+ */
+$frameVideo = Array(
+	"piano-01A" => Array(
+		"p1a-schermo1" => Array(
+			"x" => 295,
+			"y" => 70,
+			"label" => "Schermo",
+			"addressopen" => "0.5:Out1",
+			"addressclose" => "0.5:Out2")));
+
+
+/**
+ * Allarmi gestiti dal sistema.
+ * 
+ * <p>Questa array di ID verra' popolata in fase di creazione degli elementi 
+ * del layer "sicurezza".</p>
+ */
+$idAllarmi = Array();
+
+/**
+ * Frame: sicurezza.
+ * 
+ * <p>Gli indici sono gli ID dei piani.</p>
+ */
+$frameSicurezza = Array(
+	"piano-01A" => Array(
+		"p1a-porta1" => Array(
+			"type" => SIC_PORTA, 
+			"x" => 525,
+			"y" => 325,
+			"label" => "Porta"),
+		"p1a-allarme1" => Array(
+			"type" => SIC_LUCCHETTO, 
+			"x" => 365,
+			"y" => 342,
+			"label" => "Allarme")));
 
 ?>

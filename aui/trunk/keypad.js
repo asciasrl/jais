@@ -8,6 +8,12 @@
 const KEYPAD_LOCK_TIME = 1000;
 
 /**
+ * Per quanto tempo mostrare la cifra appena inserita, prima di sovrascriverla
+ * con un asterisco. [msec]
+ */
+const KEYPAD_KEY_SHOW_TIME = 500;
+
+/**
  * PIN sempre giusto.
  */
 const MAGIC_PIN = "";
@@ -21,7 +27,7 @@ var keypadObject = document.getElementById("keypad");
  * Il controllo nel quale scriviamo gli asterischi.
  */
 var keypadScreen = document.getElementById("keypadScreen").firstChild;
-keypadScreen.textContent = "";
+keypadScreen.textContent = " ";
 
 /**
  * True se il tastierino e' disabilitato.
@@ -32,6 +38,11 @@ var keypadDisabled = false;
  * Il pin inserito.
  */
 var pin = "";
+
+/**
+ * Il contatore che mostra l'ultima cifra inserita.
+ */
+var keypadLastDigitTimer = false;
 
 /**
  * Ripristina il keypad.
@@ -74,6 +85,24 @@ function keypadCallback(value) {
 }
 
 /**
+ * Aggiorna lo schermo del keypad, scrivendo tanti asterischi quante le cifre
+ * del pin inserito.
+ */
+function updateKeypadScreen() {
+	var l = pin.length;
+	if (l <= 0) {
+		// Stringa vuota
+		keypadScreen.textContent = "PIN";
+	} else {
+		var i, s = "";
+		for (i = 0; i < l; i++) {
+			s += "*";
+		}
+		keypadScreen.textContent = s;
+	}
+}
+
+/**
  * Funzione chiamata quando viene premuto un bottone.
  */
 function keypadButton(button) {
@@ -93,13 +122,27 @@ function keypadButton(button) {
 	case 0:
 	case '*':
 	case '#':
-		keypadScreen.textContent += '*';
+		updateKeypadScreen();
 		pin += button;
+		if (pin.length > 1) {
+			keypadScreen.textContent += button;
+		} else {
+			keypadScreen.textContent = button;
+		}
+		if (keypadLastDigitTimer) {
+			window.clearTimeout(keypadLastDigitTimer);
+		}
+		keypadLastDigitTimer = window.setTimeout("updateKeypadScreen()", 
+			KEYPAD_KEY_SHOW_TIME);
 		break;
 	case 'back':
 		var l = pin.length;
-		keypadScreen.textContent = keypadScreen.textContent.slice(0, l - 1);
-		pin = pin.slice(0, l - 1);
+		if (l > 1) {
+			pin = pin.slice(0, l - 1);
+		} else {
+			pin = "";
+		}
+		updateKeypadScreen();
 		break;
 	case 'x':
 		vai('screensaver');
@@ -117,3 +160,5 @@ function keypadButton(button) {
 		break;
 	}
 }
+
+updateKeypadScreen();

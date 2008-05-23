@@ -42,14 +42,14 @@ var statusObject = document.getElementById("header");
  */
 function statusMessage(message) {
 	statusObject.innerHTML = message;
-	statusBarContainer.style.display = "";
+	/* statusBarContainer.style.display = "";
 	if (statusBarTimeout) {
 		window.clearTimeout(statusBarTimeout);
 		statusBarContainer.style.opacity = STATUS_BAR_OPACITY;
 	}
 	statusBarTimeout = window.setTimeout("closeStatusBar()", 
 		STATUS_BAR_TIMEOUT);
-	currentStatusBarStatus = STATUS_BAR_OPACITY;
+	currentStatusBarStatus = STATUS_BAR_OPACITY; */
 }
 
 /**

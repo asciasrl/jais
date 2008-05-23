@@ -7,6 +7,27 @@
  */
 
 /**
+ * Periodo di auto-refresh [msec].
+ *
+ * <p>Se non impostato, l'auto-refresh viene disattivato.</p>
+ */
+$refreshInterval = 3000;
+
+/**
+ * Mostra lo screensaver.
+ *
+ * <p>Questo è ovviamente necessario se il server richiede un PIN!</p>
+ */
+$showScreenSaver = false;
+
+/**
+ * Mostra il keypad per l'inserimento del pin.
+ *
+ * <p>Questo è ovviamente necessario se il server richiede un PIN!</p>
+ */
+$showKeypad = false;
+
+/**
  * Posizione iniziale della appBar [pixel].
  *
  * <p>Se la appBar non scorre, questo numero deve indicare la posizione della
@@ -17,12 +38,12 @@ define(APPBAR_START_POSITION, 360);
 /**
  * True se la appbar non deve fare lo scrolling.
  */
-define("APPBAR_SIMPLE", false);
+define("APPBAR_SIMPLE", true);
 
 /**
  * Lista dei servizi.
  */
-$apps = array('illuminazione','serramenti','sicurezza','video', 'clima', 'audio', 'energia', 'scenari');
+$apps = array('illuminazione');
 
 /**
  * Altezza della "parte utile" dello slider del dimmer [pixel].
@@ -35,7 +56,7 @@ define("DIMMER_SLIDER_HEIGHT", 100);
 /**
  * Immagine che mostra i piani.
  */
-$pianiFile = "custom/images/assonometria320x370.png"; // images/piani-all.png";
+// $pianiFile = "custom/images/assonometria320x370.png"; // images/piani-all.png";
 $pianiSize = Array("w" => IPOD_VIEWPORT_WIDTH, "h" => 370); // Array("w" => 240, "h" => 240);
 
 /**
@@ -78,26 +99,44 @@ $frameIlluminazione = Array(
 			"type" => ILL_LUCE,
 			"x" => 100,
 			"y" => 100,
-			"label" => "Applique",
-			"address" => "0.3:Out1"),
+			"label" => "Luce 1",
+			"address" => "0.2:Out1"),
 		"p1a-luce2" => Array(
 			"type" => ILL_LUCE,
 			"x" => 300,
 			"y" => 100,
-			"label" => "Luce pitosforo",
-			"address" => "0.3:Out2"),
-		"p1a-dimmer1" => Array(
-			"type" => ILL_DIMMER,
+			"label" => "Luce 2",
+			"address" => "0.2:Out2"),
+		"p1a-luce3" => Array(
+			"type" => ILL_LUCE,
 			"x" => 100,
 			"y" => 340,
-			"label" => "Dimmer allarme",
-			"address" => "0.5:Out1"),
-		"p1a-dimmer2" => Array(
-			"type" => ILL_DIMMER,
+			"label" => "Luce 3",
+			"address" => "0.2:Out3"),
+		"p1a-luce4" => Array(
+			"type" => ILL_LUCE,
 			"x" => 300,
 			"y" => 340,
-			"label" => "Dimmer BMC virtuale",
-			"address" => "0.5:Out2")));
+			"label" => "Luce 4",
+			"address" => "0.2:Out4"),
+		"p1a-luce5" => Array(
+			"type" => ILL_LUCE,
+			"x" => 400,
+			"y" => 340,
+			"label" => "Luce 5",
+			"address" => "0.2:Out5"),
+		"p1a-luce6" => Array(
+			"type" => ILL_LUCE,
+			"x" => 340,
+			"y" => 400,
+			"label" => "Luce 6",
+			"address" => "0.2:Out6"),
+		"p1a-luce7" => Array(
+			"type" => ILL_LUCE,
+			"x" => 500,
+			"y" => 340,
+			"label" => "Luce 7",
+			"address" => "0.2:Out7")));
 
 /**
  * Prese comandate presenti nel sistema.
@@ -112,23 +151,7 @@ $idPrese = Array();
  * 
  * <p>Gli indici sono gli ID dei piani.</p>
  */
-$frameEnergia = Array(
-	"piano-01A" => Array(
-		"p1a-presa1" => Array(
-			"x" => 200,
-			"y" => 200,
-			"label" => "Presa 1",
-			"address" => "0.3:Out3"),
-		"p1a-presa2" => Array(
-			"x" => 400,
-			"y" => 200,
-			"label" => "Presa pitosforo",
-			"address" => "0.3:Out4"),
-		"p1a-presa3" => Array(
-			"x" => 200,
-			"y" => 400,
-			"label" => "Presa lavatrice",
-			"address" => "0.5:Out5")));
+$frameEnergia = Array();
 
 /**
  * Termostati presenti nel sistema.
@@ -143,18 +166,7 @@ $idClimi = Array();
  * 
  * <p>Gli indici sono gli ID dei piani.</p>
  */
-$frameClima = Array(
-	"piano-01A" => Array(
-		"p1a-clima1" => Array(
-			"x" => 300,
-			"y" => 200,
-			"label" => "Termostato a vapore",
-			"address" => "0.3:Out6"),
-		"p1a-clima2" => Array(
-			"x" => 400,
-			"y" => 400,
-			"label" => "Bruciatore",
-			"address" => "0.3:Out7")));
+$frameClima = Array();
 
 
 /**
@@ -170,14 +182,7 @@ $idSerramenti = Array();
  * 
  * <p>Gli indici sono gli ID dei piani.</p>
  */
-$frameSerramenti = Array(
-	"piano-01A" => Array(
-		"p1a-serr1" => Array(
-			"x" => 460,
-			"y" => 40,
-			"label" => "Tapparella verde",
-			"addressopen" => "0.3:Out1",
-			"addressclose" => "0.3:Out2")));
+$frameSerramenti = Array();
 
 /**
  * Schermi e altre cose "video" collegate al sistema.
@@ -192,14 +197,7 @@ $idVideo = Array();
  * 
  * <p>Gli indici sono gli ID dei piani.</p>
  */
-$frameVideo = Array(
-	"piano-01A" => Array(
-		"p1a-schermo1" => Array(
-			"x" => 295,
-			"y" => 70,
-			"label" => "Schermo",
-			"addressopen" => "0.5:Out1",
-			"addressclose" => "0.5:Out2")));
+$frameVideo = Array();
 
 
 /**
@@ -215,17 +213,6 @@ $idAllarmi = Array();
  * 
  * <p>Gli indici sono gli ID dei piani.</p>
  */
-$frameSicurezza = Array(
-	"piano-01A" => Array(
-		"p1a-porta1" => Array(
-			"type" => SIC_PORTA, 
-			"x" => 525,
-			"y" => 325,
-			"label" => "Porta"),
-		"p1a-allarme1" => Array(
-			"type" => SIC_LUCCHETTO, 
-			"x" => 365,
-			"y" => 342,
-			"label" => "Allarme")));
+$frameSicurezza = Array();
 
 ?>

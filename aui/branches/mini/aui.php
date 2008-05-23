@@ -7,6 +7,20 @@ require_once("config.php");
 require_once("custom/config.php");
 
 /**
+ * True se bisogna inserire il layer per il controllo di un dimmer.
+ *
+ * Viene impostata a true da creaLayerServizi() se esiste almeno un dimmer.
+ */
+$needsDimmerLayer = false;
+/**
+ * True se bisogna mostrare il layer per il controllo di tapparelle o schermi.
+ *
+ * Viene impostata a true da creaLayerServizi() se esiste almeno una serranda
+ * o uno schermo.
+ */
+$needsBlindLayer = false;
+
+/**
  * Crea un layer per ciascun servizio.
  * 
  * @param $piano il piano.
@@ -17,6 +31,7 @@ function creaLayerServizi($piano, $big, $clickable) {
 	global $apps, $frameIlluminazione, $frameEnergia, $frameClima, 
 		$frameSerramenti, $frameVideo, $frameSicurezza;
 	global $idLuci, $idPrese, $idClimi, $idSerramenti, $idVideo, $idAllarmi;
+	global $needsDimmerLayer, $needsBlindLayer;
 	if ($big) {
 		$scale = 1;
 	} else {
@@ -48,6 +63,7 @@ function creaLayerServizi($piano, $big, $clickable) {
 						} else {
 							$lit = "lit=\"0\" onClick=\"dimmerClicked(event, this)\"";
 							$text="0%";
+							$needsDimmerLayer = true;
 						}
 						$busaddress = "busaddress=\"" . $luce["address"] . "\"";
 						$idLuci[] = $idLuce; 
@@ -123,6 +139,7 @@ function creaLayerServizi($piano, $big, $clickable) {
 			}
 			break;
 		case "serramenti":
+			$needsBlindLayer = true;
 			$temp = getimagesize(IMG_BLIND_STILL);
 			$imgWidth = $temp[0] * $scale;
 			$imgHeight = $temp[1] * $scale;
@@ -153,6 +170,7 @@ function creaLayerServizi($piano, $big, $clickable) {
 			}
 			break;
 		case "video":
+			$needsBlindLayer = true;
 			$temp = getimagesize(IMG_BLIND_STILL);
 			$imgWidth = $temp[0] * $scale;
 			$imgHeight = $temp[1] * $scale;
@@ -254,15 +272,27 @@ function arrayJavascript($arr) {
 }
  ?>
 
- 
+
 
 <div id="header-out" style="display: none; position: absolute; z-index: 30; width: <?php echo (IPOD_VIEWPORT_WIDTH); ?>px; height: 40px; filter:alpha(opacity='60'); opacity: <?php echo(STATUS_BAR_OPACITY); ?>;">
-<div style="position: absolute;"><img src="images/barratesti.png" /></div>
-<div id="header" style="position: absolute; margin-top: 9px; height: <?php echo(STATUS_BAR_HEIGHT); ?>px; width: <?php echo (IPOD_VIEWPORT_WIDTH); ?>px; text-align: center;"><b>barra di stato</b></div>
+	<div style="position: absolute;"><img src="images/barratesti.png" /></div>
+	<div id="header" style="position: absolute; margin-top: 9px; height: <?php echo(STATUS_BAR_HEIGHT); ?>px; width: <?php echo (IPOD_VIEWPORT_WIDTH); ?>px; text-align: center;"><b>barra di stato</b></div>
 </div>
-<div id="screensaver" title="AUI screensaver - clicca per accedere" onclick="vai('login');"><img
+<?php
+
+// Screen saver
+if ($showScreenSaver) {
+?>
+<div id="screensaver" title="AUI screensaver - clicca per accedere" onclick="vai('<?php if ($showKeypad) {echo("login");} else {echo("navigazione");} ?>');"><img
 	alt="AUI" src="images/ascia_logo_home.png" /></div>
-<div id="login" style="display: none; background: URL(images/groundcalc.png); width: <?php echo (IPOD_VIEWPORT_WIDTH); ?>px; height: <?php echo (IPOD_VIEWPORT_HEIGHT); ?>px;">
+<?php
+} // if ($showScreenSaver)
+
+
+// Keypad
+if ($showKeypad) {
+?>
+<div id="login" style="<?php if($showScreenSaver) {echo("display: none;");} ?> background: URL(images/groundcalc.png); width: <?php echo (IPOD_VIEWPORT_WIDTH); ?>px; height: <?php echo (IPOD_VIEWPORT_HEIGHT); ?>px;">
 	<div id="keypadScreen" style="position: absolute; top: 24px; left: 28px; width: 260px; height: 60px; font-size: 60px; overflow: hidden; text-align: center;">&nbsp;</div> 
 	<div style="position: absolute; top: 108px; left: 30px;">
 		<table id="keypad" title="AUI login - immetti codice personale e premi OK" summary="keypad" cellpadding="0" cellspacing="0"
@@ -312,10 +342,20 @@ function arrayJavascript($arr) {
 		</table>
 	</div>
 </div>
-<div id="navigazione" style="display: none;">
+<?php
+} // if ($showKeypad)
+
+
+?>
+<div id="navigazione" style="<?php if($showScreensaver || $showKeypad) { echo("display: none;"); } ?>">
   <div id="mappa-out" style="width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px; height: <?php echo(IPOD_VIEWPORT_HEIGHT - 80); ?>px;">
 	<div id="mappa"
 		style="position: absolute; width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px; height: <?php echo(IPOD_VIEWPORT_HEIGHT); ?>px; overflow: hidden;">
+<?php
+
+// Selezione di un piano
+if (isset($pianiFile)) {
+?>
 		<div id="piani-all" 
 			style="position: absolute; width: <?php echo ($pianiSize["w"]); ?>px; height: <?php echo($pianiSize["h"]); ?>px; overflow: hidden;"
 			noappbar="noappbar">
@@ -325,14 +365,17 @@ function arrayJavascript($arr) {
 				style="position: absolute;"
 				onclick="clicca1('piani-all','piano-01A<?php if ($mobile) echo("-big") ?>');"
 				src="<?php echo($pianiFile); ?>" alt="" />
-		</div>
+		</div> <!--  piani-all -->
 <?php
+} // if isset($pianiFile)
+
+// I singoli piani
 foreach ($piani as $piano):
 	if (!$mobile) {
  ?>
 		<div id="<?php echo($piano["id"]); ?>" 
-			style="position: absolute; width: <?php echo($piano["mapSize"]["w"]); ?>px; height: <?php echo($piano["mapSize"]["h"]); ?>px; overflow: hidden; display: none;"
-			onclick="ingrandisci(event,'<?php echo($piano["id"]); ?>','<?php echo($piano["id"] . "-big"); ?>','piani-all');">
+			style="position: absolute; width: <?php echo($piano["mapSize"]["w"]); ?>px; height: <?php echo($piano["mapSize"]["h"]); ?>px; overflow: hidden; <?php if (isset($pianiFile)) { echo("display: none;"); }?>"
+			onclick="ingrandisci(event,'<?php echo($piano["id"]); ?>','<?php echo($piano["id"] . "-big"); ?>','<?php if (isset($pianiFile)) { echo("piani-all");} else { echo($piano["id"]); }?>');">
 			<img
 				header="<?php echo($piano["header"]); ?>"
 				title="AUI mappa appartamento - clicca per ingrandire - doppio click per ritornare"
@@ -376,11 +419,8 @@ foreach ($piani as $piano):
 <?php
 	} // if iPod
 endforeach; // $piani as $piano
- ?>
-		<div id="dimmer"
-			style="position: absolute; width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px; height: <?php echo(IPOD_MAP_AREA_HEIGHT); ?>px; 
-				overflow: hidden; display: none;" onclick="hideDimmer()">
-<?php
+
+// Dimmer
 $temp = getimagesize(IMG_DIMMER_SLIDER_TOP);
 $dimmerWidth = $temp[0] ;
 $dimmerTopHeight = $temp[1] ;
@@ -392,7 +432,11 @@ $dimmerCursorHeight = $temp[1] ;
 // In pixel
 $dimmerCursorTextSize = $dimmerCursorHeight / 3;
 $dimmerCursorTextTopMargin = $dimmerCursorHeight / 3;
-?>
+if ($needsDimmerLayer) {
+ ?>
+		<div id="dimmer"
+			style="position: absolute; width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px; height: <?php echo(IPOD_MAP_AREA_HEIGHT); ?>px; 
+				overflow: hidden; display: none;" onclick="hideDimmer()">
 			<div style="position: absolute; width: 100%; height: 100%; background-color: black; filter:alpha(opacity='80'); opacity: 0.8;">&nbsp;</div>
 			<div id="dimmer-slider" style="position: absolute; width: <?php echo($dimmerWidth); ?>px;"
 					onclick="dimmerSliderClicked(event)" >
@@ -406,18 +450,25 @@ $dimmerCursorTextTopMargin = $dimmerCursorHeight / 3;
 					</div>
 			</div> <!--  dimmer-sfondo -->
 		</div><!--  dimmer -->
-		<div id="blind"
-			style="position: absolute; width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px; height: <?php echo(IPOD_MAP_AREA_HEIGHT); ?>px; 
-				overflow: hidden; display: none;" onclick="blindBackgroundClicked()">
 <?php
+} // if needsDimmerLayer
+
+// Tapparelle - schermi
 $temp = getimagesize(IMG_BLIND_CONTROL);
 $blindControlWidth = $temp[0];
 $blindControlHeight = $temp[1];
+if ($needsBlindLayer) {
 ?>
+		<div id="blind"
+			style="position: absolute; width: <?php echo(IPOD_VIEWPORT_WIDTH); ?>px; height: <?php echo(IPOD_MAP_AREA_HEIGHT); ?>px; 
+				overflow: hidden; display: none;" onclick="blindBackgroundClicked()">
 			<div style="position: absolute; width: 100%; height: 100%; background-color: black; filter:alpha(opacity='80'); opacity: 0.8;">&nbsp;</div>
 			<div id="blind-control" style="position: absolute; width: <?php echo($blindControlWidth); ?>px; height: <?php echo($blindControlHeight); ?>px; background-image: URL(<?php echo(IMG_BLIND_CONTROL); ?>);"
 				onclick="blindControlClicked(event)"></div>
 		</div><!--  blind -->
+<?php
+} // if ($needsBlindLayer)
+?>
 	</div> 
 	<!-- fine mappa -->
 	</div>
@@ -474,10 +525,45 @@ $blindControlHeight = $temp[1];
 <script type="" language="javascript" src="appbar_common.js"></script>
 <script type="" language="javascript" src="appbar<?php if (APPBAR_SIMPLE) echo("_simple"); ?>.js"></script>
 <script type="" language="javascript" src="services.js"></script>
+<?php
+if ($needsDimmerLayer) {
+?>
 <script type="" language="javascript" src="dimmer_slider.js"></script>
+<?php
+}
+if ($needsBlindLayer) {
+?>
 <script type="" language="javascript" src="blind.js"></script>
+<?php
+}
+if ($showKeypad) {
+?>
 <script type="" language="javascript" src="keypad.js"></script>
+<?php
+}
+?>
 <script type="" language="javascript" src="alarm.js"></script>
 <script type="" language="javascript">
-setInterval("refreshEverything()", 3000);
+<?php
+// Dobbiamo impostare la prima pagina, per la funzione vai() dentro aui.js
+if ($showScreenSaver) {
+?>
+da_pagina = "screensaver";
+<?php
+} else if ($showKeypad) {
+?>
+da_pagina = "login";
+<?php
+} else {
+?>
+da_pagina = "navigazione";
+<?php
+}
+// Intervallo di refresh automatico
+if (isset($refreshInterval)) {
+?>
+setInterval("refreshEverything()", <?php echo($refreshInterval); ?>);
+<?php
+} // if isset($refreshInterval)
+?>
 </script>

@@ -12,7 +12,7 @@
  * <p>Se la appBar non scorre, questo numero deve indicare la posizione della
  * icona da selezionare all'avvio di AUI.</p>
  */
-define(APPBAR_START_POSITION, 360);
+define("APPBAR_START_POSITION", 360);
 
 /**
  * True se la appbar non deve fare lo scrolling.
@@ -22,7 +22,7 @@ define("APPBAR_SIMPLE", false);
 /**
  * Lista dei servizi.
  */
-$apps = array('illuminazione','serramenti','sicurezza','video', 'clima', 'audio', 'energia', 'scenari');
+$apps = array('illuminazione');
 
 /**
  * Altezza della "parte utile" dello slider del dimmer [pixel].
@@ -78,26 +78,26 @@ $frameIlluminazione = Array(
 			"type" => ILL_LUCE,
 			"x" => 100,
 			"y" => 100,
-			"label" => "Applique",
-			"address" => "0.3:Out1"),
+			"label" => "Luce 1",
+			"address" => "0.2:Out1"),
 		"p1a-luce2" => Array(
 			"type" => ILL_LUCE,
 			"x" => 300,
 			"y" => 100,
-			"label" => "Luce pitosforo",
-			"address" => "0.3:Out2"),
+			"label" => "Luce 2",
+			"address" => "0.2:Out2"),
 		"p1a-dimmer1" => Array(
-			"type" => ILL_DIMMER,
+			"type" => ILL_LUCE,
 			"x" => 100,
 			"y" => 340,
-			"label" => "Dimmer allarme",
-			"address" => "0.5:Out1"),
+			"label" => "Luce 3",
+			"address" => "0.2:Out3"),
 		"p1a-dimmer2" => Array(
-			"type" => ILL_DIMMER,
+			"type" => ILL_LUCE,
 			"x" => 300,
 			"y" => 340,
-			"label" => "Dimmer BMC virtuale",
-			"address" => "0.5:Out2")));
+			"label" => "Luce 4",
+			"address" => "0.2:Out4")));
 
 /**
  * Prese comandate presenti nel sistema.

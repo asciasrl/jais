@@ -35,11 +35,6 @@ keypadScreen.textContent = " ";
 var keypadDisabled = false;
 
 /**
- * Il pin inserito.
- */
-var pin = "";
-
-/**
  * Il contatore che mostra l'ultima cifra inserita.
  */
 var keypadLastDigitTimer = false;

@@ -210,7 +210,15 @@ public class BMCComputer extends BMC {
     		if (sendPTPRequest(new RichiestaModelloMessage(address, 
     				getIntAddress()))) {
     			temp = (BMC[])bus.getDevices(String.valueOf(address));
-    			retval = temp[0];
+    			if (temp.length > 0) {
+    				retval = temp[0];
+    			} else {
+    				// Molto strano: l'ACK del messaggio e' arrivato, ma non 
+    				// abbiamo nessun BMC.
+    				logger.warn("Sembra che ci siano problemi sulla " +
+    						"connessione");
+    				retval = null;
+    			}
     		} else {
     			retval = null;
     		}

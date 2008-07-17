@@ -14,8 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Riceve le richieste di AUI e le manda al controller.
  * 
- * <p>Le richieste vengono onorate solo se presentano i parametri "name" e "value". Altrimenti
- * vengono ignorate.</p>
+ * <p>Le richieste vengono onorate solo se presentano i parametri "name" e 
+ * "value". Altrimenti vengono ignorate.</p>
  * 
  * @author arrigo
  */

@@ -67,7 +67,7 @@ public class JBisKyoTest implements DeviceListener {
 				} catch (JBisException e) {
 					System.err.println(e.getMessage());
 				}
-				System.out.println(d.getStatus("*"));
+				System.out.println(d.getStatus("*", 0));
 			}
 		}
 	}

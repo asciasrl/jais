@@ -10,6 +10,17 @@
 var iconToToggle = false;
 
 /**
+ * Ultimo timestamp ritornato da getAll.
+ *
+ * <p>Ripassandolo alla getAll successiva, ci facciamo dire da JAIS solo ciò
+ * che è cambiato dall'ultima richiesta.<p>
+ *
+ * <p>Non importa che sia un numero: lo prendiamo e lo ripassiamo tale e quale
+ * a JAIS, quindi ci conviene trattarlo come una stringa.</p>
+ */
+var lastStatusTimestamp = "0";
+
+/**
  * Riceve le risposte delle richieste fatte da onOffIcon().
  *
  * <p>In caso di errore, ripristina l'icona "spento".</p>
@@ -214,6 +225,9 @@ function refreshBlinds(status) {
  */
 function refreshEverythingCallback(globalStatus) {
 	if (globalStatus) {
+		// La prima riga è il timestamp
+		var lines = globalStatus.split("\n");
+		lastStatusTimestamp = lines[0];
 		refreshLights(globalStatus);
 		refreshThermos(globalStatus);
 		refreshPowers(globalStatus);
@@ -226,5 +240,5 @@ function refreshEverythingCallback(globalStatus) {
  * @see refreshEverythingCallback
  */
 function refreshEverything() {
-	getAll(refreshEverythingCallback);
+	getAll(lastStatusTimestamp, refreshEverythingCallback);
 }

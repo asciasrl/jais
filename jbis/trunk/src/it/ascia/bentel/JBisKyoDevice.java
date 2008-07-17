@@ -118,6 +118,10 @@ public class JBisKyoDevice implements Device {
 	 * @see #updateStatus
 	 */
 	private byte zoneAlarms;
+	/**
+	 * Ultimo cambiamento degli allarmi di zona (timestamp).
+	 */
+	private long zoneAlarmsTimestamp = 0;
 	
 	/**
 	 * Sabotaggi di zona rilevati.
@@ -128,6 +132,10 @@ public class JBisKyoDevice implements Device {
 	 * @see #updateStatus
 	 */
 	private byte zoneSabotages;
+	/**
+	 * Ultimo cambiamento dei sabotaggi di zona (timestamp).
+	 */
+	private long zoneSabotagesTimestamp = 0;
 	
 	/**
 	 * Warning rilevati.
@@ -139,6 +147,10 @@ public class JBisKyoDevice implements Device {
 	 * @see #updateStatus
 	 */
 	private byte warnings;
+	/**
+	 * Ultimo cambiamento dei warning (timestamp).
+	 */
+	private long warningsTimestamp = 0;
 	
 	/**
 	 * Allarmi di area attivi.
@@ -150,6 +162,10 @@ public class JBisKyoDevice implements Device {
 	 * @see #updateStatus
 	 */
 	private byte areaAlarms;
+	/**
+	 * Ultimo cambiamento degli allarmi di area (timestamp).
+	 */
+	private long areaAlarmsTimestamp = 0;
 	
 	/**
 	 * Altri sabotaggi rilevati.
@@ -161,6 +177,11 @@ public class JBisKyoDevice implements Device {
 	 * @see #updateStatus
 	 */
 	private byte otherSabotages;
+	/**
+	 * Ultimo cambiamento dei sabotaggi (timestamp).
+	 */
+	private long otherSabotagesTimestamp = 0;
+	
 	/**
 	 * Registro degli eventi. I piu' nuovi sono all'inizio.
 	 */
@@ -229,30 +250,35 @@ public class JBisKyoDevice implements Device {
 		byte oldValue;
 		oldValue = zoneAlarms;
 		zoneAlarms = data[0];
+		statusTime = System.currentTimeMillis();
 		if (oldValue != zoneAlarms) {
+			zoneAlarmsTimestamp = statusTime;
 			alertListener(oldValue, zoneAlarms, zone_alarms_ports);
 		}
 		oldValue = zoneSabotages;
 		zoneSabotages = data[1];
 		if (oldValue != zoneSabotages) {
+			zoneSabotagesTimestamp = statusTime;
 			alertListener(oldValue, zoneSabotages, zone_sabotages_ports);
 		}
 		oldValue = warnings;
 		warnings = (byte)(data[2] & 0x7f); // Contano solo i bit 0-6
 		if (oldValue != warnings) {
+			warningsTimestamp = statusTime;
 			alertListener(oldValue, warnings, warnings_ports);
 		}
 		oldValue = areaAlarms;
 		areaAlarms = (byte)(data[3] & 0xf); // Contano solo i bit 0-3
 		if (oldValue != areaAlarms) {
+			areaAlarmsTimestamp = statusTime;
 			alertListener(oldValue, areaAlarms, area_alarms_ports);
 		}
 		oldValue = otherSabotages;
 		otherSabotages = (byte)(data[4] & 0xf0); // Contano solo i bit 4-7
 		if (oldValue != otherSabotages) {
+			otherSabotagesTimestamp = statusTime;
 			alertListener(oldValue, otherSabotages, other_sabotages_ports);
 		}
-		statusTime = System.currentTimeMillis();
 	}
 	
 	/**
@@ -517,14 +543,24 @@ public class JBisKyoDevice implements Device {
 	/* (non-Javadoc)
 	 * @see it.ascia.ais.Device#getStatus(java.lang.String)
 	 */
-	public String getStatus(String port) {
-		String retval;
+	public String getStatus(String port, long timeStamp) {
+		String retval = "";
 		if ((System.currentTimeMillis() - statusTime) < OLD_DATA_AGE) {
-			retval = getPort(port, zoneAlarms, zone_alarms_ports);
-			retval += getPort(port, zoneSabotages, zone_sabotages_ports);
-			retval += getPort(port, areaAlarms, area_alarms_ports);
-			retval += getPort(port, warnings, warnings_ports);
-			retval += getPort(port, otherSabotages, other_sabotages_ports);
+			if (timeStamp <= zoneAlarmsTimestamp) {
+				retval += getPort(port, zoneAlarms, zone_alarms_ports);
+			}
+			if (timeStamp <= zoneSabotagesTimestamp) {
+				retval += getPort(port, zoneSabotages, zone_sabotages_ports);
+			}
+			if (timeStamp <= areaAlarmsTimestamp) {
+				retval += getPort(port, areaAlarms, area_alarms_ports);
+			}
+			if (timeStamp <= warningsTimestamp) {
+				retval += getPort(port, warnings, warnings_ports);
+			}
+			if (timeStamp <= otherSabotagesTimestamp) {
+				retval += getPort(port, otherSabotages, other_sabotages_ports);
+			}
 		} else {
 			// I dati sono troppo vecchi
 			retval = "ERROR: data is too old!";

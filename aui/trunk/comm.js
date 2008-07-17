@@ -56,6 +56,14 @@ var nextHttpCallbackFunction = null;
 var nextHttpCommand = null;
 
 /**
+ * Quale funzione chiamare al termine della richiesta getPort.
+ *
+ * <p>Questa variabile e' usata anche per capire se ci sono richieste in corso.
+ * </p>
+ */
+var getPortUserCallback = false;
+
+/**
  * Quale funzione chiamare al termine della richiesta getAll.
  *
  * <p>Questa variabile e' usata anche per capire se ci sono richieste in corso.
@@ -79,7 +87,15 @@ var setPortUserCallback = false;
  * dovra' restituire il valore di questa porta, perche' essa sara' modificata
  * subito dopo.</p>
  */
-var portBeingSet = false; 
+var portBeingSet = false;
+
+/**
+ * Porta di cui stiamo facendo un get.
+ *
+ * <p>Questa variabile fa comodo qui, cosi' getPortCallback non deve
+ * ri-estrarre il nome della porta dalla risposta del server.</p>
+ */
+var portBeingRead = false; 
 
 /**
  * Interrompe una connessione che sta durando troppo.
@@ -208,16 +224,64 @@ function parseServerAnswer(port, answer) {
 }
 
 /**
- * Ritorna lo stato di una porta.
+ * Callback per getPort: chiama la callback specificata dall'utente.
+ *
+ * <p>Dai dati ritornati dal server viene estratto il valore della porta, che
+ * viene passato a getPortUserCallback.</p>
+ *
+ * <p>Se la porta richiesta è uguale a portBeingSet, allora la callback NON
+ * viene chiamata.</p>
+ */
+function getPortCallback(goodNews, badNews) {
+	// E' possibile che la callback faccia una nuova getPort. Permettiamoglielo. 
+	var callback = getPortUserCallback;
+	var portName = portBeingRead;
+	getPortUserCallback = false;
+	portBeingRead = false;
+	if (goodNews) {
+		if (portName != portBeingSet) {
+			var equalsIndex = goodNews.indexOf("=");
+			var portValue = false;
+			if (equalsIndex != -1) { // Trovato!
+				portValue = goodNews.slice(equalsIndex + 1, goodNews.length);
+				callback(portValue);
+			} else {
+				// JAIS dovrebbe aver risposto con un messaggio di errore
+				// sufficientemente chiaro.
+				statusMessage(goodNews);
+				callback(false);
+			}
+		} // se portBeingRead == portBeingSet non chiamiamo proprio la callback	
+	} else { // Bad news :-(
+		statusMessage(badNews);
+		callback(false);
+	}
+}
+
+/**
+ * Richiede lo stato di una porta.
+ *
+ * <p>Attenzione: deve essere usato per richiedere lo stato di una porta 
+ * sola!</p>
  *
  * @param port l'indirizzo della porta.
  *
- * @return il messaggio del server o false se si sono verificati errori.
+ * @param callback la funzione che ricevera' i dati. Ricevera' un parametro,
+ * che sarà lo stato della porta oppure false in caso di errore.
+ *
+ * @return il valore ritornato dal server o false se si sono verificati errori.
  */
-function getPort(port) {
-	// TODO: parsing della risposta
-	return query(CMD_GET + "?name=" + port);
-}
+function getPort(port, callback) {
+	if (getPortUserCallback) {
+		// C'e' gia' una richiesta di questo tipo in esecuzione.
+		callback(false);
+	} else {
+		getPortUserCallback = callback;
+		portBeingRead = port;
+		query(CMD_GET + "?name=" + port, getPortCallback);
+	}
+}	
+
 
 /**
  * Callback per getAll: chiama la callback specificata dall'utente.

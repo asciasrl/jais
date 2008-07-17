@@ -12,7 +12,7 @@
  * <p>Se la appBar non scorre, questo numero deve indicare la posizione della
  * icona da selezionare all'avvio di AUI.</p>
  */
-define(APPBAR_START_POSITION, 360);
+define(APPBAR_START_POSITION, 40);
 
 /**
  * True se la appbar non deve fare lo scrolling.

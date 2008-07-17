@@ -21,6 +21,11 @@ var iconToToggle = false;
 var lastStatusTimestamp = "0";
 
 /**
+ * Timer che chiama il getAll periodicamente.
+ */
+var getAllInterval = false;
+
+/**
  * Riceve le risposte delle richieste fatte da onOffIcon().
  *
  * <p>In caso di errore, ripristina l'icona "spento".</p>
@@ -241,4 +246,23 @@ function refreshEverythingCallback(globalStatus) {
  */
 function refreshEverything() {
 	getAll(lastStatusTimestamp, refreshEverythingCallback);
+}
+
+/**
+ * Avvia il timer che chiama getAll periodicamente.
+ */
+function startGetAllTimer() {
+	if (!getAllInterval) {
+		// getAllInterval = setInterval("refreshEverything()", 1000);
+	}
+}
+
+/**
+ * Blocca il timer che chiama getAll periodicamente.
+ */
+function stopGetAllTimer() {
+	if (getAllInterval) {
+		window.clearInterval(getAllInterval);
+		getAllInterval = false;
+	}
 }

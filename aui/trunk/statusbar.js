@@ -13,7 +13,7 @@ const STATUS_BAR_DISAPPEARING_SPEED = 30;
 /**
  * Periodo del timer che fa sparire la status bar [msec].
  */
-const STATUS_BAR_DISAPPEARING_PERIOD = 100;
+const STATUS_BAR_DISAPPEARING_PERIOD = 1000;
 /**
  * Div che contiene la barra di stato, lo sfondo ecc.
  */

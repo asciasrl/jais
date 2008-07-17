@@ -13,11 +13,11 @@
 const DIMMER_JERKINESS = 5;
 
 /**
- * Periodo del contatore che tenta reimposta il dimmer [msec].
+ * Periodo del contatore che rilegge il dimmer [msec].
  *
- * @see dimmerSetInterval
+ * @see dimmerGetInterval
  */
-const DIMMER_SET_INTERVAL = 500;
+const DIMMER_GET_INTERVAL = 1000;
 
 /**
  * Coordinata y dello slider.
@@ -97,7 +97,7 @@ var dimmerTextOnMap;
  * venga ricevuta, questo contatore richiama l'ultima impostazione 
  * periodicamente.</p>
  */
-var dimmerSetInterval = false;
+var dimmerGetInterval = false;
 
 /**
  * Calcola la posizione del cursore del dimmer a partire dal valore (0-100).
@@ -127,6 +127,24 @@ function dimmerCursor2Value(cursorTop) {
 		(DIMMER_TOP_MAX - DIMMER_TOP_MIN) * 100);
 }
 
+/**
+ * Avvia il timer che aggiorna lo stato del dimmer periodicamente.
+ */
+function startDimmerRefreshTimer() {
+	if (!dimmerGetInterval) {
+		dimmerGetInterval = setInterval("refreshDimmer()", DIMMER_GET_INTERVAL);
+	}
+}
+
+/**
+ * Blocca il timer che aggiorna lo stato del dimmer periodicamente.
+ */
+function stopDimmerRefreshTimer() {
+	if (dimmerGetInterval) {
+		window.clearInterval(dimmerGetInterval);
+		dimmerGetInterval = false;
+	}
+}
 /**
  * Mostra il cursore del dimmer.
  *
@@ -182,11 +200,8 @@ function showDimmer(divOnMap) {
 	dimmerCursorLayer.style.top = currentDimmerCursorTop + "px";
 	dimmerCursorText.textContent = currentDimmerValue + "%";
 	statusMessage(dimmerName);
-	if (!dimmerSetInterval) {
-		// Lanciamo il contatore
-		dimmerSetInterval = 
-			window.setInterval("refreshDimmer()", DIMMER_SET_INTERVAL);
-	}
+	stopGetAllTimer();
+	startDimmerRefreshTimer()
 }
 
 /**
@@ -197,18 +212,26 @@ function showDimmer(divOnMap) {
  */
 function hideDimmer() {
 	dimmerLayer.style.display = "none";
-	if (dimmerSetInterval) {
-			window.clearInterval(dimmerSetInterval);
-			dimmerSetInterval = false;
-	}
-}	
+	stopDimmerRefreshTimer();
+	startGetAllTimer();
+}
+
+/**
+ * Disegna il cursore del dimmer nella posizione specificata (in percentuale).
+ */
+function drawDimmerCursor(newValue) {
+	var newTop = dimmerValue2Cursor(newValue);
+	dimmerCursorLayer.style.top = newTop + "px";
+	currentDimmerCursorTop = newTop;
+	currentDimmerValue = newValue;
+	dimmerCursorText.textContent = newValue + "%";
+}
 
 /**
  * Riceve la risposta alla richiesta setPort sul dimmer.
  *
- * <p>Se la richiesta e' andata bene, aggiorna la posizione del cursore e 
- * l'icona sulla mappa. Il contatore che reitera l'impostazione viene spento.
- * </p>
+ * <p>Se la richiesta e' andata bene, aggiorna il testo e 
+ * l'icona sulla mappa.</p>
  *
  * <p>Se la richiesta e' andata male, ci pensera' il contatore a reiterare
  * l'impostazione.</p>
@@ -229,6 +252,8 @@ function dimmerSetCallback(ok) {
 /**
  * Segue il trascinamento del cursore.
  *
+ * <p>Interrompe il timer di aggiornamento automatico del dimmer.</p>
+ *
  * @param mousePos posizione del mouse relativa allo slider.
  * @param forceUpdate facoltativo, se true impone che il cursore venga spostato.
  */
@@ -236,35 +261,59 @@ function dragDimmerCursor(mousePos, forceUpdate) {
 	var y = mousePos.y;
 	var newValue = dimmerCursor2Value(y);
 	var newTop = dimmerValue2Cursor(newValue);
-	dimmerCursorText.textContent = newValue + "%";
+	stopDimmerRefreshTimer();
 	// Il massimo e il minimo valore sono anti-jerkiness, perche' e' brutto
 	// se il cursore non arriva in fondo.
 	if (forceUpdate || 
 		(Math.abs(newTop - currentDimmerCursorTop) >= DIMMER_JERKINESS) ||
 		(newValue == 0) || (newValue == 100)) {
-		dimmerCursorLayer.style.top = newTop + "px";
-		currentDimmerCursorTop = newTop;
+		drawDimmerCursor(newValue);
 	}
-	currentDimmerValue = newValue;
 	setPort(dimmerAddress, newValue, dimmerSetCallback);
 }
 
 /**
  * Conclude il trascinamento del cursore (o risponde a un click).
  *
+ * <p>Fa ripartire il timer di aggiornamento del dimmer.</p>
+ *
  * @param mousePos posizione del mouse relativa allo slider.
  */
 function dragDimmerStop(mousePos) {
 	dragDimmerCursor(mousePos, true);
+	startDimmerRefreshTimer();
 }
 
 /**
- * Reitera l'impostazione del dimmer.
+ * Riceve la risposta alla richiesta getPort sul dimmer.
+ *
+ * <p>Se la richiesta e' andata bene, aggiorna la posizione del cursore, il 
+ * testo e l'icona sulla mappa.</p>
+ *
+ * <p>Se la richiesta e' andata male, ci pensera' il contatore a reiterare
+ * l'impostazione.</p>
+ */
+function dimmerGetCallback(ok) {
+	if (ok) {
+		currentDimmerValue = parseInt(ok);
+		// Aggiorniamo l'icona sulla mappa
+		if (currentDimmerValue == 0) {	
+			dimmerIconOnMap.src = IMG_LIGHT_OFF;
+		} else {
+			dimmerIconOnMap.src = IMG_LIGHT_ON;
+		}
+		drawDimmerCursor(currentDimmerValue);
+		dimmerTextOnMap.textContent = currentDimmerValue + "%";
+		dimmerValueElement.value = currentDimmerValue;
+	}
+}
+/**
+ * Reitera la lettura del dimmer.
  *
  * <p>Questa funzione viene chiamata da un contatore.</p>
  */
 function refreshDimmer() {
-	setPort(dimmerAddress, currentDimmerValue, dimmerSetCallback);
+	getPort(dimmerAddress, dimmerGetCallback);
 }
 
 /**

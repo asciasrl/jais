@@ -77,7 +77,7 @@ public class MyController extends Controller implements DeviceListener {
 				if (devices.length > 0) {
 					retval = "";
 					for (int i = 0; i < devices.length; i++) {
-						retval += devices[i].getStatus(portName);
+						retval += devices[i].getStatus(portName, 0);
 					}
 				} else {
 					retval = "ERROR: address " + name + " not found.";
@@ -88,10 +88,18 @@ public class MyController extends Controller implements DeviceListener {
 		} else if (command.equals("getAll")) {
 			// Comando "getAll": equivale a "get *:*"
 			try {
-				retval = "";
+				retval = System.currentTimeMillis() + "\n";
 				Device[] devices = findDevices("*");
+				long timestamp = 0;
+				if (name.equals("timestamp")) {
+					try {
+						timestamp = Long.parseLong(value);
+					} catch (NumberFormatException e) {
+						// Manteniamo il valore di default: zero
+					}
+				}
 				for (int i = 0; i < devices.length; i++) {
-					retval += devices[i].getStatus("*");
+					retval += devices[i].getStatus("*", timestamp);
 				}
 			} catch (AISException e) {
 				retval = e.getMessage();

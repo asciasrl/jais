@@ -3,9 +3,10 @@
 import it.ascia.ais.AISException;
 import it.ascia.ais.HTTPServer;
 import it.ascia.eds.Bus;
-import it.ascia.eds.ConfigurationFile;
+// import it.ascia.eds.ConfigurationFile;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.TCPSerialBus;
+import it.ascia.eds.SerialBus;
 import it.ascia.eds.device.BMC;
 import it.ascia.eds.device.BMCChronoTerm;
 import it.ascia.eds.device.BMCComputer;
@@ -90,7 +91,7 @@ public class BusTest extends MyController {
  				bmc.updateStatus();
  		 		System.out.println("Stato del BMC dopo la richiesta: ");
  		 		bmc.printStatus();
- 		 		System.out.println(bmc.getStatus("*"));
+ 		 		System.out.println(bmc.getStatus("*", 0));
  			} // if output >= 0
 		}
 	}
@@ -111,7 +112,7 @@ public class BusTest extends MyController {
  				bmc.updateStatus();
  		 		System.out.println("Stato del BMC dopo la richiesta: ");
  		 		bmc.printStatus();
- 		 		System.out.println(bmc.getStatus("*"));
+ 		 		System.out.println(bmc.getStatus("*", 0));
  			} // if output >= 0
 		}
 		bmc.printStatus();
@@ -120,7 +121,7 @@ public class BusTest extends MyController {
 	}
 	
 	static void startServer() {
-		busController = new BusTest("1");
+		busController = new BusTest(null /* "1" */);
 		busController.addConnector(bus);
 		try {
 			server = new HTTPServer(8080, busController, 
@@ -136,17 +137,17 @@ public class BusTest extends MyController {
 	 *            porta seriale
 	 */
 	public static void main(String[] args) {
-	    String defaultPort = "ascia.homeip.net";
-		// String defaultPort = "COM1";
+	    // String defaultPort = "ascia.homeip.net";
+		String defaultPort = "/dev/ttyUSB0";
 	    // Inizializzazione logger
 	    PropertyConfigurator.configure("conf/log4j.conf");
-		ConfigurationFile cfgFile = null;
+		//ConfigurationFile cfgFile = null;
 	 	if (args.length > 0) {
 		    defaultPort = args[0];
 		}
 	 	try {
-	 		bus = new TCPSerialBus(defaultPort, 2001, "0");
-	 		// bus = new SerialBus(defaultPort, "0");
+	 		// bus = new TCPSerialBus(defaultPort, 2001, "0");
+	 		bus = new SerialBus(defaultPort, "0");
 	 	} catch (EDSException e) {
 	 		System.err.println(e.getMessage());
 	 		System.exit(-1);
@@ -155,14 +156,14 @@ public class BusTest extends MyController {
 	 	bmcComputer = new BMCComputer(0, bus);
 	 	bus.setBMCComputer(bmcComputer);
 	 	// File di configurazione
-	 	try {
-			cfgFile = new ConfigurationFile("conf/tavola20071207.xml");
-		} catch (EDSException e) {
-			System.err.println(e.getMessage());
-			System.exit(-1);
-		}
-		cfgFile.createBMCs(bus);
-		System.out.println(cfgFile.getSystemName());
+//	 	try {
+//			cfgFile = new ConfigurationFile("conf/tavola20071207.xml");
+//		} catch (EDSException e) {
+//			System.err.println(e.getMessage());
+//			System.exit(-1);
+//		}
+		// cfgFile.createBMCs(bus);
+		//System.out.println(cfgFile.getSystemName());
 	 	// Discovery
 	 	System.out.println("Discovery:");
 	 	for (int i = 0; i < 8; i++) {
@@ -180,7 +181,9 @@ public class BusTest extends MyController {
 	 	// Dimmer avanzato
 	 	bmcComputer.discoverBMC(255);
 	 	// BMC virtuale
-	 	makeVirtualBMC(1);
+	 	/* for (int i = 64; i < 104; i++) {
+	 		makeVirtualBMC(i);
+	 	} */
 	 	// testBMCStandardIO();
 	 	// testBMCDimmer();
 	 	// testBMCChronoTerm();

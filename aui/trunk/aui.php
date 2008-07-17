@@ -479,5 +479,5 @@ $blindControlHeight = $temp[1];
 <script type="" language="javascript" src="keypad.js"></script>
 <script type="" language="javascript" src="alarm.js"></script>
 <script type="" language="javascript">
-setInterval("refreshEverything()", 3000);
+startGetAllTimer();
 </script>

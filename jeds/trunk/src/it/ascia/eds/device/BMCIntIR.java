@@ -20,6 +20,10 @@ public class BMCIntIR extends BMC {
 	 * Ingresso IR.
 	 */
 	private boolean irInput;
+	/**
+	 * Timestamp dell'ultimo aggiornamento dell'ingresso.
+	 */
+	long irInputTimestamp = 0;
 	
 	/**
 	 * Costruttore.
@@ -69,6 +73,7 @@ public class BMCIntIR extends BMC {
 			temp = r.getInputs();
 			irInput = temp[0];
 			if (oldInput != irInput) {
+				irInputTimestamp = System.currentTimeMillis();
 				alertListener();
 			}
 		}
@@ -80,10 +85,11 @@ public class BMCIntIR extends BMC {
 		return getName() + ": BMC Int IR (modello " + model + ")";
 	}
 
-	public String getStatus(String port) { // TODO
+	public String getStatus(String port, long timestamp) { // TODO
 		String busName = bus.getName();
 		String compactName = busName + "." + getAddress();
-		if (port.equals("*") || port.equals(getInputCompactName(0))) {
+		if ((timestamp <= irInputTimestamp) &&
+				(port.equals("*") || port.equals(getInputCompactName(0)))) {
 			return compactName + ":" + getInputCompactName(0) +
 			"=" + (irInput? "ON" : "OFF") + "\n";
 		} else {

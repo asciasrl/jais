@@ -35,13 +35,19 @@ public class BMCDimmer extends BMC {
 	/**
 	 * Uscite. Possono assumere un valore 0-100 oppure -1 (OFF).
 	 */
-	int[] outPorts;
+	private int[] outPorts;
 	/**
 	 * La conoscenza delle uscite puo' essere errata?
 	 * 
-	 * Questa array ha un elemento per ogni porta.
+	 * <p>Questa array ha un elemento per ogni porta.</p>
 	 */
-	boolean dirty[];
+	private boolean dirty[];
+	/**
+	 * Timestamp di aggiornamento per le porte di uscita.
+	 * 
+	 * <p>Questa array ha un elemento per ogni porta.</p>
+	 */
+	private long outPortsTimestamps[];
 	/**
 	 * Potenza in uscita [Watt] o -1 se l'uscita è 0-10 V
 	 */
@@ -98,9 +104,11 @@ public class BMCDimmer extends BMC {
 		if (outPortsNum > 0) {
 			outPorts = new int[outPortsNum];
 			dirty = new boolean[outPortsNum];
+			outPortsTimestamps = new long[outPortsNum];
 		}
 		for (int i = 0; i < outPortsNum; i++) {
 			dirty[i] = true;
+			outPortsTimestamps[i] = 0;
 		}
 	}
 	
@@ -135,6 +143,7 @@ public class BMCDimmer extends BMC {
 			oldValue = outPorts[uscita];
 			outPorts[uscita] = valore;
 			if (oldValue != valore) {
+				outPortsTimestamps[uscita] = System.currentTimeMillis();
 				alertListener(uscita);
 			}
 			dirty[uscita] = true;
@@ -153,6 +162,7 @@ public class BMCDimmer extends BMC {
 			}
 			outPorts[uscita] = valore;
 			if (oldValue != valore) {
+				outPortsTimestamps[uscita] = System.currentTimeMillis();
 				alertListener(uscita);
 			}
 			dirty[uscita] = true;
@@ -163,8 +173,11 @@ public class BMCDimmer extends BMC {
 			bmsg = (ComandoBroadcastMessage) m;
 			ports = getBoundOutputs(bmsg.getCommandNumber());
 			if (ports.length > 0) {
+				logger.trace("Ricevuto un comando broadcast che ci interessa");
 				for (int i = 0; i < ports.length; i++) {
 					dirty[ports[i]] = true;
+					// Non aggiorniamo i timestamp, perché tanto non sappiamo
+					// i valori che le porte prenderanno.
 				}
 			}
 			break;
@@ -173,7 +186,7 @@ public class BMCDimmer extends BMC {
 			vmsg = (VariazioneIngressoMessage) m;
 			dirty[vmsg.getOutputNumber()] = true;
 			// FIXME: come facciamo a generare un evento? Ci serve il nuovo
-			// valore!
+			// valore! Perciò non aggiorniamo neanche il timestamp.
 			break;
 		}
 	}
@@ -188,11 +201,13 @@ public class BMCDimmer extends BMC {
 			// prendere solo quelli effettivamente presenti sul BMC
 			int temp[];
 			int i;
+			long currentTime = System.currentTimeMillis();
 			temp = r.getOutputs();
 			for (i = 0; i < outPortsNum; i++) {
 				int oldValue = outPorts[i];
 				outPorts[i] = temp[i];
 				if (oldValue != outPorts[i]) {
+					outPortsTimestamps[i] = currentTime;
 					alertListener(i);
 				}
 				dirty[i] = false;
@@ -263,7 +278,7 @@ public class BMCDimmer extends BMC {
 		return retval;
 	}
 
-	public String getStatus(String port) {
+	public String getStatus(String port, long timestamp) {
 		int i;
 		String retval = "";
 		String busName = bus.getName();
@@ -272,7 +287,8 @@ public class BMCDimmer extends BMC {
 			updateStatus();
 		}
 		for (i = 0; i < outPortsNum; i++) {
-			if (port.equals("*") || port.equals(getOutputCompactName(i))) {
+			if ((timestamp <= outPortsTimestamps[i]) &&
+					(port.equals("*") || port.equals(getOutputCompactName(i)))){
 				retval += compactName + ":" + getOutputCompactName(i) + "=" +
 					outPorts[i] + "\n";
 			}

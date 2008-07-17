@@ -11,8 +11,6 @@ import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.UnresolvedAddressException;
 import java.util.Set;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.log4j.Logger;
 
@@ -114,13 +112,7 @@ public class TCPSerialBus extends Bus {
      * Il selector per la scrittura.
      */
     Selector writeSelector;
-    /**
-     * Lock per la scrittura.
-     * 
-     * <p>Non ci dovrebbero essere problemi di threading, ma questa precauzione
-     * costa poco.</p>
-     */
-    Lock writeLock;
+
     /**
      * Costruttore.
      *
@@ -159,7 +151,6 @@ public class TCPSerialBus extends Bus {
 		tcpSerialBusReader = new TCPSerialBusReader(readSelector, this, sock);
 		logger.debug("Avvio listener");
 		new Thread(tcpSerialBusReader).start();
-		writeLock = new ReentrantLock();
     }
     
     /**
@@ -169,12 +160,11 @@ public class TCPSerialBus extends Bus {
      * 
      * @param m the message to send
      */
-    public void write(Message m) {
+    public synchronized void write(Message m) {
     	byte[] rawMessage = m.getBytesMessage();
     	ByteBuffer bb = ByteBuffer.allocate(rawMessage.length);
     	bb.put(rawMessage);
     	bb.rewind();
-    	writeLock.lock();
     	try {
     		// How to make a non-blocking connection blocking
     		while (bb.hasRemaining()) {
@@ -195,8 +185,6 @@ public class TCPSerialBus extends Bus {
     	} catch (IOException e) {
     		logger.error("Errore durante l'invio di dati via rete: " +
 				e.getMessage());
-    	} finally {
-    		writeLock.unlock();
     	}
     }
     

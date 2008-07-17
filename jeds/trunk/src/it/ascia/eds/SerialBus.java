@@ -7,8 +7,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.TooManyListenersException;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import gnu.io.*;
 
@@ -34,13 +32,6 @@ public class SerialBus extends Bus implements SerialPortEventListener {
     private InputStream inputStream;
     private static boolean	      outputBufferEmptyFlag = false;
     private SerialPort		      serialPort;
-    /**
-     * Lock per la scrittura.
-     * 
-     * Non ci dovrebbero essere problemi di threading, ma questa precauzione
-     * costa poco.
-     */
-    private Lock writeLock;
     
     /**
      * Costruttore
@@ -100,8 +91,6 @@ public class SerialBus extends Bus implements SerialPortEventListener {
 			throw new EDSException("Errore durante l'impostazione dei parametri:" +
 					e.getMessage());
 		}
-		writeLock = new ReentrantLock();
-
 		// Questo blocco blocca (!) la ricezione
 //	    try {
 //	    	serialPort.notifyOnOutputEmpty(true);
@@ -201,8 +190,7 @@ public class SerialBus extends Bus implements SerialPortEventListener {
      * 
      * @param m the message to send
      */
-    public void write(Message m) {
-    	writeLock.lock();
+    public synchronized void write(Message m) {
     	try {
 			outputBufferEmptyFlag = false;
 			m.write(outputStream);
@@ -212,8 +200,6 @@ public class SerialBus extends Bus implements SerialPortEventListener {
 //			}    
 //    	} catch (InterruptedException e) {
 		} catch (IOException e) {    		
-		} finally {
-			writeLock.unlock();
 		}
     }
 

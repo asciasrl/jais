@@ -103,27 +103,39 @@ public class BMCChronoTerm extends BMC {
 	/**
 	 * Ingresso termometro.
 	 */
-	double temperature;
+	private double temperature;
 	/**
 	 * La temperatura non e' aggiornata.
 	 */
-	boolean dirtyTemperature;
+	private boolean dirtyTemperature;
+	/**
+	 * Timestamp di aggiornamento della temperatura.
+	 */
+	private long temperatureTimestamp = 0;
 	/**
 	 * Temperatura di set point del termostato.
 	 */
-	double setPoint;
+	private double setPoint;
 	/**
 	 * Il set point non è aggiornato.
 	 */
-	boolean dirtySetPoint;
+	private boolean dirtySetPoint;
+	/**
+	 * Timestamp di aggiornamento del set point.
+	 **/
+	private long setPointTimestamp = 0;
 	/**
 	 * Stato del termostato.
 	 */
-	int state;
+	private int state;
 	/**
 	 * Lo stato del termostato non e' aggiornato.
 	 */
-	boolean dirtyState;
+	private boolean dirtyState;
+	/**
+	 * Timestamp di aggiornamento del termostato.
+	 */
+	private long stateTimestamp = 0;
 	
 	/**
 	 * Costruttore
@@ -162,6 +174,7 @@ public class BMCChronoTerm extends BMC {
 			int oldState = state;
 			state = var.getChronoTermState();
 			if (oldState != state) {
+				stateTimestamp = System.currentTimeMillis();
 				generateEvent(port_state, String.valueOf(state));
 			}
 			dirtyState = true;
@@ -173,6 +186,7 @@ public class BMCChronoTerm extends BMC {
 			double oldSetPoint = setPoint;
 			setPoint = set.getSetPoint();
 			if (oldSetPoint != setPoint) {
+				setPointTimestamp = System.currentTimeMillis();
 				generateEvent(port_setpoint, String.valueOf(setPoint));
 			}
 			dirtySetPoint = true;
@@ -190,6 +204,7 @@ public class BMCChronoTerm extends BMC {
 			double oldTemp = temperature;
 			temperature = tm.getChronoTermTemperature();
 			if (temperature != oldTemp) {
+				temperatureTimestamp = System.currentTimeMillis();
 				generateEvent(port_temperature, 
 						String.valueOf(temperature));
 			}
@@ -209,6 +224,7 @@ public class BMCChronoTerm extends BMC {
 				break;
 			}
 			if (state != oldState) {
+				stateTimestamp = System.currentTimeMillis();
 				generateEvent(port_state, getStateAsString());
 			}
 			dirtyState = false;
@@ -220,6 +236,7 @@ public class BMCChronoTerm extends BMC {
 			double oldSetPoint = setPoint;
 			setPoint = ctm.getSetPoint();
 			if (setPoint != oldSetPoint) {
+				setPointTimestamp = System.currentTimeMillis();
 				generateEvent(port_setpoint, String.valueOf(setPoint));
 			}
 			dirtySetPoint = false;
@@ -298,7 +315,7 @@ public class BMCChronoTerm extends BMC {
 	}
 
 	// Attenzione:
-	public String getStatus(String port) {
+	public String getStatus(String port, long timestamp) {
 		String retval = "";
 		String busName = bus.getName();
 		String compactName = busName + "." + getAddress();
@@ -308,15 +325,18 @@ public class BMCChronoTerm extends BMC {
 		if (dirtyState || dirtyTemperature) {
 			updateTermStatus();
 		}
-		if (port.equals("*") || port.equals(port_temperature)) {
+		if ((timestamp <= temperatureTimestamp) && 
+				(port.equals("*") || port.equals(port_temperature))) {
 			retval += compactName + ":" + port_temperature + "=" + temperature + 
 				"\n";
 		}
-		if (port.equals("*") || port.equals(port_setpoint)) {
+		if ((timestamp <= setPointTimestamp) && 
+				(port.equals("*") || port.equals(port_setpoint))) {
 			retval += compactName + ":" + port_setpoint + "=" + setPoint + 
 				"\n";
 		}
-		if (port.equals("*") || port.equals(port_state)) {
+		if ((timestamp <= stateTimestamp) && 
+				(port.equals("*") || port.equals(port_state))) {
 			retval += compactName + ":" + port_state + "=" + 
 				getStateAsString() + "\n";
 		}

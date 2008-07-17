@@ -92,7 +92,7 @@ public class ControllerWDB extends MyController {
  				bmc.updateStatus();
  		 		System.out.println("Stato del BMC dopo la richiesta: ");
  		 		bmc.printStatus();
- 		 		System.out.println(bmc.getStatus("*"));
+ 		 		System.out.println(bmc.getStatus("*", 0));
  			} // if output >= 0
 		}
 	}

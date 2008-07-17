@@ -55,6 +55,10 @@ public class BMCStandardIO extends BMC {
 	 */
 	private boolean[] inPorts;
 	/**
+	 * Timestamp di aggiornamento degli ingressi.
+	 */
+	private long inPortsTimestamps[];
+	/**
 	 * Uscite.
 	 */
 	private boolean[] outPorts;
@@ -62,6 +66,10 @@ public class BMCStandardIO extends BMC {
 	 * I valori di outPorts non sono aggiornati.
 	 */
 	private boolean[] dirty;
+	/**
+	 * Timestamp di aggiornamento delle uscite.
+	 */
+	private long outPortsTimestamps[];
 
 	/**
 	 * Costruttore.
@@ -84,17 +92,24 @@ public class BMCStandardIO extends BMC {
 		outPortsNum = getOutPortsNumber();
 		if (inPortsNum > 0) {
 			inPorts = new boolean[inPortsNum];
+			inPortsTimestamps = new long[inPortsNum];
+			for (int i = 0; i < inPortsNum; i++) {
+				inPortsTimestamps[i] = 0;
+			}
 		}
 		if (outPortsNum > 0) {
 			outPorts = new boolean[outPortsNum];
 			dirty = new boolean[outPortsNum];
-		}
-		for (int i = 0; i < outPortsNum; i++) {
-			dirty[i] = true;
+			outPortsTimestamps = new long[outPortsNum];
+			for (int i = 0; i < outPortsNum; i++) {
+				dirty[i] = true;
+				outPortsTimestamps[i] = 0;
+			}
 		}
 	}
 
 	public void messageReceived(Message m) {
+		long currentTime = System.currentTimeMillis();
 		switch (m.getMessageType()) {
 		case Message.MSG_COMANDO_USCITA: {
 			ComandoUscitaMessage cmd = (ComandoUscitaMessage) m;
@@ -103,7 +118,7 @@ public class BMCStandardIO extends BMC {
 			outPorts[uscita] = cmd.isActivation();
 			if (isReal) {
 				// L'attuazione viene richiesta, non sappiamo se sara'
-				// effettuata.
+				// effettuata. Quindi non aggiorniamo il timestamp.
 				dirty[uscita] = true;
 			} else {
 				// Siamo noi che decidiamo: avvisiamo il listener e mandiamo
@@ -114,6 +129,7 @@ public class BMCStandardIO extends BMC {
 				bus.sendMessage(ack);
 			}
 			if (outPorts[uscita] != oldValue) {
+				outPortsTimestamps[uscita] = currentTime;
 				alertListener(uscita, true);
 			}
 		}
@@ -131,12 +147,11 @@ public class BMCStandardIO extends BMC {
 						// Decidiamo noi che cosa succede
 						int portNum = ports[i];
 						outPorts[portNum] ^= true;
+						outPortsTimestamps[portNum] = currentTime;
 						alertListener(portNum, true);
-						logger
-								.debug("La porta "
-										+ ports[i]
-										+ " risponde a un comando broadcast e diventa: "
-										+ outPorts[portNum]);
+						logger.debug("La porta " + ports[i]	+ 
+								" risponde a un comando broadcast e diventa: " +
+								outPorts[portNum]);
 					}
 				} // cicla sulle porte interessate
 			} // if ports.length > 0
@@ -147,7 +162,8 @@ public class BMCStandardIO extends BMC {
 			VariazioneIngressoMessage vmsg = (VariazioneIngressoMessage) m;
 			int port = vmsg.getOutputNumber();
 			if (isReal) {
-				// Non sappiamo che succede. Ipotizziamo un toggle.
+				// Non sappiamo che succede. Ipotizziamo un toggle e non 
+				// aggiorniamo il timestamp.
 				outPorts[port] ^= true;
 				dirty[port] = true;
 			} else {
@@ -156,6 +172,7 @@ public class BMCStandardIO extends BMC {
 				logger.debug("La porta " + port	+ " risponde alla variazione " +
 						"di un ingresso e diventa: " + outPorts[port]);
 			}
+			outPortsTimestamps[port] = currentTime;
 			alertListener(port, true);
 		}
 		break;
@@ -211,6 +228,7 @@ public class BMCStandardIO extends BMC {
 		if (isReal) {
 			switch (m.getMessageType()) {
 			case Message.MSG_RISPOSTA_STATO: {
+				long currentTime = System.currentTimeMillis();
 				RispostaStatoMessage r;
 				r = (RispostaStatoMessage) m;
 				// Il RispostaStatoMessage da' sempre 8 valori. Dobbiamo
@@ -222,6 +240,7 @@ public class BMCStandardIO extends BMC {
 					mustAlert = (outPorts[i] != temp[i]);
 					outPorts[i] = temp[i];
 					if (mustAlert) {
+						outPortsTimestamps[i] = currentTime;
 						alertListener(i, true);
 					}
 					dirty[i] = false;
@@ -231,6 +250,7 @@ public class BMCStandardIO extends BMC {
 					mustAlert = (inPorts[i] != temp[i]);
 					inPorts[i] = temp[i];
 					if (mustAlert) {
+						inPortsTimestamps[i] = currentTime;
 						alertListener(i, false);
 					}
 				}
@@ -306,6 +326,7 @@ public class BMCStandardIO extends BMC {
 				boolean oldValue = outPorts[port];
 				outPorts[port] = value;
 				if (oldValue != value) {
+					outPortsTimestamps[port] = System.currentTimeMillis();
 					alertListener(port, true);
 				}
 			}
@@ -346,6 +367,7 @@ public class BMCStandardIO extends BMC {
 				retval = true;
 			}
 			if (retval) {
+				outPortsTimestamps[port] = System.currentTimeMillis();
 				alertListener(port, true);
 			}
 		} else {
@@ -404,7 +426,7 @@ public class BMCStandardIO extends BMC {
 		return retval;
 	}
 
-	public String getStatus(String port) {
+	public String getStatus(String port, long timestamp) {
 		String retval = "";
 		String busName = bus.getName();
 		int i;
@@ -413,13 +435,15 @@ public class BMCStandardIO extends BMC {
 			updateStatus();
 		}
 		for (i = 0; i < inPortsNum; i++) {
-			if (port.equals("*") || port.equals(getInputCompactName(i))) {
+			if ((timestamp <= inPortsTimestamps[i]) && 
+					(port.equals("*") || port.equals(getInputCompactName(i)))) {
 				retval += compactName + ":" + getInputCompactName(i) + "="
 						+ (inPorts[i] ? "ON" : "OFF") + "\n";
 			}
 		}
 		for (i = 0; i < outPortsNum; i++) {
-			if (port.equals("*") || port.equals(getOutputCompactName(i))) {
+			if ((timestamp <= outPortsTimestamps[i]) && 
+					(port.equals("*") || port.equals(getOutputCompactName(i)))){
 				retval += compactName + ":" + getOutputCompactName(i) + "="
 						+ (outPorts[i] ? "ON" : "OFF") + "\n";
 			}

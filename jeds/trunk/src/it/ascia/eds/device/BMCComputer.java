@@ -192,11 +192,13 @@ public class BMCComputer extends BMC {
 	/**
      * "Scopre" il BMC indicato inviandogli un messaggio di richiesta modello.
      * 
-     * <p>Se il BMC e' gia' in lista, vengono utilizzate le informazioni gia'
-     * note.</p>
+     * <p>Se il BMC e' gia' in lista, non invia messaggi, ma ritorna le 
+     * informazioni gia' note.</p>
      * 
      * <p>Se il BMC non era gia' in lista, allora verra' inserito dal metodo 
-     * messageReceived().</p>
+     * messageReceived(). Questo metodo chiama anche 
+     * @link{#discoverBroadcastBindings} per scoprire le associazioni del
+     * BMC ai comandi broadcast.
      * 
      * @param address l'indirizzo del BMC da "scoprire".
      * 
@@ -207,11 +209,14 @@ public class BMCComputer extends BMC {
     	// Gia' abbiamo il BMC in lista?
     	temp = (BMC[])bus.getDevices(String.valueOf(address));
     	if (temp.length == 0) {
+    		// No!
+    		logger.trace("Ricerca del BMC con indirizzo " + address);
     		if (sendPTPRequest(new RichiestaModelloMessage(address, 
     				getIntAddress()))) {
     			temp = (BMC[])bus.getDevices(String.valueOf(address));
     			if (temp.length > 0) {
     				retval = temp[0];
+    				discoverBroadcastBindings(retval);
     			} else {
     				// Molto strano: l'ACK del messaggio e' arrivato, ma non 
     				// abbiamo nessun BMC.
@@ -239,6 +244,8 @@ public class BMCComputer extends BMC {
     public void discoverBroadcastBindings(BMC bmc){
     	int outPort;
     	int casella;
+    	logger.trace("Richiesta associazioni broadcast BMC " + 
+    			bmc.getAddress());
     	for (outPort = 0; outPort < bmc.getOutPortsNumber(); outPort++) {
     		for (casella = 0; casella < bmc.getCaselleNumber(); casella++) {
     			RichiestaAssociazioneUscitaMessage m;
@@ -254,7 +261,7 @@ public class BMCComputer extends BMC {
 	}
 
 	// Niente da dichiarare.
-	public String getStatus(String port) {
+	public String getStatus(String port, long timestamp) {
 		return "";
 	}
 

@@ -27,11 +27,19 @@ public class BMCScenarioManager extends BMC {
 	/**
 	 * Ingressi.
 	 */
-	boolean inPorts[];
+	private boolean inPorts[];
+	/**
+	 * Timestamp di aggiornamento degli ingressi.
+	 */
+	private long inPortsTimestamps[];
 	/**
 	 * Uscite.
 	 */
 	private boolean outPorts[];
+	/**
+	 * Timestamp di aggiornamento delle uscite.
+	 */
+	private long outPortsTimestamps[]; 
 	
 	/**
 	 * Costruttore
@@ -60,9 +68,16 @@ public class BMCScenarioManager extends BMC {
 		}
 		if (inPortsNum > 0) {
 			inPorts = new boolean[inPortsNum];
+			inPortsTimestamps = new long[inPortsNum];
+			for (int i = 0; i < inPortsNum; i++) {
+				inPortsTimestamps[i] = 0;
+			}
 		}
 		outPortsNum = 8;
 		outPorts = new boolean[outPortsNum];
+		for (int i = 0; i < outPortsNum; i++) {
+			outPortsTimestamps[i] = 0;
+		}
 	}
 	
 	public void messageReceived(Message m) {
@@ -107,11 +122,13 @@ public class BMCScenarioManager extends BMC {
 			// prendere solo quelli effettivamente presenti sul BMC
 			boolean temp[], oldValue;
 			int i;
+			long currentTime = System.currentTimeMillis();
 			temp = r.getOutputs();
 			for (i = 0; i < outPortsNum; i++) {
 				oldValue = outPorts[i];
 				outPorts[i] = temp[i];
 				if (oldValue != outPorts[i]) {
+					outPortsTimestamps[i] = currentTime;
 					alertListener(i, true);
 				}
 			}
@@ -120,6 +137,7 @@ public class BMCScenarioManager extends BMC {
 				oldValue = inPorts[i];
 				inPorts[i] = temp[i];
 				if (oldValue != inPorts[i]) {
+					inPortsTimestamps[i] = currentTime;
 					alertListener(i, false);
 				}
 			}
@@ -134,20 +152,22 @@ public class BMCScenarioManager extends BMC {
 	}
 
 	// Attenzione: chiama sempre updateStatus() !
-	public String getStatus(String port) {
+	public String getStatus(String port, long timestamp) {
 		String busName = bus.getName();
 		String retval = "";
 		int i;
 		String compactName = busName + "." + getAddress();
 		updateStatus();
 		for (i = 0; i < inPortsNum; i++) {
-			if (port.equals("*") || port.equals(getInputCompactName(i))) {
+			if ((timestamp <= inPortsTimestamps[i]) &&
+					(port.equals("*") || port.equals(getInputCompactName(i)))) {
 				retval += compactName + ":" + getInputCompactName(i) + "=" + 
 					(inPorts[i]? "ON" : "OFF") + "\n";
 			}
 		}
 	 	for (i = 0; i < outPortsNum; i++) {
-	 		if (port.equals("*") || port.equals(getOutputCompactName(i))) {
+	 		if ((timestamp <= outPortsTimestamps[i]) &&
+	 				(port.equals("*") || port.equals(getOutputCompactName(i)))){
 	 			retval += compactName + ":" + getOutputCompactName(i) + "=" + 
 	 				(outPorts[i]? "ON" : "OFF") + "\n";
 	 		}

@@ -21,6 +21,30 @@ public abstract class Controller {
 	private Map connectors;
 	
 	/**
+	 * Rifa' String.split() per il GCJ che non ce l'ha.
+	 */
+	private static String[] splitString(String s, String separator) {
+		String retval[], current = "";
+		int i = 0, strings = 1, stringNo = 0, lastIndex = 0;
+		i = s.indexOf(separator, i);
+		while (i != -1) {
+			strings++;
+			i = s.indexOf(separator, i + 1);
+		}
+		retval = new String[strings];
+		i = s.indexOf(separator, lastIndex);
+		while (i != -1) {
+			retval[stringNo] = s.substring(lastIndex, i);
+			stringNo++;
+			lastIndex = i + 1;
+			i = s.indexOf(separator, lastIndex);
+		}
+		// Anche l'ultima
+		retval[stringNo] = s.substring(lastIndex);
+		return retval;
+	}
+	
+	/**
 	 * Aggiunge un Connector alla lista di quelli gestiti.
 	 * 
 	 * @param connector il connector da aggiungere.
@@ -40,7 +64,7 @@ public abstract class Controller {
 	protected String getDeviceFromAddress(String address) throws AISException {
 		String temp[];
 		// Prima cosa: trovare i ":" per dividere porte e device.
-		temp = address.split(":");
+		temp = splitString(address, ":");
 		if (temp.length != 2) {
 			throw new AISException("L'indirizzo deve contenere uno e un solo " +
 					"\":\"");
@@ -59,7 +83,7 @@ public abstract class Controller {
 	protected String getPortFromAddress(String address) throws AISException {
 		String temp[];
 		// Prima cosa: trovare i ":" per dividere porte e device.
-		temp = address.split(":");
+		temp = splitString(address, ":");
 		if (temp.length != 2) {
 			throw new AISException("L'indirizzo deve contenere uno e un solo " +
 					"\":\"");

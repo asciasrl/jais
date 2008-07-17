@@ -220,7 +220,7 @@ function getPort(port) {
 }
 
 /**
- * Callback per getAll.
+ * Callback per getAll: chiama la callback specificata dall'utente.
  */
 function getAllCallback(goodNews, badNews) {
 	// E' possibile che la callback faccia una nuova getAll. Permettiamoglielo. 
@@ -237,16 +237,19 @@ function getAllCallback(goodNews, badNews) {
 /**
  * Ritorna lo stato di tutte le porte del sistema.
  *
+ * @param il timestamp da specificare nella chiamata.
+ *
  * @param callback la funzione che ricevera' i dati. Ricevera' un parametro,
  * che saranno i dati oppure false in caso di errore.
  */
-function getAll(callback) {
+function getAll(timestamp, callback) {
 	if (getAllUserCallback) {
 		// C'e' gia' una richiesta di questo tipo in esecuzione.
 		callback(false);
 	} else {
 		getAllUserCallback = callback;
-		query(CMD_GETALL, getAllCallback);
+		query(CMD_GETALL + "?name=timestamp&value=" + timestamp, 
+			getAllCallback);
 	}
 }
 

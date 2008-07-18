@@ -75,6 +75,7 @@ public class BMCScenarioManager extends BMC {
 		}
 		outPortsNum = 8;
 		outPorts = new boolean[outPortsNum];
+		outPortsTimestamps = new long[outPortsNum];
 		for (int i = 0; i < outPortsNum; i++) {
 			outPortsTimestamps[i] = 0;
 		}
@@ -182,6 +183,13 @@ public class BMCScenarioManager extends BMC {
 	public int getOutPortsNumber() {
 		return 8;
 	}
+	/**
+	 * Gli scenari non sono attivabili con comandi broadcast 
+	 */
+	public int getCaselleNumber() {
+		return 4;
+	}
+	
 
 	public void setPort(String port, String value) throws EDSException {
 		throw new EDSException("Not implemented.");

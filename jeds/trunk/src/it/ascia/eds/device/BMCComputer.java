@@ -56,16 +56,23 @@ public class BMCComputer extends BMC {
 		messageToBeAnswered = null;
 	}
 
-	/* (non-Javadoc)
+	/** 
+	 * Alla ricezione di un messaggio:
+	 * <ol>
+	 *   <li>Aggiunge il messaggio alla inbox</li>
+	 *   <li>Se il messaggio e' una risposta a richiesta modello, agiunge un BMC</li>
+	 *   <li>Conferma che il messaggio e' stato ricevuto</li>
+	 * </ol>  
 	 * @see it.ascia.eds.device.Device#receiveMessage(it.ascia.eds.msg.Message)
 	 */
 	public void messageReceived(Message m) {
+		// Tutti i messaggi ricevuti devono finire nella inbox. Ma non troppi.
+		inbox.addFirst(m);
+		while (inbox.size() > MAX_INBOX_SIZE) {
+			inbox.removeLast();
+		}
 		if (!m.isBroadcast()) {
 			PTPMessage ptpm = (PTPMessage) m;
-			// Attendiamo risposte?
-			if (messageToBeAnswered != null) {
-				messageToBeAnswered.isAnsweredBy(ptpm);
-			}
 			// Aggiungiamo i BMC che si presentano
 			if (RispostaModelloMessage.class.isInstance(ptpm)) {
 				RispostaModelloMessage risposta = (RispostaModelloMessage) ptpm;
@@ -76,12 +83,11 @@ public class BMCComputer extends BMC {
 				// Se il device e' gia' sul bus, non e' un errore.
 				}
 			}
+			// Attendiamo risposte?
+			if (messageToBeAnswered != null) {
+				messageToBeAnswered.isAnsweredBy(ptpm);
+			}
 		} // if m è un PTPMessage
-		// Tutti i messaggi ricevuti devono finire nella inbox. Ma non troppi.
-		inbox.addFirst(m);
-		while (inbox.size() > MAX_INBOX_SIZE) {
-			inbox.removeLast();
-		}
 	}
 	
 	public void messageSent(Message m) {

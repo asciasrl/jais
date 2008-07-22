@@ -25,9 +25,10 @@ public class VariazioneIngressoMessage extends PTPRequest
 	 * 
 	 * @param d destinatario del messaggio.
 	 * @param m mittente del messaggio.
-	 * @param Attivazione true per attivazione/incremento
-	 * @param Uscita numero dell'uscita da cambiare
-	 * @param Variazione 0: circuito aperto, 1: contatto (cortocircuito a massa)
+	 * @param Attivazione true per attivazione/incremento.
+	 * @param Uscita numero dell'uscita da cambiare.
+	 * @param Variazione 0: circuito aperto, 1: contatto (cortocircuito a 
+	 * massa).
 	 */
 	public VariazioneIngressoMessage(int d, int m, boolean Attivazione, 
 			int Uscita, int Variazione) {

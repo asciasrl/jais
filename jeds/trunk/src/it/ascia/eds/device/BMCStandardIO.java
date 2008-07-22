@@ -317,6 +317,9 @@ public class BMCStandardIO extends BMC {
 				VariazioneIngressoMessage m;
 				m = new VariazioneIngressoMessage(getIntAddress(), 
 						bus.getBMCComputerAddress(), value, port, 1);
+				/* ComandoUscitaMessage m;
+				m = new ComandoUscitaMessage(getIntAddress(), 
+						bus.getBMCComputerAddress(), port, value); */
 				retval = bus.sendMessage(m);
 				dirty[port] = true;
 			} else { // The easy way

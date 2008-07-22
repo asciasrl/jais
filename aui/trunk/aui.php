@@ -252,6 +252,15 @@ function arrayJavascript($arr) {
 	}
 	echo("]");
 }
+
+/**
+ * Include uno script cambiandogli il nome, in modo da evitare il caching da
+ * parte del browser.
+ */
+function includeScript($scriptName) {
+	echo("<script type=\"\" language=\"javascript\" src=\"$scriptName?" . 
+		time() . "\"></script>\n");
+}
  ?>
 
  
@@ -467,17 +476,24 @@ $blindControlHeight = $temp[1];
 	const IMG_DOOR_OPEN_ALARM = "<?php echo(IMG_DOOR_OPEN_ALARM); ?>";
 	const IMG_DOOR_CLOSE_OK = "<?php echo(IMG_DOOR_CLOSE_OK); ?>";
 </script>
-<script type="" language="javascript" src="statusbar.js"></script>
-<script type="" language="javascript" src="aui.js"></script>
-<script type="" language="javascript" src="comm.js"></script>
-<script type="" language="javascript" src="map.js"></script>
-<script type="" language="javascript" src="appbar_common.js"></script>
-<script type="" language="javascript" src="appbar<?php if (APPBAR_SIMPLE) echo("_simple"); ?>.js"></script>
-<script type="" language="javascript" src="services.js"></script>
-<script type="" language="javascript" src="dimmer_slider.js"></script>
-<script type="" language="javascript" src="blind.js"></script>
-<script type="" language="javascript" src="keypad.js"></script>
-<script type="" language="javascript" src="alarm.js"></script>
+
+<?php
+includeScript("statusbar.js");
+includeScript("aui.js");
+includeScript("comm.js");
+includeScript("map.js");
+includeScript("appbar_common.js");
+if (APPBAR_SIMPLE) {
+	includeScript("appbar_simple.js");
+} else {
+	includeScript("appbar.js");
+}
+includeScript("services.js");
+includeScript("dimmer_slider.js");
+includeScript("blind.js");
+includeScript("keypad.js");
+includeScript("alarm.js");
+?>
 <script type="" language="javascript">
-startGetAllTimer();
+startMasterTimer();
 </script>

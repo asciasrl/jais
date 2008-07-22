@@ -3,6 +3,11 @@
  */
  
 /**
+ * Periodo del master timer.
+ */
+const MASTER_TIMER_PERIOD = 1000;
+ 
+/**
  * Informazioni sull'icona che si sta accendendo o spegnendo in questo momento.
  *
  * @see onOffIcon()
@@ -21,9 +26,33 @@ var iconToToggle = false;
 var lastStatusTimestamp = "0";
 
 /**
- * Timer che chiama il getAll periodicamente.
+ * Semaforo: masterTimerTick è in esecuzione?
+ *
+ * <p>Questa variabile serve a evitare che più istanze di masterTimerTick
+ * vengano eseguite contemporaneamente.</p>
  */
-var getAllInterval = false;
+var inMasterTimerTick = false;
+
+/**
+ * Semaforo: abbiamo fatto un getAll e stiamo aspettando il risultato?
+ *
+ * <p>Questa variabile serve a evitare che getAll venga chiamato troppo di
+ * frequente.</p>
+ */
+var inRefreshEverything = false;
+
+/**
+ * Timestamp della prossima esecuzione di getAll.
+ *
+ * <p>Questa variabile serve a evitare che getAll venga chiamato troppo di
+ * frequente.</p>
+ */
+var nextGetAllTimestamp = 0;
+
+/**
+ * Minima distanza tra due getAll [msec].
+ */
+const GET_ALL_INTERVAL = 1000;
 
 /**
  * Riceve le risposte delle richieste fatte da onOffIcon().
@@ -230,14 +259,20 @@ function refreshBlinds(status) {
  */
 function refreshEverythingCallback(globalStatus) {
 	if (globalStatus) {
-		// La prima riga è il timestamp
-		var lines = globalStatus.split("\n");
-		lastStatusTimestamp = lines[0];
-		refreshLights(globalStatus);
-		refreshThermos(globalStatus);
-		refreshPowers(globalStatus);
-		refreshBlinds(globalStatus);
+		try { // Dobbiamo essere resistenti agli errori
+			// La prima riga è il timestamp
+			var lines = globalStatus.split("\n");
+			lastStatusTimestamp = lines[0];
+			refreshLights(globalStatus);
+			refreshThermos(globalStatus);
+			refreshPowers(globalStatus);
+			refreshBlinds(globalStatus);
+		} catch (error) {
+			statusMessage(error.description);
+		}
 	}
+	nextGetAllTimestamp = new Date().getTime() + GET_ALL_INTERVAL;
+	inRefreshEverything = false;
 }
 /**
  * Richiede un aggiornamento dello stato di tutti i sistemi.
@@ -245,24 +280,66 @@ function refreshEverythingCallback(globalStatus) {
  * @see refreshEverythingCallback
  */
 function refreshEverything() {
+	inRefreshEverything = true;
 	getAll(lastStatusTimestamp, refreshEverythingCallback);
 }
 
 /**
- * Avvia il timer che chiama getAll periodicamente.
+ * Il tick del nostro grande timer.
+ *
+ * <p>Questa funzione deve gestire tutte le temporizzazioni di AUI.</p>
  */
-function startGetAllTimer() {
-	if (!getAllInterval) {
-		// getAllInterval = setInterval("refreshEverything()", 1000);
+function masterTimerTick() {
+	if (inMasterTimerTick) {
+		return;
 	}
+	inMasterTimerTick = true;
+	var currentTime = new Date().getTime();
+	// Sparizione graduale status bar
+	if (statusBarIsShown && !statusBarLocked && 
+		(statusBarDisappearTimestamp < currentTime)) {
+		try {
+			closeStatusBar();
+		} catch (error) {
+			// Non possiamo usare la status bar per mostrare il messaggio! :-/
+			window.alert(error.description);
+		}
+	}
+	// Aggiornamento slider dimmer (dimmer_slider.js)
+	if (isShowingDimmer) {
+		if (dimmerDisappearTimestamp < currentTime) {
+			try {
+				hideDimmer();
+			} catch (error) {
+				statusMessage(error.description);
+			}
+		} else if ((!isRefreshingDimmer) && 
+			(nextDimmerRefreshTimestamp < currentTime)) {
+			try { 
+				refreshDimmer();
+			} catch (error) {
+				isRefreshingDimmer = false;
+				statusMessage(error.description);
+			}
+		}
+		inMasterTimerTick = false;
+		return; // non vogliamo fare altro.
+	}
+	// getAll
+	if ((!inRefreshEverything) && (nextGetAllTimestamp < currentTime)) {
+		try {
+			refreshEverything();
+		} catch (error) {
+			inRefreshEverything = false;
+			statusMessage(error.description);
+		}
+	}
+	inMasterTimerTick = false;
 }
 
 /**
- * Blocca il timer che chiama getAll periodicamente.
+ * Avvia il nostro grande timer.
  */
-function stopGetAllTimer() {
-	if (getAllInterval) {
-		window.clearInterval(getAllInterval);
-		getAllInterval = false;
-	}
+function startMasterTimer() {
+	setInterval("masterTimerTick()", MASTER_TIMER_PERIOD);
 }

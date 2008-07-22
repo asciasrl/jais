@@ -39,7 +39,7 @@ public class MyController extends Controller implements DeviceListener {
 	 * @param pin il pin da richiedere; se null, qualunque pin verra' accettato.
 	 */
 	public MyController(String pin) {
-		this.logger = Logger.getLogger(getClass());
+		logger = Logger.getLogger(getClass());
 		this.pin = pin;
 	}
 	
@@ -139,7 +139,7 @@ public class MyController extends Controller implements DeviceListener {
 	}
 
 	public void statusChanged(DeviceEvent event) {
-		logger.trace(event.getInfo());
+		logger.trace("Ricevuto evento: " + event.getInfo());
 		// Esempio: accendiamo un dimmer
 		Device device = event.getDevice();
 //		if (device.getAddress().equals("1")) {

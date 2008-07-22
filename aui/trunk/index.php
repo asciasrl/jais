@@ -55,7 +55,11 @@ if ($mobile) {
 			iPodClock();
 		</script>
 		<!-- Fine Barra di sistema dell iPod -->  
-		<iframe width="<?php echo(IPOD_VIEWPORT_WIDTH); ?>" height="<?php echo(IPOD_VIEWPORT_HEIGHT); ?>" style="position: absolute; top: 80px;" frameborder="0" marginwidth="0" marginheight="0" style="position:absolute; background-color: black;" src='aui.php'>
+		<iframe width="<?php echo(IPOD_VIEWPORT_WIDTH); ?>" 
+			height="<?php echo(IPOD_VIEWPORT_HEIGHT); ?>" 
+			style="position: absolute; top: 80px;" frameborder="0" 
+			marginwidth="0" marginheight="0" 
+			style="position:absolute; background-color: black;" src='aui.php'>
 		</iframe>
 		<div style="position:absolute; top: <?php echo(IPOD_VIEWPORT_HEIGHT + 80); ?>px;"><img src="images/safari-button_bar.png" /></div>
 	</div>

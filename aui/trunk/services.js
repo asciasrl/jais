@@ -84,11 +84,11 @@ function toggleIcon() {
 	if (status.value.toUpperCase() == "ON") {
 		iconElement.src = iconToToggle.iconOff;
 		status.value = "OFF";
-		textElement.textContent = "OFF";
+		textElement.innerHTML = "OFF";
 	} else {
 		iconElement.src = iconToToggle.iconOn;
 		status.value = "ON";
-		textElement.textContent = "ON";
+		textElement.innerHTML = "ON";
 	}
 	return status.value;
 }
@@ -106,15 +106,16 @@ function toggleIcon() {
  */
 function onOffIcon(divElement, attributeName, iconOn, iconOff) {
 	var iconElement = divElement.firstChild.firstChild;
-	var textElement = divElement.lastChild.firstChild;
+	var textElement = divElement.lastChild;
 	var status = divElement.attributes.getNamedItem(attributeName);
 	var address = divElement.attributes.getNamedItem("busaddress").value;
-	statusMessage(divElement.attributes.getNamedItem("name").value);
 	if (!iconToToggle) {
+		var i;
 		iconToToggle = {img:iconElement, txt:textElement, status:status,
 			iconOn:iconOn, iconOff:iconOff};
-		var newStatus = toggleIcon();
-		setPort(address, newStatus, onOffIconCallback);
+		var newStatus = toggleIcon(); // 4 sec
+		setPort(address, newStatus , onOffIconCallback);
+		statusMessage(divElement.attributes.getNamedItem("name").value); // 2 sec
 	} else { // C'e' gia' una chiamata a onOffIcon in corso
 		// statusMessage("Richiesta gia' in corso, riprova.");
 	}

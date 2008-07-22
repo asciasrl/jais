@@ -14,7 +14,7 @@ require_once("custom/config.php");
  * @param $clickable true se i servizi devono reagire a click
  */
 function creaLayerServizi($piano, $big, $clickable) {
-	global $apps, $frameIlluminazione, $frameEnergia, $frameClima, 
+	global $mobile, $apps, $frameIlluminazione, $frameEnergia, $frameClima, 
 		$frameSerramenti, $frameVideo, $frameSicurezza;
 	global $idLuci, $idPrese, $idClimi, $idSerramenti, $idVideo, $idAllarmi;
 	if ($big) {
@@ -22,6 +22,11 @@ function creaLayerServizi($piano, $big, $clickable) {
 	} else {
 		// Assumiamo che la mappa piccola e' uguale alla grande rimpicciolita
 		$scale = $piano["mapSize"]["w"] / $piano["bigMapSize"]["w"];
+	}
+	if (isset($mobile)) {
+		$onClick = "ontouchstart";
+	} else {
+		$onClick = "onclick";
 	}
 	$fontSize = ($scale * 100) . "%";
 	foreach ($apps as $s):
@@ -43,10 +48,10 @@ function creaLayerServizi($piano, $big, $clickable) {
 					if ($clickable) {
 						$id = "id=\"$idLuce\"";
 						if ($luce["type"] == ILL_LUCE) {
-							$lit = "lit=\"off\" onClick=\"lightClicked(event, this)\"";
+							$lit = "lit=\"off\" $onClick=\"lightClicked(event, this)\"";
 							$text="OFF";
 						} else {
-							$lit = "lit=\"0\" onClick=\"dimmerClicked(event, this)\"";
+							$lit = "lit=\"0\" $onClick=\"dimmerClicked(event, this)\"";
 							$text="0%";
 						}
 						$busaddress = "busaddress=\"" . $luce["address"] . "\"";

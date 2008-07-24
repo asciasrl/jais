@@ -3,6 +3,8 @@
  */
 package it.ascia.ais;
 
+import javax.servlet.http.HttpServlet;
+
 import it.ascia.ais.AISException;
 
 import org.apache.log4j.Logger;
@@ -11,6 +13,7 @@ import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.DefaultServlet;
 import org.mortbay.jetty.servlet.ServletHolder;
+import org.apache.jasper.servlet.JspServlet;
 
 /**
  *
@@ -55,22 +58,30 @@ public class HTTPServer {
 		// Scegliamo il nostro logger anziche' quello predefinito di Jetty
 		System.setProperty("org.mortbay.log.class", "it.ascia.ais.JettyLogger");
 		ContextHandlerCollection contexts = new ContextHandlerCollection();
-		Context filesContext, requestsContext;
-		ServletHolder holder;
 		logger = Logger.getLogger(getClass());
 		server = new Server(port);
-		// La nostra AUIRequestServlet e il suo contesto.
-		auiRequestServlet = new AUIRequestServlet(controller);
-		requestsContext = new Context(contexts, "/jais", Context.SESSIONS);
-		holder = new ServletHolder(auiRequestServlet);
-		requestsContext.addServlet(holder, "/*");
-		// La fileServlet e il suo contesto
-		filesContext = new Context(contexts, "/aui", Context.SESSIONS);
-		fileServlet = new DefaultServlet();
-		holder = new ServletHolder(fileServlet);
-		holder.setInitParameter("resourceBase", auiDirectory);
-		filesContext.addServlet(holder, "/*");
 		server.setHandler(contexts);
+		// TODO capire come servire dalla stessa directory sia jsp che files statici (adesso mostra il sorgente!!!)
+		// contesto servito da jspservlet
+		Context jspContext = new Context(contexts, "/jsp", Context.SESSIONS);
+		jspContext.setResourceBase(auiDirectory);
+		JspServlet jspServlet = new JspServlet();
+		ServletHolder jspHolder = new ServletHolder(jspServlet);
+		jspContext.addServlet(jspHolder,"*.jsp");
+		// La nostra AUIRequestServlet e il suo contesto.
+		HttpServlet auiRequestServlet = new AUIRequestServlet(controller);
+		Context jaisContext = new Context(contexts, "/jais", Context.SESSIONS);
+		ServletHolder jaisHolder = new ServletHolder(auiRequestServlet);
+		jaisContext.addServlet(jaisHolder, "/*");
+		// La fileServlet e il suo contesto
+		Context rootContext = new Context(contexts, "/aui", Context.SESSIONS);		
+		rootContext.setResourceBase(auiDirectory);
+		HttpServlet defaultServlet = new DefaultServlet();
+		ServletHolder defaultHolder = new ServletHolder(defaultServlet);
+		defaultHolder.setInitParameter("resourceBase", auiDirectory);		 
+		defaultHolder.setInitParameter("dirAllowed", "true");
+		defaultHolder.setInitParameter("redirectWelcome", "true");		 
+		rootContext.addServlet(defaultHolder, "/*");
 		try {
 			server.start();
 		} catch (Exception e) {

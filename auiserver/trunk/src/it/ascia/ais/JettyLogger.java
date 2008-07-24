@@ -41,7 +41,7 @@ public class JettyLogger implements org.mortbay.log.Logger  {
 	public JettyLogger() {
 		logger = org.apache.log4j.Logger.getLogger(getClass());
 		// Il funzionamento interno di Jetty non ci interessa
-		debugging = false;
+		debugging = true;
 	}
 	
 	public void debug(String arg0, Object arg1, Object arg2) {

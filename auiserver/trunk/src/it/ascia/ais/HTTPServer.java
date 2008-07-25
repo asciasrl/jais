@@ -21,6 +21,7 @@ import org.apache.jasper.servlet.JspServlet;
  * 
  * <p>I suoi compiti sono:</p>
  * <ul>
+ *   <li>servire AUI (JSP);</li>
  *   <li>servire i file richiesti da AUI;</li>
  *   <li>rispondere alle richieste di AUI.</li>
  * </ul>
@@ -63,25 +64,23 @@ public class HTTPServer {
 		server.setHandler(contexts);
 		// TODO capire come servire dalla stessa directory sia jsp che files statici (adesso mostra il sorgente!!!)
 		// contesto servito da jspservlet
-		Context jspContext = new Context(contexts, "/jsp", Context.SESSIONS);
-		jspContext.setResourceBase(auiDirectory);
+		Context rootContext = new Context(contexts, "/", Context.SESSIONS);
+		rootContext.setResourceBase(auiDirectory);
 		JspServlet jspServlet = new JspServlet();
 		ServletHolder jspHolder = new ServletHolder(jspServlet);
-		jspContext.addServlet(jspHolder,"*.jsp");
+		rootContext.addServlet(jspHolder, "*.jsp");
 		// La nostra AUIRequestServlet e il suo contesto.
 		HttpServlet auiRequestServlet = new AUIRequestServlet(controller);
 		Context jaisContext = new Context(contexts, "/jais", Context.SESSIONS);
 		ServletHolder jaisHolder = new ServletHolder(auiRequestServlet);
 		jaisContext.addServlet(jaisHolder, "/*");
 		// La fileServlet e il suo contesto
-		Context rootContext = new Context(contexts, "/aui", Context.SESSIONS);		
-		rootContext.setResourceBase(auiDirectory);
 		HttpServlet defaultServlet = new DefaultServlet();
 		ServletHolder defaultHolder = new ServletHolder(defaultServlet);
 		defaultHolder.setInitParameter("resourceBase", auiDirectory);		 
 		defaultHolder.setInitParameter("dirAllowed", "true");
 		defaultHolder.setInitParameter("redirectWelcome", "true");		 
-		rootContext.addServlet(defaultHolder, "/*");
+		rootContext.addServlet(defaultHolder, "/");
 		try {
 			server.start();
 		} catch (Exception e) {

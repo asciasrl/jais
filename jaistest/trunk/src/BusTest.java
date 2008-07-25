@@ -125,7 +125,7 @@ public class BusTest extends MyController {
 		busController.addConnector(bus);
 		try {
 			server = new HTTPServer(8080, busController, 
-					"/home/arrigo/public_html/auiFixed");
+					"/home/arrigo/public_html/aui");
 		} catch (AISException e) {
 			System.err.println(e.getMessage());
 			System.exit(-1);
@@ -137,8 +137,8 @@ public class BusTest extends MyController {
 	 *            porta seriale
 	 */
 	public static void main(String[] args) {
-	    // String defaultPort = "ascia.homeip.net";
-		String defaultPort = "/dev/ttyUSB0";
+	    String defaultPort = "ascia.homeip.net";
+		// String defaultPort = "/dev/ttyUSB0";
 	    // Inizializzazione logger
 	    PropertyConfigurator.configure("conf/log4j.conf");
 		//ConfigurationFile cfgFile = null;
@@ -146,8 +146,8 @@ public class BusTest extends MyController {
 		    defaultPort = args[0];
 		}
 	 	try {
-	 		// bus = new TCPSerialBus(defaultPort, 2001, "0");
-	 		bus = new SerialBus(defaultPort, "0");
+	 		bus = new TCPSerialBus(defaultPort, 2001, "0");
+	 		// bus = new SerialBus(defaultPort, "0");
 	 	} catch (EDSException e) {
 	 		System.err.println(e.getMessage());
 	 		System.exit(-1);

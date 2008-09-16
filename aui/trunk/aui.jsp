@@ -4,14 +4,31 @@
  */
  %>
 <%@ page import="java.io.File, java.io.IOException, 
+	java.util.Map, java.util.Iterator,
+	javax.servlet.jsp.JspWriter,
 	javax.xml.parsers.DocumentBuilder, 
 	javax.xml.parsers.DocumentBuilderFactory,
 	javax.xml.parsers.ParserConfigurationException, org.apache.log4j.Logger,
 	org.w3c.dom.Document, org.w3c.dom.Element, org.w3c.dom.NodeList,
 	org.xml.sax.SAXException, org.xml.sax.SAXParseException" %>
-<%@ include file="config.jsp" %>
+<%@ include file="constants.jsp" %>
+<%@ include file="custom/config.jsp" %>
 <%
-
+/**
+ * Se riceviamo il parametro "nomobile" allora siamo sul fisso.
+ */
+boolean mobile;
+{
+	String fixedParameter = request.getParameter("nomobile");
+	if ((fixedParameter == null) || (fixedParameter == "0")) {
+		mobile = true;
+	} else {
+		mobile = false;
+	}
+}
+initAUI();
+%>
+<%!
 /**
  * Eccezione nel parsing.
  *
@@ -23,7 +40,7 @@ class ParseException extends Exception {
 	}
 }
 
-
+%><%!
 /**
  * Le informazioni contenute in un file di configurazione di AUI.
  *
@@ -157,12 +174,284 @@ class ConfigurationFile {
 	
 }
 
-// -------------------------------- Main --------------------------------------
-ConfigurationFile configFile;
-
-configFile = new ConfigurationFile("../aui/custom/impianto.xml");
-
+%><%!
+/** Crea un layer per ciascun servizio.
+ * 
+ * @param piano il piano.
+ * @param apps i servizi possibili.
+ * @param big true se stiamo facendo i layer della mappa grande.
+ * @param clickable true se i servizi devono reagire a click
+ * @param out dove scrivere l'output.
+ *
+ * @throw IOException se out lo decide.
+ */
+void creaLayerServizi(Map piano, String[] apps, boolean big, boolean clickable,
+		boolean mobile, JspWriter out) throws IOException {
+	double scale;
+	String onClick;
+	String fontSize;
+	if (big) {
+		scale = 1;
+	} else {%><%!
+		// Assumiamo che la mappa piccola e' uguale alla grande rimpicciolita
+		int mapWidth = ((int[])piano.get("mapSize"))[0];
+		int bigMapWidth = ((int[])piano.get("bigMapSize"))[0];
+		scale = (double)mapWidth / bigMapWidth;
+	}
+	if (mobile) {
+		onClick = "ontouchstart";
+	} else {
+		onClick = "onclick";
+	}
+	fontSize = (int)(scale * 100) + "%";
+	for (int i = 0; i < apps.length; i++) {
+		String s = apps[i];
+		String idPiano;
+		String id, text, busAddress;
+		Map frame;
+		int imgWidth, imgHeight;
+		if (clickable) {
+			idPiano = (String)piano.get("id") + "-big-" + s; 
+		} else {
+			idPiano = (String)piano.get("id") + "-" + s;
+		}
+		out.println("<div id=\"" + idPiano + "\" style=\"position: absolute; display: none;\">");
+		imgWidth = imgHeight = (int) (MAP_ICON_WIDTH * scale);
+		if (s.equals("illuminazione")) { 
+			frame = (Map)frameIlluminazione.get(piano.get("id"));
+			if (frame != null) {
+				Iterator it = frame.keySet().iterator();
+				while (it.hasNext()) {
+					String idLuce = (String)it.next();
+					String lit;
+					Map luce = (Map)frame.get(idLuce); 
+					if (clickable) {
+						id = "id=\"" + idLuce + "\"";
+						if (luce.get("type").equals(ILL_LUCE)) {
+							lit = "lit=\"off\" " + onClick + "=\"lightClicked(event, this)\"";
+							text = "OFF";
+						} else {
+							lit = "lit=\"0\" "+ onClick +"=\"dimmerClicked(event, this)\"";
+							text = "0%";
+						}
+						busAddress = "busaddress=\"" + (String)luce.get("address") + "\"";
+						idLuci.add(idLuce); 
+					} else {
+						id = "";
+						lit = "";
+						busAddress = "";
+						text = "";
+					}
+					out.print("<div " + id + "style=\"position:absolute; left: " +
+						(int)((Integer)luce.get("x") * scale) + "px; top: " + (Integer)luce.get("y") * scale + "px; color: white;\" " +
+						busAddress + " " + lit + " name=\"" + (String)luce.get("label") + "\"><div style=\"position: absolute;\"><img src=\"" + IMG_LIGHT_OFF +
+						"\" alt=\"" + (String)luce.get("label") + "\" width=\"" + imgWidth + "\"" +
+						"height=\"" + imgHeight + "\" /></div><div style=\"position: absolute; font-size: " + fontSize + ";\">" + text + "</div></div>");
+				} // foreach luce
+			} else {
+				out.print("Non ci sono luci per questo piano!");
+			}
+		} else if (s.equals("energia")) {
+			frame = (Map)frameEnergia.get(piano.get("id"));
+			if (frame != null) {
+				Iterator it = frame.keySet().iterator();
+				while (it.hasNext()) {
+					String active; 
+					String idPresa = (String)it.next();
+					Map presa = (Map) frame.get(idPresa);
+					if (clickable) { 
+						id = "id=\"" + idPresa + "\"";
+						active = "power=\"off\" busaddress=\"" + (String)presa.get("address") + 
+							"\" onClick=\"powerClicked(event, this)\"";
+						idPrese.add(idPresa);
+						text = "OFF";
+					} else {
+						id = "";
+						active = "";
+						text = "";
+					}
+					out.print("<div "+ id + " style=\"position:absolute; left: " +
+						(int)((Integer)presa.get("x") * scale) + "px; top: " + 
+						(int)((Integer)presa.get("y") * scale) + "px; color: white;\" " + active + " name=\"" +
+						(String)presa.get("label") + "\"><div style=\"position: absolute;\"><img src=\"" +
+						IMG_POWER_OFF + "\" alt=\"" + (String)presa.get("label") +
+						"\" width=\"" + imgWidth + "\" height=\"" + imgHeight + "\" /></div><div style=\"position: absolute; font-size: " + fontSize + ";\">" + text + "</div></div>");
+				} // foreach presa
+			} else {
+				out.print("Non ci sono prese comandate su questo piano!");
+			}
+		} else if (s.equals("clima")) {
+			frame = (Map)frameClima.get(piano.get("id"));
+			if (frame != null) {
+				Iterator it = frame.keySet().iterator();
+				while (it.hasNext()) {
+					String idClima = (String)it.next();
+					Map clima = (Map)frame.get(idClima);
+					String active;  
+					if (clickable) {
+						id = "id=\"" + idClima + "\"";
+						active = "power=\"off\" busaddress=\"" +
+							(String)clima.get("address") + "\" onClick=\"thermoClicked(event, this)\"";
+						idClimi.add(idClima);
+						text = "20&deg;C";
+					} else {
+						id = "";
+						active = "";
+						text = "";
+					}
+					out.print("<div " + id + " style=\"position:absolute; left: " +
+						(int)((Integer)clima.get("x") * scale) + "px; top: " +
+						(int)((Integer)clima.get("y") * scale) + "px; color: white;\" " + active + " name=\"" + 
+						(String)clima.get("label") + "\"><div style=\"position: absolute;\"><img src=\"" +
+						IMG_THERMO_OFF + "\" alt=\"" + (String)clima.get("label") +
+						"\" width=\"" + imgWidth + "\" height=\"" + imgHeight + "\"/></div><div style=\"position: absolute; font-size: " + fontSize + ";\">" + text + "</div></div>");
+				} // foreach clima
+			} else {
+				out.print("Non ci sono termostati su questo piano!");
+			} 
+		} else if (s.equals("serramenti")) {
+			frame = (Map) frameSerramenti.get(piano.get("id"));
+			if (frame != null) {
+				Iterator it = frame.keySet().iterator();
+				while (it.hasNext()) {
+					String idSerramento = (String)it.next();
+					Map schermo = (Map)frame.get(idSerramento);
+					String active;
+					if (clickable) {
+						id = "id=\"" + idSerramento + "\"";
+						active = "status=\"still\" addressopen=\"" + 
+							(String)schermo.get("addressopen") + 
+							"\" addressclose =\"" + 
+							(String)schermo.get("addressclose") +
+							"\" onClick=\"blindClicked(event, this)\"";
+						idSerramenti.add(idSerramento);
+						text = (String)schermo.get("label");
+					} else {
+						id = "";
+						active = "";
+						text = "";
+					}
+					out.print("<div "+ id +" style=\"position:absolute; left: " +
+						(int)((Integer)schermo.get("x") * scale) + "px; top: " + 
+						(int)((Integer)schermo.get("y") * scale) + "px; color: white;\" " + active + " name=\"" + 
+						(String)schermo.get("label") + "\"><div style=\"position: absolute;\"><img src=\"" +
+						IMG_BLIND_STILL + "\" alt=\"" + (String)schermo.get("label") + "\" width=\"" + imgWidth + "\" height=\"" + imgHeight + "\"/></div><div style=\"position: absolute; font-size: " + fontSize + ";\"></div></div>");
+				} // foreach schermo
+			} else {
+				out.print("Non ci sono serramenti su questo piano!");
+			} 
+		} else if (s.equals("video")) {
+			frame = (Map)frameVideo.get(piano.get("id"));
+			if (frame != null) { 
+				Iterator it = frame.keySet().iterator();
+				while (it.hasNext()) {
+					String idSchermo = (String)it.next();
+					Map schermo = (Map)frame.get(idSchermo);
+					String active;
+					if (clickable) { 
+						id = "id=\"" + idSchermo + "\"";
+						active = "status=\"still\" addressopen=\"" + 
+							(String)schermo.get("addressopen") +
+							"\" addressclose =\"" + (String)schermo.get("addressclose") +
+							"\" onClick=\"blindClicked(event, this)\"";
+						idVideo.add(idSchermo);
+						text = (String)schermo.get("label");
+					} else {
+						id = "";
+						active = "";
+						text = "";
+					}
+					out.print("<div "+ id +" style=\"position:absolute; left: " +
+						(int)((Integer)schermo.get("x") * scale) + "px; top: " + 
+						(int)((Integer)schermo.get("y") * scale) + "px; color: white;\" " + active + " name=\"" + 
+						(String)schermo.get("label") + "\"><div style=\"position: absolute;\"><img src=\"" +
+						IMG_BLIND_STILL + "\" alt=\"" + (String)schermo.get("label") + "\" width=\"" + imgWidth + "\" height=\"" + imgHeight+ "\"/></div><div style=\"position: absolute; font-size: " + fontSize + ";\"></div></div>");
+				} // foreach schermo
+			} else {
+				out.print("Non ci sono schermi su questo piano!");
+			} 
+		} else if (s.equals("sicurezza")) {
+			frame = (Map)frameSicurezza.get(piano.get("id"));
+			if (frame != null) {
+				Iterator it = frame.keySet().iterator();
+				while (it.hasNext()) {
+					String idAllarme = (String)it.next();
+					Map allarme = (Map)frame.get(idAllarme);
+					String img, active;
+					if (clickable) {
+						id = "id=\"" + idAllarme + "\"";
+						if (allarme.get("type").equals(SIC_PORTA)) {
+							active = "status=\"open\" alarm=\"off\" onClick=\"doorClicked(event, this)\"";
+							img = IMG_DOOR_OPEN;
+						} else { //SIC_LUCCHETTO:
+							active = "status=\"off\" onClick=\"lockClicked(event, this)\"";
+							img = IMG_LOCK_OPEN;
+						}
+						idAllarmi.add(idAllarme);
+						text = (String)allarme.get("label");
+					} else {
+						id = "";
+						active = "";
+						text = "";
+						if (allarme.get("type").equals(SIC_PORTA)) {
+							img = IMG_DOOR_OPEN;
+						} else { // SIC_LUCCHETTO:
+							img = IMG_LOCK_OPEN;
+						}
+					}
+					out.print("<div " + id + " style=\"position:absolute; left: " +
+						(int)((Integer)allarme.get("x") * scale) + "px; top: " + 
+						(int)((Integer)allarme.get("y") * scale) + "px; color: white;\" " + active + " name=\"" + 
+						(String)allarme.get("label") + "\"><div style=\"position: absolute;\"><img src=\"" +
+						img + "\" alt=\"" + (String)allarme.get("label") + "\" width=\"" + imgWidth + "\" height=\"" + imgHeight + "\"/></div><div style=\"position: absolute; font-size: " + fontSize + ";\"></div></div>");
+				} // foreach allarme
+			} else {
+				out.print("Non ci sono allarmi su questo piano!");
+			}
+		} else if (s.equals("scenari")) {
+			// TODO: farlo vero
+			// Riproduciamo l'immagine facendola grande quanto la mappa.
+			imgWidth = (int)(((int [])piano.get("bigMapSize"))[0] * scale);
+			imgHeight = (int)(((int [])piano.get("bigMapSize"))[1] * scale);
+			out.print("<img src=\"" + IMG_SCENARIOS + "\" width=\"" + imgWidth + "\" height=\"" + imgHeight + "\" alt=\"\" />");
+		}
+	out.println("</div>");
+	} // Cicla su tutte le "apps"
+}
 %>
+<%!
+/**
+ * Ritorna il contenuto di un Vector di String sotto forma di dichiarazione di
+ * array Javascript.
+ */
+static String arrayJavascript(Vector v) {
+	String retval = "[";
+	Iterator it = v.iterator();
+	while (it.hasNext()) {
+		retval += "\"" + (String)it.next() + "\", ";
+	}
+	retval += "]";
+	return retval;
+}
+%>
+<%!
+/**
+ * Include uno script cambiandogli il nome, in modo da evitare il caching da
+ * parte del browser.
+ *
+ * @return il codice HTML per includerlo.
+ */
+String includeScript(String scriptName) {
+	return "<script type=\"\" language=\"javascript\" src=\"" + scriptName +
+		"?" + System.currentTimeMillis() + "\"></script>\n";
+}
+%>
+<%
+// -------------------------------- Main --------------------------------------
+// ConfigurationFile configFile;
+// configFile = new ConfigurationFile("../aui/custom/impianto.xml");
+%>
+
 <div id="header-out" style="display: none; position: absolute; z-index: 30; width: <%= IPOD_VIEWPORT_WIDTH %>px; height: 40px; filter:alpha(opacity='60'); opacity: <%= STATUS_BAR_OPACITY %>;">
 <div style="position: absolute;"><img src="images/barratesti.png" /></div>
 <div id="header" style="position: absolute; margin-top: 9px; height: <%= STATUS_BAR_HEIGHT %>px; width: <%= IPOD_VIEWPORT_WIDTH %>px; text-align: center;"><b>barra di stato</b></div>
@@ -224,174 +513,163 @@ configFile = new ConfigurationFile("../aui/custom/impianto.xml");
 	<div id="mappa"
 		style="position: absolute; width: <%= IPOD_VIEWPORT_WIDTH %>px; height: <%= IPOD_VIEWPORT_HEIGHT %>px; overflow: hidden;">
 		<div id="piani-all" 
-			style="position: absolute; width: <?php echo ($pianiSize["w"]); ?>px; height: <?php echo($pianiSize["h"]); ?>px; overflow: hidden;"
+			style="position: absolute; width: <%= pianiSize[0] %>px; height: <%= pianiSize[1] %>px; overflow: hidden;"
 			noappbar="noappbar">
 			<img 
 				header="ASCIA Building"
 				title="AUI edificio - clicca su un appartamento" 
 				style="position: absolute;"
-				onclick="clicca1('piani-all','piano-01A<?php if ($mobile) echo("-big") ?>');"
-				src="<?php echo($pianiFile); ?>" alt="" />
+				onclick="clicca1('piani-all','piano-01A<% if (mobile) out.print("-big"); %>');"
+				src="<%= pianiFile %>" alt="" />
 		</div>
-<?php
-foreach ($piani as $piano):
-	if (!$mobile) {
- ?>
-		<div id="<?php echo($piano["id"]); ?>" 
-			style="position: absolute; width: <?php echo($piano["mapSize"]["w"]); ?>px; height: <?php echo($piano["mapSize"]["h"]); ?>px; overflow: hidden; display: none;"
-			onclick="ingrandisci(event,'<?php echo($piano["id"]); ?>','<?php echo($piano["id"] . "-big"); ?>','piani-all');">
+<%
+Iterator it = piani.iterator();
+while (it.hasNext()) {
+	Map piano = (Map)it.next();
+	if (!mobile) {
+%>
+		<div id="<%= (String)piano.get("id") %>" 
+			style="position: absolute; width: <%= ((int [])piano.get("mapSize"))[0] %>px; height: <%= ((int [])piano.get("mapSize"))[1] %>px; overflow: hidden; display: none;"
+			onclick="ingrandisci(event,'<%= (String)piano.get("id") %>','<%= (String)piano.get("id") + "-big" %>','piani-all');">
 			<img
-				header="<?php echo($piano["header"]); ?>"
+				header="<%= (String)piano.get("header") %>"
 				title="AUI mappa appartamento - clicca per ingrandire - doppio click per ritornare"
 				style="position: absolute;"
-				src="<?php echo($piano["mapFile"]); ?>" alt="" />
-			<?php creaLayerServizi($piano, false, false); ?>
+				src="<%= (String)piano.get("mapFile") %>" alt="" />
+			<% creaLayerServizi(piano, apps, false, false, mobile, out); %>
 		</div>
-		<div id="<?php echo($piano["id"] . "-big"); ?>"
+	<div id="<%= (String)piano.get("id") + "-big" %>"
 			style="position: absolute;
 				display: none; 
-				width: <?php echo($piano["bigMapSize"]["w"]); ?>px;
-				height: <?php echo($piano["bigMapSize"]["h"]); ?>px;"
-			onclick="clicca('<?php echo($piano["id"] . "-big"); ?>','<?php echo($piano["id"] . "-big"); ?>','<?php echo($piano["id"]); ?>');">
+				width: <%= ((int [])piano.get("bigMapSize"))[0] %>px;
+				height: <%= ((int [])piano.get("bigMapSize"))[1] %>px;"
+			onclick="clicca('<%= (String)piano.get("id") + "-big" %>','<%= (String)piano.get("id") + "-big" %>','<%= (String)piano.get("id") %>');">
 			<img
-				header="<?php echo($piano["header"]); ?>"
+				header="<%= (String)piano.get("header") %>"
 				title="AUI appartamento - doppio click per ritornare"
 				style="position: absolute;"
-				src="<?php echo($piano["bigMapFile"]); ?>" alt="" 
-				width="<?php echo($piano["bigMapSize"]["w"]); ?>"
-				height="<?php echo($piano["bigMapSize"]["h"]); ?>" />
-			<?php creaLayerServizi($piano, true, true); ?>
+				src="<%= (String) piano.get("bigMapFile") %>" alt="" 
+				width="<%= ((int [])piano.get("bigMapSize"))[0] %>"
+				height="<%= ((int [])piano.get("bigMapSize"))[1] %>" />
+			<% creaLayerServizi(piano, apps, true, true, mobile, out); %>
 		</div>
-<?php
-	} else { // iPod
-?>
-	<div id="<?php echo($piano["id"] . "-big"); ?>"
+<%	} else { // iPod
+%>
+	<div id="<%= (String)piano.get("id") + "-big" %>"
 		style="position: absolute;
 			display: none; 
 			width: <%= IPOD_VIEWPORT_WIDTH %>px;
-			height: <?php echo(IPOD_MAP_AREA_HEIGHT); ?>px;"
-		onclick="clicca('<?php echo($piano["id"] . "-big"); ?>','<?php echo($piano["id"] . "-big"); ?>','piani-all');">
+			height: <%= IPOD_MAP_AREA_HEIGHT %>px;"
+		onclick="clicca('<%= (String)piano.get("id") + "-big" %>','<%= (String)piano.get("id") + "-big" %>','piani-all');">
 		<img
-			header="<?php echo($piano["header"]); ?>"
+			header="<%= (String)piano.get("header") %>"
 			title="AUI appartamento - doppio click per ritornare"
 			style="position: absolute;"
-			src="<?php echo($piano["bigMapFile"]); ?>" alt="" 
-			width="<?php echo($piano["mapSize"]["w"]); ?>"
-			height="<?php echo($piano["mapSize"]["h"]); ?>" />
-		<?php creaLayerServizi($piano, false, true); ?>
+			src="<%= (String)piano.get("bigMapFile") %>" alt="" 
+			width="<%= ((int [])piano.get("mapSize"))[0] %>"
+			height="<%= ((int [])piano.get("mapSize"))[1] %>" />
+		<%  creaLayerServizi(piano, apps, false, true, mobile, out); %>
 	</div>
-<?php
+<%
 	} // if iPod
-endforeach; // $piani as $piano
- ?>
+} // Cicla sui piani
+ %>
 		<div id="dimmer"
-			style="position: absolute; width: <%= IPOD_VIEWPORT_WIDTH %>px; height: <?php echo(IPOD_MAP_AREA_HEIGHT); ?>px; 
+			style="position: absolute; width: <%= IPOD_VIEWPORT_WIDTH %>px; height: <%= IPOD_MAP_AREA_HEIGHT %>px; 
 				overflow: hidden; display: none;" onclick="hideDimmer()">
-<?php
-$temp = getimagesize(IMG_DIMMER_SLIDER_TOP);
-$dimmerWidth = $temp[0] ;
-$dimmerTopHeight = $temp[1] ;
-$temp = getImageSize(IMG_DIMMER_SLIDER_BOTTOM);
-$dimmerBottomHeight = $temp[1] ;
-$temp = getImageSize(IMG_DIMMER_CURSOR);
-$dimmerCursorWidth = $temp[0] ;
-$dimmerCursorHeight = $temp[1] ;
+<%
 // In pixel
-$dimmerCursorTextSize = $dimmerCursorHeight / 3;
-$dimmerCursorTextTopMargin = $dimmerCursorHeight / 3;
-?>
+int dimmerCursorTextSize = IMG_DIMMER_CURSOR_HEIGHT / 3;
+int dimmerCursorTextTopMargin = IMG_DIMMER_CURSOR_HEIGHT / 3;
+%>
 			<div style="position: absolute; width: 100%; height: 100%; background-color: black; filter:alpha(opacity='80'); opacity: 0.8;">&nbsp;</div>
-			<div id="dimmer-slider" style="position: absolute; width: <?php echo($dimmerWidth); ?>px;"
+			<div id="dimmer-slider" style="position: absolute; width: <%= DIMMER_WIDTH %>px;"
 					onclick="dimmerSliderClicked(event)" >
-				<div style="position: absolute; height: <?php echo ($dimmerTopHeight); ?>px;"><img src="<?php echo(IMG_DIMMER_SLIDER_TOP); ?>" alt="" width="<?php echo($dimmerWidth); ?>" height="<?php echo($dimmerTopHeight); ?>" /></div>
-				<div style="position: absolute; top: <?php echo($dimmerTopHeight); ?>px; width: <?php echo ($dimmerWidth); ?>px; height: <?php echo (DIMMER_SLIDER_HEIGHT - 2 * DIMMER_SLIDER_CORNER_HEIGHT ); ?>px; background-image: URL(<?php echo(IMG_DIMMER_SLIDER_MIDDLE); ?>);"></div>
-				<div style="position: absolute; top: <?php echo($dimmerTopHeight + DIMMER_SLIDER_HEIGHT - 2 * DIMMER_SLIDER_CORNER_HEIGHT ); ?>px;"><img src="<?php echo(IMG_DIMMER_SLIDER_BOTTOM); ?>" width="<?php echo($dimmerWidth); ?>" height="<?php echo($dimmerTopHeight); ?>" /></div>
+				<div style="position: absolute; height: <%= IMG_DIMMER_SLIDER_TOP_HEIGHT %>px;"><img src="<%= IMG_DIMMER_SLIDER_TOP %>" alt="" width="<%= DIMMER_WIDTH %>" height="<%= IMG_DIMMER_SLIDER_TOP_HEIGHT %>" /></div>
+				<div style="position: absolute; top: <%= IMG_DIMMER_SLIDER_TOP_HEIGHT %>px; width: <%=  DIMMER_WIDTH %>px; height: <%=  DIMMER_SLIDER_HEIGHT - 2 * DIMMER_SLIDER_CORNER_HEIGHT %>px; background-image: URL(<%=  IMG_DIMMER_SLIDER_MIDDLE %>);"></div>
+				<div style="position: absolute; top: <%= IMG_DIMMER_SLIDER_TOP_HEIGHT + DIMMER_SLIDER_HEIGHT - 2 * DIMMER_SLIDER_CORNER_HEIGHT %>px;"><img src="<%= IMG_DIMMER_SLIDER_BOTTOM %>" width="<%= DIMMER_WIDTH %>" height="<%= IMG_DIMMER_SLIDER_TOP_HEIGHT %>" /></div>
 				<div id="dimmer-tasto" style="position: absolute; 
-					margin-left: <?php echo(DIMMER_SLIDER_BORDER_WIDTH ); ?>px;">
-					<div style="position: absolute;"><img  src="<?php echo(IMG_DIMMER_CURSOR); ?> " width="<?php echo($dimmerCursorWidth); ?>" height="<?php echo($dimmerCursorHeight); ?>" /></div>
-					<div id="dimmer-tasto-testo" style="position: absolute; text-align: center; width: <?php echo($dimmerCursorWidth); ?>px; top: <?php echo($dimmerCursorTextTopMargin); ?>px; bottom: auto; font-size: <?php echo($dimmerCursorTextSize); ?>px;"></div>
+					margin-left: <%= DIMMER_SLIDER_BORDER_WIDTH %>px;">
+					<div style="position: absolute;"><img  src="<%= IMG_DIMMER_CURSOR %> " width="<%= IMG_DIMMER_CURSOR_WIDTH %>" height="<%= IMG_DIMMER_CURSOR_HEIGHT %>" /></div>
+					<div id="dimmer-tasto-testo" style="position: absolute; text-align: center; width: <%= IMG_DIMMER_CURSOR_WIDTH %>px; top: <%= dimmerCursorTextTopMargin %>px; bottom: auto; font-size: <%= dimmerCursorTextSize %>px;"></div>
 					</div>
 			</div> <!--  dimmer-sfondo -->
 		</div><!--  dimmer -->
 		<div id="blind"
-			style="position: absolute; width: <%= IPOD_VIEWPORT_WIDTH %>px; height: <?php echo(IPOD_MAP_AREA_HEIGHT); ?>px; 
+			style="position: absolute; width: <%= IPOD_VIEWPORT_WIDTH %>px; height: <%= IPOD_MAP_AREA_HEIGHT %>px; 
 				overflow: hidden; display: none;" onclick="blindBackgroundClicked()">
-<?php
-$temp = getimagesize(IMG_BLIND_CONTROL);
-$blindControlWidth = $temp[0];
-$blindControlHeight = $temp[1];
-?>
 			<div style="position: absolute; width: 100%; height: 100%; background-color: black; filter:alpha(opacity='80'); opacity: 0.8;">&nbsp;</div>
-			<div id="blind-control" style="position: absolute; width: <?php echo($blindControlWidth); ?>px; height: <?php echo($blindControlHeight); ?>px; background-image: URL(<?php echo(IMG_BLIND_CONTROL); ?>);"
+			<div id="blind-control" style="position: absolute; width: <%= IMG_BLIND_CONTROL_WIDTH %>px; height: <%= IMG_BLIND_CONTROL_HEIGHT %>px; background-image: URL(<%= IMG_BLIND_CONTROL %>);"
 				onclick="blindControlClicked(event)"></div>
 		</div><!--  blind -->
 	</div> 
 	<!-- fine mappa -->
 	</div>
 	<div id="appbar-out" style="display: none;">
-<?php include('appbar.php'); ?>
+	<%@ include file="appbar.jsp" %>
 	</div>
 </div>
 <script type="" language="javascript">
-	const MOBILE = <?php if($mobile) echo "true"; else echo "false"; ?>;
-	const ID_LUCI = <?php arrayJavascript($idLuci); ?>;
-	const ID_PRESE = <?php arrayJavascript($idPrese); ?>;
-	const ID_CLIMI = <?php arrayJavascript($idClimi); ?>;
-	const ID_SERRAMENTI = <?php arrayJavascript($idSerramenti); ?>;
-	const IMG_LIGHT_ON = "<?php echo(IMG_LIGHT_ON); ?>";
-	const IMG_LIGHT_OFF = "<?php echo(IMG_LIGHT_OFF); ?>";
-	const IMG_POWER_ON = "<?php echo(IMG_POWER_ON); ?>";
-	const IMG_POWER_OFF = "<?php echo(IMG_POWER_OFF); ?>";
-	const IMG_THERMO_ON = "<?php echo(IMG_THERMO_ON); ?>";
-	const IMG_THERMO_OFF = "<?php echo(IMG_THERMO_OFF); ?>";
-	const IMG_BLIND_STILL = "<?php echo(IMG_BLIND_STILL); ?>";
-	const IMG_BLIND_OPENING = "<?php echo(IMG_BLIND_OPENING); ?>";
-	const IMG_BLIND_CLOSING = "<?php echo(IMG_BLIND_CLOSING); ?>";
-	const STATUS_BAR_HEIGHT = <?php echo(STATUS_BAR_HEIGHT); ?>;
-	const STATUS_BAR_OPACITY = "<?php echo(STATUS_BAR_OPACITY); ?>";
-	const APPBAR_START_POSITION = <?php echo(APPBAR_START_POSITION); ?>;
-	const DIMMER_SLIDER_HEIGHT = <?php echo(DIMMER_SLIDER_HEIGHT); ?>;
-	const DIMMER_TOP_MIN = <?php echo($dimmerTopHeight - DIMMER_SLIDER_CORNER_HEIGHT ); ?>;
-	const DIMMER_TOP_MAX = <?php echo($dimmerTopHeight - DIMMER_SLIDER_CORNER_HEIGHT  + DIMMER_SLIDER_HEIGHT - $dimmerCursorHeight); ?>;
-	const DIMMER_CURSOR_MIDDLE = <?php echo($dimmerCursorHeight / 2); ?>;
-	const DIMMER_SLIDER_TOTAL_HEIGHT = <?php echo ($dimmerTopHeight + DIMMER_SLIDER_HEIGHT - 2 * DIMMER_SLIDER_CORNER_HEIGHT + $dimmerBottomHeight); ?>;
-	const DIMMER_SLIDER_WIDTH = <?php echo($dimmerWidth); ?>;
-	const IMG_BLIND_CONTROL = "<?php echo(IMG_BLIND_CONTROL); ?>";
-	const BLIND_UP_TOP = <?php echo(BLIND_UP_TOP); ?>;
-	const BLIND_LEFT = <?php echo(BLIND_LEFT); ?>;
-	const BLIND_UP_BOTTOM = <?php echo(BLIND_UP_BOTTOM); ?>;
-	const BLIND_RIGHT = <?php echo(BLIND_RIGHT); ?>;
-	const BLIND_DOWN_TOP = <?php echo(BLIND_DOWN_TOP); ?>;
-	const BLIND_DOWN_BOTTOM = <?php echo(BLIND_DOWN_BOTTOM); ?>;
-	const BLIND_CONTROL_HEIGHT = <?php echo($blindControlHeight); ?>;
-	const BLIND_CONTROL_WIDTH = <?php echo($blindControlWidth); ?>;
+	const MOBILE = <%= mobile %>;
+	const ID_LUCI = <%= arrayJavascript(idLuci) %>;
+	const ID_PRESE = <%= arrayJavascript(idPrese) %>;
+	const ID_CLIMI = <%= arrayJavascript(idClimi) %>;
+	const ID_SERRAMENTI = <%= arrayJavascript(idSerramenti) %>;
+	const IMG_LIGHT_ON = "<%= IMG_LIGHT_ON %>";
+	const IMG_LIGHT_OFF = "<%= IMG_LIGHT_OFF %>";
+	const IMG_POWER_ON = "<%= IMG_POWER_ON %>";
+	const IMG_POWER_OFF = "<%= IMG_POWER_OFF %>";
+	const IMG_THERMO_ON = "<%= IMG_THERMO_ON %>";
+	const IMG_THERMO_OFF = "<%= IMG_THERMO_OFF %>";
+	const IMG_BLIND_STILL = "<%= IMG_BLIND_STILL %>";
+	const IMG_BLIND_OPENING = "<%= IMG_BLIND_OPENING %>";
+	const IMG_BLIND_CLOSING = "<%= IMG_BLIND_CLOSING %>";
+	const STATUS_BAR_HEIGHT = <%= STATUS_BAR_HEIGHT %>;
+	const STATUS_BAR_OPACITY = "<%= STATUS_BAR_OPACITY %>";
+	const APPBAR_START_POSITION = <%= APPBAR_START_POSITION %>;
+	const DIMMER_SLIDER_HEIGHT = <%= DIMMER_SLIDER_HEIGHT %>;
+	const DIMMER_TOP_MIN = <%= IMG_DIMMER_SLIDER_TOP_HEIGHT - DIMMER_SLIDER_CORNER_HEIGHT %>;
+	const DIMMER_TOP_MAX = <%= IMG_DIMMER_SLIDER_TOP_HEIGHT - DIMMER_SLIDER_CORNER_HEIGHT  + DIMMER_SLIDER_HEIGHT - IMG_DIMMER_CURSOR_HEIGHT %>;
+	const DIMMER_CURSOR_MIDDLE = <%= IMG_DIMMER_CURSOR_HEIGHT / 2 %>;
+	const DIMMER_SLIDER_TOTAL_HEIGHT = <%= IMG_DIMMER_SLIDER_TOP_HEIGHT + DIMMER_SLIDER_HEIGHT - 2 * DIMMER_SLIDER_CORNER_HEIGHT + IMG_DIMMER_SLIDER_BOTTOM_HEIGHT %>;
+	const DIMMER_SLIDER_WIDTH = <%= DIMMER_WIDTH %>;
+	const IMG_BLIND_CONTROL = "<%= IMG_BLIND_CONTROL %>";
+	const BLIND_UP_TOP = <%= BLIND_UP_TOP %>;
+	const BLIND_LEFT = <%= BLIND_LEFT %>;
+	const BLIND_UP_BOTTOM = <%= BLIND_UP_BOTTOM %>;
+	const BLIND_RIGHT = <%= BLIND_RIGHT %>;
+	const BLIND_DOWN_TOP = <%= BLIND_DOWN_TOP %>;
+	const BLIND_DOWN_BOTTOM = <%= BLIND_DOWN_BOTTOM %>;
+	const BLIND_CONTROL_HEIGHT = <%= IMG_BLIND_CONTROL_HEIGHT %>;
+	const BLIND_CONTROL_WIDTH = <%= IMG_BLIND_CONTROL_WIDTH %>;
 	const MAP_AREA_WIDTH = <%= IPOD_VIEWPORT_WIDTH %>;
-	const MAP_AREA_HEIGHT = <?php echo(IPOD_MAP_AREA_HEIGHT); ?>;
-	const IMG_LOCK_OPEN = "<?php echo(IMG_LOCK_OPEN); ?>";
-	const IMG_LOCK_CLOSE = "<?php echo(IMG_LOCK_CLOSE); ?>";
-	const IMG_DOOR_OPEN = "<?php echo(IMG_DOOR_OPEN); ?>";
-	const IMG_DOOR_CLOSE = "<?php echo(IMG_DOOR_CLOSE); ?>";
-	const IMG_DOOR_OPEN_ALARM = "<?php echo(IMG_DOOR_OPEN_ALARM); ?>";
-	const IMG_DOOR_CLOSE_OK = "<?php echo(IMG_DOOR_CLOSE_OK); ?>";
+	const MAP_AREA_HEIGHT = <%= IPOD_MAP_AREA_HEIGHT %>;
+	const IMG_LOCK_OPEN = "<%= IMG_LOCK_OPEN %>";
+	const IMG_LOCK_CLOSE = "<%= IMG_LOCK_CLOSE %>";
+	const IMG_DOOR_OPEN = "<%= IMG_DOOR_OPEN %>";
+	const IMG_DOOR_CLOSE = "<%= IMG_DOOR_CLOSE %>";
+	const IMG_DOOR_OPEN_ALARM = "<%= IMG_DOOR_OPEN_ALARM %>";
+	const IMG_DOOR_CLOSE_OK = "<%= IMG_DOOR_CLOSE_OK %>";
 </script>
 
-<?php
-includeScript("statusbar.js");
-includeScript("aui.js");
-includeScript("comm.js");
-includeScript("map.js");
-includeScript("appbar_common.js");
+<%= includeScript("statusbar.js") %>
+<%= includeScript("aui.js") %>
+<%= includeScript("comm.js") %>
+<%= includeScript("map.js") %>
+<%= includeScript("appbar_common.js") %>
+<%
 if (APPBAR_SIMPLE) {
-	includeScript("appbar_simple.js");
+	out.print(includeScript("appbar_simple.js"));
 } else {
-	includeScript("appbar.js");
+	out.print(includeScript("appbar.js"));
 }
-includeScript("services.js");
-includeScript("dimmer_slider.js");
-includeScript("blind.js");
-includeScript("keypad.js");
-includeScript("alarm.js");
-?>
+%>
+<%= includeScript("services.js") %>
+<%= includeScript("dimmer_slider.js") %>
+<%= includeScript("blind.js") %>
+<%= includeScript("keypad.js") %>
+<%= includeScript("alarm.js") %>
+
 <script type="" language="javascript">
 startMasterTimer();
 </script>

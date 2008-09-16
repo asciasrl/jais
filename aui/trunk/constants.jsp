@@ -1,4 +1,4 @@
-<%
+<%!
 /**
  * Copyright (C 2008 ASCIA S.r.l.
  *
@@ -45,11 +45,23 @@ final int DIMMER_SLIDER_BORDER_WIDTH =  6;
  * Immagine che contiene la parte superiore dello slider del dimmer.
  */
 final String IMG_DIMMER_SLIDER_TOP =  "images/dimmer-top.png";
+/**
+ * Larghezza di IMG_DIMMER_SLIDER_TOP (e quindi di tutto il dimmer) [pixel].
+ */
+final int DIMMER_WIDTH = 40;
+/**
+ * Altezza di IMG_DIMMER_SLIDER_TOP [pixel].
+ */
+final int IMG_DIMMER_SLIDER_TOP_HEIGHT = 17;
 
 /**
  * Immagine che contiene la parte inferiore dello slider del dimmer.
  */
 final String IMG_DIMMER_SLIDER_BOTTOM =  "images/dimmer-bottom.png";
+/**
+ * Altezza di IMG_DIMMER_SLIDER_BOTTOM [pixel].
+ */
+final int IMG_DIMMER_SLIDER_BOTTOM_HEIGHT = 17;
 
 /**
  * Immagine che contiene un segmento della parte centrale dello slider del 
@@ -63,11 +75,27 @@ final String IMG_DIMMER_SLIDER_MIDDLE =  "images/dimmer-sfondo.png";
  * Cursore del dimmer.
  */
 final String IMG_DIMMER_CURSOR =  "images/dimmer-tasto.png";
+/**
+ * Larghezza del cursore del dimmer [pixel].
+ */
+final int IMG_DIMMER_CURSOR_WIDTH = 28;
+/**
+ * Altezza del cursore del dimmer [pixel].
+ */
+final int IMG_DIMMER_CURSOR_HEIGHT = 30;
 
 /**
  * Controllo delle tapparelle.
  */
 final String IMG_BLIND_CONTROL =  "images/serrande.png";
+/**
+ * Larghezza di IMG_BLIND_CONTROL [pixel].
+ */
+final int IMG_BLIND_CONTROL_WIDTH = 40;
+/**
+ * Altezza di IMG_BLIND_CONTROL [pixel].
+ */
+final int IMG_BLIND_CONTROL_HEIGHT = 90;
 
 /**
  * Coordinata y del bordo superiore del bottone "up".
@@ -110,6 +138,8 @@ final int SIC_PORTA =  1;
 
 /**
  * Icone varie.
+ *
+ * <p>Queste icone devono essere tutte quadrate, con lato MAP_ICON_WIDTH.</p>
  */
 final String IMG_LIGHT_ON =  "images/luce_on.png";
 final String IMG_LIGHT_OFF =  "images/luce_off.png";
@@ -127,6 +157,7 @@ final String IMG_DOOR_CLOSE =  "images/porta_chiusa.png";
 final String IMG_DOOR_OPEN_ALARM =  "images/porta_aperta_red.png";
 final String IMG_DOOR_CLOSE_OK =  "images/porta_chiusa_green.png";
 final String IMG_SCENARIOS =  "images/scenari_all.png";
+final int MAP_ICON_WIDTH = 60;
 
 /**
  * Altezza della status bar [pixel].

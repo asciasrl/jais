@@ -2,18 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/jetty-6.1.7.jar"/>
-	<classpathentry kind="lib" path="lib/jetty-util-6.1.7.jar"/>
-	<classpathentry kind="lib" path="lib/servlet-api-2.5-6.1.7.jar"/>
-	<classpathentry kind="lib" path="/jais/lib/log4j-1.2.15.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jais">
 		<attributes>
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="jais/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/ant-1.6.5.jar"/>
-	<classpathentry kind="lib" path="lib/core-3.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/jsp-2.1.jar"/>
-	<classpathentry kind="lib" path="lib/jsp-api-2.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

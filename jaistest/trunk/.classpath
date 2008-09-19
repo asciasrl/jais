@@ -2,8 +2,11 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/jais/lib/log4j-1.2.15.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/auiserver"/>
+	<classpathentry kind="lib" path="/jais/lib/log4j-1.2.15.jar" sourcepath="K:/Software/apache-log4j-1.2.15.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="http://logging.apache.org/log4j/1.2/apidocs/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/jais">
 		<attributes>
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="jais/lib"/>
@@ -12,5 +15,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/jbis"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jeds"/>
 	<classpathentry kind="lib" path="/jais/lib/RXTXcomm.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

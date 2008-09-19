@@ -3,7 +3,7 @@
  */
 package it.ascia.eds.device;
 
-import it.ascia.eds.Bus;
+import it.ascia.eds.EDSConnector;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.Message;
 import it.ascia.eds.msg.RispostaStatoMessage;
@@ -46,7 +46,7 @@ public class BMCScenarioManager extends BMC {
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
 	 */
-	public BMCScenarioManager(int address, int model, Bus bus, String name) {
+	public BMCScenarioManager(int address, int model, EDSConnector bus, String name) {
 		super(address, model, bus, name);
 		switch(model) {
 		case 152:
@@ -154,7 +154,7 @@ public class BMCScenarioManager extends BMC {
 
 	// Attenzione: chiama sempre updateStatus() !
 	public String getStatus(String port, long timestamp) {
-		String busName = bus.getName();
+		String busName = connector.getName();
 		String retval = "";
 		int i;
 		String compactName = busName + "." + getAddress();

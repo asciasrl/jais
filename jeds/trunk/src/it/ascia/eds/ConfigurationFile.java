@@ -142,7 +142,7 @@ public class ConfigurationFile {
 	 * 
 	 * @param bus il bus a cui collegare i BMC.
 	 */
-	public void createBMCs(Bus bus) {
+	public void createBMCs(EDSConnector bus) {
 		int i;
 		for (i = 0; i < dispositivoElements.getLength(); i++) {
 			Element dispositivoElement = (Element)dispositivoElements.item(i);

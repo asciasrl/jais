@@ -13,7 +13,7 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
-import it.ascia.ais.Connector;
+import it.ascia.ais.ConnectorInterface;
 import it.ascia.ais.Device;
 import it.ascia.ais.DeviceEvent;
 import it.ascia.ais.DeviceListener;
@@ -41,7 +41,7 @@ public abstract class BMC implements Device {
 	/**
 	 * Il bus a cui il BMC e' collegato.
 	 */
-	protected Bus bus;
+	protected EDSConnector connector;
 	/**
 	 * L'indirizzo sul bus.
 	 */
@@ -103,8 +103,8 @@ public abstract class BMC implements Device {
 	 * @param model il modello di questo BMC
 	 * @param name il nome di questo BMC (dal file di configurazione)
 	 */
-	public BMC(int address, int model, Bus bus, String name) {
-		this.bus = bus;
+	public BMC(int address, int model, EDSConnector connector, String name) {
+		this.connector = connector;
 		this.address = address;
 		this.model = model;
 		this.name = name;
@@ -158,7 +158,7 @@ public abstract class BMC implements Device {
 	 * 
 	 * @throws an exception if the address is already in use by another BMC.
 	 */
-	public static BMC createBMC(int bmcAddress, int model, String name, Bus bus,
+	public static BMC createBMC(int bmcAddress, int model, String name, EDSConnector bus,
 			boolean isReal) 
 		throws EDSException {
 		Logger logger = Logger.getLogger("BMC.createBMC");
@@ -273,8 +273,8 @@ public abstract class BMC implements Device {
 	public void updateStatus() {
 		PTPRequest m;
 		m = new RichiestaStatoMessage(getIntAddress(), 
-				bus.getBMCComputerAddress(), 0);
-		bus.sendMessage(m);
+				connector.getBMCComputerAddress(), 0);
+		connector.sendMessage(m);
 	}
 	
 	/**
@@ -480,8 +480,8 @@ public abstract class BMC implements Device {
 		deviceListener = listener;
 	}
 	
-	public Connector getConnector() {
-		return bus;
+	public ConnectorInterface getConnector() {
+		return connector;
 	}
 	
 	/**

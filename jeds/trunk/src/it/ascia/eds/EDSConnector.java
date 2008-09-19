@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import it.ascia.ais.Bus;
 import it.ascia.ais.Device;
 import it.ascia.eds.device.*;
 import it.ascia.eds.msg.*;
@@ -25,7 +26,7 @@ import it.ascia.eds.msg.*;
  * @author arrigo
  *
  */
-public abstract class Bus implements it.ascia.ais.Connector {
+public class EDSConnector extends it.ascia.ais.Connector implements it.ascia.ais.ConnectorInterface {
 	/**
 	 * Quanto tempo aspettare la risposta dopo l'invio di un messaggio.
 	 * 
@@ -91,7 +92,7 @@ public abstract class Bus implements it.ascia.ais.Connector {
      * @param name il nome del bus, che sara' la parte iniziale degli indirizzi
      * di tutti i Device collegati a questo bus.
      */
-    public Bus(String name) {
+    public EDSConnector(String name) {
         devices = new HashMap();
         bmcComputer = null;
 		mp = new MessageParser();
@@ -99,34 +100,6 @@ public abstract class Bus implements it.ascia.ais.Connector {
 		this.name = name;
     }
     
-    /**
-     * Verifica se ci sono dati pronti da leggere.
-     * 
-     * @return true se ci sono dati leggibili da readByte()
-     */
-    protected abstract boolean hasData();
-    
-    /**
-     * Ritorna il prossimo byte ricevuto.
-     * @throws IOException 
-     * 
-     * @return il dato ricevuto.
-     */
-    protected abstract byte readByte() throws IOException;
-    
-	/**
-     * Invia un messaggio sul bus.
-     * 
-     * <p>Eventuali errori di trasmissione vengono ignorati.</p>
-     * 
-     * @param m the message to send
-     */
-    public abstract void write(Message m);
-    
-    /**
-     * Chiude la connessione al bus.
-     */
-    public abstract void close();
     
     /**
      * Ritorna il nome di questo bus.
@@ -162,10 +135,10 @@ public abstract class Bus implements it.ascia.ais.Connector {
      * 
      * <p>I messaggi decodificati vengono passati a dispatchMessage().</p>
      */
-    protected void readData() {
-    	while (hasData()) {
+    public void readData() {
+    	while (bus.hasData()) {
     		try {
-    			byte b = readByte();
+    			byte b = bus.readByte();
     			mp.push(b);
     			if (mp.isValid()) {
     				Message m = mp.getMessage();

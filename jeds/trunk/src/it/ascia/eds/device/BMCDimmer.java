@@ -3,7 +3,7 @@
  */
 package it.ascia.eds.device;
 
-import it.ascia.eds.Bus;
+import it.ascia.eds.EDSConnector;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.ComandoBroadcastMessage;
 import it.ascia.eds.msg.ComandoUscitaDimmerMessage;
@@ -62,7 +62,7 @@ public class BMCDimmer extends BMC {
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
 	 */
-	public BMCDimmer(int address, int model, Bus bus, String name) {
+	public BMCDimmer(int address, int model, EDSConnector bus, String name) {
 		super(address, model, bus, name);
 		switch(model) {
 		case 101:
@@ -263,8 +263,8 @@ public class BMCDimmer extends BMC {
 		// Il protocollo permette di scegliere più uscite. Qui chiediamo solo le
 		// prime due.
 		m = new RichiestaStatoMessage(getIntAddress(), 
-				bus.getBMCComputerAddress(), 3);
-		bus.sendMessage(m);
+				connector.getBMCComputerAddress(), 3);
+		connector.sendMessage(m);
 	}
 
 	/**
@@ -281,7 +281,7 @@ public class BMCDimmer extends BMC {
 	public String getStatus(String port, long timestamp) {
 		int i;
 		String retval = "";
-		String busName = bus.getName();
+		String busName = connector.getName();
 		String compactName = busName + "." + getAddress();
 		if (hasDirtyCache()) {
 			updateStatus();
@@ -313,9 +313,9 @@ public class BMCDimmer extends BMC {
 			if ((value >= 0) && (value <= 100)) {
 				ComandoUscitaMessage m;
 				m = new ComandoUscitaMessage(getIntAddress(), 
-						bus.getBMCComputerAddress(), 0, output, value, 
+						connector.getBMCComputerAddress(), 0, output, value, 
 						(value > 0)? 1 : 0);
-				retval = bus.sendMessage(m);
+				retval = connector.sendMessage(m);
 			} else {
 				logger.error("Valore non valido per canale dimmer: " +
 						value);
@@ -340,8 +340,8 @@ public class BMCDimmer extends BMC {
 			if ((value >= 0) && (value <= 100)) {
 				ComandoUscitaDimmerMessage m;
 				m = new ComandoUscitaDimmerMessage(getIntAddress(), 
-						bus.getBMCComputerAddress(), output, value);
-				bus.sendMessage(m);
+						connector.getBMCComputerAddress(), output, value);
+				connector.sendMessage(m);
 			} else {
 				logger.error("Valore non valido per canale dimmer: " +
 						value);

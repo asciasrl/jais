@@ -3,7 +3,7 @@
  */
 package it.ascia.eds.device;
 
-import it.ascia.eds.Bus;
+import it.ascia.eds.EDSConnector;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.Message;
 import it.ascia.eds.msg.RispostaStatoMessage;
@@ -66,7 +66,7 @@ public class BMCIR extends BMC {
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
 	 */
-	public BMCIR(int address, int model, Bus bus, String name) {
+	public BMCIR(int address, int model, EDSConnector bus, String name) {
 		super(address, model, bus, name);
 		switch(model) {
 		case 41:
@@ -121,7 +121,7 @@ public class BMCIR extends BMC {
 	// Attenzione: chiama sempre updateStatus() !
 	public String getStatus(String port, long timestamp) {
 		String retval = "";
-		String busName = bus.getName();
+		String busName = connector.getName();
 		int i;
 		String compactName = busName + "." + getAddress();
 		updateStatus();

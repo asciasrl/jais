@@ -4,7 +4,7 @@
 package it.ascia.eds.device;
 
 
-import it.ascia.eds.Bus;
+import it.ascia.eds.EDSConnector;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.CronotermMessage;
 import it.ascia.eds.msg.ImpostaSetPointMessage;
@@ -142,7 +142,7 @@ public class BMCChronoTerm extends BMC {
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
 	 */
-	public BMCChronoTerm(int address, int model, Bus bus, String name) {
+	public BMCChronoTerm(int address, int model, EDSConnector bus, String name) {
 		// FIXME: quante uscite ha un BMCChronoTerm?
 		super(address, model, bus, name);
 		switch(model) {
@@ -253,16 +253,16 @@ public class BMCChronoTerm extends BMC {
 	 * Aggiorna lo stato del termostato.
 	 */
 	public void updateTermStatus() {
-		bus.sendMessage(new RichiestaStatoTermostatoMessage(getIntAddress(), 
-				bus.getBMCComputerAddress()));
+		connector.sendMessage(new RichiestaStatoTermostatoMessage(getIntAddress(), 
+				connector.getBMCComputerAddress()));
 	}
 	
 	/**
 	 * Aggiorna il set point corrente.
 	 */
 	public void updateSetPoint() {
-		bus.sendMessage(new RichiestaSetPointMessage(getIntAddress(), 
-			bus.getBMCComputerAddress()));
+		connector.sendMessage(new RichiestaSetPointMessage(getIntAddress(), 
+				connector.getBMCComputerAddress()));
 	}
 	
 	public void updateStatus() {
@@ -280,8 +280,8 @@ public class BMCChronoTerm extends BMC {
 	public boolean setSetPoint(double temperature) {
 		ImpostaSetPointMessage m;
 		m = new ImpostaSetPointMessage(getIntAddress(), 
-				bus.getBMCComputerAddress(), temperature);
-		return bus.sendMessage(m);
+				connector.getBMCComputerAddress(), temperature);
+		return connector.sendMessage(m);
 	}
 	
 	/**
@@ -296,9 +296,9 @@ public class BMCChronoTerm extends BMC {
 	public boolean setState(int state) {
 		VariazioneIngressoMessage m;
 		m = new VariazioneIngressoMessage(getIntAddress(), 
-				bus.getBMCComputerAddress(),
+				connector.getBMCComputerAddress(),
 				state);
-		return bus.sendMessage(m);
+		return connector.sendMessage(m);
 	}
 	
 	/**
@@ -317,7 +317,7 @@ public class BMCChronoTerm extends BMC {
 	// Attenzione:
 	public String getStatus(String port, long timestamp) {
 		String retval = "";
-		String busName = bus.getName();
+		String busName = connector.getName();
 		String compactName = busName + "." + getAddress();
 		if (dirtySetPoint) {
 			updateSetPoint();

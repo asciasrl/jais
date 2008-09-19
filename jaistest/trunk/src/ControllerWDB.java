@@ -3,11 +3,13 @@
  */
 
 import it.ascia.ais.AISException;
+import it.ascia.ais.Bus;
 import it.ascia.ais.HTTPServer;
-import it.ascia.eds.Bus;
+import it.ascia.ais.SerialBus;
+import it.ascia.ais.TCPSerialBus;
+import it.ascia.eds.EDSConnector;
 import it.ascia.eds.ConfigurationFile;
 import it.ascia.eds.EDSException;
-import it.ascia.eds.TCPSerialBus;
 import it.ascia.eds.device.BMC;
 import it.ascia.eds.device.BMCChronoTerm;
 import it.ascia.eds.device.BMCComputer;
@@ -23,7 +25,7 @@ import org.apache.log4j.PropertyConfigurator;
  * @author arrigo
  */
 public class ControllerWDB extends MyController {
-	static Bus bus;
+	static EDSConnector bus;
 	static BMCComputer bmcComputer;
 	static HTTPServer server;
 	static ControllerWDB busController;
@@ -178,8 +180,9 @@ public class ControllerWDB extends MyController {
 	/**
 	 * @param args
 	 *            porta seriale
+	 * @throws AISException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws AISException {
 	    String defaultPort = "ascia.homeip.net";
 		// String defaultPort = "COM1";
 	    // Inizializzazione logger
@@ -188,16 +191,20 @@ public class ControllerWDB extends MyController {
 	 	if (args.length > 0) {
 		    defaultPort = args[0];
 		}
+	 	EDSConnector eds = null;
+	 	Bus bus = null;
 	 	try {
-	 		bus = new TCPSerialBus(defaultPort, 2001, "0");
+	 		eds = new EDSConnector("0");
+	 		bus = new SerialBus(defaultPort, eds);
+	 		//bus = new TCPSerialBus(defaultPort, 2001, "0");
 	 		// bus = new SerialBus(defaultPort, "0");
 	 	} catch (EDSException e) {
 	 		System.err.println(e.getMessage());
 	 		System.exit(-1);
 	 	}
 	 	startServer();
-	 	bmcComputer = new BMCComputer(0, bus);
-	 	bus.setBMCComputer(bmcComputer);
+	 	bmcComputer = new BMCComputer(0, eds);
+	 	eds.setBMCComputer(bmcComputer);
 	 	// File di configurazione
 	 	try {
 			cfgFile = new ConfigurationFile("conf/impianto_ufficio_wdb.xml");
@@ -205,7 +212,7 @@ public class ControllerWDB extends MyController {
 			System.err.println(e.getMessage());
 			System.exit(-1);
 		}
-		cfgFile.createBMCs(bus);
+		cfgFile.createBMCs(eds);
 		System.out.println(cfgFile.getSystemName());
 	 	
 	 	// BMC virtuale

@@ -1,6 +1,6 @@
-package it.ascia.eds;
+package it.ascia.ais;
 
-import it.ascia.eds.msg.Message;
+import it.ascia.ais.Bus;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -43,6 +43,7 @@ public class TCPSerialBus extends Bus {
 		 * Il nostro bus.
 		 */
 		private TCPSerialBus bus;
+
 		/**
 		 * Il nostro logger.
 		 */
@@ -78,7 +79,7 @@ public class TCPSerialBus extends Bus {
 					sock.read(bb);
 					bb.flip();
 					bus.setByteBuffer(bb);
-					bus.readData();
+					bus.connector.readData();
 					keys.clear();
 				}
 			} catch (IOException e) {
@@ -120,32 +121,32 @@ public class TCPSerialBus extends Bus {
      * 
      * @throws un'Exception se incontra un errore
      */
-    public TCPSerialBus(String hostName, int port, String busName) 
-    	throws EDSException {
-    	super(busName);
+    public TCPSerialBus(String hostName, int port, Connector connector) 
+    	throws AISException {
+    	super(connector);
     	this.tcpPort = port;
 		try {
 			logger.info("Connessione a " + hostName + ":" + port);
 			sock = SocketChannel.open(new InetSocketAddress(hostName, tcpPort));
 			sock.configureBlocking(false);
 		} catch (UnresolvedAddressException e) {
-			throw new EDSException("Indirizzo non trovato: " + hostName);
+			throw new AISException("Indirizzo non trovato: " + hostName);
 		} catch (IOException e) {
-			throw new EDSException("Impossibile ottenere gli stream: " + 
+			throw new AISException("Impossibile ottenere gli stream: " + 
 					e.getMessage());
 		}
 		try {
 			readSelector = Selector.open();
 			sock.register(readSelector, SelectionKey.OP_READ);
 		} catch (IOException e) {
-			throw new EDSException("Impossibile creare il Selector di lettura: " +
+			throw new AISException("Impossibile creare il Selector di lettura: " +
 					e.getMessage());
 		}
 		try {
 			writeSelector = Selector.open();
 			sock.register(writeSelector, SelectionKey.OP_WRITE);
 		} catch (IOException e) {
-			throw new EDSException("Impossibile creare il Selector di " +
+			throw new AISException("Impossibile creare il Selector di " +
 					"scrittura: " +	e.getMessage());
 		}
 		tcpSerialBusReader = new TCPSerialBusReader(readSelector, this, sock);
@@ -160,8 +161,7 @@ public class TCPSerialBus extends Bus {
      * 
      * @param m the message to send
      */
-    public synchronized void write(Message m) {
-    	byte[] rawMessage = m.getBytesMessage();
+    public synchronized void write(byte[] rawMessage) {
     	ByteBuffer bb = ByteBuffer.allocate(rawMessage.length);
     	bb.put(rawMessage);
     	bb.rewind();
@@ -195,7 +195,7 @@ public class TCPSerialBus extends Bus {
     	this.byteBuffer = bb;
     }
 
-	protected boolean hasData() {
+	public boolean hasData() {
 		if (byteBuffer != null) {
 				return byteBuffer.hasRemaining();
 		} else {
@@ -203,7 +203,7 @@ public class TCPSerialBus extends Bus {
 		}
 	}
 
-	protected byte readByte() throws IOException {
+	public byte readByte() throws IOException {
 		try {
 			return byteBuffer.get();
 		} catch (BufferUnderflowException e) {

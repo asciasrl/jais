@@ -13,7 +13,7 @@ import it.ascia.eds.msg.RichiestaAssociazioneUscitaMessage;
 import it.ascia.eds.msg.RichiestaModelloMessage;
 import it.ascia.eds.msg.RispostaAssociazioneUscitaMessage;
 import it.ascia.eds.msg.RispostaModelloMessage;
-import it.ascia.eds.Bus;
+import it.ascia.eds.EDSConnector;
 import it.ascia.eds.EDSException;
 
 /**
@@ -50,7 +50,7 @@ public class BMCComputer extends BMC {
 	 * @param bus il bus a cui siamo collegati
 	 * @param address l'indirizzo di questo device sul bus
 	 */
-	public BMCComputer(int address, Bus bus) {
+	public BMCComputer(int address, EDSConnector bus) {
 		super(address, -1, bus, "Computer");
 		inbox = new LinkedList();
 		messageToBeAnswered = null;
@@ -78,7 +78,7 @@ public class BMCComputer extends BMC {
 				RispostaModelloMessage risposta = (RispostaModelloMessage) ptpm;
 				try {
 					BMC.createBMC(risposta.getSender(), risposta.getModello(),
-							null, bus, true);
+							null, connector, true);
 				} catch (EDSException e) {
 				// Se il device e' gia' sul bus, non e' un errore.
 				}
@@ -132,8 +132,8 @@ public class BMCComputer extends BMC {
     			if (tries > 0) {
     				logger.trace("Write, tries="+tries+" "+m.toHexString());    			
     			}
-    			bus.write(m);
-				int delay = (int)(Bus.PING_WAIT * (1 + Math.random() * 0.2));
+    			connector.bus.write(m.getBytesMessage());
+				int delay = (int)(EDSConnector.PING_WAIT * (1 + Math.random() * 0.2));
     			for (waitings = 0; 
     				(waitings < delay) && (!received); 
     				waitings++) {
@@ -157,10 +157,10 @@ public class BMCComputer extends BMC {
 		for (int i = 0; i < tries; i++) {
 			m.randomizeHeaders();
 			try {
-				Thread.sleep(Bus.WAIT_RETRIES * Bus.PING_WAIT);
+				Thread.sleep(EDSConnector.WAIT_RETRIES * EDSConnector.PING_WAIT);
 			} catch (InterruptedException e) {
 			}
-			bus.write(m);
+			connector.bus.write(m.getBytesMessage());
 		}
 	}
 	
@@ -186,7 +186,7 @@ public class BMCComputer extends BMC {
 				retval = sendPTPRequest((PTPRequest) ptpm);
 			} else {
 				// Invio nudo e crudo
-				bus.write(m);
+				connector.bus.write(m.getBytesMessage());
 				// non c'e' modo di sapere se e' arrivato; siamo ottimisti.
 				retval = true;
 			}
@@ -213,13 +213,13 @@ public class BMCComputer extends BMC {
     public BMC discoverBMC(int address) {
     	BMC retval, temp[];
     	// Gia' abbiamo il BMC in lista?
-    	temp = (BMC[])bus.getDevices(String.valueOf(address));
+    	temp = (BMC[])connector.getDevices(String.valueOf(address));
     	if (temp.length == 0) {
     		// No!
     		logger.trace("Ricerca del BMC con indirizzo " + address);
     		if (sendPTPRequest(new RichiestaModelloMessage(address, 
     				getIntAddress()))) {
-    			temp = (BMC[])bus.getDevices(String.valueOf(address));
+    			temp = (BMC[])connector.getDevices(String.valueOf(address));
     			if (temp.length > 0) {
     				retval = temp[0];
     				discoverBroadcastBindings(retval);

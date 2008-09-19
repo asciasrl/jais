@@ -6,6 +6,7 @@ package it.ascia.bentel;
 import org.apache.log4j.Logger;
 
 import it.ascia.ais.Connector;
+import it.ascia.ais.ConnectorInterface;
 import it.ascia.ais.Device;
 
 /**
@@ -13,7 +14,7 @@ import it.ascia.ais.Device;
  * 
  * @author sergio, arrigo
  */
-public class JBisKyoUnit implements Connector, Runnable {
+public class JBisKyoUnit extends Connector implements  Runnable {
 	/**
 	 * Attesa tra due polling dello stato [msec].
 	 */
@@ -237,5 +238,10 @@ public class JBisKyoUnit implements Connector, Runnable {
 
 	public String getName() {
 		return name;
+	}
+
+	public void readData() {
+		// TODO Auto-generated method stub
+		
 	}
 }

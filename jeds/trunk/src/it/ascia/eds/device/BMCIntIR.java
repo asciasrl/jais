@@ -3,7 +3,7 @@
  */
 package it.ascia.eds.device;
 
-import it.ascia.eds.Bus;
+import it.ascia.eds.EDSConnector;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.Message;
 import it.ascia.eds.msg.RispostaStatoMessage;
@@ -31,7 +31,7 @@ public class BMCIntIR extends BMC {
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
 	 */
-	public BMCIntIR(int address, int model, Bus bus, String name) {
+	public BMCIntIR(int address, int model, EDSConnector bus, String name) {
 		super(address, model, bus, name);
 		if (model != 131) {
 			logger.error("Errore: modello di BMC Int IR sconosciuto:" + 
@@ -86,7 +86,7 @@ public class BMCIntIR extends BMC {
 	}
 
 	public String getStatus(String port, long timestamp) { // TODO
-		String busName = bus.getName();
+		String busName = connector.getName();
 		String compactName = busName + "." + getAddress();
 		if ((timestamp <= irInputTimestamp) &&
 				(port.equals("*") || port.equals(getInputCompactName(0)))) {

@@ -1,12 +1,15 @@
 
 
 import it.ascia.ais.AISException;
+import it.ascia.ais.Bus;
+import it.ascia.ais.Connector;
+import it.ascia.ais.ConnectorInterface;
 import it.ascia.ais.HTTPServer;
-import it.ascia.eds.Bus;
+import it.ascia.ais.SerialBus;
+import it.ascia.ais.TCPSerialBus;
 // import it.ascia.eds.ConfigurationFile;
+import it.ascia.eds.EDSConnector;
 import it.ascia.eds.EDSException;
-import it.ascia.eds.TCPSerialBus;
-import it.ascia.eds.SerialBus;
 import it.ascia.eds.device.BMC;
 import it.ascia.eds.device.BMCChronoTerm;
 import it.ascia.eds.device.BMCComputer;
@@ -21,17 +24,16 @@ import org.apache.log4j.PropertyConfigurator;
  * 
  */
 public class BusTest extends MyController {
-	static Bus bus;
 	static BMCComputer bmcComputer;
 	static HTTPServer server;
 	static BusTest busController;
 	
 	
-	static void makeVirtualBMC(int address) {
+	static void makeVirtualBMC(int address, EDSConnector connector) {
 		// Lo creiamo noi il BMC!
 		try {
-			BMCStandardIO bmc = new BMCStandardIO(address, 88, bus, "BMCFinto"); 
-			bus.addDevice(bmc);
+			BMCStandardIO bmc = new BMCStandardIO(address, 88, connector, "BMCFinto"); 
+			connector.addDevice(bmc);
 			bmc.makeSimulated(busController);
 		} catch (EDSException e) {
 			System.err.println(e.getMessage());
@@ -39,11 +41,11 @@ public class BusTest extends MyController {
 		}
 	}
 	
-	static void testBMCStandardIO(int address) {
+	static void testBMCStandardIO(int address, Connector connector) {
 		int porta, valore;
  		// Prova su BMC modello 88, indirizzo 3
  		BMCStandardIO bmc = 
- 			(BMCStandardIO)bus.getDevices(String.valueOf(address))[0];
+ 			(BMCStandardIO)connector.getDevices(String.valueOf(address))[0];
  		System.out.println();
  		System.out.println("Prova BMC Standard I/O");
  		System.out.println("Discovery...");
@@ -69,11 +71,11 @@ public class BusTest extends MyController {
  			
 	}
 	
-	static void testBMCDimmer() {
+	static void testBMCDimmer(Connector connector) {
 		String address = "5";
 		int output = 0, value = 0;
  		// Prova su BMC modello 88, indirizzo 3
-		BMCDimmer bmc = (BMCDimmer)bus.getDevices(address)[0];
+		BMCDimmer bmc = (BMCDimmer)connector.getDevices(address)[0];
 		System.out.println();
 		System.out.println("Prova Dimmer");
 		System.out.println("Discovery...");
@@ -96,11 +98,11 @@ public class BusTest extends MyController {
 		}
 	}
 	
-	static void testBMCChronoTerm() {
+	static void testBMCChronoTerm(Connector connector) {
 		String address = "7";
 		double setPoint = 0;
  		// Prova su BMC modello 127, indirizzo 7
-		BMCChronoTerm bmc = (BMCChronoTerm)bus.getDevices(address)[0];
+		BMCChronoTerm bmc = (BMCChronoTerm)connector.getDevices(address)[0];
 		System.out.println();
 		System.out.println("Prova Cronotermostato");
 		while (setPoint >= 0.0) {
@@ -120,41 +122,40 @@ public class BusTest extends MyController {
 		bmc.printStatus();
 	}
 	
-	static void startServer() {
-		busController = new BusTest(null /* "1" */);
-		busController.addConnector(bus);
-		try {
-			server = new HTTPServer(8080, busController, 
-					"/home/arrigo/public_html/aui");
-		} catch (AISException e) {
-			System.err.println(e.getMessage());
-			System.exit(-1);
-		}
-	}
-	
 	/**
 	 * @param args
 	 *            porta seriale
+	 * @throws AISException 
 	 */
-	public static void main(String[] args) {
-	    String defaultPort = "ascia.homeip.net";
-		// String defaultPort = "/dev/ttyUSB0";
+	public static void main(String[] args) throws AISException {
+	    //String defaultPort = "ascia.homeip.net";
+		String defaultPort = "COM2";
 	    // Inizializzazione logger
 	    PropertyConfigurator.configure("conf/log4j.conf");
 		//ConfigurationFile cfgFile = null;
 	 	if (args.length > 0) {
 		    defaultPort = args[0];
 		}
+	 	EDSConnector eds = null;
+	 	Bus bus = null;
 	 	try {
-	 		bus = new TCPSerialBus(defaultPort, 2001, "0");
-	 		// bus = new SerialBus(defaultPort, "0");
+	 		//bus = new TCPSerialBus(defaultPort, 2001, "0");
+	 		eds = new EDSConnector("0");
+	 		bus = new SerialBus(defaultPort, eds);
 	 	} catch (EDSException e) {
 	 		System.err.println(e.getMessage());
 	 		System.exit(-1);
 	 	}
-	 	startServer();
-	 	bmcComputer = new BMCComputer(0, bus);
-	 	bus.setBMCComputer(bmcComputer);
+		busController = new BusTest(null /* "1" */);
+		busController.addConnector(eds);
+		try {
+			server = new HTTPServer(80, busController, "p:/Dev/aui");
+		} catch (AISException e) {
+			System.err.println(e.getMessage());
+			System.exit(-1);
+		}
+	 	bmcComputer = new BMCComputer(0, eds);
+	 	eds.setBMCComputer(bmcComputer);
 	 	// File di configurazione
 //	 	try {
 //			cfgFile = new ConfigurationFile("conf/tavola20071207.xml");

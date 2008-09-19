@@ -17,7 +17,7 @@ public interface Device {
 	/**
 	 * Ritorna il Connector di questo device.
 	 */
-	public Connector getConnector();
+	public ConnectorInterface getConnector();
 	
 	/**
 	 * Ritorna lo stato del device cambiato rispetto a un certo istante,

@@ -1,6 +1,7 @@
-package it.ascia.eds;
+package it.ascia.ais;
 
-import it.ascia.eds.msg.Message;
+import it.ascia.ais.Bus;
+import it.ascia.ais.AISException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,8 +41,8 @@ public class SerialBus extends Bus implements SerialPortEventListener {
      * 
      * @throws un'Exception se incontra un errore
      */
-    public SerialBus(String portName, String busName) throws EDSException {
-    	super(busName);
+    public SerialBus(String portName, Connector connector) throws AISException {
+    	super(connector);
         boolean portFound = false;
         
     	portList = CommPortIdentifier.getPortIdentifiers();
@@ -56,28 +57,28 @@ public class SerialBus extends Bus implements SerialPortEventListener {
     	    }
     	} 
     	if (!portFound) {
-    	    throw new EDSException("port " + portName + " not found.");
+    	    throw new AISException("port " + portName + " not found.");
     	} 
 
     	logger.info("Connessione a " + portName); 
     	try {
     		serialPort = (SerialPort) portId.open("SerialBus", 2000);
     	} catch (PortInUseException e) {
-	    	throw new EDSException("Porta in uso: " + e.toString());
+	    	throw new AISException("Porta in uso: " + e.toString());
     	}
 
 		try {
 		    inputStream = serialPort.getInputStream();
 		    outputStream = serialPort.getOutputStream();
 		} catch (IOException e) {
-			throw new EDSException("Impossibile ottenere gli stream: " + 
+			throw new AISException("Impossibile ottenere gli stream: " + 
 					e.getMessage());
 		}
 		
 		try {
 		    serialPort.addEventListener(this);
 		} catch (TooManyListenersException e) {
-			throw new EDSException("Troppi listeners sulla porta:" + 
+			throw new AISException("Troppi listeners sulla porta:" + 
 					e.getMessage());
 		}
 
@@ -88,100 +89,10 @@ public class SerialBus extends Bus implements SerialPortEventListener {
 						   SerialPort.STOPBITS_1, 
 						   SerialPort.PARITY_NONE);
 		} catch (UnsupportedCommOperationException e) {
-			throw new EDSException("Errore durante l'impostazione dei parametri:" +
-					e.getMessage());
+					e.getMessage();
 		}
-		// Questo blocco blocca (!) la ricezione
-//	    try {
-//	    	serialPort.notifyOnOutputEmpty(true);
-//	    } catch (Exception e) {
-//	    	throw new Exception("Error setting event notification: " + 
-//	    			e.toString());
-//	    }
-				
-//		scrivi();
     }
     
-//    public void scrivi() {
-//    	try {
-//			/*for (int i = 1; i <= 255; i++) {
-//				scrivi(new RichiestaModelloMessage(i,0));
-//				Thread.sleep(20);
-//			}*/
-//    		
-//    		scrivi(new RichiestaModelloMessage(255,0));
-//			Thread.sleep(100);
-//			
-//    		//scrivi(new VariazioneIngressoMessage(5,0,1,0,1));
-//			//Thread.sleep(100);
-//
-//    		/*
-//    		scrivi(new ComandoUscitaDimmerMessage(5,0,0,50));
-//			Thread.sleep(100);
-//			scrivi(new RichiestaStatoMessage(5,0,0x03));
-//			Thread.sleep(1000);
-//    		scrivi(new ComandoUscitaDimmerMessage(5,0,0,0));
-//			Thread.sleep(100);
-//			scrivi(new RichiestaStatoMessage(5,0,0x03));
-//			Thread.sleep(100);
-//			*/
-//
-//			/*
-//			scrivi(new VariazioneIngressoMessage(255,0,0,0,1));
-//			Thread.sleep(100);
-//			scrivi(new VariazioneIngressoMessage(255,0,0,0,0));
-//			Thread.sleep(100);
-//			for (int i = 0; i <= 1000; i++) {
-//				scrivi(new RichiestaStatoMessage(255,0,0x03));
-//				Thread.sleep(100);
-//			}
-//			*/
-//			
-//			/*
-//			for (int i = 0; i <= 1000; i++) {
-//				scrivi(new ComandoUscitaDimmerMessage(255,0,0,0));
-//				Thread.sleep(10);
-//				scrivi(new RichiestaStatoMessage(255,0,0x03));
-//				Thread.sleep(20);
-//				scrivi(new RichiestaStatoMessage(255,0,0x03));
-//				Thread.sleep(20);
-//				scrivi(new RichiestaStatoMessage(255,0,0x03));
-//				Thread.sleep(20);
-////				scrivi(new RichiestaStatoMessage(255,0,0x03));
-////				Thread.sleep(20);
-////				Thread.sleep(1000);
-//			}
-//			*/
-//
-//			/*scrivi(new ComandoUscitaMessage(255, 0, 1, 0, 50, 1));
-//			Thread.sleep(100);
-//			scrivi(new RichiestaStatoMessage(255,0,0x03));
-//			Thread.sleep(10000);
-//			*/
-//			
-//			scrivi(new RichiestaStatoMessage(255,0,0x03));
-//			Thread.sleep(100);
-//			for (int i = 0; i <= 100; i++) {
-//				scrivi(new ComandoUscitaDimmerMessage(255,0,0,i));
-//				Thread.sleep(20);
-//				scrivi(new RichiestaStatoMessage(255,0,0xff));
-//				Thread.sleep(20);
-//			}
-//			/*scrivi(new ComandoUscitaDimmerMessage(255,0,0,50));
-//			Thread.sleep(100);
-//			scrivi(new RichiestaStatoMessage(255,0,0x03));
-//			Thread.sleep(100);
-//			*/
-//			for (int i = 0; i <= 1000; i++) {
-//				scrivi(new RichiestaStatoMessage(255,0,0x03));
-//				Thread.sleep(200);
-//			}
-//
-//			System.out.println("Fine.");
-//	    	System.exit(0);						
-//    	} catch (InterruptedException e) {
-//    	}    
-//    }
     
     /**
      * Invia un messaggio sul bus.
@@ -190,15 +101,10 @@ public class SerialBus extends Bus implements SerialPortEventListener {
      * 
      * @param m the message to send
      */
-    public synchronized void write(Message m) {
+    public synchronized void write(byte[] b) {
     	try {
 			outputBufferEmptyFlag = false;
-			m.write(outputStream);
-			// TODO: evitare di saturare il buffer di tx
-//			while (!outputBufferEmptyFlag) {
-//				Thread.sleep(1);
-//			}    
-//    	} catch (InterruptedException e) {
+			outputStream.write(b);
 		} catch (IOException e) {    		
 		}
     }
@@ -236,7 +142,7 @@ public class SerialBus extends Bus implements SerialPortEventListener {
 	
 		case SerialPortEvent.DATA_AVAILABLE:
 			// La superclasse sa che cosa fare
-		    readData();	
+		    connector.readData();	
 		    break;
 		}
     }
@@ -248,7 +154,7 @@ public class SerialBus extends Bus implements SerialPortEventListener {
     	serialPort.close();
     }
 
-	protected boolean hasData() {
+	public boolean hasData() {
 		try {
 			return (inputStream.available() > 0);
 		} catch (IOException e) {
@@ -258,7 +164,7 @@ public class SerialBus extends Bus implements SerialPortEventListener {
 		}
 	}
 
-	protected byte readByte() throws IOException {
+	public byte readByte() throws IOException {
 		return (byte)inputStream.read();
 	}
 }

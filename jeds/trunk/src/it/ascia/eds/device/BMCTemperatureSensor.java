@@ -4,7 +4,7 @@
 package it.ascia.eds.device;
 
 import it.ascia.ais.AISException;
-import it.ascia.eds.Bus;
+import it.ascia.eds.EDSConnector;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.ImpostaParametroMessage;
 import it.ascia.eds.msg.Message;
@@ -108,7 +108,7 @@ public class BMCTemperatureSensor extends BMC {
 	/**
 	 * Costruttore.
 	 */
-	public BMCTemperatureSensor(int address, int model, Bus bus, String name) {
+	public BMCTemperatureSensor(int address, int model, EDSConnector bus, String name) {
 		super(address, model, bus, name);
 		dirtyAutoSendTime = true;
 		dirtyAlarmTemperature = true;
@@ -248,8 +248,8 @@ public class BMCTemperatureSensor extends BMC {
 	 * Aggiorna lo stato del sensore (temperatura, modalita' di funzionamento).
 	 */
 	public void updateTermStatus() {
-		bus.sendMessage(new RichiestaStatoTermostatoMessage(getIntAddress(), 
-				bus.getBMCComputerAddress()));
+		connector.sendMessage(new RichiestaStatoTermostatoMessage(getIntAddress(), 
+				connector.getBMCComputerAddress()));
 	}
 	
 	/**
@@ -258,8 +258,8 @@ public class BMCTemperatureSensor extends BMC {
 	 * <p>Invia un messaggio al BMC richiedendo il valore del parametro.</p>
 	 */
 	public void updateAlarmTemperature() {
-		bus.sendMessage(new RichiestaParametroMessage(getIntAddress(), 
-				bus.getBMCComputerAddress(), 
+		connector.sendMessage(new RichiestaParametroMessage(getIntAddress(), 
+				connector.getBMCComputerAddress(), 
 				RichiestaParametroMessage.PARAM_TERM_ALARM_TEMPERATURE));
 	}
 	
@@ -269,8 +269,8 @@ public class BMCTemperatureSensor extends BMC {
 	 * <p>Invia un messaggio al BMC richiedendo il valore del parametro.</p>
 	 */
 	public void updateAutoSendTime() {
-		bus.sendMessage(new RichiestaParametroMessage(getIntAddress(), 
-				bus.getBMCComputerAddress(), 
+		connector.sendMessage(new RichiestaParametroMessage(getIntAddress(), 
+				connector.getBMCComputerAddress(), 
 				RichiestaParametroMessage.PARAM_TERM_AUTO_SEND_TIME));
 	}
 	
@@ -301,8 +301,8 @@ public class BMCTemperatureSensor extends BMC {
 	 * @return true se il BMC ha risposto.
 	 */
 	public boolean setAlarmTemperature(int temp) {
-		return bus.sendMessage(new ImpostaParametroMessage(getIntAddress(), 
-				bus.getBMCComputerAddress(), 
+		return connector.sendMessage(new ImpostaParametroMessage(getIntAddress(), 
+				connector.getBMCComputerAddress(), 
 				RichiestaParametroMessage.PARAM_TERM_ALARM_TEMPERATURE,
 				temp,
 				ImpostaParametroMessage.PARM_TYPE_TEMPERATURE));
@@ -316,8 +316,8 @@ public class BMCTemperatureSensor extends BMC {
 	 * @return true se il BMC ha risposto.
 	 */
 	public boolean setAutoSendTime(int time) {
-		return bus.sendMessage(new ImpostaParametroMessage(getIntAddress(), 
-				bus.getBMCComputerAddress(), 
+		return connector.sendMessage(new ImpostaParametroMessage(getIntAddress(), 
+				connector.getBMCComputerAddress(), 
 				RichiestaParametroMessage.PARAM_TERM_ALARM_TEMPERATURE,
 				time,
 				ImpostaParametroMessage.PARM_TYPE_TIME));
@@ -328,7 +328,7 @@ public class BMCTemperatureSensor extends BMC {
 	 */
 	public String getStatus(String port, long timestamp) {
 		String retval = "";
-		String busName = bus.getName();
+		String busName = connector.getName();
 		String compactName = busName + "." + getAddress();
 		if (dirtyAlarmTemperature) {
 			updateAlarmTemperature();

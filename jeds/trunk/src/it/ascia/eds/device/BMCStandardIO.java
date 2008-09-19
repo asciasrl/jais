@@ -4,7 +4,7 @@
 package it.ascia.eds.device;
 
 import it.ascia.ais.DeviceListener;
-import it.ascia.eds.Bus;
+import it.ascia.eds.EDSConnector;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.AcknowledgeMessage;
 import it.ascia.eds.msg.ComandoBroadcastMessage;
@@ -85,7 +85,7 @@ public class BMCStandardIO extends BMC {
 	 * @param model
 	 *            numero del modello
 	 */
-	public BMCStandardIO(int address, int model, Bus bus, String name) {
+	public BMCStandardIO(int address, int model, EDSConnector bus, String name) {
 		super(address, model, bus, name);
 		this.isReal = true; // fino a prova contraria!
 		inPortsNum = getInPortsNumber();
@@ -126,7 +126,7 @@ public class BMCStandardIO extends BMC {
 				logger.debug("Impostata la porta " + uscita + " a "
 						+ cmd.isActivation());
 				AcknowledgeMessage ack = new AcknowledgeMessage(cmd);
-				bus.sendMessage(ack);
+				connector.sendMessage(ack);
 			}
 			if (outPorts[uscita] != oldValue) {
 				outPortsTimestamps[uscita] = currentTime;
@@ -183,7 +183,7 @@ public class BMCStandardIO extends BMC {
 				RispostaModelloMessage answer;
 				answer = new RispostaModelloMessage(m.getSender(),
 						getIntAddress(), model, 1);
-				bus.sendMessage(answer);
+				connector.sendMessage(answer);
 			}
 		}
 			break;
@@ -206,7 +206,7 @@ public class BMCStandardIO extends BMC {
 				// FIXME: diciamo sempre che sono attivazioni.
 				answer = new RispostaAssociazioneUscitaMessage(question, 0,
 						true, message);
-				bus.sendMessage(answer);
+				connector.sendMessage(answer);
 			}
 		}
 			break;
@@ -217,7 +217,7 @@ public class BMCStandardIO extends BMC {
 				RichiestaStatoMessage question = (RichiestaStatoMessage) m;
 				RispostaStatoMessage answer;
 				answer = new RispostaStatoMessage(question, outPorts, inPorts);
-				bus.write(answer);
+				connector.bus.write(answer.getBytesMessage());
 			}
 		} // switch (m.getMessageType())
 	}
@@ -316,11 +316,11 @@ public class BMCStandardIO extends BMC {
 			if (isReal) {
 				VariazioneIngressoMessage m;
 				m = new VariazioneIngressoMessage(getIntAddress(), 
-						bus.getBMCComputerAddress(), value, port, 1);
+						connector.getBMCComputerAddress(), value, port, 1);
 				/* ComandoUscitaMessage m;
 				m = new ComandoUscitaMessage(getIntAddress(), 
-						bus.getBMCComputerAddress(), port, value); */
-				retval = bus.sendMessage(m);
+						connector.getBMCComputerAddress(), port, value); */
+				retval = connector.sendMessage(m);
 				dirty[port] = true;
 			} else { // The easy way
 				retval = true;
@@ -362,9 +362,9 @@ public class BMCStandardIO extends BMC {
 		if ((port >= 0) && (port < outPortsNum)) {
 			if (isReal) {
 				ComandoUscitaMessage m;
-				m = new ComandoUscitaMessage(getIntAddress(), bus
+				m = new ComandoUscitaMessage(getIntAddress(), connector
 						.getBMCComputerAddress(), 0, port, 0, intValue);
-				retval = bus.sendMessage(m);
+				retval = connector.sendMessage(m);
 			} else { // The easy way
 				outPorts[port] = value;
 				retval = true;
@@ -431,7 +431,7 @@ public class BMCStandardIO extends BMC {
 
 	public String getStatus(String port, long timestamp) {
 		String retval = "";
-		String busName = bus.getName();
+		String busName = connector.getName();
 		int i;
 		String compactName = busName + "." + getAddress();
 		if (hasDirtyCache()) {

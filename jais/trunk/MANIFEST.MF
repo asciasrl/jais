@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.7.0
+Created-By: 1.6.0-b105 (Sun Microsystems Inc.)
+Built-By: sergio
+Main-Class: BusTest
+Implementation-Version: 1.00-b0
+Built-Date: 2008-11-07 09:53:57
+

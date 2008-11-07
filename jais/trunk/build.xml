@@ -1,0 +1,38 @@
+<project default="jar">
+	<target name="compile">
+		<javac srcdir="src" />
+		<javac dstdir="bin" />
+	</target>
+
+	<target name="jar">
+		<delete file="jais.jar"/>
+		<property name="version.num" value="1.00"/>
+		<buildnumber file="build.num"/>
+		<tstamp>
+			<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
+		</tstamp>
+		
+		<manifest file="MANIFEST.MF">
+			<attribute name="Built-By" value="${user.name}"/>
+			<attribute name="Main-Class" value="BusTest"/>
+			<attribute name="Implementation-Version" value="${version.num}-b${build.number}"/>   
+			<attribute name="Built-Date" value="${TODAY}"/>                 
+		</manifest>
+		
+		<jar destfile="jais.jar"
+		   basedir="bin"
+		   includes="**/*.class"
+		   manifest="MANIFEST.MF"
+		   />
+	</target>
+	
+	<target name="cleanup">
+	 <delete>
+		 <fileset dir="." includes="**/*.class"/>
+		 <fileset file="MANIFEST.MF"/>
+	 </delete>  
+	</target>
+	
+	<target name="build" depends="compile,jar,cleanup" />
+</project>
+  

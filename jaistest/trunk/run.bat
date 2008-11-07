@@ -1,0 +1,1 @@
+java -Djava.library.path=..\jais\lib -cp ..\jais\jais.jar;..\jeds\jeds.jar;..\jais\lib\*;aui.jar BusTest

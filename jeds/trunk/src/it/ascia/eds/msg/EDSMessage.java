@@ -3,6 +3,8 @@
  */
 package it.ascia.eds.msg;
 
+
+import it.ascia.ais.MessageInterface;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -11,8 +13,7 @@ import java.io.OutputStream;
  * 
  * @author sergio, arrigo
  */
-public abstract class Message
-implements MessageInterface {
+public abstract class EDSMessage implements MessageInterface {
 	/**
 	 * Richiesta modello e revisione.
 	 */
@@ -191,6 +192,7 @@ implements MessageInterface {
 	/**
 	 * Invia se stesso.
 	 * @param out OutputStream su cui inviarsi.
+	 * @deprecated
 	 */
 	public void write(OutputStream out) throws IOException {
 		out.write(getBytesMessage());
@@ -262,13 +264,13 @@ implements MessageInterface {
 		return s.toString();
 	}
 
-	public Message() {  
+	public EDSMessage() {  
 	}
 
 	/**
 	 * Costruisce il messaggio a partire da un'array di interi.
 	 */
-	public Message(int[] message) {
+	public EDSMessage(int[] message) {
 		parseMessage(message);
 	}
 

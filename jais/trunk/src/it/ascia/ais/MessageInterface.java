@@ -1,4 +1,4 @@
-package it.ascia.eds.msg;
+package it.ascia.ais;
 
 public interface MessageInterface {
 

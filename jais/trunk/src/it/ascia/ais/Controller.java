@@ -49,7 +49,7 @@ public abstract class Controller {
 	 * 
 	 * @param connector il connector da aggiungere.
 	 */
-	public void registerConnector(ConnectorInterface connector) {
+	public void registerConnector(Connector connector) {
 		connectors.put(connector.getName(), connector);
 	}
 	
@@ -105,7 +105,7 @@ public abstract class Controller {
 	protected Device[] findDevices(String address) throws AISException {
 		String connectorName = null;
 		String deviceAddress = null;
-		ConnectorInterface connector = null;
+		Connector connector = null;
 		Device retval[];
 		Iterator it;
 		if (address.equals("*")) {
@@ -120,7 +120,7 @@ public abstract class Controller {
 					(address.indexOf(connectorName + ".") == 0)) {
 				// Questo connector ci interessa!
 				int deviceNameIndex;
-				connector = (ConnectorInterface)connectors.get(connectorName);
+				connector = (Connector)connectors.get(connectorName);
 				// Dove inizia l'indirizzo del Device?
 				if (address.indexOf("*") == 0) {
 					 // L'indirizzo ha la forma "*.nome"

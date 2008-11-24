@@ -3,7 +3,7 @@
  */
 import org.apache.log4j.Logger;
 
-import it.ascia.ais.ConnectorInterface;
+import it.ascia.ais.Connector;
 import it.ascia.ais.AISException;
 import it.ascia.ais.Controller;
 import it.ascia.ais.Device;
@@ -43,7 +43,7 @@ public class MyController extends Controller implements DeviceListener {
 		this.pin = pin;
 	}
 	
-	public void addConnector(ConnectorInterface connector) {
+	public void addConnector(Connector connector) {
 		registerConnector(connector);
 	}
 

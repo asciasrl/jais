@@ -1,6 +1,6 @@
 package it.ascia.ais;
 
-import it.ascia.ais.Bus;
+import it.ascia.ais.Transport;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -15,16 +15,16 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 /**
- * Gestisce la comunicazione con il bus EDS attraverso un convertitore seriale-ethernet.
+ * Gestisce la comunicazione attraverso un convertitore seriale-ethernet.
  * 
  * Tutti i messaggi che passano vengono smistati all'oggetto BMCComputer 
  * passato al costruttore.
  * 
  * @author arrigo
  */
-public class TCPSerialBus extends Bus {
+public class TCPSerialTransport extends Transport {
 	/**
-	 * Un thread che attende i dati dalla rete e li manda al bus.
+	 * Un thread che attende i dati dalla rete e li manda al transport.
 	 */
 	private static class TCPSerialBusReader implements Runnable {
 		/**
@@ -40,9 +40,9 @@ public class TCPSerialBus extends Bus {
 		 */
 		private SocketChannel sock;
 		/**
-		 * Il nostro bus.
+		 * Il nostro transport.
 		 */
-		private TCPSerialBus bus;
+		private TCPSerialTransport bus;
 
 		/**
 		 * Il nostro logger.
@@ -53,10 +53,10 @@ public class TCPSerialBus extends Bus {
 		 * 
 		 * @param selector un Selector pronto a leggere, su cui è registrato 
 		 * _un_ SocketChannel.
-		 * @param bus il bus da avvisare quando arrivano dati.
+		 * @param transport il transport da avvisare quando arrivano dati.
 		 * @param sock il SocketChannel *gia' registrato* sul selector
 		 */
-		public TCPSerialBusReader(Selector selector, TCPSerialBus bus, 
+		public TCPSerialBusReader(Selector selector, TCPSerialTransport bus, 
 				SocketChannel sock) {
 			this.selector = selector;
 			this.bus = bus;
@@ -68,7 +68,7 @@ public class TCPSerialBus extends Bus {
 		 * Qui si fa il lavoro sporco.
 		 * 
 		 * <p>I dati vengono ricevuti dal SocketChannel vengono estratti e 
-		 * passati al bus sotto forma di array di byte.</p> 
+		 * passati al transport sotto forma di array di byte.</p> 
 		 */
 		public void run() {
 			try {
@@ -121,10 +121,11 @@ public class TCPSerialBus extends Bus {
      * 
      * @throws un'Exception se incontra un errore
      */
-    public TCPSerialBus(String hostName, int port, Connector connector) 
+    public TCPSerialTransport(String hostName, int port, Connector connector) 
     	throws AISException {
     	super(connector);
     	this.tcpPort = port;
+    	name = hostName + ":" + port;
 		try {
 			logger.info("Connessione a " + hostName + ":" + port);
 			sock = SocketChannel.open(new InetSocketAddress(hostName, tcpPort));
@@ -155,7 +156,7 @@ public class TCPSerialBus extends Bus {
     }
     
     /**
-     * Invia un messaggio sul bus.
+     * Invia un messaggio sulla connessione.
      * 
      * Eventuali errori di trasmissione vengono ignorati.
      * 
@@ -215,7 +216,7 @@ public class TCPSerialBus extends Bus {
      * Chiude la connessione.
      */
     public void close() {
-    	logger.info("Chiusura bus...");
+    	logger.info("Chiusura connessione seriale TCP ...");
     	try {
     		readSelector.close();
     		writeSelector.close();

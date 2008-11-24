@@ -4,34 +4,44 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
-public abstract class Bus {
+/**
+ * Mezzo di trasporto dei messaggi (seriale, tcp, ...) 
+ * 
+ * @author Sergio
+ *
+ */
+public abstract class Transport {
 	
     /**
      * Il nostro logger.
      */
     protected Logger logger;
+    
+    /**
+     * Il nome di questo trasport
+     */
+    protected String name;
 
     /**
-     * Il connecttore associato a questo Bus
+     * Il connettore associato a questo Transport
      */
     protected Connector connector;
     
     /**
      * Costruttore.
-     * @param name il nome del bus, che sara' la parte iniziale degli indirizzi
-     * di tutti i Device collegati a questo bus.
+     * @param connector Il connettore associato
      */
-    public Bus(Connector connector) {
-		logger = Logger.getLogger(getClass());
+    public Transport(Connector connector) {
     	this.connector = connector;
-    	connector.bus = this;
+    	connector.transport = this;
+		logger = Logger.getLogger(getClass());
     }
     
-    public String getName()
+    public String toString()
     {
-    	return connector.getName();
+    	return name;
     }
-    
+
     /**
      * Verifica se ci sono dati pronti da leggere.
      * 
@@ -48,7 +58,7 @@ public abstract class Bus {
     public abstract byte readByte() throws IOException;
     
 	/**
-     * Invia un messaggio sul bus.
+     * Invia un messaggio sul transport.
      * 
      * <p>Eventuali errori di trasmissione vengono ignorati.</p>
      * 
@@ -57,8 +67,9 @@ public abstract class Bus {
     public abstract void write(byte[] b);
     
     /**
-     * Chiude la connessione al bus.
+     * Chiude la connessione al transport.
      */
     public abstract void close();
 
+    
 }

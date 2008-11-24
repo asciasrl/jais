@@ -1,6 +1,6 @@
 package it.ascia.ais;
 
-import it.ascia.ais.Bus;
+import it.ascia.ais.Transport;
 import it.ascia.ais.AISException;
 
 import java.io.IOException;
@@ -19,7 +19,7 @@ import gnu.io.*;
  * 
  * @author sergio, arrigo
  */
-public class SerialBus extends Bus implements SerialPortEventListener {
+public class SerialTransport extends Transport implements SerialPortEventListener {
 
     private static CommPortIdentifier portId;
     private static Enumeration	      portList;
@@ -41,9 +41,10 @@ public class SerialBus extends Bus implements SerialPortEventListener {
      * 
      * @throws un'Exception se incontra un errore
      */
-    public SerialBus(String portName, Connector connector) throws AISException {
+    public SerialTransport(String portName, Connector connector) throws AISException {
     	super(connector);
         boolean portFound = false;
+        name = portName;
         
     	portList = CommPortIdentifier.getPortIdentifiers();
     	while (!portFound && portList.hasMoreElements()) {
@@ -62,7 +63,7 @@ public class SerialBus extends Bus implements SerialPortEventListener {
 
     	logger.info("Connessione a " + portName); 
     	try {
-    		serialPort = (SerialPort) portId.open("SerialBus", 2000);
+    		serialPort = (SerialPort) portId.open("SerialTransport", 2000);
     	} catch (PortInUseException e) {
 	    	throw new AISException("Porta in uso: " + e.toString());
     	}
@@ -85,6 +86,7 @@ public class SerialBus extends Bus implements SerialPortEventListener {
 		serialPort.notifyOnDataAvailable(true);
 
 		try {
+			// TODO: parametrizzare velocità della porta
 		    serialPort.setSerialPortParams(9600, SerialPort.DATABITS_8, 
 						   SerialPort.STOPBITS_1, 
 						   SerialPort.PARITY_NONE);
@@ -95,7 +97,7 @@ public class SerialBus extends Bus implements SerialPortEventListener {
     
     
     /**
-     * Invia un messaggio sul bus.
+     * Invia un messaggio sul transport.
      * 
      * Eventuali errori di trasmissione vengono ignorati.
      * 

@@ -9,7 +9,7 @@ import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.AcknowledgeMessage;
 import it.ascia.eds.msg.ComandoBroadcastMessage;
 import it.ascia.eds.msg.ComandoUscitaMessage;
-import it.ascia.eds.msg.Message;
+import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.RichiestaAssociazioneUscitaMessage;
 import it.ascia.eds.msg.RichiestaStatoMessage;
 import it.ascia.eds.msg.RispostaAssociazioneUscitaMessage;
@@ -38,7 +38,7 @@ public class BMCStandardIO extends BMC {
 	 */
 	protected int outPortsNum;
 	/**
-	 * Questo BMC e' fisicamente presente sul bus?
+	 * Questo BMC e' fisicamente presente sul transport?
 	 * 
 	 * <p>
 	 * Se questo attributo e' false, allora bisogna simulare l'esistenza di
@@ -108,10 +108,10 @@ public class BMCStandardIO extends BMC {
 		}
 	}
 
-	public void messageReceived(Message m) {
+	public void messageReceived(EDSMessage m) {
 		long currentTime = System.currentTimeMillis();
 		switch (m.getMessageType()) {
-		case Message.MSG_COMANDO_USCITA: {
+		case EDSMessage.MSG_COMANDO_USCITA: {
 			ComandoUscitaMessage cmd = (ComandoUscitaMessage) m;
 			int uscita = cmd.getOutputPortNumber();
 			boolean oldValue = outPorts[uscita];
@@ -134,7 +134,7 @@ public class BMCStandardIO extends BMC {
 			}
 		}
 			break;
-		case Message.MSG_COMANDO_BROADCAST: {
+		case EDSMessage.MSG_COMANDO_BROADCAST: {
 			// Messaggio broadcast: potrebbe interessare alcune porte.
 			ComandoBroadcastMessage bmsg = (ComandoBroadcastMessage) m;
 			int ports[] = getBoundOutputs(bmsg.getCommandNumber());
@@ -157,7 +157,7 @@ public class BMCStandardIO extends BMC {
 			} // if ports.length > 0
 		}
 			break;
-		case Message.MSG_VARIAZIONE_INGRESSO: {
+		case EDSMessage.MSG_VARIAZIONE_INGRESSO: {
 			// Qualcuno ha premuto un interruttore, e la cosa ci interessa.
 			VariazioneIngressoMessage vmsg = (VariazioneIngressoMessage) m;
 			int port = vmsg.getOutputNumber();
@@ -176,7 +176,7 @@ public class BMCStandardIO extends BMC {
 			alertListener(port, true);
 		}
 		break;
-		case Message.MSG_RICHIESTA_MODELLO: {
+		case EDSMessage.MSG_RICHIESTA_MODELLO: {
 			// Ci chiedono chi siamo...
 			if (!isReal) {
 				// ...dobbiamo rispondere!
@@ -187,7 +187,7 @@ public class BMCStandardIO extends BMC {
 			}
 		}
 			break;
-		case Message.MSG_RICHIESTA_ASSOCIAZIONE_BROADCAST: {
+		case EDSMessage.MSG_RICHIESTA_ASSOCIAZIONE_BROADCAST: {
 			// Ci chiedono se abbiamo uscite associate a comandi broadcast...
 			if (!isReal) {
 				// ...dobbiamo rispondere!
@@ -210,24 +210,24 @@ public class BMCStandardIO extends BMC {
 			}
 		}
 			break;
-		case Message.MSG_RICHIESTA_STATO:
+		case EDSMessage.MSG_RICHIESTA_STATO:
 			// Ci chiedono il nostro stato...
 			if (!isReal) {
 				// ...dobbiamo rispondere!
 				RichiestaStatoMessage question = (RichiestaStatoMessage) m;
 				RispostaStatoMessage answer;
 				answer = new RispostaStatoMessage(question, outPorts, inPorts);
-				connector.bus.write(answer.getBytesMessage());
+				connector.transport.write(answer.getBytesMessage());
 			}
 		} // switch (m.getMessageType())
 	}
 
-	public void messageSent(Message m) {
+	public void messageSent(EDSMessage m) {
 		// Il messaggio inviato ci interessa solo se non siamo stati noi a
 		// generarlo, cioe' se il BMC e' reale.
 		if (isReal) {
 			switch (m.getMessageType()) {
-			case Message.MSG_RISPOSTA_STATO: {
+			case EDSMessage.MSG_RISPOSTA_STATO: {
 				long currentTime = System.currentTimeMillis();
 				RispostaStatoMessage r;
 				r = (RispostaStatoMessage) m;
@@ -256,7 +256,7 @@ public class BMCStandardIO extends BMC {
 				}
 			}
 				break;
-			case Message.MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST: {
+			case EDSMessage.MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST: {
 				// Stiamo facendo un discovery delle associazioni.
 				RispostaAssociazioneUscitaMessage r = (RispostaAssociazioneUscitaMessage) m;
 				if (r.getComandoBroadcast() != 0) {

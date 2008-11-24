@@ -8,7 +8,7 @@ import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.ComandoBroadcastMessage;
 import it.ascia.eds.msg.ComandoUscitaDimmerMessage;
 import it.ascia.eds.msg.ComandoUscitaMessage;
-import it.ascia.eds.msg.Message;
+import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.PTPRequest;
 import it.ascia.eds.msg.RichiestaStatoMessage;
 import it.ascia.eds.msg.RispostaAssociazioneUscitaMessage;
@@ -125,14 +125,14 @@ public class BMCDimmer extends BMC {
 	/* (non-Javadoc)
 	 * @see it.ascia.eds.device.BMC#receiveMessage(it.ascia.eds.msg.Message)
 	 */
-	public void messageReceived(Message m) {
+	public void messageReceived(EDSMessage m) {
 		int uscita, valore;
 		ComandoBroadcastMessage bmsg;
 		VariazioneIngressoMessage vmsg;
 		int[] ports;
 //		logger.debug("Ricevuto un messaggio di tipo " + m.getTipoMessaggio());
 		switch (m.getMessageType()) {
-		case Message.MSG_COMANDO_USCITA_DIMMER: {
+		case EDSMessage.MSG_COMANDO_USCITA_DIMMER: {
 			// L'attuazione viene richiesta, non sappiamo se sara' 
 			// effettuata
 			ComandoUscitaDimmerMessage cmdDimmer = 
@@ -149,7 +149,7 @@ public class BMCDimmer extends BMC {
 			dirty[uscita] = true;
 		}
 		break;
-		case Message.MSG_COMANDO_USCITA: {
+		case EDSMessage.MSG_COMANDO_USCITA: {
 			// L'attuazione viene richiesta, non sappiamo se sara' 
 			// effettuata.
 			ComandoUscitaMessage cmd = (ComandoUscitaMessage) m;
@@ -168,7 +168,7 @@ public class BMCDimmer extends BMC {
 			dirty[uscita] = true;
 		}
 		break;
-		case Message.MSG_COMANDO_BROADCAST:
+		case EDSMessage.MSG_COMANDO_BROADCAST:
 			// Messaggio broadcast: potrebbe interessare alcune porte.
 			bmsg = (ComandoBroadcastMessage) m;
 			ports = getBoundOutputs(bmsg.getCommandNumber());
@@ -181,7 +181,7 @@ public class BMCDimmer extends BMC {
 				}
 			}
 			break;
-		case Message.MSG_VARIAZIONE_INGRESSO:
+		case EDSMessage.MSG_VARIAZIONE_INGRESSO:
 			// Qualcuno ha premuto un interruttore, e la cosa ci interessa.
 			vmsg = (VariazioneIngressoMessage) m;
 			dirty[vmsg.getOutputNumber()] = true;
@@ -191,11 +191,11 @@ public class BMCDimmer extends BMC {
 		}
 	}
 	
-	public void messageSent(Message m) {
+	public void messageSent(EDSMessage m) {
 		RispostaStatoDimmerMessage r;
 		RispostaAssociazioneUscitaMessage ra;
 		switch(m.getMessageType()) {
-		case Message.MSG_RISPOSTA_STATO_DIMMER:
+		case EDSMessage.MSG_RISPOSTA_STATO_DIMMER:
 			r = (RispostaStatoDimmerMessage)m;
 			// Il RispostaStatoMessage da' sempre 8 valori. Dobbiamo
 			// prendere solo quelli effettivamente presenti sul BMC
@@ -213,7 +213,7 @@ public class BMCDimmer extends BMC {
 				dirty[i] = false;
 			}
 			break;
-		case Message.MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST: 
+		case EDSMessage.MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST: 
 			ra = (RispostaAssociazioneUscitaMessage) m;
 			// Stiamo facendo un discovery delle associazioni.
 			if (ra.getComandoBroadcast() != 0) {

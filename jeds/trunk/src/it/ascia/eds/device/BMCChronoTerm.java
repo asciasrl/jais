@@ -8,7 +8,7 @@ import it.ascia.eds.EDSConnector;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.CronotermMessage;
 import it.ascia.eds.msg.ImpostaSetPointMessage;
-import it.ascia.eds.msg.Message;
+import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.RichiestaSetPointMessage;
 import it.ascia.eds.msg.RichiestaStatoTermostatoMessage;
 import it.ascia.eds.msg.TemperatureMessage;
@@ -164,9 +164,9 @@ public class BMCChronoTerm extends BMC {
 	 * @see it.ascia.eds.device.BMC#receiveMessage(it.ascia.eds.msg.Message)
 	 */
 	// TODO: reagire a messaggi broadcast
-	public void messageReceived(Message m) {
+	public void messageReceived(EDSMessage m) {
 		switch (m.getMessageType()) {
-		case Message.MSG_VARIAZIONE_INGRESSO: {
+		case EDSMessage.MSG_VARIAZIONE_INGRESSO: {
 			// Qualcuno ha premuto un interruttore. Siamo dirty, finche' non
 			// vedremo un acknowledge.
 			VariazioneIngressoMessage var = 
@@ -180,7 +180,7 @@ public class BMCChronoTerm extends BMC {
 			dirtyState = true;
 		}
 		break;
-		case Message.MSG_IMPOSTA_SET_POINT: {
+		case EDSMessage.MSG_IMPOSTA_SET_POINT: {
 			// Si vuole cambiare il set point
 			ImpostaSetPointMessage set = (ImpostaSetPointMessage) m;
 			double oldSetPoint = setPoint;
@@ -195,9 +195,9 @@ public class BMCChronoTerm extends BMC {
 		}
 	}
 	
-	public void messageSent(Message m) {
+	public void messageSent(EDSMessage m) {
 		switch (m.getMessageType()) {
-		case Message.MSG_TEMPERATURA: {
+		case EDSMessage.MSG_TEMPERATURA: {
 			// Questo messaggio contiene il nostro stato
 			TemperatureMessage tm = (TemperatureMessage) m;
 			int oldState = state;
@@ -230,7 +230,7 @@ public class BMCChronoTerm extends BMC {
 			dirtyState = false;
 		}
 		break;
-		case Message.MSG_LETTURA_SET_POINT: {
+		case EDSMessage.MSG_LETTURA_SET_POINT: {
 			// Vediamo qual e' il nostro set-point.
 			CronotermMessage ctm = (CronotermMessage) m;
 			double oldSetPoint = setPoint;

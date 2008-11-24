@@ -13,12 +13,11 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
-import it.ascia.ais.ConnectorInterface;
 import it.ascia.ais.Device;
 import it.ascia.ais.DeviceEvent;
 import it.ascia.ais.DeviceListener;
 import it.ascia.eds.*;
-import it.ascia.eds.msg.Message;
+import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.PTPRequest;
 import it.ascia.eds.msg.RichiestaStatoMessage;
 
@@ -37,19 +36,15 @@ import it.ascia.eds.msg.RichiestaStatoMessage;
  * 
  * @author arrigo
  */
-public abstract class BMC implements Device {
-	/**
-	 * Il bus a cui il BMC e' collegato.
-	 */
-	protected EDSConnector connector;
-	/**
-	 * L'indirizzo sul bus.
-	 */
-	protected int address;
+public abstract class BMC extends Device {
 	/**
 	 * Il modello di questo BMC.
 	 */
 	protected int model;
+	/**
+	 * Il bus a cui il dispositivo e' collegato.
+	 */
+	protected EDSConnector connector;
 	/**
 	 * Il nome che AUI da' a questo BMC.
 	 */
@@ -105,7 +100,7 @@ public abstract class BMC implements Device {
 	 */
 	public BMC(int address, int model, EDSConnector connector, String name) {
 		this.connector = connector;
-		this.address = address;
+		this.address = String.valueOf(address);
 		this.model = model;
 		this.name = name;
 		inPortsNames = new HashMap();
@@ -123,35 +118,28 @@ public abstract class BMC implements Device {
 	}
 	
 	/**
-	 * Ritorna l'indirizzo di questo BMC.
-	 */
-	public String getAddress() {
-		return String.valueOf(address);
-	}
-	
-	/**
 	 * Ritorna l'indirizzo (int) di questo BMC sul bus EDS.
 	 */
 	public int getIntAddress() {
-		return address;
+		return Integer.parseInt(address);
 	}
 	
 	/**
 	 * Ritorna il nome di questo BMC.
 	 */
 	public String getName() {
-		return name;
+		return connector.getName()+"."+address;
 	}
 	
 	/**
-	 * Factory method for creating BMCs and adding them to the bus.
+	 * Factory method for creating BMCs and adding them to the transport.
 	 * 
-	 * @param bmcAddress the address on the bus.
+	 * @param bmcAddress the address on the transport.
 	 * @param model the model number of the BMC.
 	 * @param name the BMC name from the configuration file. Set it to null if 
 	 * you want it to be auto-generated.
-	 * @param bus the bus the BMC is connected to.
-	 * @param isReal vero se questo BMC è fisicamente presente sul bus. Alcuni
+	 * @param transport the transport the BMC is connected to.
+	 * @param isReal vero se questo BMC è fisicamente presente sul transport. Alcuni
 	 * BMC possono essere simulati.
 	 * 
 	 * @return the newly created BMC or null if the model is unknown.
@@ -233,28 +221,28 @@ public abstract class BMC implements Device {
 		
 	
 	/** 
-	 * Il bus ha ricevuto un messaggio per questo BMC.
+	 * Il transport ha ricevuto un messaggio per questo BMC.
 	 * 
 	 * <p>Questo metodo deve leggere il contenuto del messaggio e aggiornare lo 
 	 * stato interno.</p>
 	 * 
-	 * <p>Dovrebbe essere chiamato solo dal bus.</p>
+	 * <p>Dovrebbe essere chiamato solo dal transport.</p>
 	 * 
 	 * @param m il messaggio ricevuto.
 	 */
-	public abstract void messageReceived(Message m);
+	public abstract void messageReceived(EDSMessage m);
 	
 	/** 
-	 * Il BMC (fisico) ha inviato un messaggio sul bus.
+	 * Il BMC (fisico) ha inviato un messaggio sul transport.
 	 * 
 	 * <p>Questo metodo deve leggere il contenuto del messaggio e aggiornare lo 
 	 * stato interno.</p>
 	 * 
-	 * <p>Dovrebbe essere chiamato solo dal bus.</p>
+	 * <p>Dovrebbe essere chiamato solo dal transport.</p>
 	 * 
 	 * @param m il messaggio inviato.
 	 */
-	public abstract void messageSent(Message m);
+	public abstract void messageSent(EDSMessage m);
 	
 	/**
 	 * Ritorna una descrizione del BMC.
@@ -479,11 +467,11 @@ public abstract class BMC implements Device {
 	public void setDeviceListener(DeviceListener listener) {
 		deviceListener = listener;
 	}
-	
+	/*
 	public ConnectorInterface getConnector() {
 		return connector;
 	}
-	
+	*/
 	/**
 	 * Genera un evento di tipo DeviceEvent per il listener di questo BMC.
 	 * 

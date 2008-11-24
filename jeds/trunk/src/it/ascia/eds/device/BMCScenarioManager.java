@@ -5,7 +5,7 @@ package it.ascia.eds.device;
 
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.EDSException;
-import it.ascia.eds.msg.Message;
+import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.RispostaStatoMessage;
 
 /**
@@ -81,7 +81,7 @@ public class BMCScenarioManager extends BMC {
 		}
 	}
 	
-	public void messageReceived(Message m) {
+	public void messageReceived(EDSMessage m) {
 		// TODO
 	}
 	
@@ -114,9 +114,9 @@ public class BMCScenarioManager extends BMC {
 		generateEvent(portName, newValue);
 	}
 	
-	public void messageSent(Message m) {
+	public void messageSent(EDSMessage m) {
 		switch (m.getMessageType()) {
-		case Message.MSG_RISPOSTA_STATO: {
+		case EDSMessage.MSG_RISPOSTA_STATO: {
 			RispostaStatoMessage r;
 			r = (RispostaStatoMessage)m;
 			// Il RispostaStatoMessage da' sempre 8 valori. Dobbiamo
@@ -187,7 +187,7 @@ public class BMCScenarioManager extends BMC {
 	 * Gli scenari non sono attivabili con comandi broadcast 
 	 */
 	public int getCaselleNumber() {
-		return 4;
+		return 0;
 	}
 	
 

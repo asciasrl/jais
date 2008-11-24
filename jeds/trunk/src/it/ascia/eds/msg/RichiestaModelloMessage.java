@@ -1,5 +1,7 @@
 package it.ascia.eds.msg;
 
+import it.ascia.ais.MessageInterface;
+
 /**
  * Un messaggio di richiesta modello e revisione.
  * 
@@ -30,7 +32,7 @@ public class RichiestaModelloMessage extends PTPRequest
 	}
 
 	public boolean isAnsweredBy(PTPMessage m) {
-		if (m.getMessageType() == Message.MSG_RISPOSTA_MODELLO) {
+		if (m.getMessageType() == EDSMessage.MSG_RISPOSTA_MODELLO) {
 			if ((getSender() == m.getRecipient()) &&
 					(getRecipient() == m.getSender())) {
 				answered = true;

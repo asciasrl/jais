@@ -1,5 +1,7 @@
 package it.ascia.eds.msg;
 
+import it.ascia.ais.MessageInterface;
+
 public class RichiestaIngressoIRMessage extends PTPRequest
 	implements MessageInterface {
 
@@ -28,7 +30,7 @@ public class RichiestaIngressoIRMessage extends PTPRequest
 	}
 
 	public boolean isAnsweredBy(PTPMessage m) {
-		if (m.getMessageType() == Message.MSG_RISPOSTA_INGRESSO_IR) {
+		if (m.getMessageType() == EDSMessage.MSG_RISPOSTA_INGRESSO_IR) {
 			if ((getSender() == m.getRecipient()) &&
 					(getRecipient() == m.getSender())) {
 				answered = true;

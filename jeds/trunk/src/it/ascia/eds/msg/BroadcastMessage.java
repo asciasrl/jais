@@ -6,8 +6,7 @@ import java.util.Random;
  * 
  * @author sergio
  */
-public abstract class BroadcastMessage extends Message 
-	implements MessageInterface
+public abstract class BroadcastMessage extends EDSMessage 
 	{
 	/**
 	 * La nostra fonte di numeri casuali.

@@ -1,5 +1,7 @@
 package it.ascia.eds.msg;
 
+import it.ascia.ais.MessageInterface;
+
 public class RispostaIngressoIRMessage extends PTPMessage
 	implements MessageInterface {
 

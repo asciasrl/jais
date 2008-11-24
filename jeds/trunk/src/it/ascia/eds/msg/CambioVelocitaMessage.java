@@ -3,14 +3,15 @@
  */
 package it.ascia.eds.msg;
 
+import it.ascia.ais.MessageInterface;
 import it.ascia.eds.EDSException;
 
 /**
- * Il bus deve cambiare velocita'.
+ * Il transport deve cambiare velocita'.
  * 
  * @author sergio, arrigo
  */
-public class CambioVelocitaMessage extends BroadcastMessage
+public class CambioVelocitaMessage extends BroadcastMessage 
 	implements MessageInterface
 	{
 

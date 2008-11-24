@@ -3,6 +3,8 @@
  */
 package it.ascia.eds.msg;
 
+import it.ascia.ais.MessageInterface;
+
 /**
  * Messaggio di richiesta set point del cronotermostato.
  * 
@@ -28,7 +30,7 @@ public class RichiestaSetPointMessage extends PTPRequest
 	}
 	
 	public boolean isAnsweredBy(PTPMessage m) {
-		if (m.getMessageType() == Message.MSG_LETTURA_SET_POINT) {
+		if (m.getMessageType() == EDSMessage.MSG_LETTURA_SET_POINT) {
 			if ((getSender() == m.getRecipient()) &&
 					(getRecipient() == m.getSender())) {
 				answered = true;

@@ -3,21 +3,35 @@
  */
 package it.ascia.ais;
 
+
 /**
  * Device generico connesso a un Connector generico.
  * 
- * @author arrigo
+ * @author arrigo, sergio
  */
-public interface Device {
+public abstract class Device {
+	/**
+	 * L'indirizzo sul transport.
+	 */
+	protected String address;
 	/**
 	 * Ritorna l'indirizzo del Device, cosi' come visto da AUI.
 	 */
-	public String getAddress();
+	public String getAddress() {
+		return address;
+	}
+	
+	/**
+	 * Il bus a cui il dispositivo e' collegato.
+	 */
+	protected Connector connector;
 	
 	/**
 	 * Ritorna il Connector di questo device.
 	 */
-	public ConnectorInterface getConnector();
+	public Connector getConnector() {
+		return connector;
+	}
 	
 	/**
 	 * Ritorna lo stato del device cambiato rispetto a un certo istante,
@@ -35,7 +49,7 @@ public interface Device {
 	 * che ci interessano, nella forma ritornata da System.currentTimeMillis().
 	 * Se posto a 0, richiede l'intero stato del sistema.
 	 */
-	public String getStatus(String port, long timestamp);
+	public abstract String getStatus(String port, long timestamp);
 	
 	/**
 	 * Imposta il valore di una porta.
@@ -45,12 +59,12 @@ public interface Device {
 	 * 
 	 * @throws un'eccezione se qualcosa va male.
 	 */
-	public void setPort(String port, String value) throws AISException;
+	public abstract void setPort(String port, String value) throws AISException;
 	
 	/**
      * Imposta un DeviceListener che ricevera' gli eventi di questo Device.
      * 
      * @param listener il DeviceListener che ricevera' gli eventi.
      */
-    public void setDeviceListener(DeviceListener listener);
+    public abstract void setDeviceListener(DeviceListener listener);
 }

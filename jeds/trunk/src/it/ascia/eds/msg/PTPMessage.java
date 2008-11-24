@@ -7,7 +7,7 @@ package it.ascia.eds.msg;
  * @author arrigo
  *
  */
-public abstract class PTPMessage extends Message {
+public abstract class PTPMessage extends EDSMessage {
 	/**
 	 * Ritorna il numero massimo di tentativi di invio da effettuare.
 	 * 

@@ -3,10 +3,12 @@
  */
 package it.ascia.eds.msg;
 
+import it.ascia.ais.MessageInterface;
+
 /**
  * Richiede a quale gruppo di attuazione multipla appartiene un'uscita.
  * 
- * Sul bus possono essere lanciati fino a 31 comandi broadcast diversi.
+ * Sul transport possono essere lanciati fino a 31 comandi broadcast diversi.
  * Alcuni BMC possono rispondere a questi comandi broadcast, attivando o 
  * spegnendo le proprie uscite.
  * 
@@ -67,7 +69,7 @@ public class RichiestaAssociazioneUscitaMessage extends PTPRequest
 	 * Per questo motivo, non viene considerato qui.
 	 */
 	public boolean isAnsweredBy(PTPMessage m) {
-		if (m.getMessageType() == Message.MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST) {
+		if (m.getMessageType() == EDSMessage.MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST) {
 			RispostaAssociazioneUscitaMessage r = 
 				(RispostaAssociazioneUscitaMessage) m;
 			if ((getSender() == r.getRecipient()) &&

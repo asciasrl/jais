@@ -3,6 +3,8 @@
  */
 package it.ascia.eds.msg;
 
+import it.ascia.ais.MessageInterface;
+
 /**
  * Messaggio di richiesta di lettura parametri (per dimmer o sonda 
  * termica).
@@ -73,7 +75,7 @@ public class RichiestaParametroMessage extends PTPRequest
 	}
 
 	public boolean isAnsweredBy(PTPMessage m) {
-		if (m.getMessageType() == Message.MSG_RISPOSTA_PARAMETRO) {
+		if (m.getMessageType() == EDSMessage.MSG_RISPOSTA_PARAMETRO) {
 			RispostaParametroMessage ack = (RispostaParametroMessage) m;
 			if ((getSender() == ack.getRecipient()) &&
 					(getRecipient() == ack.getSender()) &&

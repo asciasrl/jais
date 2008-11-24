@@ -20,7 +20,7 @@ public class MessageParser {
 
 	private boolean valid = false;
 
-	private Message message;
+	private EDSMessage message;
 
 	/**
 	 * Il nostro logger.
@@ -96,54 +96,54 @@ public class MessageParser {
 	 * @param message sequenza di byte che compone il messaggio
 	 * @return messaggio decodificato
 	 */
-	private Message createMessage(int[] message) {
+	private EDSMessage createMessage(int[] message) {
 		switch (message[3]) {
-		case Message.MSG_RICHIESTA_MODELLO : 
+		case EDSMessage.MSG_RICHIESTA_MODELLO : 
 			return new RichiestaModelloMessage(message);
-		case Message.MSG_RISPOSTA_MODELLO: 
+		case EDSMessage.MSG_RISPOSTA_MODELLO: 
 			return new RispostaModelloMessage(message);
-		case Message.MSG_VARIAZIONE_INGRESSO:
+		case EDSMessage.MSG_VARIAZIONE_INGRESSO:
 			// Non consideriamo MSG_IMPOSTAZIONE_STATO_TERMOSTATO, che ha lo
 			// stesso valore, perche' non riceveremo mai messaggi di quel tipo,
 			// ma li genereremo soltanto.
 			return new VariazioneIngressoMessage(message);
-		case Message.MSG_ACKNOWLEDGE: 
+		case EDSMessage.MSG_ACKNOWLEDGE: 
 			return new AcknowledgeMessage(message);
-		case Message.MSG_RICHIESTA_ASSOCIAZIONE_BROADCAST: 
+		case EDSMessage.MSG_RICHIESTA_ASSOCIAZIONE_BROADCAST: 
 			return new RichiestaAssociazioneUscitaMessage(message);
-		case Message.MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST: 
+		case EDSMessage.MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST: 
 			return new RispostaAssociazioneUscitaMessage(message);
-		case Message.MSG_COMANDO_BROADCAST: 
+		case EDSMessage.MSG_COMANDO_BROADCAST: 
 			return new ComandoBroadcastMessage(message);
-		case Message.MSG_COMANDO_USCITA: 
+		case EDSMessage.MSG_COMANDO_USCITA: 
 			return new ComandoUscitaMessage(message);
-		case Message.MSG_RICHIESTA_STATO: 
+		case EDSMessage.MSG_RICHIESTA_STATO: 
 			return new RichiestaStatoMessage(message);
-		case Message.MSG_RISPOSTA_STATO: 
+		case EDSMessage.MSG_RISPOSTA_STATO: 
 			return new RispostaStatoMessage(message);
-		case Message.MSG_CAMBIO_VELOCITA: 
+		case EDSMessage.MSG_CAMBIO_VELOCITA: 
 			return new CambioVelocitaMessage(message);
-		case Message.MSG_PROGRAMMAZIONE:
+		case EDSMessage.MSG_PROGRAMMAZIONE:
 			return new ProgrammazioneMessage(message);
-		case Message.MSG_RICHIESTA_INGRESSO_IR: 
+		case EDSMessage.MSG_RICHIESTA_INGRESSO_IR: 
 			return new RichiestaIngressoIRMessage(message);
-		case Message.MSG_RISPOSTA_INGRESSO_IR: 
+		case EDSMessage.MSG_RISPOSTA_INGRESSO_IR: 
 			return new RispostaIngressoIRMessage(message);
-		case Message.MSG_COMANDO_USCITA_DIMMER: 
+		case EDSMessage.MSG_COMANDO_USCITA_DIMMER: 
 			return new ComandoUscitaDimmerMessage(message);
-		case Message.MSG_RISPOSTA_STATO_DIMMER: 
+		case EDSMessage.MSG_RISPOSTA_STATO_DIMMER: 
 			return new RispostaStatoDimmerMessage(message);
-		case Message.MSG_IMPOSTA_PARAMETRO: 
+		case EDSMessage.MSG_IMPOSTA_PARAMETRO: 
 			return new ImpostaParametroMessage(message);
-		case Message.MSG_RICHIESTA_STATO_TERMOSTATO:
+		case EDSMessage.MSG_RICHIESTA_STATO_TERMOSTATO:
 			return new RichiestaStatoTermostatoMessage(message);
-		case Message.MSG_TEMPERATURA: 
+		case EDSMessage.MSG_TEMPERATURA: 
 			return new TemperatureMessage(message);
-		case Message.MSG_IMPOSTA_SET_POINT:
+		case EDSMessage.MSG_IMPOSTA_SET_POINT:
 			return new ImpostaSetPointMessage(message);
-		case Message.MSG_RICHIESTA_SET_POINT:
+		case EDSMessage.MSG_RICHIESTA_SET_POINT:
 			return new RichiestaSetPointMessage(message);
-		case Message.MSG_LETTURA_SET_POINT: 
+		case EDSMessage.MSG_LETTURA_SET_POINT: 
 			return new CronotermMessage(message);
 		default: 
 			logger.error("Messaggio di tipo sconosciuto: " + 
@@ -153,7 +153,7 @@ public class MessageParser {
 		}
 	}
 
-	public Message getMessage()
+	public EDSMessage getMessage()
 	{
 		return message;
 	}

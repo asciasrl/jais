@@ -3,6 +3,8 @@
  */
 package it.ascia.eds.msg;
 
+import it.ascia.ais.MessageInterface;
+
 /**
  * Messaggio di richiesta stato per cronotermostato o sonda termica.
  * 
@@ -28,7 +30,7 @@ public class RichiestaStatoTermostatoMessage extends PTPRequest
 	}
 	
 	public boolean isAnsweredBy(PTPMessage m) {
-		if (m.getMessageType() == Message.MSG_TEMPERATURA) {
+		if (m.getMessageType() == EDSMessage.MSG_TEMPERATURA) {
 			if ((getSender() == m.getRecipient()) &&
 					(getRecipient() == m.getSender())) {
 				answered = true;

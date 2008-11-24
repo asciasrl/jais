@@ -1,5 +1,7 @@
 package it.ascia.eds.msg;	
 
+import it.ascia.ais.MessageInterface;
+
 /**
  * Imposta l'uscita di un BMC Standard I/O oppure dimmer.
  * 
@@ -31,7 +33,7 @@ public class ComandoUscitaMessage extends PTPRequest
 			int Percentuale, int Attivazione) {
 		Destinatario = d & 0xFF;
 		Mittente = m & 0xFF;
-		TipoMessaggio = Message.MSG_COMANDO_USCITA; // 21;
+		TipoMessaggio = EDSMessage.MSG_COMANDO_USCITA; // 21;
 		Byte1 = (Uscita & 0x07) + ((Tempo & 0x0F) << 3);
 		Byte2 = (Attivazione & 0x01) + ((Percentuale & 0x7F) << 1);
 	}
@@ -47,7 +49,7 @@ public class ComandoUscitaMessage extends PTPRequest
 	public ComandoUscitaMessage(int d, int m, int Uscita, boolean Attivazione) {
 		Destinatario = d & 0xFF;
 		Mittente = m & 0xFF;
-		TipoMessaggio = Message.MSG_COMANDO_USCITA; // 21;
+		TipoMessaggio = EDSMessage.MSG_COMANDO_USCITA; // 21;
 		Byte1 = (Uscita & 0x07);
 		if (Attivazione) {
 			Byte2 = 1; 

@@ -3,6 +3,8 @@
  */
 package it.ascia.eds.msg;
 
+import it.ascia.ais.MessageInterface;
+
 /**
  * Comando per impostare l'uscita di un dimmer.
  * 
@@ -16,7 +18,7 @@ public class ComandoUscitaDimmerMessage extends PTPMessage
 	public ComandoUscitaDimmerMessage(int d, int m, int Uscita, int Percentuale) {
 		Destinatario = d & 0xFF;
 		Mittente = m & 0xFF;
-		TipoMessaggio = Message.MSG_COMANDO_USCITA_DIMMER;
+		TipoMessaggio = EDSMessage.MSG_COMANDO_USCITA_DIMMER;
 		Byte1 = (Percentuale & 0x7f);
 		Byte2 = (Uscita & 0x01);
 	}

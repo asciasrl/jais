@@ -3,6 +3,8 @@
  */
 package it.ascia.eds.msg;
 
+import it.ascia.ais.MessageInterface;
+
 /**
  * Messaggio di richiesta stato.
  */
@@ -26,8 +28,8 @@ public class RichiestaStatoMessage extends PTPRequest
 	}
 	
 	public boolean isAnsweredBy(PTPMessage m) {
-		if ((m.getMessageType() == Message.MSG_RISPOSTA_STATO) ||
-				(m.getMessageType() == Message.MSG_RISPOSTA_STATO_DIMMER)) {
+		if ((m.getMessageType() == EDSMessage.MSG_RISPOSTA_STATO) ||
+				(m.getMessageType() == EDSMessage.MSG_RISPOSTA_STATO_DIMMER)) {
 			if ((getSender() == m.getRecipient()) &&
 					(getRecipient() == m.getSender())) {
 				answered = true;

@@ -26,7 +26,7 @@ public abstract class PTPRequest extends PTPMessage {
 	 * @return true se m e' la risposta a questo messaggio.
 	 */
 	public boolean isAnsweredBy(PTPMessage m) {
-		if (m.getMessageType() == Message.MSG_ACKNOWLEDGE) {
+		if (m.getMessageType() == EDSMessage.MSG_ACKNOWLEDGE) {
 			AcknowledgeMessage ack = (AcknowledgeMessage) m;
 			if ((getSender() == ack.getRecipient()) &&
 					(getRecipient() == ack.getSender()) &&

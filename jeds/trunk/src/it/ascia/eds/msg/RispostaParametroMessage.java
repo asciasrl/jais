@@ -3,6 +3,8 @@
  */
 package it.ascia.eds.msg;
 
+import it.ascia.ais.MessageInterface;
+
 /**
  * Messaggio di risposta a richiesta di lettura parametri (per dimmer o sonda 
  * termica).

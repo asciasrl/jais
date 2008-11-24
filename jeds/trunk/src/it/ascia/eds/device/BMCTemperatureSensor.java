@@ -7,7 +7,7 @@ import it.ascia.ais.AISException;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.ImpostaParametroMessage;
-import it.ascia.eds.msg.Message;
+import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.RichiestaParametroMessage;
 import it.ascia.eds.msg.RichiestaStatoTermostatoMessage;
 import it.ascia.eds.msg.RispostaParametroMessage;
@@ -141,10 +141,10 @@ public class BMCTemperatureSensor extends BMC {
 	/* (non-Javadoc)
 	 * @see it.ascia.eds.device.BMC#messageReceived(it.ascia.eds.msg.Message)
 	 */
-	public void messageReceived(Message m) {
+	public void messageReceived(EDSMessage m) {
 		long currentTime = System.currentTimeMillis();
 		switch (m.getMessageType()) {
-		case Message.MSG_IMPOSTA_PARAMETRO: {
+		case EDSMessage.MSG_IMPOSTA_PARAMETRO: {
 			// Aggiorniamo i parametri interni e li contrassegnamo "dirty"
 			ImpostaParametroMessage mesg = (ImpostaParametroMessage) m;
 			if (mesg.hasAutoSendTime()) {
@@ -177,10 +177,10 @@ public class BMCTemperatureSensor extends BMC {
 	/* (non-Javadoc)
 	 * @see it.ascia.eds.device.BMC#messageSent(it.ascia.eds.msg.Message)
 	 */
-	public void messageSent(Message m) {
+	public void messageSent(EDSMessage m) {
 		long currentTime = System.currentTimeMillis();
 		switch(m.getMessageType()) {
-		case Message.MSG_RISPOSTA_PARAMETRO: {
+		case EDSMessage.MSG_RISPOSTA_PARAMETRO: {
 			RispostaParametroMessage mesg =
 				(RispostaParametroMessage) m;
 			if (mesg.hasAlarmTemperature()) {
@@ -207,7 +207,7 @@ public class BMCTemperatureSensor extends BMC {
 			}
 			break;
 		}
-		case Message.MSG_TEMPERATURA: {
+		case EDSMessage.MSG_TEMPERATURA: {
 			TemperatureMessage mesg = (TemperatureMessage) m;
 			double oldTemp = temperature;
 			int oldMode = mode;

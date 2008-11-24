@@ -5,7 +5,7 @@ package it.ascia.eds.device;
 
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.EDSException;
-import it.ascia.eds.msg.Message;
+import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.RispostaStatoMessage;
 
 /**
@@ -86,13 +86,13 @@ public class BMCIR extends BMC {
 	/* (non-Javadoc)
 	 * @see it.ascia.eds.device.BMC#receiveMessage(it.ascia.eds.msg.Message)
 	 */
-	public void messageReceived(Message m) {
+	public void messageReceived(EDSMessage m) {
 		// TODO
 	}
 	
-	public void messageSent(Message m) {
+	public void messageSent(EDSMessage m) {
 		switch (m.getMessageType()) {
-		case Message.MSG_RISPOSTA_STATO: {
+		case EDSMessage.MSG_RISPOSTA_STATO: {
 			RispostaStatoMessage r;
 			r = (RispostaStatoMessage)m;
 			// Di questo messaggio ci interessano solo gli ingressi.

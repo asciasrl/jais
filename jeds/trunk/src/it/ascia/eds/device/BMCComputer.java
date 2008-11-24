@@ -5,8 +5,9 @@ package it.ascia.eds.device;
 
 import java.util.*;
 
+import it.ascia.ais.Device;
 import it.ascia.eds.msg.BroadcastMessage;
-import it.ascia.eds.msg.Message;
+import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.PTPMessage;
 import it.ascia.eds.msg.PTPRequest;
 import it.ascia.eds.msg.RichiestaAssociazioneUscitaMessage;
@@ -17,15 +18,15 @@ import it.ascia.eds.EDSConnector;
 import it.ascia.eds.EDSException;
 
 /**
- * Il rappresentante di questo computer sul bus EDS.
+ * Il rappresentante di questo computer sul transport EDS.
  * 
  * <p>Le sue funzioni sono:</p>
  * <ul>
  * <li>tenere un log di tutti i messaggi ricevuti;</li>
- * <li>spedire messaggi sul bus.</li>
+ * <li>spedire messaggi sul transport.</li>
  * </ul>
  * 
- * <p>Ci deve essere un solo oggetto di questa classe per ciascun bus.</p>
+ * <p>Ci deve essere un solo oggetto di questa classe per ciascun transport.</p>
  * 
  * @author arrigo
  */
@@ -47,8 +48,8 @@ public class BMCComputer extends BMC {
 	/**
 	 * Costruttore.
 	 * 
-	 * @param bus il bus a cui siamo collegati
-	 * @param address l'indirizzo di questo device sul bus
+	 * @param transport il transport a cui siamo collegati
+	 * @param address l'indirizzo di questo device sul transport
 	 */
 	public BMCComputer(int address, EDSConnector bus) {
 		super(address, -1, bus, "Computer");
@@ -63,9 +64,9 @@ public class BMCComputer extends BMC {
 	 *   <li>Se il messaggio e' una risposta a richiesta modello, agiunge un BMC</li>
 	 *   <li>Conferma che il messaggio e' stato ricevuto</li>
 	 * </ol>  
-	 * @see it.ascia.eds.device.Device#receiveMessage(it.ascia.eds.msg.Message)
+	 * @see it.ascia.eds.device.Device#receiveMessage(it.ascia.eds.msg.EDSMessage)
 	 */
-	public void messageReceived(Message m) {
+	public void messageReceived(EDSMessage m) {
 		// Tutti i messaggi ricevuti devono finire nella inbox. Ma non troppi.
 		inbox.addFirst(m);
 		while (inbox.size() > MAX_INBOX_SIZE) {
@@ -80,7 +81,7 @@ public class BMCComputer extends BMC {
 					BMC.createBMC(risposta.getSender(), risposta.getModello(),
 							null, connector, true);
 				} catch (EDSException e) {
-				// Se il device e' gia' sul bus, non e' un errore.
+				// Se il device e' gia' sul transport, non e' un errore.
 				}
 			}
 			// Attendiamo risposte?
@@ -90,7 +91,7 @@ public class BMCComputer extends BMC {
 		} // if m è un PTPMessage
 	}
 	
-	public void messageSent(Message m) {
+	public void messageSent(EDSMessage m) {
 		// Sappiamo quello che abbiamo inviato.
 	}
 	
@@ -99,10 +100,10 @@ public class BMCComputer extends BMC {
 	 * 
 	 * @return il messaggio oppure null se la coda è vuota.
 	 */
-	public Message getNextMessage() {
-		Message retval;
+	public EDSMessage getNextMessage() {
+		EDSMessage retval;
 		try {
-			retval = (Message) inbox.removeFirst();
+			retval = (EDSMessage) inbox.removeFirst();
 		} catch (NoSuchElementException e) {
 			retval = null;
 		}
@@ -132,7 +133,7 @@ public class BMCComputer extends BMC {
     			if (tries > 0) {
     				logger.trace("Write, tries="+tries+" "+m.toHexString());    			
     			}
-    			connector.bus.write(m.getBytesMessage());
+    			connector.transport.write(m.getBytesMessage());
 				int delay = (int)(EDSConnector.PING_WAIT * (1 + Math.random() * 0.2));
     			for (waitings = 0; 
     				(waitings < delay) && (!received); 
@@ -160,12 +161,12 @@ public class BMCComputer extends BMC {
 				Thread.sleep(EDSConnector.WAIT_RETRIES * EDSConnector.PING_WAIT);
 			} catch (InterruptedException e) {
 			}
-			connector.bus.write(m.getBytesMessage());
+			connector.transport.write(m.getBytesMessage());
 		}
 	}
 	
 	/**
-	 * Invia un messaggio sul bus.
+	 * Invia un messaggio sul transport.
 	 * 
 	 * <p>Se il messaggio richiede una risposta, questa viene attesa seguendo i
 	 * timeout stabiliti.</p>
@@ -173,7 +174,7 @@ public class BMCComputer extends BMC {
 	 * @return true se l'invio e' andato a buon fine; nel caso di richieste,
 	 * ritorna true se e' arrivata una risposta.
 	 */
-	public synchronized boolean sendMessage(Message m) {
+	public boolean sendMessage(EDSMessage m) {
 		boolean retval;
 		if (m.isBroadcast()) {
 			sendBroadcastMessage((BroadcastMessage) m);
@@ -186,7 +187,7 @@ public class BMCComputer extends BMC {
 				retval = sendPTPRequest((PTPRequest) ptpm);
 			} else {
 				// Invio nudo e crudo
-				connector.bus.write(m.getBytesMessage());
+				connector.transport.write(m.getBytesMessage());
 				// non c'e' modo di sapere se e' arrivato; siamo ottimisti.
 				retval = true;
 			}
@@ -211,17 +212,19 @@ public class BMCComputer extends BMC {
      * @return il BMC se trovato o registrato, oppure null.
      */
     public BMC discoverBMC(int address) {
-    	BMC retval, temp[];
+    	BMC retval;
+    	Device temp[];
     	// Gia' abbiamo il BMC in lista?
-    	temp = (BMC[])connector.getDevices(String.valueOf(address));
+    	temp = connector.getDevices(String.valueOf(address));
     	if (temp.length == 0) {
     		// No!
     		logger.trace("Ricerca del BMC con indirizzo " + address);
     		if (sendPTPRequest(new RichiestaModelloMessage(address, 
     				getIntAddress()))) {
-    			temp = (BMC[])connector.getDevices(String.valueOf(address));
+    			temp = connector.getDevices(String.valueOf(address));
     			if (temp.length > 0) {
-    				retval = temp[0];
+    				retval = (BMC)temp[0];
+    				logger.info("Trovato BMC "+retval.getInfo());
     				discoverBroadcastBindings(retval);
     			} else {
     				// Molto strano: l'ACK del messaggio e' arrivato, ma non 
@@ -234,7 +237,7 @@ public class BMCComputer extends BMC {
     			retval = null;
     		}
     	} else {
-    		retval = temp[0];
+    		retval = (BMC)temp[0];
     	}
     	return retval;
     }
@@ -250,8 +253,8 @@ public class BMCComputer extends BMC {
     public void discoverBroadcastBindings(BMC bmc){
     	int outPort;
     	int casella;
-    	logger.trace("Richiesta associazioni broadcast BMC " + 
-    			bmc.getAddress());
+    	logger.debug("Richiesta associazioni broadcast BMC " + 
+    			bmc.getName());
     	for (outPort = 0; outPort < bmc.getOutPortsNumber(); outPort++) {
     		for (casella = 0; casella < bmc.getCaselleNumber(); casella++) {
     			RichiestaAssociazioneUscitaMessage m;

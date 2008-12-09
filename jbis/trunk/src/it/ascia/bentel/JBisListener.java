@@ -164,7 +164,7 @@ public class JBisListener implements SerialPortEventListener {
 
     	logger.info("Connessione a " + portName); 
     	try {
-    		serialPort = (SerialPort) portId.open("SerialBus", 2000);
+    		serialPort = (SerialPort) portId.open("SerialTransport", 2000);
     	} catch (PortInUseException e) {
 	    	throw new JBisException("Porta in uso: " + e.toString());
     	}

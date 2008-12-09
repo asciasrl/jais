@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import org.apache.log4j.Logger;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.ConnectorInterface;
+import it.ascia.ais.Connector;
 import it.ascia.ais.Device;
 import it.ascia.ais.DeviceEvent;
 import it.ascia.ais.DeviceListener;
@@ -21,7 +21,7 @@ import it.ascia.ais.DeviceListener;
  * 
  * @author arrigo
  */
-public class JBisKyoDevice implements Device {
+public class JBisKyoDevice extends Device {
 	/**
 	 * Dimensione massima del registro interno alla centralina (n. di eventi).
 	 */
@@ -509,7 +509,7 @@ public class JBisKyoDevice implements Device {
 	/* (non-Javadoc)
 	 * @see it.ascia.ais.Device#getConnector()
 	 */
-	public ConnectorInterface getConnector() {
+	public Connector getConnector() {
 		return connector;
 	}
 

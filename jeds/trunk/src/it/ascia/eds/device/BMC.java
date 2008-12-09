@@ -128,7 +128,7 @@ public abstract class BMC extends Device {
 	 * Ritorna il nome di questo BMC.
 	 */
 	public String getName() {
-		return connector.getName()+"."+address;
+		return name;
 	}
 	
 	/**

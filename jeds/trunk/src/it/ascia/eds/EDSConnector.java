@@ -4,17 +4,12 @@
 package it.ascia.eds;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import it.ascia.ais.Bus;
-import it.ascia.ais.Device;
+import it.ascia.ais.MessageInterface;
 import it.ascia.eds.device.*;
 import it.ascia.eds.msg.*;
 
@@ -26,7 +21,7 @@ import it.ascia.eds.msg.*;
  * @author arrigo
  *
  */
-public class EDSConnector extends it.ascia.ais.Connector implements it.ascia.ais.ConnectorInterface {
+public class EDSConnector extends it.ascia.ais.Connector {
 	/**
 	 * Quanto tempo aspettare la risposta dopo l'invio di un messaggio.
 	 * 
@@ -70,27 +65,20 @@ public class EDSConnector extends it.ascia.ais.Connector implements it.ascia.ais
 	 * MessageParser per la lettura dei messaggi in ingresso.
 	 */
 	protected MessageParser mp;
-	/**
-	 * I BMC presenti nel bus.
-	 */
-    private Map devices;
     /**
      * Il BMC "finto" che corrisponde a questo computer.
      */
     private BMCComputer bmcComputer;
-    /**
-     * Il nostro logger.
-     */
-    protected Logger logger;
     /**
      * Il nostro nome secondo AUI.
      */
     private String name;
     
     /**
-     * Costruttore.
-     * @param name il nome del bus, che sara' la parte iniziale degli indirizzi
-     * di tutti i Device collegati a questo bus.
+     * Connettore per il BUS EDS.
+     * 
+     * @param name il nome del transport, che sara' la parte iniziale degli indirizzi
+     * di tutti i Device collegati a questo transport.
      */
     public EDSConnector(String name) {
         devices = new HashMap();
@@ -102,14 +90,14 @@ public class EDSConnector extends it.ascia.ais.Connector implements it.ascia.ais
     
     
     /**
-     * Ritorna il nome di questo bus.
+     * Ritorna il nome di questo transport.
      */
     public String getName() {
     	return name;
     }
     
     /**
-     * Imposta il BMCComputer del bus.
+     * Imposta il BMCComputer del transport.
      */
     public void setBMCComputer(BMCComputer bmcComputer) {
     	this.bmcComputer = bmcComputer;
@@ -117,7 +105,7 @@ public class EDSConnector extends it.ascia.ais.Connector implements it.ascia.ais
     }
     
     /**
-     * Ritorna l'indirizzo del BMCComputer del bus.
+     * Ritorna l'indirizzo del BMCComputer del transport.
      * 
      * <p>Questo metodo e' utile per i BMC, quando devono richiedere 
      * informazioni sul proprio stato. I messaggi che inviano devono partire 
@@ -136,12 +124,12 @@ public class EDSConnector extends it.ascia.ais.Connector implements it.ascia.ais
      * <p>I messaggi decodificati vengono passati a dispatchMessage().</p>
      */
     public void readData() {
-    	while (bus.hasData()) {
+    	while (transport.hasData()) {
     		try {
-    			byte b = bus.readByte();
+    			byte b = transport.readByte();
     			mp.push(b);
     			if (mp.isValid()) {
-    				Message m = mp.getMessage();
+    				EDSMessage m = mp.getMessage();
 //  				if (!m.getTipoMessaggio().equals("Aknowledge")) {
 //  				System.out.println((new Date()).toString() + "\r\n" + m);
 //  				}
@@ -169,7 +157,7 @@ public class EDSConnector extends it.ascia.ais.Connector implements it.ascia.ais
      * 
      * @param m il messaggio da inviare
      */
-    private void dispatchMessage(Message m) {
+    private void dispatchMessage(EDSMessage m) {
     	int rcpt = m.getRecipient();
     	int sender = m.getSender();
     	// logger.trace("Messaggio da " + sender + " per " + rcpt);
@@ -211,11 +199,11 @@ public class EDSConnector extends it.ascia.ais.Connector implements it.ascia.ais
      * @return true se il messaggio di risposta e' arrivato, o se l'invio e'
      * andato a buon fine.
      */
-    public boolean sendMessage(Message m) {
+    public boolean sendMessage(MessageInterface m) {
     	if (bmcComputer != null) {
-    		return bmcComputer.sendMessage(m);
+    		return bmcComputer.sendMessage((EDSMessage)m);
     	} else {
-    		logger.error("Il bus non ha un BMCComputer!");
+    		logger.error("Il transport non ha un BMCComputer!");
     		return false;
     	}
     }
@@ -236,6 +224,7 @@ public class EDSConnector extends it.ascia.ais.Connector implements it.ascia.ais
     	devices.put(new Integer(deviceAddress), device);
     }
     
+    /*
     public Device[] getDevices(String address) {
     	Collection values = devices.values();
     	if (address.equals("*")) {
@@ -251,4 +240,5 @@ public class EDSConnector extends it.ascia.ais.Connector implements it.ascia.ais
     	}
     	return (BMC[]) devices.toArray(new BMC[devices.size()]);
     }
+    */
 }

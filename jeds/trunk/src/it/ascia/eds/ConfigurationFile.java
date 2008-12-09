@@ -135,12 +135,12 @@ public class ConfigurationFile {
 	}
 	
 	/**
-	 * Inserisce nel bus i BMC elencati nel file di configurazione.
+	 * Inserisce nel transport i BMC elencati nel file di configurazione.
 	 * 
 	 * Le informazioni inserite sono: nome, modello, indirizzo e nomi delle
 	 * porte di input/output.
 	 * 
-	 * @param bus il bus a cui collegare i BMC.
+	 * @param transport il transport a cui collegare i BMC.
 	 */
 	public void createBMCs(EDSConnector bus) {
 		int i;

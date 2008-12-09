@@ -1,6 +1,6 @@
 package it.ascia.eds;
 
-import it.ascia.eds.msg.Message;
+import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.MessageParser;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ import java.util.TooManyListenersException;
 import gnu.io.*;
 
 /**
- * Apre il bus e decodifica i messaggi del protocollo EDS scrivendoli su console
+ * Apre il transport e decodifica i messaggi del protocollo EDS scrivendoli su console
  * 
  * @author sergio
  *
@@ -26,7 +26,7 @@ public class EDSReader
     SerialPort		      serialPort;
     Thread		      readThread;
     MessageParser mp;
-	Message m;
+	EDSMessage m;
 	
     /**
      * Method declaration

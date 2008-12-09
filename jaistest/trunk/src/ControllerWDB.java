@@ -3,15 +3,13 @@
  */
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Bus;
+import it.ascia.ais.Transport;
 import it.ascia.ais.HTTPServer;
-import it.ascia.ais.SerialBus;
-import it.ascia.ais.TCPSerialBus;
+import it.ascia.ais.SerialTransport;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.ConfigurationFile;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.device.BMC;
-import it.ascia.eds.device.BMCChronoTerm;
 import it.ascia.eds.device.BMCComputer;
 import it.ascia.eds.device.BMCDimmer;
 import it.ascia.eds.device.BMCStandardIO;
@@ -192,12 +190,12 @@ public class ControllerWDB extends MyController {
 		    defaultPort = args[0];
 		}
 	 	EDSConnector eds = null;
-	 	Bus bus = null;
+	 	Transport transport = null;
 	 	try {
 	 		eds = new EDSConnector("0");
-	 		bus = new SerialBus(defaultPort, eds);
-	 		//bus = new TCPSerialBus(defaultPort, 2001, "0");
-	 		// bus = new SerialBus(defaultPort, "0");
+	 		transport = new SerialTransport(defaultPort, eds);
+	 		//transport = new TCPSerialTransport(defaultPort, 2001, "0");
+	 		// transport = new SerialTransport(defaultPort, "0");
 	 	} catch (EDSException e) {
 	 		System.err.println(e.getMessage());
 	 		System.exit(-1);
@@ -229,7 +227,7 @@ public class ControllerWDB extends MyController {
 	 	// La palla all'utente
 		userInteraction();
 		server.close();
-		bus.close();
+		transport.close();
 	}
 	
 	public ControllerWDB(String pin) {

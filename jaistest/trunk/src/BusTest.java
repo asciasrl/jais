@@ -1,12 +1,11 @@
 
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Bus;
+import it.ascia.ais.Transport;
 import it.ascia.ais.Connector;
-import it.ascia.ais.ConnectorInterface;
 import it.ascia.ais.HTTPServer;
-import it.ascia.ais.SerialBus;
-import it.ascia.ais.TCPSerialBus;
+import it.ascia.ais.SerialTransport;
+import it.ascia.ais.TCPSerialTransport;
 // import it.ascia.eds.ConfigurationFile;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.EDSException;
@@ -17,6 +16,7 @@ import it.ascia.eds.device.BMCDimmer;
 import it.ascia.eds.device.BMCStandardIO;
 
 
+import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 /**
@@ -130,26 +130,43 @@ public class BusTest extends MyController {
 	public static void main(String[] args) throws AISException {
 	    //String defaultPort = "ascia.homeip.net";
 		String defaultPort = "COM2";
+		Integer tcpPort = null;
+		String documentRoot = "../aui";
 	    // Inizializzazione logger
 	    PropertyConfigurator.configure("conf/log4j.conf");
 		//ConfigurationFile cfgFile = null;
+		Logger log = Logger.getLogger("main");
 	 	if (args.length > 0) {
-		    defaultPort = args[0];
+	 		for (int i = 0; i < args.length; i++) {
+				log.debug("Parametro "+i+"="+args[i]);
+			}
+		    if (args[0].contains(":")) {
+		    	String[] s2 = args[0].split(":",2);
+		    	defaultPort = s2[0];
+		    	tcpPort = new Integer(Integer.parseInt(s2[1])); 
+		    } else {
+		    	defaultPort = args[0];
+		    }
 		}
 	 	EDSConnector eds = null;
-	 	Bus bus = null;
+	 	Transport transport = null;
 	 	try {
-	 		//bus = new TCPSerialBus(defaultPort, 2001, "0");
 	 		eds = new EDSConnector("0");
-	 		bus = new SerialBus(defaultPort, eds);
+	 		if (tcpPort != null) {
+	 			transport = new TCPSerialTransport(defaultPort, tcpPort.intValue(), eds);
+	 			log.info("Connesso via socket a "+defaultPort+" porta "+tcpPort);
+	 		} else {
+	 			transport = new SerialTransport(defaultPort, eds);
+	 			log.info("Connesso via seriale a "+defaultPort);
+	 		}
 	 	} catch (EDSException e) {
-	 		System.err.println(e.getMessage());
+	 		log.fatal(e.getMessage());
 	 		System.exit(-1);
 	 	}
 		busController = new BusTest(null /* "1" */);
 		busController.addConnector(eds);
 		try {
-			server = new HTTPServer(80, busController, "p:/Dev/aui");
+			server = new HTTPServer(80, busController, documentRoot);
 		} catch (AISException e) {
 			System.err.println(e.getMessage());
 			System.exit(-1);
@@ -163,19 +180,18 @@ public class BusTest extends MyController {
 //			System.err.println(e.getMessage());
 //			System.exit(-1);
 //		}
-		// cfgFile.createBMCs(bus);
+		// cfgFile.createBMCs(transport);
 		//System.out.println(cfgFile.getSystemName());
 	 	// Discovery
-	 	System.out.println("Discovery:");
+	 	log.info("Discovery su "+eds.getName() + " tramite " + transport);
 	 	for (int i = 0; i < 8; i++) {
 	 		if ((i != 1) && (i != 4)) {
 	 			// Evitiamo gli indirizzi non assegnati
-	 			System.out.print(i + ":");
 	 			BMC bmc = bmcComputer.discoverBMC(i); 
 	 			if (bmc != null) {
-	 				System.out.println(bmc.getInfo());
+	 				log.info("Indirizzo "+i+" : "+bmc.getInfo());
 	 			} else {
-	 				System.out.println();
+	 				log.debug("Nessun BMC all'indirizzo "+i);
 	 			}
 	 		}
 	 	}
@@ -195,10 +211,9 @@ public class BusTest extends MyController {
 			System.exit(-1);
 		}
 	 	// La palla all'utente
-	 	System.out.println("Running ...");
 		int dest = 1;
 		while (dest > 0) {
-			dest = Stdio.inputInteger("Indirizzo da pingare:");
+			dest = Stdio.inputInteger("Indirizzo da pingare (0 per terminare):");
 				if (dest > 0) {
 					BMC bmc = bmcComputer.discoverBMC(dest); 
 					if ( bmc != null) {
@@ -209,7 +224,7 @@ public class BusTest extends MyController {
 				}
 		}
 		server.close();
-		bus.close();
+		transport.close();
 	}
 	
 	public BusTest(String pin) {

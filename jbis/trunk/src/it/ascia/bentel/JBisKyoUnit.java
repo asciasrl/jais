@@ -6,8 +6,8 @@ package it.ascia.bentel;
 import org.apache.log4j.Logger;
 
 import it.ascia.ais.Connector;
-import it.ascia.ais.ConnectorInterface;
 import it.ascia.ais.Device;
+import it.ascia.ais.MessageInterface;
 
 /**
  * Interfaccia di comunicazione con la centralina Bentel Kyo8.
@@ -150,6 +150,8 @@ public class JBisKyoUnit extends Connector implements  Runnable {
     	}
     	return data;
     }
+	
+	
 
     static
     {
@@ -244,4 +246,10 @@ public class JBisKyoUnit extends Connector implements  Runnable {
 		// TODO Auto-generated method stub
 		
 	}
+
+	public boolean sendMessage(MessageInterface m) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
 }

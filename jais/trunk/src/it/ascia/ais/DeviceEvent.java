@@ -64,7 +64,6 @@ public class DeviceEvent {
 	 * @return una stringa: "indirizzo_device:porta = nuovo_valore".
 	 */
 	public String getInfo() {
-		return device.getConnector().getName() + "." + 
-			device.getAddress() + ":" + getPort() + " = " + getNewValue();
+		return device.getAddress() + ":" + getPort() + " = " + getNewValue();
 	}
 }

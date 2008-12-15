@@ -85,6 +85,8 @@ public class MessageParser {
 				return;
 			}
 			message = createMessage(buff);
+			//logger.trace(message.toHexString());
+			logger.trace(message.toString());
 			valid = true;
 			return;
 		}
@@ -109,6 +111,10 @@ public class MessageParser {
 			return new VariazioneIngressoMessage(message);
 		case EDSMessage.MSG_ACKNOWLEDGE: 
 			return new AcknowledgeMessage(message);
+		case EDSMessage.MSG_RICHIESTA_USCITA:
+			return new RichiestaUscitaMessage(message);
+		case EDSMessage.MSG_RISPOSTA_USCITA:
+			return new RispostaUscitaMessage(message);
 		case EDSMessage.MSG_RICHIESTA_ASSOCIAZIONE_BROADCAST: 
 			return new RichiestaAssociazioneUscitaMessage(message);
 		case EDSMessage.MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST: 
@@ -117,6 +123,8 @@ public class MessageParser {
 			return new ComandoBroadcastMessage(message);
 		case EDSMessage.MSG_COMANDO_USCITA: 
 			return new ComandoUscitaMessage(message);
+		case EDSMessage.MSG_RISPOSTA_OPZIONI_INGRESSO: 
+			return new RispostaOpzioniIngressoMessage(message);			
 		case EDSMessage.MSG_RICHIESTA_STATO: 
 			return new RichiestaStatoMessage(message);
 		case EDSMessage.MSG_RISPOSTA_STATO: 
@@ -146,10 +154,7 @@ public class MessageParser {
 		case EDSMessage.MSG_LETTURA_SET_POINT: 
 			return new CronotermMessage(message);
 		default: 
-			logger.error("Messaggio di tipo sconosciuto: " + 
-				message[3]);
-			dumpBuffer();
-			return null;
+			return new UnknowMessage(message);
 		}
 	}
 

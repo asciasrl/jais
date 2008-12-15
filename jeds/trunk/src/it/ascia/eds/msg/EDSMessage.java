@@ -34,6 +34,14 @@ public abstract class EDSMessage implements MessageInterface {
 	 */
 	public final static int MSG_ACKNOWLEDGE = 6;
 	/**
+	 * Risposta opzioni uscita
+	 */
+	public final static int MSG_RICHIESTA_USCITA = 7;
+	/**
+	 * Risposta opzioni uscita
+	 */
+	public final static int MSG_RISPOSTA_USCITA = 8;
+	/**
 	 * Richiesta lettura associazione di un'uscita a un comando broadcast.
 	 */
 	public final static int MSG_RICHIESTA_ASSOCIAZIONE_BROADCAST = 15;
@@ -50,6 +58,17 @@ public abstract class EDSMessage implements MessageInterface {
 	 * Attivazione/disattivazione di un'uscita.
 	 */
 	public final static int MSG_COMANDO_USCITA = 21;
+
+	/**
+	 * Richiesta opzioni ingresso
+	 */
+	public final static int MSG_RICHIESTA_OPZIONI = 23;
+
+	/**
+	 * Risposta opzioni ingresso
+	 */
+	public final static int MSG_RISPOSTA_OPZIONI_INGRESSO = 24;
+
 	/**
 	 * Richiesta lettura stato dispositivo.
 	 */
@@ -205,14 +224,16 @@ public abstract class EDSMessage implements MessageInterface {
 		return (new Integer((Stx+Destinatario+Mittente+TipoMessaggio+Byte1+Byte2) & 0xff)).byteValue();
 	}
 
+	/*
 	public String toString() {
 		StringBuffer s = new StringBuffer();
 		s.append(toHexString() + "\r\n");
 		s.append("Tipo Messaggio: "+getTipoMessaggio()+"\r\n");
-		s.append(getInformazioni());
+		s.append(toHumanReadable());
 		return s.toString();
 	}
-
+	*/
+	
 	/**
 	 * Ritorna il messaggio riportandone i campi in esadecimale.
 	 */
@@ -247,21 +268,17 @@ public abstract class EDSMessage implements MessageInterface {
 		return s;
 	}
 
-	public String getTipoMessaggio() {
-		return "Unknown ("+TipoMessaggio+")";
-	}
+	/**
+	 * Ritorna il nome descrittivo del messaggio.
+	 */
+	public abstract String getMessageDescription();
 
 	/**
 	 * Ritorna una descrizione testuale che interpreta i campi del messaggio.
 	 */
-	public String getInformazioni()
+	public String toString()
 	{
-		StringBuffer s = new StringBuffer();
-		s.append("Mittente: "+Mittente+"\r\n");
-		s.append("Destinatario: "+Destinatario+"\r\n");
-		s.append("Byte1: "+Byte1+"\r\n");
-		s.append("Byte2: "+Byte2+"\r\n");
-		return s.toString();
+		return Mittente + " -> " + Destinatario + " " + getMessageDescription()+ " ["+b2h(Byte1)+":"+b2h(Byte2)+" "+Byte1+":"+Byte2+"]";
 	}
 
 	public EDSMessage() {  
@@ -271,7 +288,7 @@ public abstract class EDSMessage implements MessageInterface {
 	 * Costruisce il messaggio a partire da un'array di interi.
 	 */
 	public EDSMessage(int[] message) {
-		parseMessage(message);
+		load(message);
 	}
 
 	/**
@@ -279,7 +296,7 @@ public abstract class EDSMessage implements MessageInterface {
 	 * 
 	 * ATTENZIONE: non verifica che il tipo sia coerente!
 	 */
-	public void parseMessage(int[] message) {
+	protected void load(int[] message) {
 		rawmessage = message;
 		Destinatario = message[1];
 		Mittente = message[2];
@@ -296,7 +313,7 @@ public abstract class EDSMessage implements MessageInterface {
 	public abstract boolean isBroadcast();
 	
 	/**
-	 * Ritorna il tipo di messaggio.
+	 * Ritorna il codice del tipo di messaggio.
 	 */
 	public abstract int getMessageType();
 }

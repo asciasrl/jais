@@ -16,7 +16,7 @@ public class RispostaAssociazioneUscitaMessage extends PTPMessage {
 	 * Costruisce il messaggio a partire dai dati ricevuti.
 	 */
 	public RispostaAssociazioneUscitaMessage(int[] message) {
-		parseMessage(message);
+		load(message);
 	}
 	
 	/**
@@ -50,20 +50,21 @@ public class RispostaAssociazioneUscitaMessage extends PTPMessage {
 		Byte2 = Byte2 | (comandoBroadcast & 0x1f);
 	}
 
-	public String getTipoMessaggio() {
+	public String getMessageDescription() {
 		return "Risposta Associazione Uscite a Comando Broadcast";
 	}
 
-	public String getInformazioni()	{
+	public String toString()	{
 		StringBuffer s = new StringBuffer();
-		s.append("Mittente: "+Mittente+"\r\n");
-		s.append("Destinatario: "+Destinatario+"\r\n");
-		s.append("Comando broadcast: " + getComandoBroadcast() + "\r\n");
-		s.append("Uscita': " + getUscita() + "\r\n");
-		s.append("Velocita': " + getVelocita() + "\r\n");
-		s.append("BMC\r\n casella: " + getCasellaBMC() + "\r\n");
-		s.append(" attivazione: " + activatesBMC() + "\r\n");
-		s.append("Dimmer:\r\n casella: " + getCasellaDimmer() + "\r\n");
+		s.append(Mittente + " -> "+Destinatario+" ");
+		s.append("Out " + getUscita() + ","+getCasellaBMC()+"/"+getCasellaDimmer()+" ");
+		s.append("Gruppo: " + getComandoBroadcast()+" ");
+		if (activatesBMC()) {
+			s.append("Attiva");
+		} else {
+			s.append("Disattiva");
+		}
+		s.append(" Velocita': " + getVelocita());
 		return s.toString();
 	}
 	

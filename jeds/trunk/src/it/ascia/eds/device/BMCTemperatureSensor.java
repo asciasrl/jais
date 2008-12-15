@@ -167,7 +167,7 @@ public class BMCTemperatureSensor extends BMC {
 				dirtyAlarmTemperature = true;
 			} else {
 				logger.warn("Ricevuto messaggio di impostazione per un " +
-						"parametro sconosciuto: " + mesg.getInformazioni());
+						"parametro sconosciuto: " + mesg.toString());
 			}
 			break;
 		}
@@ -203,7 +203,7 @@ public class BMCTemperatureSensor extends BMC {
 				dirtyAutoSendTime = false;
 			} else {
 				logger.warn("Ricevuto messaggio di lettura parametro " +
-						"sconosciuto: " + m.getInformazioni());
+						"sconosciuto: " + m.toString());
 			}
 			break;
 		}
@@ -402,6 +402,21 @@ public class BMCTemperatureSensor extends BMC {
 				(dirtyTemperature? "?" : ""));
 		System.out.println("Tempo di auto invio: " + autoSendTime + 
 				(dirtyAutoSendTime? "?" : ""));
+	}
+
+	public int getInPortsNumber() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public String peek(String portId) throws AISException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void poke(String portId, String value) throws AISException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

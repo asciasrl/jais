@@ -28,17 +28,16 @@ public class CambioVelocitaMessage extends BroadcastMessage
 	}
 
 	public CambioVelocitaMessage(int[] message) {
-		parseMessage(message);
+		load(message);
 	}
 
-	public String getTipoMessaggio() {
+	public String getMessageDescription() {
 		return "Cambio velocita'";
 	}
 	
-	public String getInformazioni()	{
+	public String toString()	{
 		StringBuffer s = new StringBuffer();
-		s.append("Timestamp: "+((Mittente & 0xFF) * 0x100 + (Destinatario & 0xFF)) +"\r\n");
-		s.append("Baudrate: ");
+		//s.append("Timestamp: "+((Mittente & 0xFF) * 0x100 + (Destinatario & 0xFF)) +"\r\n");
 		switch (Byte1 & 0x03) {
 		case 1:
 			s.append("1200");
@@ -49,8 +48,11 @@ public class CambioVelocitaMessage extends BroadcastMessage
 		case 3:
 			s.append("9600");
 			break;
+		case 4:
+			s.append("19200");
+			break;
 		}
-		s.append(" bit/sec \r\n");
+		s.append(" baud");
 		return s.toString();
 	}
 

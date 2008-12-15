@@ -5,6 +5,9 @@ package it.ascia.eds.device;
 
 import java.util.*;
 
+import com.sun.net.httpserver.Authenticator.Retry;
+
+import it.ascia.ais.AISException;
 import it.ascia.ais.Device;
 import it.ascia.eds.msg.BroadcastMessage;
 import it.ascia.eds.msg.EDSMessage;
@@ -12,6 +15,7 @@ import it.ascia.eds.msg.PTPMessage;
 import it.ascia.eds.msg.PTPRequest;
 import it.ascia.eds.msg.RichiestaAssociazioneUscitaMessage;
 import it.ascia.eds.msg.RichiestaModelloMessage;
+import it.ascia.eds.msg.RichiestaUscitaMessage;
 import it.ascia.eds.msg.RispostaAssociazioneUscitaMessage;
 import it.ascia.eds.msg.RispostaModelloMessage;
 import it.ascia.eds.EDSConnector;
@@ -66,7 +70,7 @@ public class BMCComputer extends BMC {
 	 * </ol>  
 	 * @see it.ascia.eds.device.Device#receiveMessage(it.ascia.eds.msg.EDSMessage)
 	 */
-	public void messageReceived(EDSMessage m) {
+	public synchronized void messageReceived(EDSMessage m) {
 		// Tutti i messaggi ricevuti devono finire nella inbox. Ma non troppi.
 		inbox.addFirst(m);
 		while (inbox.size() > MAX_INBOX_SIZE) {
@@ -76,6 +80,7 @@ public class BMCComputer extends BMC {
 			PTPMessage ptpm = (PTPMessage) m;
 			// Aggiungiamo i BMC che si presentano
 			if (RispostaModelloMessage.class.isInstance(ptpm)) {
+				//logger.trace("Ricevuto modello");
 				RispostaModelloMessage risposta = (RispostaModelloMessage) ptpm;
 				try {
 					BMC.createBMC(risposta.getSender(), risposta.getModello(),
@@ -86,7 +91,11 @@ public class BMCComputer extends BMC {
 			}
 			// Attendiamo risposte?
 			if (messageToBeAnswered != null) {
-				messageToBeAnswered.isAnsweredBy(ptpm);
+				if (messageToBeAnswered.isAnsweredBy(ptpm)) {
+					//logger.trace("Ricevuta risposta a richiesta");
+					messageToBeAnswered.answered = true;
+					notify();
+				}
 			}
 		} // if m è un PTPMessage
 	}
@@ -109,7 +118,7 @@ public class BMCComputer extends BMC {
 		}
 		return retval;
 	}
-
+	
 	public String getInfo() {
 		return "This computer";
 	}
@@ -123,26 +132,24 @@ public class BMCComputer extends BMC {
      * <p>Il messaggio di risposta viene riconosciuto da dispatchMessage().</p>
 	 */
 	private synchronized boolean sendPTPRequest(PTPRequest m) {
-    	int waitings, tries;
+    	int tries;
     	boolean received = false;
     	messageToBeAnswered = m;
     	try {
-    		for (tries = 0;
-    			(tries < m.getMaxSendTries()) && (!received); 
+    		for (tries = 1;
+    			(tries <= m.getMaxSendTries()) && (!m.answered); 
     			tries++) {
-    			if (tries > 0) {
-    				logger.trace("Write, tries="+tries+" "+m.toHexString());    			
+    			if (tries > 1) {
+    				logger.trace("Invio "+tries+" di "+m.getMaxSendTries()+" "+m.toHexString());    			
     			}
     			connector.transport.write(m.getBytesMessage());
-				int delay = (int)(EDSConnector.PING_WAIT * (1 + Math.random() * 0.2));
-    			for (waitings = 0; 
-    				(waitings < delay) && (!received); 
-    				waitings++) {
-    					Thread.sleep(1);
-    					received = (messageToBeAnswered.wasAnswered());
-    			}
+    			wait((long)(connector.getRetryTimeout() * (1 + 0.2 * Math.random())));
     		}
     	} catch (InterruptedException e) {
+    	}
+    	received = m.answered;
+    	if (! received) {
+    		logger.error("Messaggio non risposto: "+m);
     	}
     	messageToBeAnswered = null;
 		return received;
@@ -151,14 +158,15 @@ public class BMCComputer extends BMC {
 	/**
 	 * Invia un messaggio broadcast.
 	 * 
-	 * <p>Gli header vengono ri-generati ad ogni invio.</p>
+	 * <p>Gli header0
+	 *  vengono ri-generati ad ogni invio.</p>
 	 */
 	private void sendBroadcastMessage(BroadcastMessage m) {
 		int tries = m.getSendTries();
 		for (int i = 0; i < tries; i++) {
 			m.randomizeHeaders();
 			try {
-				Thread.sleep(EDSConnector.WAIT_RETRIES * EDSConnector.PING_WAIT);
+				Thread.sleep(connector.getRetryTimeout());
 			} catch (InterruptedException e) {
 			}
 			connector.transport.write(m.getBytesMessage());
@@ -225,6 +233,7 @@ public class BMCComputer extends BMC {
     			if (temp.length > 0) {
     				retval = (BMC)temp[0];
     				logger.info("Trovato BMC "+retval.getInfo());
+    				discoverUscite(retval);
     				discoverBroadcastBindings(retval);
     			} else {
     				// Molto strano: l'ACK del messaggio e' arrivato, ma non 
@@ -242,6 +251,23 @@ public class BMCComputer extends BMC {
     	return retval;
     }
     
+    /**
+     * Rileva le opzioni delle uscite.
+     * 
+     * <p>Questo metodo manda molti messaggi! Il metodo messageReceived() del 
+     * BMC deve interpretare i messaggi di risposta.</p>
+     *  
+     * {@link RispostaUscitaMessage}.
+     */
+    public void discoverUscite(BMC bmc){
+    	int outPort;
+    	for (outPort = 0; outPort < bmc.getOutPortsNumber(); outPort++) {
+    		RichiestaUscitaMessage m = new RichiestaUscitaMessage(bmc.getIntAddress(),
+    					getIntAddress(), outPort);
+    		sendPTPRequest(m);
+    	}
+    }
+
     /**
      * Rileva le associazioni delle uscite con comandi broadcast.
      * 
@@ -285,8 +311,17 @@ public class BMCComputer extends BMC {
 		return 0; // per ora...
 	}
 
-	public void setPort(String port, String value) throws EDSException {
+	public void poke(String port, String value) throws EDSException {
 		throw new EDSException("Unimplemented.");
+	}
+
+	public int getInPortsNumber() {
+		return 8;
+	}
+
+	public String peek(String portId) throws AISException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -4,6 +4,7 @@
 package it.ascia.eds.device;
 
 
+import it.ascia.ais.AISException;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.CronotermMessage;
@@ -349,7 +350,8 @@ public class BMCChronoTerm extends BMC {
 
 	public int getOutPortsNumber() {
 		// FIXME: e' vero?
-		return 11;
+		//return 11;
+		return 0;
 	}
 	
 	public void printStatus() {
@@ -409,5 +411,19 @@ public class BMCChronoTerm extends BMC {
 		if (!success) {
 			throw new EDSException("Il device non risponde");
 		}
+	}
+
+	public int getInPortsNumber() {
+		return 0;
+	}
+
+	public String peek(String portId) throws AISException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void poke(String portId, String value) throws AISException {
+		// TODO Auto-generated method stub
+		
 	}
 }

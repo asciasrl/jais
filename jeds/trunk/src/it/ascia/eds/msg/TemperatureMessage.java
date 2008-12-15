@@ -38,11 +38,11 @@ public class TemperatureMessage	extends PTPMessage
 	public static final int MODE_TIME = 3;
 
 	public TemperatureMessage(int[] message) {
-		parseMessage(message);
+		load(message);
 	}
 
-	public String getTipoMessaggio() {
-		return "Lettura dello stato del cronotermostato";
+	public String getMessageDescription() {
+		return "Stato termostato";
 	}
 	
 	/**
@@ -74,8 +74,8 @@ public class TemperatureMessage	extends PTPMessage
 	/**
 	 * Ritorna true se la temperatura e' superiore al set-point.
 	 */
-	public boolean tempOverSetPoint() {
-		return ((Byte2 & 0x04) != 0); 
+	public boolean isOn() {
+		return ((Byte2 & 0x04) == 1); 
 	}
 	
 	/**
@@ -87,19 +87,28 @@ public class TemperatureMessage	extends PTPMessage
 		return (Byte2 & 0x03);
 	}
 	
-	public String getInformazioni()	{
+	public String getModeDescription() {
+		switch (getMode()) {
+			case 0:
+				return "Antigelo";
+			case 1:
+				return "Chrono";
+			case 2:
+				return "Manuale";
+			case 3:
+				return "Cronotermostato";
+			default:
+				return "modo sconosciuto";
+		}	
+	}
+	
+	public String toString()	{
 		StringBuffer s = new StringBuffer();
-		s.append("Mittente: "+Mittente+"\r\n");
-		s.append("Destinatario: "+Destinatario+"\r\n");
-		s.append("Allarme minima temp.: " + getAlarm() + "\r\n");
-		s.append("Temperatura: "+ getChronoTermTemperature());
-		if (tempOverSetPoint()) {
-			s.append(" sopra");
-		} else {
-			s.append(" sotto");
-		}
-		s.append(" al set point\r\n");
-		s.append("Modalita': " + getMode() + "\r\n");
+		s.append(super.toString());
+		s.append(getAlarm() ? " Antigelo":"");
+		s.append("T="+ getChronoTermTemperature()+"°C");
+		s.append(isOn()?" ON ":" OFF ");
+		s.append(getModeDescription());
 		return s.toString();
 	}
 

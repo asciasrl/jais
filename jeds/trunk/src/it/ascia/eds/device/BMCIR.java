@@ -3,6 +3,7 @@
  */
 package it.ascia.eds.device;
 
+import it.ascia.ais.AISException;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.EDSMessage;
@@ -53,7 +54,7 @@ public class BMCIR extends BMC {
 	 */
 	private void alertListener(int port) {
 		String portName, newValue;
-		portName = getInputCompactName(port);
+		portName = getInputPortId(port);
 		if (inPorts[port]) {
 			newValue = "on";
 		} else {
@@ -127,8 +128,8 @@ public class BMCIR extends BMC {
 		updateStatus();
 		for (i = 0; i < inPortsNum; i++) {
 			if ((timestamp <= inPortsTimestamps[i]) &&
-					(port.equals("*") || port.equals(getInputCompactName(i)))) {
-				retval += compactName + ":" + getInputCompactName(i) + "=" + 
+					(port.equals("*") || port.equals(getInputPortId(i)))) {
+				retval += compactName + ":" + getInputPortId(i) + "=" + 
 					(inPorts[i]? "ON" : "OFF") + "\n";
 			}
 		}
@@ -150,5 +151,17 @@ public class BMCIR extends BMC {
 
 	public void setPort(String port, String value) throws EDSException {
 		throw new EDSException("Not implemented.");
+	}
+	
+	public int getInPortsNumber() {
+		return inPortsNum;
+	}
+	public String peek(String portId) throws AISException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public void poke(String portId, String value) throws AISException {
+		// TODO Auto-generated method stub
+		
 	}
 }

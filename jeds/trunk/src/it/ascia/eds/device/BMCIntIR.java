@@ -3,6 +3,7 @@
  */
 package it.ascia.eds.device;
 
+import it.ascia.ais.AISException;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.EDSMessage;
@@ -58,7 +59,7 @@ public class BMCIntIR extends BMC {
 		} else {
 			value = "OFF";
 		}
-		generateEvent(getInputCompactName(0), value);
+		generateEvent(getInputPortId(0), value);
 	}
 	
 	public void messageSent(EDSMessage m) {
@@ -89,8 +90,8 @@ public class BMCIntIR extends BMC {
 		String busName = connector.getName();
 		String compactName = busName + "." + getAddress();
 		if ((timestamp <= irInputTimestamp) &&
-				(port.equals("*") || port.equals(getInputCompactName(0)))) {
-			return compactName + ":" + getInputCompactName(0) +
+				(port.equals("*") || port.equals(getInputPortId(0)))) {
+			return compactName + ":" + getInputPortId(0) +
 			"=" + (irInput? "ON" : "OFF") + "\n";
 		} else {
 			return "";
@@ -109,7 +110,18 @@ public class BMCIntIR extends BMC {
 		return 0;
 	}
 
-	public void setPort(String port, String value) throws EDSException {
+	public void poke(String port, String value) throws EDSException {
 		throw new EDSException("Not implemented.");
 	}
+
+	public int getInPortsNumber() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public String peek(String portId) throws AISException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

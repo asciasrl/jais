@@ -33,10 +33,10 @@ public class ComandoBroadcastMessage extends BroadcastMessage
 	}
 
 	public ComandoBroadcastMessage(int[] message) {
-		parseMessage(message);
+		load(message);
 	}
 
-	public String getTipoMessaggio() {
+	public String getMessageDescription() {
 		return "Messaggio Broadcast";
 	}
 	
@@ -54,16 +54,17 @@ public class ComandoBroadcastMessage extends BroadcastMessage
 		return (Byte2 & 0x1F);
 	}
 	
-	public String getInformazioni()	{
+	public String toString()	{
 		StringBuffer s = new StringBuffer();
-		s.append("Timestamp: "+((Mittente & 0xFF) * 0x100 + (Destinatario & 0xFF)) +"\r\n");
+		s.append(b2h(Mittente)+":"+b2h(Destinatario)+" "+getMessageDescription()+ " ["+b2h(Byte1)+":"+b2h(Byte2)+" "+Byte1+":"+Byte2+"]");
+		//s.append("Timestamp: "+((Mittente & 0xFF) * 0x100 + (Destinatario & 0xFF)) +"\r\n");
+		s.append(" Gruppo "+ getCommandNumber());
 		if (isActivation()) {
-			s.append("Attivazione/Incremento\r\n");
+			s.append(" Attiva");
 		} else {
-			s.append("Disattivazione/Decremento\r\n");
+			s.append(" Disattiva");
 		}
-		s.append("Numero comando: "+ getCommandNumber() +"\r\n");
-		s.append("Modalita: "+((Byte1 >> 1) & 0x7F)+"\r\n");
+		s.append(" Modalita: "+((Byte1 >> 1) & 0x7F));
 		return s.toString();
 	}
 

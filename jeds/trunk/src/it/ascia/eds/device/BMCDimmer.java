@@ -3,6 +3,7 @@
  */
 package it.ascia.eds.device;
 
+import it.ascia.ais.AISException;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.ComandoBroadcastMessage;
@@ -118,7 +119,7 @@ public class BMCDimmer extends BMC {
 	 * @param portNumber numero della porta che ha cambiato valore.
 	 */
 	private void alertListener(int portNumber) {
-		generateEvent(getOutputCompactName(portNumber), 
+		generateEvent(getOutputPortId(portNumber), 
 				String.valueOf(outPorts[portNumber]));
 	}
 	
@@ -288,8 +289,8 @@ public class BMCDimmer extends BMC {
 		}
 		for (i = 0; i < outPortsNum; i++) {
 			if ((timestamp <= outPortsTimestamps[i]) &&
-					(port.equals("*") || port.equals(getOutputCompactName(i)))){
-				retval += compactName + ":" + getOutputCompactName(i) + "=" +
+					(port.equals("*") || port.equals(getOutputPortId(i)))){
+				retval += compactName + ":" + getOutputPortId(i) + "=" +
 					outPorts[i] + "\n";
 			}
 		}
@@ -375,9 +376,9 @@ public class BMCDimmer extends BMC {
 	 * @param port il nome compatto della porta.
 	 * @value un numero, un valore percentuale o "OFF"
 	 */
-	public void setPort(String port, String value) throws EDSException {
+	public void poke(String port, String value) throws EDSException {
 		int outPort, numericValue;
-		outPort = getOutputNumberFromCompactName(port);
+		outPort = getOutputNumberFromPortId(port);
 		if (outPort == -1) {
 			throw new EDSException("Porta non valida: " + port);
 		}
@@ -396,4 +397,14 @@ public class BMCDimmer extends BMC {
 		}
 		setOutputRealTime(outPort, numericValue);
 	}
+
+	public int getInPortsNumber() {
+		return 0;
+	}
+
+	public String peek(String portId) throws AISException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -22,10 +22,10 @@ public class RichiestaSetPointMessage extends PTPRequest
 	}
 	
 	public RichiestaSetPointMessage(int[] message) {
-		parseMessage(message);
+		load(message);
 	}
 
-	public String getTipoMessaggio() {
+	public String getMessageDescription() {
 		return "Richiesta set point cronotermostato";
 	}
 	

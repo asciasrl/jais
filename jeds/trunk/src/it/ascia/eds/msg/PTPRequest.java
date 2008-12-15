@@ -12,7 +12,7 @@ public abstract class PTPRequest extends PTPMessage {
 	/**
 	 * True se il messaggio ha ricevuto una risposta.
 	 */
-	protected boolean answered = false;
+	public boolean answered = false;
 	
 	/**
 	 * Verifica se un messaggio risponde a questo.
@@ -30,24 +30,20 @@ public abstract class PTPRequest extends PTPMessage {
 			AcknowledgeMessage ack = (AcknowledgeMessage) m;
 			if ((getSender() == ack.getRecipient()) &&
 					(getRecipient() == ack.getSender()) &&
-					ack.hasBytes(Byte1, Byte2)) {
-				answered = true;
+					(ack.Byte1 == Byte1) && (ack.Byte2 == Byte2)) {
+				return true;
 			}
 		}
-		return answered;
+		return false;
 	}
 
-	
 	/**
-	 * Controlla se il messaggio ha ricevuto una risposta.
-	 * 
-	 * Le risposte devono prima essere verificate dal metodo checkAnswer().
-	 * 
-	 * @return true se e' stata ricevuta una risposta a questo messaggio.
+	 * Ritorna il numero massimo di tentativi di invio da effettuare.
 	 */
-	public final boolean wasAnswered() {
-		return answered;
+	public int getMaxSendTries() {
+		return 8;
 	}
+
 	
 	public final boolean wantsReply() {
 		return true;

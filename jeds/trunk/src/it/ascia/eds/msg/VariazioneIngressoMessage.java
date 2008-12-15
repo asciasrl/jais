@@ -61,11 +61,11 @@ public class VariazioneIngressoMessage extends PTPRequest
 	}
 
 	public VariazioneIngressoMessage(int[] message) {
-		parseMessage(message);
+		load(message);
 	}
 
-	public String getTipoMessaggio() {
-		return "Variazione di un ingresso";
+	public String getMessageDescription() {
+		return "Variazione ingresso";
 	}
 	
 	/**
@@ -76,6 +76,18 @@ public class VariazioneIngressoMessage extends PTPRequest
 	public boolean isActivation() {
 		return ((Byte1 & 0x08) == 0);
 	}
+	
+	/**
+	 * Indica la modalità di variazione dell’ingresso verso massa 
+	 * (0 = apertura verso GND, 1 = chiusura verso GND)
+	 * 
+	 * @return true Ingresso chiuso
+	 */
+	public boolean isClose() {
+		return ((Byte2 & 0x01) == 1);
+	}
+	
+	
 	
 	/**
 	 * Ritorna il numero dell'uscita interessata.
@@ -94,20 +106,21 @@ public class VariazioneIngressoMessage extends PTPRequest
 		return Byte1 & 0x0f;
 	}
 		
-	public String getInformazioni()	{
+	public String toString()	{
 		StringBuffer s = new StringBuffer();
-		s.append("Mittente: "+ Mittente +"\r\n");
-		s.append("Destinatario: "+ Destinatario +"\r\n");
-		s.append("BMC:\r\n");
+		s.append(super.toString());
+		s.append(" Out"+ getOutputNumber());
 		if (isActivation()) {
-			s.append(" Attivazione/Incremento\r\n");
+			s.append(" Attiva");
 		} else {
-			s.append(" Disattivazione/Decremento\r\n");
+			s.append(" Disattiva");
 		}
-		s.append(" Numero uscita: "+ getOutputNumber() +"\r\n");
-		s.append(" Variazione: "+ (Byte2 & 0x01) +"\r\n");
-		s.append("Cronotermostato:\r\n");
-		s.append(" Stato: " + getChronoTermState() + "\r\n");
+		if (isClose()) {
+			s.append(" Chiuso");
+		} else {
+			s.append(" Aperto");
+		}
+		//s.append(" CT: " + getChronoTermState());
 		return s.toString();
 	}
 

@@ -3,6 +3,8 @@
  */
 package it.ascia.ais;
 
+import java.util.HashMap;
+
 
 /**
  * Device generico connesso a un Connector generico.
@@ -14,6 +16,12 @@ public abstract class Device {
 	 * L'indirizzo sul transport.
 	 */
 	protected String address;
+
+	/**
+	 * I nomi delle porte del dispositivo.
+	 */
+	protected HashMap portsNames = new HashMap();
+
 	/**
 	 * Ritorna l'indirizzo del Device, cosi' come visto da AUI.
 	 */
@@ -39,8 +47,8 @@ public abstract class Device {
 	 * 
 	 * <p>Lo stato deve essere aggiornato.</p>
 	 * 
-	 * @return lo stato del device che è cambiato al timestamp specificato, 
-	 * oppure più tardi.
+	 * @return lo stato del device che e' cambiato al timestamp specificato, 
+	 * oppure piu' tardi.
 	 * 
 	 * @param port il nome della porta da restituire, o "*" per indicarle
 	 * tutte.
@@ -49,18 +57,63 @@ public abstract class Device {
 	 * che ci interessano, nella forma ritornata da System.currentTimeMillis().
 	 * Se posto a 0, richiede l'intero stato del sistema.
 	 */
-	public abstract String getStatus(String port, long timestamp);
+	public abstract String getStatus(String portId, long timestamp);
+	
+	public void addPort(String portId, String portName) {
+		portsNames.put(portId, portName);		
+	}
+
+	public void addPort(String portId) {
+		portsNames.put(portId, portId);		
+	}
+	
+	/**
+	 * Fornisce il nome descrittivo della porta del device
+	 * 
+	 * @param portId identificatore univoco della porta del device
+	 * @return null Se la porta non esiste
+	 */
+	public String getPortName(String portId) {
+		if (portsNames.containsKey(portId)) {
+			return (String) portsNames.get(portId);
+		}
+		return null;
+	}
+	
+	/**
+	 * Imposta il nome descrittivo della porta del device
+	 * 
+	 * @param portId identificatore univoco della porta del device
+	 * @param portName Nuovo nome per la porra
+	 * @return false Se la porta non esiste
+	 */
+	public boolean setPortName(String portId, String portName) {
+		if (portsNames.containsKey(portId)) {
+			portsNames.put(portId, portName);
+			return true;
+		}
+		return false;		
+	}
 	
 	/**
 	 * Imposta il valore di una porta.
 	 * 
-	 * @param port il nome della porta
+	 * @param portId il nome della porta
 	 * @param value il valore da impostare
 	 * 
 	 * @throws un'eccezione se qualcosa va male.
 	 */
-	public abstract void setPort(String port, String value) throws AISException;
+	public abstract void poke(String portId, String value) throws AISException;
 	
+	/**
+	 * Legge il valore di una porta.
+	 * 
+	 * @param portId il nome della porta
+	 * 
+	 * @throws un'eccezione se qualcosa va male.
+	 */
+	public abstract String peek(String portId) throws AISException;
+
 	/**
      * Imposta un DeviceListener che ricevera' gli eventi di questo Device.
      * 

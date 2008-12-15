@@ -22,10 +22,10 @@ public class RichiestaStatoTermostatoMessage extends PTPRequest
 	}
 	
 	public RichiestaStatoTermostatoMessage(int[] message) {
-		parseMessage(message);
+		load(message);
 	}
 
-	public String getTipoMessaggio() {
+	public String getMessageDescription() {
 		return "Richiesta Stato termostato";
 	}
 	

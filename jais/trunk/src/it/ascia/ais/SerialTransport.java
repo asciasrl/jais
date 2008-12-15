@@ -45,7 +45,8 @@ public class SerialTransport extends Transport implements SerialPortEventListene
     	super(connector);
         boolean portFound = false;
         name = portName;
-        
+  
+/*        
     	portList = CommPortIdentifier.getPortIdentifiers();
     	while (!portFound && portList.hasMoreElements()) {
     	    portId = (CommPortIdentifier) portList.nextElement();
@@ -60,12 +61,28 @@ public class SerialTransport extends Transport implements SerialPortEventListene
     	if (!portFound) {
     	    throw new AISException("port " + portName + " not found.");
     	} 
-
-    	logger.info("Connessione a " + portName); 
+*/
+        
+    	logger.info("Connessione a " + portName);    	
+    	CommPortIdentifier portId;
+		try {
+			portId = CommPortIdentifier.getPortIdentifier(portName);
+		} catch (NoSuchPortException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+	    	portList = CommPortIdentifier.getPortIdentifiers();
+	    	while (portList.hasMoreElements()) {
+	    	    portId = (CommPortIdentifier) portList.nextElement();
+	    	    if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
+		    	    logger.debug("Detected serial port: " + portId.getName());
+	    	    }
+	    	}
+	    	throw new AISException("Porta "+portName+" non trovata: " + e.toString());
+		}
     	try {
     		serialPort = (SerialPort) portId.open("SerialTransport", 2000);
     	} catch (PortInUseException e) {
-	    	throw new AISException("Porta in uso: " + e.toString());
+	    	throw new AISException("Porta "+portName+" in uso: " + e.toString());
     	}
 
 		try {

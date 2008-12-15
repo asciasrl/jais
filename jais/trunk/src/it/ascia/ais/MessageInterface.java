@@ -2,7 +2,7 @@ package it.ascia.ais;
 
 public interface MessageInterface {
 
-	public String getTipoMessaggio();
+	public String getMessageDescription();
 	
-	public String getInformazioni();
+	public String toString();
 }

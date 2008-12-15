@@ -5,7 +5,7 @@
 	</target>
 
 	<target name="jar">
-		<delete file="aui.jar"/>
+		<delete file="JaisTest.jar"/>
 		<property name="version.num" value="1.00"/>
 		<buildnumber file="build.num"/>
 		<tstamp>
@@ -19,7 +19,7 @@
 			<attribute name="Built-Date" value="${TODAY}"/>                 
 		</manifest>
 		
-		<jar destfile="aui.jar"
+		<jar destfile="JaisTest.jar"
 		   basedir="bin"
 		   includes="**/*.class"
 		   manifest="MANIFEST.MF"

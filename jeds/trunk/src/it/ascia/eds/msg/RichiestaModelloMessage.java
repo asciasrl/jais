@@ -24,10 +24,10 @@ public class RichiestaModelloMessage extends PTPRequest
 	}
 	
 	public RichiestaModelloMessage(int[] message) {
-		parseMessage(message);
+		load(message);
 	}
 
-	public String getTipoMessaggio() {
+	public String getMessageDescription() {
 		return "Richiesta Modello e Revisione";
 	}
 
@@ -35,10 +35,10 @@ public class RichiestaModelloMessage extends PTPRequest
 		if (m.getMessageType() == EDSMessage.MSG_RISPOSTA_MODELLO) {
 			if ((getSender() == m.getRecipient()) &&
 					(getRecipient() == m.getSender())) {
-				answered = true;
+				return true;
 			}
 		}
-		return wasAnswered();
+		return false;
 	}
 	
 	/**

@@ -578,8 +578,13 @@ public class JBisKyoDevice extends Device {
 	/* (non-Javadoc)
 	 * @see it.ascia.ais.Device#setPort(java.lang.String, java.lang.String)
 	 */
-	public void setPort(String port, String value) throws AISException {
+	public void poke(String port, String value) throws AISException {
 		throw new AISException("Unsupported.");
+	}
+
+	public String peek(String portId) throws AISException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

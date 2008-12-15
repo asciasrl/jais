@@ -69,10 +69,10 @@ public class ImpostaParametroMessage extends PTPRequest
 	}
 
 	public ImpostaParametroMessage(int[] message) {
-		parseMessage(message);
+		load(message);
 	}
 
-	public String getTipoMessaggio() {
+	public String getMessageDescription() {
 		return "Impostazione parametro (dimmer o sonda termica)";
 	}
 	
@@ -130,7 +130,7 @@ public class ImpostaParametroMessage extends PTPRequest
 		}
 	}
 
-	public String getInformazioni()	{
+	public String toString()	{
 		StringBuffer s = new StringBuffer();
 		s.append("Mittente: "+Mittente+"\r\n");
 		s.append("Destinatario: "+Destinatario+"\r\n");

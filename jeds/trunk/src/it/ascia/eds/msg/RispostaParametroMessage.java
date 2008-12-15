@@ -26,10 +26,10 @@ public class RispostaParametroMessage extends PTPMessage
 	}
 */	
 	public RispostaParametroMessage(int[] message) {
-		parseMessage(message);
+		load(message);
 	}
 
-	public String getTipoMessaggio() {
+	public String getMessageDescription() {
 		return "Risposta a lettura parametro (dimmer o sonda termica)";
 	}
 	
@@ -95,7 +95,7 @@ public class RispostaParametroMessage extends PTPMessage
 		return Byte1 & 0xff;
 	}
 	
-	public String getInformazioni()	{
+	public String toString()	{
 		StringBuffer s = new StringBuffer();
 		s.append("Mittente: "+Mittente+"\r\n");
 		s.append("Destinatario: "+Destinatario+"\r\n");

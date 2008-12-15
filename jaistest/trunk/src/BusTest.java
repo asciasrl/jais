@@ -131,11 +131,12 @@ public class BusTest extends MyController {
 	    //String defaultPort = "ascia.homeip.net";
 		String defaultPort = "COM2";
 		Integer tcpPort = null;
+		int httpPort = 80;
 		String documentRoot = "../aui";
 	    // Inizializzazione logger
 	    PropertyConfigurator.configure("conf/log4j.conf");
 		//ConfigurationFile cfgFile = null;
-		Logger log = Logger.getLogger("main");
+		Logger log = Logger.getLogger(BusTest.class);
 	 	if (args.length > 0) {
 	 		for (int i = 0; i < args.length; i++) {
 				log.debug("Parametro "+i+"="+args[i]);
@@ -143,10 +144,20 @@ public class BusTest extends MyController {
 		    if (args[0].contains(":")) {
 		    	String[] s2 = args[0].split(":",2);
 		    	defaultPort = s2[0];
-		    	tcpPort = new Integer(Integer.parseInt(s2[1])); 
+		    	tcpPort = new Integer(Integer.parseInt(s2[1]));
+		    	log.info("Connessione al BUS tramite TCP/IP su "+defaultPort+":"+tcpPort);
 		    } else {
 		    	defaultPort = args[0];
+		    	log.info("Connessione al BUS tramite seriale "+defaultPort);
 		    }
+		    if (args.length > 1) {
+		    	httpPort = Integer.parseInt(args[1]);
+		    }
+	    	log.info("Server HTTP su porta "+httpPort);
+		    if (args.length > 2) {
+		    	documentRoot = args[2];
+		    }
+	    	log.info("Cartella files http "+documentRoot);
 		}
 	 	EDSConnector eds = null;
 	 	Transport transport = null;
@@ -166,7 +177,9 @@ public class BusTest extends MyController {
 		busController = new BusTest(null /* "1" */);
 		busController.addConnector(eds);
 		try {
-			server = new HTTPServer(80, busController, documentRoot);
+			if (httpPort > 0) {
+				server = new HTTPServer(httpPort, busController, documentRoot);
+			}
 		} catch (AISException e) {
 			System.err.println(e.getMessage());
 			System.exit(-1);
@@ -223,8 +236,9 @@ public class BusTest extends MyController {
 					}
 				}
 		}
-		server.close();
+		if (server != null) server.close();
 		transport.close();
+		log.info("Termine programma");
 	}
 	
 	public BusTest(String pin) {

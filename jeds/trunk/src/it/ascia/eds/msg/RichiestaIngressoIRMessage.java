@@ -14,14 +14,14 @@ public class RichiestaIngressoIRMessage extends PTPRequest
 	}
 	
 	public RichiestaIngressoIRMessage(int[] message) {
-		parseMessage(message);
+		load(message);
 	}
 
-	public String getTipoMessaggio() {
+	public String getMessageDescription() {
 		return "Richiesta codice ingresso IR";
 	}
 
-	public String getInformazioni()	{
+	public String toString()	{
 		StringBuffer s = new StringBuffer();
 		s.append("Mittente: "+Mittente+"\r\n");
 		s.append("Destinatario: "+Destinatario+"\r\n");
@@ -33,10 +33,10 @@ public class RichiestaIngressoIRMessage extends PTPRequest
 		if (m.getMessageType() == EDSMessage.MSG_RISPOSTA_INGRESSO_IR) {
 			if ((getSender() == m.getRecipient()) &&
 					(getRecipient() == m.getSender())) {
-				answered = true;
+				return true;
 			}
 		}
-		return wasAnswered();
+		return false;
 	}
 
 	public int getMessageType() {

@@ -34,27 +34,24 @@ public class RispostaStatoMessage extends PTPMessage {
 	}
 
 	public RispostaStatoMessage(int[] message) {
-		parseMessage(message);
+		load(message);
 	}
 
-	public String getTipoMessaggio() {
+	public String getMessageDescription() {
 		return "Risposta a richiesta Stato";
 	}
 
-	public String getInformazioni()	{
+	public String toString()	{
 		StringBuffer s = new StringBuffer();
-		s.append("Mittente: "+Mittente+"\r\n");
-		s.append("Destinatario: "+Destinatario+"\r\n");
-		s.append("Uscite:");
+		s.append(Mittente+" -> "+Destinatario);
+		s.append(" Entrate:");
 		for (int i = 0; i <= 7; i++) {
-			s.append((i+1)+"="+((Byte1 >> i) & 0x01)+"  ");
+			s.append(((Byte2 >> i) & 0x01));
 		} 
-		s.append("\r\n");
-		s.append("Entrate:");
+		s.append(" Uscite:");
 		for (int i = 0; i <= 7; i++) {
-			s.append((i+1)+"="+((Byte2 >> i) & 0x01)+"  ");
+			s.append(((Byte1 >> i) & 0x01));
 		} 
-		s.append("\r\n");
 		return s.toString();
 	}
 	

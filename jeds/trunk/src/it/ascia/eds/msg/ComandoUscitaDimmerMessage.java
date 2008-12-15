@@ -24,14 +24,14 @@ public class ComandoUscitaDimmerMessage extends PTPMessage
 	}
 	
 	public ComandoUscitaDimmerMessage(int[] message) {
-		parseMessage(message);
+		load(message);
 	}
 
-	public String getTipoMessaggio() {
+	public String getMessageDescription() {
 		return "Comando uscita dimmer";
 	}
 
-	public String getInformazioni()	{
+	public String toString()	{
 		StringBuffer s = new StringBuffer();
 		s.append("Mittente: "+Mittente+"\r\n");
 		s.append("Destinatario: "+Destinatario+"\r\n");

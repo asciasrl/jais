@@ -32,11 +32,11 @@ public class CronotermMessage extends PTPMessage implements MessageInterface {
 	 */
 	
 	public CronotermMessage(int[] message) {
-		parseMessage(message);
+		load(message);
 	}
 
-	public String getTipoMessaggio() {
-		return "Lettura del set point del cronotermostato";
+	public String getMessageDescription() {
+		return "Set point cronotermostato";
 	}
 	
 	/**
@@ -53,16 +53,11 @@ public class CronotermMessage extends PTPMessage implements MessageInterface {
 		return ((Byte2 & 0x80) > 0);
 	}
 	
-	public String getInformazioni()	{
+	public String toString()	{
 		StringBuffer s = new StringBuffer();
-		s.append("Mittente: "+Mittente+"\r\n");
-		s.append("Destinatario: "+Destinatario+"\r\n");
-		if (isWinter()) {
-			s.append("Inverno\r\n");
-		} else {
-			s.append("Estate\r\n");
-		}
-		s.append("Temperatura del set point: "+ getSetPoint() +"\r\n");
+		s.append(super.toString());
+		s.append(isWinter() ? " Inverno "  : " Estate ");
+		s.append("Tset="+ getSetPoint() +"°C");
 		return s.toString();
 	}
 

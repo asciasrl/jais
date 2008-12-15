@@ -29,30 +29,20 @@ public class EDSConnector extends it.ascia.ais.Connector {
 	 * 8 / 120 = 660 msec. In quello migliore (9600 bps), la trasmissione 
 	 * richiede 82 msec. Questa costante deve tener conto del caso migliore.</p>
 	 */
-	public static final int PING_WAIT = 200;
-	/**
-	 * Quante volte aspettare PING_WAIT prima di ritrasmettere.
-	 * 
-	 * <p>Questo indica quante volte si attende PING_WAIT millisecondi, prima di
-	 * riprovare a inviare un messaggio. Condizione da rispettare e' che 
-	 * PING_WAIT * WAIT_RETRIES sia maggiore del tempo piu' lungo previsto per 
-	 * il round-trip di un messaggio.</p>
-	 * 
-	 * <p>All'attesa deve essere aggiunto un ritardo casuale.</p>
-	 */
-	public static final int WAIT_RETRIES = 6;
+	protected int RETRY_TIMEOUT = 500;
+
 	/**
 	 * Quante volte provare a reinviare un messaggio che richiede una risposta.
 	 * 
 	 * <p>Quando l'attesa supera PING_WAIT * WAIT_RETRIES, questa costante 
 	 * decide quanti tentativi di ri-invio effettuare.</p>
 	 */
-	public static final int ACKMESSAGE_SEND_RETRIES = 2;
+	public static final int ACKMESSAGE_SEND_RETRIES = 3;
 	/**
 	 * Quante volte provare a reinviare un messaggio di richiesta stato 
 	 * senza risposta.
 	 * 
-	 * <p>Quando l'attesa supera PING_WAIT * WAIT_RETRIES, questa costante 
+	 * <p>Quando l'attesa supera retryTimeout, questa costante 
 	 * decide quanti tentativi di ri-invio effettuare.</p>
 	 */
 	protected static final int STATUSREQ_SEND_RETRIES = 3;
@@ -66,7 +56,7 @@ public class EDSConnector extends it.ascia.ais.Connector {
 	 */
 	protected MessageParser mp;
     /**
-     * Il BMC "finto" che corrisponde a questo computer.
+     * Il BMC "finto" che corrisponde a questo.
      */
     private BMCComputer bmcComputer;
     /**
@@ -90,7 +80,7 @@ public class EDSConnector extends it.ascia.ais.Connector {
     
     
     /**
-     * Ritorna il nome di questo transport.
+     * Ritorna il nome di questa istanza di connettore.
      */
     public String getName() {
     	return name;
@@ -241,4 +231,9 @@ public class EDSConnector extends it.ascia.ais.Connector {
     	return (BMC[]) devices.toArray(new BMC[devices.size()]);
     }
     */
+    
+    public int getRetryTimeout() {
+    	return RETRY_TIMEOUT;
+    }
+        
 }

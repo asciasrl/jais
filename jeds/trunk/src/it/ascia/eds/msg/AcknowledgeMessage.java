@@ -17,7 +17,7 @@ public class AcknowledgeMessage extends PTPMessage {
 	 * Costruttore a partire dai dati di un messaggio ACK ricevuto.
 	 */
 	public AcknowledgeMessage(int[] message) {
-		parseMessage(message);
+		load(message);
 	}
 	
 	/**
@@ -36,19 +36,12 @@ public class AcknowledgeMessage extends PTPMessage {
 		Byte2 = rawMessage[5];
 	}
 
-	public String getTipoMessaggio() {
+	public String getMessageDescription() {
 		return "Acknowledge";
 	}
 
 	public int getMessageType() {
 		return MSG_ACKNOWLEDGE;
 	}
-
-	/**
-	 * Confronta i campi Byte1 e Byte2 con i valori specificati.
-	 */
-	public boolean hasBytes(int byte1, int byte2) {
-		return ((Byte1 == byte1) && (Byte2 == byte2));
-	}
-
+	
 }

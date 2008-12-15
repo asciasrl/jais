@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -45,26 +44,12 @@ public abstract class BMC extends Device {
 	 * Il bus a cui il dispositivo e' collegato.
 	 */
 	protected EDSConnector connector;
+
 	/**
 	 * Il nome che AUI da' a questo BMC.
 	 */
 	protected String name;
-	/**
-	 * I nomi delle porte di ingresso.
-	 * 
-	 * <p>Nel file di configurazione, gli ingressi partono da 1 per quasi
-	 * tutti i tipi di dispositivi. Per gli altri, la numerazione degli ingressi
-	 * puo' seguire logiche diverse (ad es. dando significato ai singoli 
-	 * bit).</p>
-	 * 
-	 * <p>Da un punto di vista di occupazione di memoria, un Vector sarebbe
-	 * piu' svantaggioso nel caso peggiore.</p>
-	 */
-	private Map inPortsNames;
-	/**
-	 * I nomi delle porte di uscita.
-	 */
-	private Vector outPortsNames;
+	
 	/**
 	 * Binding tra messaggi broadcast e porte di output.
 	 * 
@@ -103,16 +88,18 @@ public abstract class BMC extends Device {
 		this.address = String.valueOf(address);
 		this.model = model;
 		this.name = name;
-		inPortsNames = new HashMap();
-		outPortsNames = new Vector(getOutPortsNumber());
 		broadcastBindingsBySignal = new Set[32];
 		broadcastBindingsByPort = new Set[getOutPortsNumber()];
 		for (int i = 0; i < broadcastBindingsBySignal.length; i++) {
 			broadcastBindingsBySignal[i] = new HashSet();
 		}
+		for (int i = 0; i < getInPortsNumber(); i++) {
+			addPort(getInputPortId(i));
+		}
 		for (int i = 0; i < getOutPortsNumber(); i++) {
 			// Usiamo un tipo di Set che mantenga l'ordinamento
 			broadcastBindingsByPort[i] = new LinkedHashSet();
+			addPort(getOutputPortId(i));
 		}
 		logger = Logger.getLogger(getClass());
 	}
@@ -132,7 +119,7 @@ public abstract class BMC extends Device {
 	}
 	
 	/**
-	 * Factory method for creating BMCs and adding them to the transport.
+	 * Factory method for creating BMCs and adding them to the connector.
 	 * 
 	 * @param bmcAddress the address on the transport.
 	 * @param model the model number of the BMC.
@@ -146,7 +133,7 @@ public abstract class BMC extends Device {
 	 * 
 	 * @throws an exception if the address is already in use by another BMC.
 	 */
-	public static BMC createBMC(int bmcAddress, int model, String name, EDSConnector bus,
+	public static BMC createBMC(int bmcAddress, int model, String name, EDSConnector connector,
 			boolean isReal) 
 		throws EDSException {
 		Logger logger = Logger.getLogger("BMC.createBMC");
@@ -160,7 +147,7 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "StandardIO" + bmcAddress;
 			}
-			bmc = new BMCStandardIO(bmcAddress, model, bus, name);
+			bmc = new BMCStandardIO(bmcAddress, model, connector, name);
 			break;
 		case 41:
 		case 61:
@@ -168,7 +155,7 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "IR" + bmcAddress;
 			}
-			bmc = new BMCIR(bmcAddress, model, bus, name);
+			bmc = new BMCIR(bmcAddress, model, connector, name);
 			break;
 		case 101:
 		case 102:
@@ -179,13 +166,13 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "Dimmer" + bmcAddress;
 			}
-			bmc = new BMCDimmer(bmcAddress, model, bus, name);
+			bmc = new BMCDimmer(bmcAddress, model, connector, name);
 			break;
 		case 131:
 			if (name == null) {
 				name = "IntIR" + bmcAddress;
 			}
-			bmc = new BMCIntIR(bmcAddress, model, bus, name);
+			bmc = new BMCIntIR(bmcAddress, model, connector, name);
 			break;
 		case 152:
 		case 154:
@@ -194,19 +181,19 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "ScenarioManager" + bmcAddress;
 			}
-			bmc = new BMCScenarioManager(bmcAddress, model, bus, name);
+			bmc = new BMCScenarioManager(bmcAddress, model, connector, name);
 			break;
 		case 121:
 			if (name == null) {
 				name = "TemperatureSensor" + bmcAddress; 
 			}
-			bmc = new BMCTemperatureSensor(bmcAddress, model, bus, name);
+			bmc = new BMCTemperatureSensor(bmcAddress, model, connector, name);
 			break;
 		case 127:
 			if (name == null) {
 				name = "ChronoTerm" + bmcAddress;
 			}
-			bmc = new BMCChronoTerm(bmcAddress, model, bus, name);
+			bmc = new BMCChronoTerm(bmcAddress, model, connector, name);
 			break;
 		default:
 			logger.error("Modello di BMC sconosciuto: " + 
@@ -214,7 +201,7 @@ public abstract class BMC extends Device {
 			bmc = null;
 		}
 		if (bmc != null) {
-			bus.addDevice(bmc);
+			connector.addDevice(bmc);
 		}
 		return bmc;
 	}	
@@ -273,6 +260,16 @@ public abstract class BMC extends Device {
 	 * infrarossi, invece, possono valere anche 0.</p>
 	 */
 	public abstract int getFirstInputPortNumber();
+
+	
+	/**
+	 * Ritorna il numero di ingressi.
+	 * 
+	 * <p>Attenzione: questa funzione viene chiamata dal costruttore di BMC! 
+	 * Quindi <i>non</i> deve contare su eventuali elaborazioni fatte dal
+	 * costruttore della sottoclasse!</p>
+	 */
+	public abstract int getInPortsNumber();
 	
 	/**
 	 * Ritorna il numero di uscite.
@@ -303,7 +300,7 @@ public abstract class BMC extends Device {
 	 * @param name il nome da assegnare.
 	 */
 	public void setInputName(int number, String name) {
-		inPortsNames.put(new Integer(number), name);
+		setPortName(getInputPortId(number), name);
 	}
 	
 	/**
@@ -312,66 +309,43 @@ public abstract class BMC extends Device {
 	 * @param number the port number.
 	 * @param name the name to assign.
 	 */
-	public void setOutputName(int number, String name) {
-		// Sanity check
-		if (number >= getOutPortsNumber()) {
-			logger.error("Adding port " + name + " with too big index: " +
-					number);
-		}
-		if (outPortsNames.size() < number + 1) {
-			outPortsNames.setSize(number + 1);
-		}
-		outPortsNames.set(number, name);
+	public boolean setOutputName(int number, String portName) {
+		return setPortName(getOutputPortId(number), portName);
 	}
-	
+			
 	/**
 	 * Genera un nome compatto per una porta di ingresso.
 	 */
-	protected static String getInputCompactName(int number) {
+	protected static String getInputPortId(int number) {
 		return "Inp" + (number + 1);
 	}
-	
+
 	/**
 	 * Ritorna il nome di una porta di ingresso.
-	 * 
-	 * <p>Se il nome non esiste, viene impostato automaticamente.</p>
 	 * 
 	 * @param number il numero della porta di ingresso (a partire da 0).
 	 */
 	public String getInputName(int number) {
-		String retval;
-		retval = (String) inPortsNames.get(new Integer(number));
-		if (retval == null) {
-			retval = getInputCompactName(number);
-			setInputName(number, retval);
-		}
-		return retval;
+		String portId = getInputPortId(number);
+		return getPortName(portId);
 	}
-	
+
+
 	/**
 	 * Genera un nome compatto per una porta di uscita.
 	 */
-	protected static String getOutputCompactName(int number) {
+	protected static String getOutputPortId(int number) {
 		return "Out" + (number + 1);
 	}
 	
 	/**
 	 * Ritorna il nome di una porta di uscita.
-	 * 
-	 * <p>Se il nome non esiste, viene impostato automaticamente.</p>
+	 *
+	 * @return null se la porta non esiste
 	 */
 	public String getOutputName(int number) {
-		String retval;
-		try {
-			retval = (String) outPortsNames.get(number);
-		} catch (ArrayIndexOutOfBoundsException e) {
-			retval = null;
-		}
-		if (retval == null) {
-			retval = getOutputCompactName(number);
-			setOutputName(number, retval);
-		}
-		return retval;
+		String portId = getOutputPortId(number);
+		return getPortName(portId);
 	}
 
 	/**
@@ -379,12 +353,12 @@ public abstract class BMC extends Device {
 	 * 
 	 * @return il numero della porta, oppure -1 se non e' stata trovata.
 	 */
-	public int getOutputNumberFromCompactName(String name) {
+	public int getOutputNumberFromPortId(String portId) {
 		int retval = -1;
 		int max = getOutPortsNumber();
-		// Non e' il massimo dell'efficienza, ma funziona.
+		// TODO Non e' il massimo dell'efficienza, ma funziona.
 		for (int i = 0; (i < max) && (retval == -1); i++) {
-			if (name.equals(getOutputCompactName(i))) {
+			if (portId.equals(getOutputPortId(i))) {
 				retval = i;
 			}
 		}
@@ -485,5 +459,6 @@ public abstract class BMC extends Device {
 			DeviceEvent event = new DeviceEvent(this, port, value);
 			deviceListener.statusChanged(event);
 		}
-	}	
+	}
+	
 }

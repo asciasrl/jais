@@ -20,11 +20,11 @@ public class RichiestaStatoMessage extends PTPRequest
 	}
 	
 	public RichiestaStatoMessage(int[] message) {
-		parseMessage(message);
+		load(message);
 	}
 
-	public String getTipoMessaggio() {
-		return "Richiesta Stato";
+	public String getMessageDescription() {
+		return "Richiesta uscite";
 	}
 	
 	public boolean isAnsweredBy(PTPMessage m) {

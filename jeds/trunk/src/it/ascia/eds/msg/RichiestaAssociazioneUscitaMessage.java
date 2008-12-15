@@ -43,10 +43,10 @@ public class RichiestaAssociazioneUscitaMessage extends PTPRequest
 	}
 	
 	public RichiestaAssociazioneUscitaMessage(int[] message) {
-		parseMessage(message);
+		load(message);
 	}
 
-	public String getTipoMessaggio() {
+	public String getMessageDescription() {
 		return "Richiesta Associazione Uscita ad un Comando Broadcast";
 	}
 	

@@ -41,10 +41,10 @@ public class ProgrammazioneMessage extends BroadcastMessage
 	}
 
 	public ProgrammazioneMessage(int[] message) {
-		parseMessage(message);
+		load(message);
 	}
 
-	public String getTipoMessaggio() {
+	public String getMessageDescription() {
 		return "Messaggio di apertura/chiusura programmazione";
 	}
 	
@@ -52,25 +52,34 @@ public class ProgrammazioneMessage extends BroadcastMessage
 	 * Ritorna true se e' un comando di apertura programmazione.
 	 */
 	public boolean isStarting() {
-		return ((Byte1 & 0x01) == 0);
+		return ((Byte1 & 0x01) == 1);
 	}
 	
 	/**
 	 * Ritorna il numero del protocollo.
 	 */
-	public int getProtocol() {
-		return Byte2;
+	public String getProtocol() {
+		switch (Byte2) {
+		case 0:
+			return " precedente.";
+		case 2:
+			return " normale.";
+		case 3:
+			return " supervisione.";
+		default:
+			return "("+Byte2+")";
+		}
 	}
 	
-	public String getInformazioni()	{
+	public String toString()	{
 		StringBuffer s = new StringBuffer();
-		s.append("Timestamp: "+((Mittente & 0xFF) * 0x100 + (Destinatario & 0xFF)) +"\r\n");
+		//s.append("Timestamp: "+((Mittente & 0xFF) * 0x100 + (Destinatario & 0xFF)) +"\r\n");
 		if (isStarting()) {
-			s.append("Apertura programmazione\r\n");
+			s.append("Apertura programmazione");
 		} else {
-			s.append("Chiusura programmazione\r\n");
+			s.append("Chiusura programmazione");
 		}
-		s.append("Protocollo: "+ getProtocol() +"\r\n");
+		s.append(" Protocollo: "+ getProtocol());
 		return s.toString();
 	}
 

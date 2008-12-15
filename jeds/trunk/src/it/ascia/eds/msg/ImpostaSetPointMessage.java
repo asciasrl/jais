@@ -25,7 +25,7 @@ public class ImpostaSetPointMessage extends PTPRequest
 	}
 	
 	public ImpostaSetPointMessage(int[] message) {
-		parseMessage(message);
+		load(message);
 	}
 	
 	/**
@@ -35,11 +35,11 @@ public class ImpostaSetPointMessage extends PTPRequest
 		return Byte1 + (Byte2 & 0x0f) / 10.0;
 	}
 
-	public String getTipoMessaggio() {
+	public String getMessageDescription() {
 		return "Impostazione set point cronotermostato";
 	}
 
-	public String getInformazioni()	{
+	public String toString()	{
 		StringBuffer s = new StringBuffer();
 		s.append("Mittente: "+Mittente+"\r\n");
 		s.append("Destinatario: "+Destinatario+"\r\n");

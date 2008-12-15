@@ -11,14 +11,14 @@ public class RispostaStatoDimmerMessage extends PTPMessage {
 	}
 
 	public RispostaStatoDimmerMessage(int[] message) {
-		parseMessage(message);
+		load(message);
 	}
 
-	public String getTipoMessaggio() {
+	public String getMessageDescription() {
 		return "Risposta Stato uscite Dimmer";
 	}
 
-	public String getInformazioni()	{
+	public String toString()	{
 		StringBuffer s = new StringBuffer();
 		s.append("Mittente: "+Mittente+"\r\n");
 		s.append("Destinatario: "+Destinatario+"\r\n");

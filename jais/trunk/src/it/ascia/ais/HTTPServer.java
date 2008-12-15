@@ -13,6 +13,7 @@ import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.DefaultServlet;
 import org.mortbay.jetty.servlet.ServletHolder;
+import org.mortbay.log.Log;
 import org.apache.jasper.servlet.JspServlet;
 
 /**
@@ -82,7 +83,9 @@ public class HTTPServer {
 		defaultHolder.setInitParameter("redirectWelcome", "true");		 
 		rootContext.addServlet(defaultHolder, "/");
 		try {
+			logger.info("Avvio server HTTP...");
 			server.start();
+			logger.info("Avviato server HTTP");
 		} catch (Exception e) {
 			throw new AISException(e.getMessage());
 		}

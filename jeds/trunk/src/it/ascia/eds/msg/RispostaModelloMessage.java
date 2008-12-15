@@ -11,22 +11,20 @@ public class RispostaModelloMessage extends PTPMessage {
 	}
 
 	public RispostaModelloMessage(int[] message) {
-		parseMessage(message);
+		load(message);
 	}
 
-	public String getTipoMessaggio() {
-		return "Risposta a richiesta Modello e Revisione";
+	public String getMessageDescription() {
+		return "Risposta Modello e Revisione";
 	}
 	
 	public int getModello() {
 		return Byte1;
 	}
 
-	public String getInformazioni()	{
+	public String toString()	{
 		StringBuffer s = new StringBuffer();
-		s.append("Mittente: "+Mittente+"\r\n");
-		s.append("Destinatario: "+Destinatario+"\r\n");
-		s.append("Modello: "+Byte1+" = ");
+		s.append(super.toString()+" ");
 		switch (Byte1) {
 			case 8:			
 				s.append("BMC Standard I/O, 0 IN - 8 OUT");
@@ -41,7 +39,7 @@ public class RispostaModelloMessage extends PTPMessage {
 				s.append("BMC Standard I/O, 6 IN - 0 OUT");
 				break;
 			case 88:			
-				s.append("BMC Standard I/O, 8 IN � 8 OUT");
+				s.append("BMC Standard I/O, 8 IN - 8 OUT");
 				break;
 			case 102:			
 				s.append("DIMMER Evolution low power (800W, 2 canali)");
@@ -74,8 +72,7 @@ public class RispostaModelloMessage extends PTPMessage {
 				s.append("sconosciuto");
 				break;
 		}
-		s.append("\r\n");		
-		s.append("Versione: "+Byte2+"\r\n");		
+		s.append(" Revisione:"+Byte2);
 		return s.toString();
 	}
 

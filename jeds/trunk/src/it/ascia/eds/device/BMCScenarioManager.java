@@ -3,6 +3,7 @@
  */
 package it.ascia.eds.device;
 
+import it.ascia.ais.AISException;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.EDSMessage;
@@ -16,14 +17,17 @@ import it.ascia.eds.msg.RispostaStatoMessage;
  * @author arrigo
  */
 public class BMCScenarioManager extends BMC {
+
 	/**
-	 * Numero di uscite digitali.
-	 */
-	protected int outPortsNum;
-	/**
-	 * Numero ingressi digitali.
+	 * Numero di porte in ingresso
 	 */
 	private int inPortsNum;
+
+	/**
+	 * Numero di porte in ingresso
+	 */
+	private int outPortsNum;
+
 	/**
 	 * Ingressi.
 	 */
@@ -73,7 +77,7 @@ public class BMCScenarioManager extends BMC {
 				inPortsTimestamps[i] = 0;
 			}
 		}
-		outPortsNum = 8;
+		outPortsNum = 0;
 		outPorts = new boolean[outPortsNum];
 		outPortsTimestamps = new long[outPortsNum];
 		for (int i = 0; i < outPortsNum; i++) {
@@ -101,10 +105,10 @@ public class BMCScenarioManager extends BMC {
 		boolean val;
 		if (isOutput) {
 			val = outPorts[port];
-			portName = getOutputCompactName(port);
+			portName = getOutputPortId(port);
 		} else {
 			val = inPorts[port];
-			portName = getInputCompactName(port);
+			portName = getInputPortId(port);
 		}
 		if (val) {
 			newValue = "on";
@@ -161,15 +165,15 @@ public class BMCScenarioManager extends BMC {
 		updateStatus();
 		for (i = 0; i < inPortsNum; i++) {
 			if ((timestamp <= inPortsTimestamps[i]) &&
-					(port.equals("*") || port.equals(getInputCompactName(i)))) {
-				retval += compactName + ":" + getInputCompactName(i) + "=" + 
+					(port.equals("*") || port.equals(getInputPortId(i)))) {
+				retval += compactName + ":" + getInputPortId(i) + "=" + 
 					(inPorts[i]? "ON" : "OFF") + "\n";
 			}
 		}
 	 	for (i = 0; i < outPortsNum; i++) {
 	 		if ((timestamp <= outPortsTimestamps[i]) &&
-	 				(port.equals("*") || port.equals(getOutputCompactName(i)))){
-	 			retval += compactName + ":" + getOutputCompactName(i) + "=" + 
+	 				(port.equals("*") || port.equals(getOutputPortId(i)))){
+	 			retval += compactName + ":" + getOutputPortId(i) + "=" + 
 	 				(outPorts[i]? "ON" : "OFF") + "\n";
 	 		}
 		}
@@ -180,8 +184,9 @@ public class BMCScenarioManager extends BMC {
 		return 1;
 	}
 
+	// TODO: quante uscite ???
 	public int getOutPortsNumber() {
-		return 8;
+		return 0;
 	}
 	/**
 	 * Gli scenari non sono attivabili con comandi broadcast 
@@ -191,8 +196,18 @@ public class BMCScenarioManager extends BMC {
 	}
 	
 
-	public void setPort(String port, String value) throws EDSException {
+	public void poke(String port, String value) throws EDSException {
 		throw new EDSException("Not implemented.");
+	}
+
+
+	public String peek(String portId) throws AISException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public int getInPortsNumber() {
+		return inPortsNum;
 	}
 
 }

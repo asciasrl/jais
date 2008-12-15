@@ -66,7 +66,7 @@ public class MyController extends Controller implements DeviceListener {
 	private String receiveAuthenticatedRequest(String command, String name,
 			String value) {
 		String retval;
-		logger.trace("Comando: \"" + command + "\" \"" + name + "\" \"" +
+		logger.debug("Comando: \"" + command + "\" \"" + name + "\" \"" +
 				value + "\"");
 		if (command.equals("get")) {
 			// Comando "get"
@@ -111,7 +111,7 @@ public class MyController extends Controller implements DeviceListener {
 				String portName = getPortFromAddress(name);
 				Device devices[] = findDevices(deviceAddress);
 				if (devices.length == 1) {
-					devices[0].setPort(portName, value);
+					devices[0].poke(portName, value);
 					retval = "OK";
 				} else {
 					retval = "ERROR: indirizzo ambiguo";

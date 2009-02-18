@@ -121,9 +121,8 @@ public class TCPSerialTransport extends Transport {
      * 
      * @throws un'Exception se incontra un errore
      */
-    public TCPSerialTransport(String hostName, int port, Connector connector) 
+    public TCPSerialTransport(String hostName, int port) 
     	throws AISException {
-    	super(connector);
     	this.tcpPort = port;
     	name = hostName + ":" + port;
 		try {

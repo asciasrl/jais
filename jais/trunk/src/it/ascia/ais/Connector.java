@@ -66,6 +66,11 @@ public abstract class Connector {
 		return (Device[]) devices.toArray(new Device[devices.size()]);
     }
     
+    public void addDevice(Device device) {
+    	String deviceAddress = device.getAddress();
+    	devices.put(new Integer(deviceAddress), device);    	
+    }
+    
     /**
      * Ritorna il nome del Connector, nella forma "tipo.numero".
      * 
@@ -91,6 +96,14 @@ public abstract class Connector {
      */
     public abstract boolean sendMessage(MessageInterface m);
     
+    /**
+     * Associa il Transport al Connector
+     * @param transport Il Transport associato
+     */
+    public void bindTransport(Transport transport) {
+    	this.transport = transport;
+    	transport.connector = this;
+    }
 
 }
 

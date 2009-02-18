@@ -33,37 +33,23 @@ public class SerialTransport extends Transport implements SerialPortEventListene
     private InputStream inputStream;
     private static boolean	      outputBufferEmptyFlag = false;
     private SerialPort		      serialPort;
-    
+
+    public SerialTransport(String portName) throws AISException {
+    	this(portName, 9600);
+    }
+
     /**
      * Costruttore
      *
      * @param portName nome della porta (ad es. "COM1" o "/dev/ttyUSB0")
+     * @param connector Conettore da associare
+     * @param portSpeed velocita' della porta (default 9600)
      * 
      * @throws un'Exception se incontra un errore
      */
-    public SerialTransport(String portName, Connector connector) throws AISException {
-    	super(connector);
-        boolean portFound = false;
-        name = portName;
-  
-/*        
-    	portList = CommPortIdentifier.getPortIdentifiers();
-    	while (!portFound && portList.hasMoreElements()) {
-    	    portId = (CommPortIdentifier) portList.nextElement();
-    	    logger.debug("Detected port: " + portId.getName());
-    	    if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-	    		if (portId.getName().equals(portName)) {
-	    		    logger.info("Found port: "+portName);
-	    		    portFound = true;
-	    	    }
-    	    }
-    	} 
-    	if (!portFound) {
-    	    throw new AISException("port " + portName + " not found.");
-    	} 
-*/
-        
-    	logger.info("Connessione a " + portName);    	
+    public SerialTransport(String portName, int portSpeed) throws AISException {
+        name = portName;  
+    	logger.info("Connessione a " + portName + " speed " +  portSpeed);    	
     	CommPortIdentifier portId;
 		try {
 			portId = CommPortIdentifier.getPortIdentifier(portName);
@@ -103,15 +89,15 @@ public class SerialTransport extends Transport implements SerialPortEventListene
 		serialPort.notifyOnDataAvailable(true);
 
 		try {
-			// TODO: parametrizzare velocità della porta
-		    serialPort.setSerialPortParams(9600, SerialPort.DATABITS_8, 
+		    serialPort.setSerialPortParams(portSpeed, SerialPort.DATABITS_8, 
 						   SerialPort.STOPBITS_1, 
 						   SerialPort.PARITY_NONE);
 		} catch (UnsupportedCommOperationException e) {
 					e.getMessage();
 		}
     }
-    
+
+
     
     /**
      * Invia un messaggio sul transport.

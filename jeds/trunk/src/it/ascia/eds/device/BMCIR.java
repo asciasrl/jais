@@ -67,8 +67,8 @@ public class BMCIR extends BMC {
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
 	 */
-	public BMCIR(int address, int model, EDSConnector bus, String name) {
-		super(address, model, bus, name);
+	public BMCIR(int address, int model, String name) {
+		super(address, model, name);
 		switch(model) {
 		case 41:
 		case 61:

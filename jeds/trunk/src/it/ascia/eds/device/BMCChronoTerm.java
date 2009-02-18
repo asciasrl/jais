@@ -143,9 +143,9 @@ public class BMCChronoTerm extends BMC {
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
 	 */
-	public BMCChronoTerm(int address, int model, EDSConnector bus, String name) {
+	public BMCChronoTerm(int address, int model, String name) {
 		// FIXME: quante uscite ha un BMCChronoTerm?
-		super(address, model, bus, name);
+		super(address, model, name);
 		switch(model) {
 		case 127:
 			break;
@@ -254,16 +254,14 @@ public class BMCChronoTerm extends BMC {
 	 * Aggiorna lo stato del termostato.
 	 */
 	public void updateTermStatus() {
-		connector.sendMessage(new RichiestaStatoTermostatoMessage(getIntAddress(), 
-				connector.getBMCComputerAddress()));
+		connector.sendMessage(new RichiestaStatoTermostatoMessage(getIntAddress(), getBMCComputerAddress()));
 	}
 	
 	/**
 	 * Aggiorna il set point corrente.
 	 */
 	public void updateSetPoint() {
-		connector.sendMessage(new RichiestaSetPointMessage(getIntAddress(), 
-				connector.getBMCComputerAddress()));
+		connector.sendMessage(new RichiestaSetPointMessage(getIntAddress(), getBMCComputerAddress()));
 	}
 	
 	public void updateStatus() {
@@ -280,8 +278,7 @@ public class BMCChronoTerm extends BMC {
 	 */
 	public boolean setSetPoint(double temperature) {
 		ImpostaSetPointMessage m;
-		m = new ImpostaSetPointMessage(getIntAddress(), 
-				connector.getBMCComputerAddress(), temperature);
+		m = new ImpostaSetPointMessage(getIntAddress(), getBMCComputerAddress(), temperature);
 		return connector.sendMessage(m);
 	}
 	
@@ -296,9 +293,7 @@ public class BMCChronoTerm extends BMC {
 	 */
 	public boolean setState(int state) {
 		VariazioneIngressoMessage m;
-		m = new VariazioneIngressoMessage(getIntAddress(), 
-				connector.getBMCComputerAddress(),
-				state);
+		m = new VariazioneIngressoMessage(getIntAddress(), getBMCComputerAddress(),state);
 		return connector.sendMessage(m);
 	}
 	

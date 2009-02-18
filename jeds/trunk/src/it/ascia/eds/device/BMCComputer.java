@@ -55,8 +55,8 @@ public class BMCComputer extends BMC {
 	 * @param transport il transport a cui siamo collegati
 	 * @param address l'indirizzo di questo device sul transport
 	 */
-	public BMCComputer(int address, EDSConnector bus) {
-		super(address, -1, bus, "Computer");
+	public BMCComputer(int address) {
+		super(address, -1, "Computer");
 		inbox = new LinkedList();
 		messageToBeAnswered = null;
 	}
@@ -83,9 +83,11 @@ public class BMCComputer extends BMC {
 				//logger.trace("Ricevuto modello");
 				RispostaModelloMessage risposta = (RispostaModelloMessage) ptpm;
 				try {
-					BMC.createBMC(risposta.getSender(), risposta.getModello(),
-							null, connector, true);
+					BMC bmc = BMC.createBMC(risposta.getSender(), risposta.getModello(), null, true);
+					logger.info("Creato BMC "+bmc);
+					connector.addDevice(bmc);
 				} catch (EDSException e) {
+					logger.warn(e);
 				// Se il device e' gia' sul transport, non e' un errore.
 				}
 			}
@@ -94,6 +96,7 @@ public class BMCComputer extends BMC {
 				if (messageToBeAnswered.isAnsweredBy(ptpm)) {
 					//logger.trace("Ricevuta risposta a richiesta");
 					messageToBeAnswered.answered = true;
+					// sveglia sendPTPRequest
 					notify();
 				}
 			}
@@ -143,7 +146,8 @@ public class BMCComputer extends BMC {
     				logger.trace("Invio "+tries+" di "+m.getMaxSendTries()+" "+m.toHexString());    			
     			}
     			connector.transport.write(m.getBytesMessage());
-    			wait((long)(connector.getRetryTimeout() * (1 + 0.2 * Math.random())));
+    			// si mette in attesa, ma se nel frattempo arriva la risposta 
+    			wait((long)(((EDSConnector)connector).getRetryTimeout() * (1 + 0.2 * Math.random())));
     		}
     	} catch (InterruptedException e) {
     	}
@@ -166,7 +170,7 @@ public class BMCComputer extends BMC {
 		for (int i = 0; i < tries; i++) {
 			m.randomizeHeaders();
 			try {
-				Thread.sleep(connector.getRetryTimeout());
+				Thread.sleep(((EDSConnector)connector).getRetryTimeout());
 			} catch (InterruptedException e) {
 			}
 			connector.transport.write(m.getBytesMessage());

@@ -86,8 +86,8 @@ public class BMCStandardIO extends BMC {
 	 * @param model
 	 *            numero del modello
 	 */
-	public BMCStandardIO(int address, int model, EDSConnector connector, String name) {
-		super(address, model, connector, name);
+	public BMCStandardIO(int address, int model, String name) {
+		super(address, model, name);
 		this.isReal = true; // fino a prova contraria!
 		inPortsNum = getInPortsNumber();
 		outPortsNum = getOutPortsNumber();
@@ -317,7 +317,7 @@ public class BMCStandardIO extends BMC {
 			if (isReal) {
 				VariazioneIngressoMessage m;
 				m = new VariazioneIngressoMessage(getIntAddress(), 
-						connector.getBMCComputerAddress(), value, port, 1);
+						getBMCComputerAddress(), value, port, 1);
 				/* ComandoUscitaMessage m;
 				m = new ComandoUscitaMessage(getIntAddress(), 
 						connector.getBMCComputerAddress(), port, value); */
@@ -363,8 +363,7 @@ public class BMCStandardIO extends BMC {
 		if ((port >= 0) && (port < outPortsNum)) {
 			if (isReal) {
 				ComandoUscitaMessage m;
-				m = new ComandoUscitaMessage(getIntAddress(), connector
-						.getBMCComputerAddress(), 0, port, 0, intValue);
+				m = new ComandoUscitaMessage(getIntAddress(), getBMCComputerAddress(), 0, port, 0, intValue);
 				retval = connector.sendMessage(m);
 			} else { // The easy way
 				outPorts[port] = value;

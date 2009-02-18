@@ -32,8 +32,8 @@ public class BMCIntIR extends BMC {
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
 	 */
-	public BMCIntIR(int address, int model, EDSConnector bus, String name) {
-		super(address, model, bus, name);
+	public BMCIntIR(int address, int model, String name) {
+		super(address, model, name);
 		if (model != 131) {
 			logger.error("Errore: modello di BMC Int IR sconosciuto:" + 
 					model);

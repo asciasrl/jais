@@ -43,7 +43,7 @@ public abstract class BMC extends Device {
 	/**
 	 * Il bus a cui il dispositivo e' collegato.
 	 */
-	protected EDSConnector connector;
+	//protected EDSConnector connector;
 
 	/**
 	 * Il nome che AUI da' a questo BMC.
@@ -83,8 +83,7 @@ public abstract class BMC extends Device {
 	 * @param model il modello di questo BMC
 	 * @param name il nome di questo BMC (dal file di configurazione)
 	 */
-	public BMC(int address, int model, EDSConnector connector, String name) {
-		this.connector = connector;
+	public BMC(int address, int model, String name) {
 		this.address = String.valueOf(address);
 		this.model = model;
 		this.name = name;
@@ -103,6 +102,17 @@ public abstract class BMC extends Device {
 		}
 		logger = Logger.getLogger(getClass());
 	}
+	
+    /**
+     * Ritorna l'indirizzo del BMCComputer del connettore.
+     * 
+     * <p>Questo metodo e' utile per i BMC, quando devono richiedere 
+     * informazioni sul proprio stato. I messaggi che inviano devono partire 
+     * "a nome" del BMCComputer.</p>
+     */
+    public int getBMCComputerAddress() {
+    	return ((EDSConnector)connector).getBMCComputerAddress();
+    }
 	
 	/**
 	 * Ritorna l'indirizzo (int) di questo BMC sul bus EDS.
@@ -133,8 +143,7 @@ public abstract class BMC extends Device {
 	 * 
 	 * @throws an exception if the address is already in use by another BMC.
 	 */
-	public static BMC createBMC(int bmcAddress, int model, String name, EDSConnector connector,
-			boolean isReal) 
+	public static BMC createBMC(int bmcAddress, int model, String name, boolean isReal) 
 		throws EDSException {
 		Logger logger = Logger.getLogger("BMC.createBMC");
 		BMC bmc;
@@ -147,7 +156,7 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "StandardIO" + bmcAddress;
 			}
-			bmc = new BMCStandardIO(bmcAddress, model, connector, name);
+			bmc = new BMCStandardIO(bmcAddress, model, name);
 			break;
 		case 41:
 		case 61:
@@ -155,7 +164,7 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "IR" + bmcAddress;
 			}
-			bmc = new BMCIR(bmcAddress, model, connector, name);
+			bmc = new BMCIR(bmcAddress, model, name);
 			break;
 		case 101:
 		case 102:
@@ -166,13 +175,13 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "Dimmer" + bmcAddress;
 			}
-			bmc = new BMCDimmer(bmcAddress, model, connector, name);
+			bmc = new BMCDimmer(bmcAddress, model, name);
 			break;
 		case 131:
 			if (name == null) {
 				name = "IntIR" + bmcAddress;
 			}
-			bmc = new BMCIntIR(bmcAddress, model, connector, name);
+			bmc = new BMCIntIR(bmcAddress, model, name);
 			break;
 		case 152:
 		case 154:
@@ -181,27 +190,24 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "ScenarioManager" + bmcAddress;
 			}
-			bmc = new BMCScenarioManager(bmcAddress, model, connector, name);
+			bmc = new BMCScenarioManager(bmcAddress, model, name);
 			break;
 		case 121:
 			if (name == null) {
 				name = "TemperatureSensor" + bmcAddress; 
 			}
-			bmc = new BMCTemperatureSensor(bmcAddress, model, connector, name);
+			bmc = new BMCTemperatureSensor(bmcAddress, model, name);
 			break;
 		case 127:
 			if (name == null) {
 				name = "ChronoTerm" + bmcAddress;
 			}
-			bmc = new BMCChronoTerm(bmcAddress, model, connector, name);
+			bmc = new BMCChronoTerm(bmcAddress, model, name);
 			break;
 		default:
 			logger.error("Modello di BMC sconosciuto: " + 
 					model);
 			bmc = null;
-		}
-		if (bmc != null) {
-			connector.addDevice(bmc);
 		}
 		return bmc;
 	}	
@@ -248,7 +254,7 @@ public abstract class BMC extends Device {
 	public void updateStatus() {
 		PTPRequest m;
 		m = new RichiestaStatoMessage(getIntAddress(), 
-				connector.getBMCComputerAddress(), 0);
+				((EDSConnector)connector).getBMCComputerAddress(), 0);
 		connector.sendMessage(m);
 	}
 	
@@ -459,6 +465,10 @@ public abstract class BMC extends Device {
 			DeviceEvent event = new DeviceEvent(this, port, value);
 			deviceListener.statusChanged(event);
 		}
+	}
+	
+	public String toString() {
+		return getInfo();
 	}
 	
 }

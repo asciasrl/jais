@@ -50,8 +50,8 @@ public class BMCScenarioManager extends BMC {
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
 	 */
-	public BMCScenarioManager(int address, int model, EDSConnector bus, String name) {
-		super(address, model, bus, name);
+	public BMCScenarioManager(int address, int model, String name) {
+		super(address, model, name);
 		switch(model) {
 		case 152:
 			inPortsNum = 2;

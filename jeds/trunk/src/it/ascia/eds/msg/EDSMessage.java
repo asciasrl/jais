@@ -278,7 +278,7 @@ public abstract class EDSMessage implements MessageInterface {
 	 */
 	public String toString()
 	{
-		return Mittente + " -> " + Destinatario + " " + getMessageDescription()+ " ["+b2h(Byte1)+":"+b2h(Byte2)+" "+Byte1+":"+Byte2+"]";
+		return Mittente + " -> " + Destinatario + " " + getMessageDescription()+" ("+TipoMessaggio+") ["+b2h(Byte1)+":"+b2h(Byte2)+" "+Byte1+":"+Byte2+"]";
 	}
 
 	public EDSMessage() {  

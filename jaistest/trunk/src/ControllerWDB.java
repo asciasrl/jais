@@ -32,7 +32,7 @@ public class ControllerWDB extends MyController {
 	static void makeVirtualBMC(int address) {
 		// Lo creiamo noi il BMC!
 		try {
-			BMCStandardIO bmc = new BMCStandardIO(address, 88, bus, "BMCFinto"); 
+			BMCStandardIO bmc = new BMCStandardIO(address, 88, "BMCFinto"); 
 			bus.addDevice(bmc);
 			bmc.makeSimulated(busController);
 		} catch (EDSException e) {
@@ -193,7 +193,7 @@ public class ControllerWDB extends MyController {
 	 	Transport transport = null;
 	 	try {
 	 		eds = new EDSConnector("0");
-	 		transport = new SerialTransport(defaultPort, eds);
+	 		transport = new SerialTransport(defaultPort);
 	 		//transport = new TCPSerialTransport(defaultPort, 2001, "0");
 	 		// transport = new SerialTransport(defaultPort, "0");
 	 	} catch (EDSException e) {
@@ -201,7 +201,7 @@ public class ControllerWDB extends MyController {
 	 		System.exit(-1);
 	 	}
 	 	startServer();
-	 	bmcComputer = new BMCComputer(0, eds);
+	 	bmcComputer = new BMCComputer(0);
 	 	eds.setBMCComputer(bmcComputer);
 	 	// File di configurazione
 	 	try {

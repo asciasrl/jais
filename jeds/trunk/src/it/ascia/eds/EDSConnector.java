@@ -87,15 +87,16 @@ public class EDSConnector extends it.ascia.ais.Connector {
     }
     
     /**
-     * Imposta il BMCComputer del transport.
+     * Imposta il BMCComputer del connector.
      */
     public void setBMCComputer(BMCComputer bmcComputer) {
+    	bmcComputer.bindConnector(this);
     	this.bmcComputer = bmcComputer;
     	devices.put(new Integer(bmcComputer.getAddress()), bmcComputer);
     }
     
     /**
-     * Ritorna l'indirizzo del BMCComputer del transport.
+     * Ritorna l'indirizzo del BMCComputer del connettore.
      * 
      * <p>Questo metodo e' utile per i BMC, quando devono richiedere 
      * informazioni sul proprio stato. I messaggi che inviano devono partire 
@@ -204,7 +205,7 @@ public class EDSConnector extends it.ascia.ais.Connector {
      * @param device il Device da aggiungere.
      * 
      * @throws un'EDSException se esiste gia' un device con lo stesso indirizzo.
-     */
+     */    
     public void addDevice(BMC device) throws EDSException {
     	String deviceAddress = device.getAddress();
     	if (getDevices(deviceAddress).length != 0) {

@@ -63,8 +63,8 @@ public class BMCDimmer extends BMC {
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
 	 */
-	public BMCDimmer(int address, int model, EDSConnector bus, String name) {
-		super(address, model, bus, name);
+	public BMCDimmer(int address, int model, String name) {
+		super(address, model, name);
 		switch(model) {
 		case 101:
 			outPortsNum = 2;
@@ -263,8 +263,7 @@ public class BMCDimmer extends BMC {
 		PTPRequest m;
 		// Il protocollo permette di scegliere più uscite. Qui chiediamo solo le
 		// prime due.
-		m = new RichiestaStatoMessage(getIntAddress(), 
-				connector.getBMCComputerAddress(), 3);
+		m = new RichiestaStatoMessage(getIntAddress(),getBMCComputerAddress(), 3);
 		connector.sendMessage(m);
 	}
 
@@ -313,8 +312,7 @@ public class BMCDimmer extends BMC {
 		if ((output >= 0) && (output <= outPortsNum)) {
 			if ((value >= 0) && (value <= 100)) {
 				ComandoUscitaMessage m;
-				m = new ComandoUscitaMessage(getIntAddress(), 
-						connector.getBMCComputerAddress(), 0, output, value, 
+				m = new ComandoUscitaMessage(getIntAddress(), getBMCComputerAddress(), 0, output, value, 
 						(value > 0)? 1 : 0);
 				retval = connector.sendMessage(m);
 			} else {
@@ -341,7 +339,7 @@ public class BMCDimmer extends BMC {
 			if ((value >= 0) && (value <= 100)) {
 				ComandoUscitaDimmerMessage m;
 				m = new ComandoUscitaDimmerMessage(getIntAddress(), 
-						connector.getBMCComputerAddress(), output, value);
+						getBMCComputerAddress(), output, value);
 				connector.sendMessage(m);
 			} else {
 				logger.error("Valore non valido per canale dimmer: " +

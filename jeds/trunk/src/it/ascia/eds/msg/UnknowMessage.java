@@ -18,7 +18,7 @@ public class UnknowMessage extends EDSMessage {
 	}
 	
 	public String getMessageDescription() {
-		return "Unknown ("+TipoMessaggio+")";
+		return "Unknown";
 	}
 
 	public UnknowMessage(int[] message) {

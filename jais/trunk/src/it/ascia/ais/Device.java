@@ -120,4 +120,8 @@ public abstract class Device {
      * @param listener il DeviceListener che ricevera' gli eventi.
      */
     public abstract void setDeviceListener(DeviceListener listener);
+    
+    public void bindConnector(Connector connector) {
+    	this.connector = connector;
+    }
 }

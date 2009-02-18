@@ -31,10 +31,17 @@ public abstract class Transport {
      * Costruttore.
      * @param connector Il connettore associato
      */
-    public Transport(Connector connector) {
+    public Transport() {
+		logger = Logger.getLogger(getClass());
+    }
+
+    /**
+     * Associa il Transport al Connector
+     * @param connector Il connettore associato
+     */
+    public void bind(Connector connector) {
     	this.connector = connector;
     	connector.transport = this;
-		logger = Logger.getLogger(getClass());
     }
     
     public String toString()

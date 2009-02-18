@@ -152,7 +152,7 @@ public class ConfigurationFile {
 				int address = getIntegerTagContent(dispositivoElement, 
 						"indirizzo"); 
 				int model = getIntegerTagContent(dispositivoElement, "modello");
-				bmc = BMC.createBMC(address, model, name, bus, true);
+				bmc = BMC.createBMC(address, model, name, true);
 				if (bmc != null) {
 					int j;
 					NodeList lista;

@@ -32,7 +32,7 @@ public class BusTest extends MyController {
 	static void makeVirtualBMC(int address, EDSConnector connector) {
 		// Lo creiamo noi il BMC!
 		try {
-			BMCStandardIO bmc = new BMCStandardIO(address, 88, connector, "BMCFinto"); 
+			BMCStandardIO bmc = new BMCStandardIO(address, 88, "BMCFinto"); 
 			connector.addDevice(bmc);
 			bmc.makeSimulated(busController);
 		} catch (EDSException e) {
@@ -129,7 +129,7 @@ public class BusTest extends MyController {
 	 */
 	public static void main(String[] args) throws AISException {
 	    //String defaultPort = "ascia.homeip.net";
-		String defaultPort = "COM2";
+		String defaultPort = "COM1";
 		Integer tcpPort = null;
 		int httpPort = 80;
 		String documentRoot = "../aui";
@@ -162,14 +162,16 @@ public class BusTest extends MyController {
 	 	EDSConnector eds = null;
 	 	Transport transport = null;
 	 	try {
-	 		eds = new EDSConnector("0");
+	 		eds = new EDSConnector("EDSConnector0");
 	 		if (tcpPort != null) {
-	 			transport = new TCPSerialTransport(defaultPort, tcpPort.intValue(), eds);
+	 			transport = new TCPSerialTransport(defaultPort, tcpPort.intValue());
 	 			log.info("Connesso via socket a "+defaultPort+" porta "+tcpPort);
 	 		} else {
-	 			transport = new SerialTransport(defaultPort, eds);
+	 			transport = new SerialTransport(defaultPort);
 	 			log.info("Connesso via seriale a "+defaultPort);
 	 		}
+	 		eds.bindTransport(transport);
+	 		//transport.bind(eds);
 	 	} catch (EDSException e) {
 	 		log.fatal(e.getMessage());
 	 		System.exit(-1);
@@ -184,7 +186,7 @@ public class BusTest extends MyController {
 			System.err.println(e.getMessage());
 			System.exit(-1);
 		}
-	 	bmcComputer = new BMCComputer(0, eds);
+	 	bmcComputer = new BMCComputer(0);
 	 	eds.setBMCComputer(bmcComputer);
 	 	// File di configurazione
 //	 	try {

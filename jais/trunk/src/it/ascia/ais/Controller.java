@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 /**
  * Questa classe deve essere estesa da controllori per bus domotici.
  * 
@@ -19,6 +21,13 @@ public abstract class Controller {
 	 * <p>I Connector qui dentro sono accessibili dal loro nome (stringa).</p>
 	 */
 	private Map connectors;
+	
+	/**
+	 * Plugins attivi
+	 */
+	private Map plugins;
+	
+	protected Logger logger; 
 	
 	/**
 	 * Rifa' String.split() per il GCJ che non ce l'ha.
@@ -51,6 +60,29 @@ public abstract class Controller {
 	 */
 	public void registerConnector(Connector connector) {
 		connectors.put(connector.getName(), connector);
+	}
+	
+	public void loadPlugin(String name) {
+		String className = "it.ascia.ais."+name+"ControllerPlugin"; 
+		loadPlugin(name, className);
+	}
+	
+	public void loadPlugin(String name, String className) {
+		ClassLoader pluginLoader = ControllerPlugin.class.getClassLoader();
+		try {
+			Class pluginClass = pluginLoader.loadClass(className);
+			ControllerPlugin plugin = (ControllerPlugin) pluginClass.newInstance();
+			plugin.setController(this);
+			plugins.put(name, plugin);
+			logger.info("Caricato plugin '"+name+"' da '"+className+"'");
+			plugin.configure();
+		} catch (ClassNotFoundException e) {
+			logger.error("Fallito caricamento plugin '"+name+"': non trovata classe '"+className+"'");
+		} catch (InstantiationException e) {
+			logger.error("Fallito caricamento plugin '"+name+"': errore instanzazione classe '"+className+"'");
+		} catch (IllegalAccessException e) {
+			logger.error("Fallito caricamento plugin '"+name+"': accesso negato alla classe '"+className+"'");
+		}
 	}
 	
 	/**
@@ -161,6 +193,8 @@ public abstract class Controller {
 	
 	public Controller() {
 		connectors = new HashMap();
+		plugins = new HashMap();
+		logger = Logger.getLogger(getClass());
 	}
 	
 	/**
@@ -173,5 +207,18 @@ public abstract class Controller {
 	 */
 	public abstract String receiveRequest(String command, String name, 
 			String value, String pin);
+
+	/**
+	 * Comunica l'evento a tutti i plugin
+	 * 
+	 * @param event
+	 */
+	public void onDeviceEvent(DeviceEvent event) {
+		Iterator i = plugins.keySet().iterator();
+		while (i.hasNext()) {
+			ControllerPlugin plugin = (ControllerPlugin) i.next();
+			plugin.onDeviceEvent(event);
+		}
+	}
 }
 

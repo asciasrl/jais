@@ -45,7 +45,7 @@ public abstract class ControllerPlugin {
 	}
 
 	/**
-	 * Configura il plugin
+	 * (ri)configura il plugin
 	 */
 	public void configure() {
 		// TODO Auto-generated method stub

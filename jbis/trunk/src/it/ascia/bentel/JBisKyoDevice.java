@@ -574,4 +574,9 @@ public class JBisKyoDevice extends Device {
 		return null;
 	}
 
+	protected void generateEvent(String port, String value) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

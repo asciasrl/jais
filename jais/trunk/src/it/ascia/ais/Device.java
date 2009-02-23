@@ -95,6 +95,8 @@ public abstract class Device {
 		return false;		
 	}
 	
+	protected abstract void generateEvent(String port, String value);
+	
 	/**
 	 * Imposta il valore di una porta.
 	 * 

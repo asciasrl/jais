@@ -34,7 +34,7 @@ public class ControllerWDB extends MyController {
 		try {
 			BMCStandardIO bmc = new BMCStandardIO(address, 88, "BMCFinto"); 
 			bus.addDevice(bmc);
-			bmc.makeSimulated(busController);
+			bmc.makeSimulated();
 		} catch (EDSException e) {
 			System.err.println(e.getMessage());
 			System.exit(-1);
@@ -99,7 +99,7 @@ public class ControllerWDB extends MyController {
 	
 	static void startServer() {
 		busController = new ControllerWDB(null);
-		busController.addConnector(bus);
+		busController.registerConnector(bus);
 		try {
 			server = new HTTPServer(8080, busController, 
 					"/home/arrigo/public_html/auiFixed");
@@ -218,12 +218,14 @@ public class ControllerWDB extends MyController {
 	 	// testBMCStandardIO();
 	 	// testBMCDimmer();
 	 	// testBMCChronoTerm();
-	 	try {
+	 	/*
+		try {
 			busController.setDevicesListener();
 		} catch (AISException e) {
 			System.err.println(e.getMessage());
 			System.exit(-1);
 		}
+		*/
 	 	// La palla all'utente
 		userInteraction();
 		server.close();

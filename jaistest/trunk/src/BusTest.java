@@ -34,7 +34,7 @@ public class BusTest extends MyController {
 		try {
 			BMCStandardIO bmc = new BMCStandardIO(address, 88, "BMCFinto"); 
 			connector.addDevice(bmc);
-			bmc.makeSimulated(busController);
+			bmc.makeSimulated();
 		} catch (EDSException e) {
 			System.err.println(e.getMessage());
 			System.exit(-1);
@@ -128,13 +128,27 @@ public class BusTest extends MyController {
 	 * @throws AISException 
 	 */
 	public static void main(String[] args) throws AISException {
-	    //String defaultPort = "ascia.homeip.net";
+
+		// TODO inizializzazione da file di configurazione
+		
+	    // Inizializzazione logger
+	    PropertyConfigurator.configure("conf/log4j.conf");
+
+		busController = new BusTest(null /* "1" */);
+		busController.loadPlugin("Default");
+		// TODO caricare dati da files di configurazione
+		// TODO fare EDSControllerPlugin 
+		busController.loadPlugin("EDS");
+		// TODO fare BentelControllerPlugin 
+		busController.loadPlugin("Bentel");
+		// TODO fare HTPSServerControllerPlugin 
+		busController.loadPlugin("HTTPServer");
+
+		//String defaultPort = "ascia.homeip.net";
 		String defaultPort = "COM1";
 		Integer tcpPort = null;
 		int httpPort = 80;
 		String documentRoot = "../aui";
-	    // Inizializzazione logger
-	    PropertyConfigurator.configure("conf/log4j.conf");
 		//ConfigurationFile cfgFile = null;
 		Logger log = Logger.getLogger(BusTest.class);
 	 	if (args.length > 0) {
@@ -176,8 +190,7 @@ public class BusTest extends MyController {
 	 		log.fatal(e.getMessage());
 	 		System.exit(-1);
 	 	}
-		busController = new BusTest(null /* "1" */);
-		busController.addConnector(eds);
+		busController.registerConnector(eds);
 		try {
 			if (httpPort > 0) {
 				server = new HTTPServer(httpPort, busController, documentRoot);
@@ -219,12 +232,14 @@ public class BusTest extends MyController {
 	 	// testBMCStandardIO();
 	 	// testBMCDimmer();
 	 	// testBMCChronoTerm();
+	 	/*
 	 	try {
 			busController.setDevicesListener();
 		} catch (AISException e) {
 			System.err.println(e.getMessage());
 			System.exit(-1);
 		}
+		*/
 	 	// La palla all'utente
 		int dest = 1;
 		while (dest > 0) {

@@ -118,7 +118,7 @@ public class BMCDimmer extends BMC {
 	 * 
 	 * @param portNumber numero della porta che ha cambiato valore.
 	 */
-	private void alertListener(int portNumber) {
+	private void generateEvent(int portNumber) {
 		generateEvent(getOutputPortId(portNumber), 
 				String.valueOf(outPorts[portNumber]));
 	}
@@ -145,7 +145,7 @@ public class BMCDimmer extends BMC {
 			outPorts[uscita] = valore;
 			if (oldValue != valore) {
 				outPortsTimestamps[uscita] = System.currentTimeMillis();
-				alertListener(uscita);
+				generateEvent(uscita);
 			}
 			dirty[uscita] = true;
 		}
@@ -164,7 +164,7 @@ public class BMCDimmer extends BMC {
 			outPorts[uscita] = valore;
 			if (oldValue != valore) {
 				outPortsTimestamps[uscita] = System.currentTimeMillis();
-				alertListener(uscita);
+				generateEvent(uscita);
 			}
 			dirty[uscita] = true;
 		}
@@ -209,7 +209,7 @@ public class BMCDimmer extends BMC {
 				outPorts[i] = temp[i];
 				if (oldValue != outPorts[i]) {
 					outPortsTimestamps[i] = currentTime;
-					alertListener(i);
+					generateEvent(i);
 				}
 				dirty[i] = false;
 			}

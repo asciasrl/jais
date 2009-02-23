@@ -11,7 +11,6 @@ import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.Device;
 import it.ascia.ais.DeviceEvent;
-import it.ascia.ais.DeviceListener;
 
 /**
  * Centralina Bentel KYO8.
@@ -191,10 +190,7 @@ public class JBisKyoDevice extends Device {
 	 * Il nostro Connector.
 	 */
 	private JBisKyoUnit connector;
-	/**
-	 * Chi ascolta i nostri eventi.
-	 */
-	private DeviceListener listener;
+
 	/**
 	 * Il nostro logger.
 	 */
@@ -204,7 +200,6 @@ public class JBisKyoDevice extends Device {
 		logger = Logger.getLogger(getClass());
 		eventLog = new LinkedList();
 		this.connector = connector;
-		listener = null;
 		statusTime = 0;
 	}
 	
@@ -216,26 +211,25 @@ public class JBisKyoDevice extends Device {
 	 * @param newAlarms il valore attuale del byte che contiene uno stato.
 	 * @param portNames array con i nomi delle porte che corrispondono ai bit.
 	 */
-	private void alertListener(byte oldAlarms, byte newAlarms, 
-			String portNames[]) {
-		if (listener != null) {
-			int i;
-			for (i = 0; i < 8; i++) {
-				int b = 1 << i;
-				if ((oldAlarms & b) != (newAlarms & b)) {
-					DeviceEvent event;
-					String newValue;
-					if ((newAlarms & b) != 0) {
-						newValue = "ON";
-					} else {
-						newValue = "OFF";
-					}
-					event = new DeviceEvent(this, portNames[i], newValue);
-					listener.statusChanged(event);
+	private void generateEvent(byte oldAlarms, byte newAlarms, 
+		String portNames[]) {
+		int i;
+		for (i = 0; i < 8; i++) {
+			int b = 1 << i;
+			if ((oldAlarms & b) != (newAlarms & b)) {
+				DeviceEvent event;
+				String newValue;
+				if ((newAlarms & b) != 0) {
+					newValue = "ON";
+				} else {
+					newValue = "OFF";
 				}
+				event = new DeviceEvent(this, portNames[i], newValue);
+				connector.onDeviceEvent(event);
 			}
 		}
 	}
+	
 	
 	/**
 	 * Aggiorna lo stato della centralina.
@@ -253,31 +247,31 @@ public class JBisKyoDevice extends Device {
 		statusTime = System.currentTimeMillis();
 		if (oldValue != zoneAlarms) {
 			zoneAlarmsTimestamp = statusTime;
-			alertListener(oldValue, zoneAlarms, zone_alarms_ports);
+			generateEvent(oldValue, zoneAlarms, zone_alarms_ports);
 		}
 		oldValue = zoneSabotages;
 		zoneSabotages = data[1];
 		if (oldValue != zoneSabotages) {
 			zoneSabotagesTimestamp = statusTime;
-			alertListener(oldValue, zoneSabotages, zone_sabotages_ports);
+			generateEvent(oldValue, zoneSabotages, zone_sabotages_ports);
 		}
 		oldValue = warnings;
 		warnings = (byte)(data[2] & 0x7f); // Contano solo i bit 0-6
 		if (oldValue != warnings) {
 			warningsTimestamp = statusTime;
-			alertListener(oldValue, warnings, warnings_ports);
+			generateEvent(oldValue, warnings, warnings_ports);
 		}
 		oldValue = areaAlarms;
 		areaAlarms = (byte)(data[3] & 0xf); // Contano solo i bit 0-3
 		if (oldValue != areaAlarms) {
 			areaAlarmsTimestamp = statusTime;
-			alertListener(oldValue, areaAlarms, area_alarms_ports);
+			generateEvent(oldValue, areaAlarms, area_alarms_ports);
 		}
 		oldValue = otherSabotages;
 		otherSabotages = (byte)(data[4] & 0xf0); // Contano solo i bit 4-7
 		if (oldValue != otherSabotages) {
 			otherSabotagesTimestamp = statusTime;
-			alertListener(oldValue, otherSabotages, other_sabotages_ports);
+			generateEvent(oldValue, otherSabotages, other_sabotages_ports);
 		}
 	}
 	
@@ -566,13 +560,6 @@ public class JBisKyoDevice extends Device {
 			retval = "ERROR: data is too old!";
 		}
 		return retval;
-	}
-
-	/* (non-Javadoc)
-	 * @see it.ascia.ais.Device#setDeviceListener(it.ascia.ais.DeviceListener)
-	 */
-	public void setDeviceListener(DeviceListener listener) {
-		this.listener = listener;
 	}
 
 	/* (non-Javadoc)

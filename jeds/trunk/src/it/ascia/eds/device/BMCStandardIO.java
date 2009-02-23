@@ -4,7 +4,6 @@
 package it.ascia.eds.device;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.DeviceListener;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.AcknowledgeMessage;
@@ -116,6 +115,7 @@ public class BMCStandardIO extends BMC {
 			ComandoUscitaMessage cmd = (ComandoUscitaMessage) m;
 			int uscita = cmd.getOutputPortNumber();
 			boolean oldValue = outPorts[uscita];
+			// TODO gestire configurazione delle uscite (passo-passo, ecc.)
 			outPorts[uscita] = cmd.isActivation();
 			if (isReal) {
 				// L'attuazione viene richiesta, non sappiamo se sara'
@@ -131,7 +131,7 @@ public class BMCStandardIO extends BMC {
 			}
 			if (outPorts[uscita] != oldValue) {
 				outPortsTimestamps[uscita] = currentTime;
-				alertListener(uscita, true);
+				generateEvent(uscita, true);
 			}
 		}
 			break;
@@ -149,7 +149,7 @@ public class BMCStandardIO extends BMC {
 						int portNum = ports[i];
 						outPorts[portNum] ^= true;
 						outPortsTimestamps[portNum] = currentTime;
-						alertListener(portNum, true);
+						generateEvent(portNum, true);
 						logger.debug("La porta " + ports[i]	+ 
 								" risponde a un comando broadcast e diventa: " +
 								outPorts[portNum]);
@@ -174,7 +174,7 @@ public class BMCStandardIO extends BMC {
 						"di un ingresso e diventa: " + outPorts[port]);
 			}
 			outPortsTimestamps[port] = currentTime;
-			alertListener(port, true);
+			generateEvent(port, true);
 		}
 		break;
 		case EDSMessage.MSG_RICHIESTA_MODELLO: {
@@ -242,7 +242,7 @@ public class BMCStandardIO extends BMC {
 					outPorts[i] = temp[i];
 					if (mustAlert) {
 						outPortsTimestamps[i] = currentTime;
-						alertListener(i, true);
+						generateEvent(i, true);
 					}
 					outPortsDirty[i] = false;
 				}
@@ -252,7 +252,7 @@ public class BMCStandardIO extends BMC {
 					inPorts[i] = temp[i];
 					if (mustAlert) {
 						inPortsTimestamps[i] = currentTime;
-						alertListener(i, false);
+						generateEvent(i, false);
 					}
 				}
 			}
@@ -331,7 +331,7 @@ public class BMCStandardIO extends BMC {
 				outPorts[port] = value;
 				if (oldValue != value) {
 					outPortsTimestamps[port] = System.currentTimeMillis();
-					alertListener(port, true);
+					generateEvent(port, true);
 				}
 			}
 		} else {
@@ -371,7 +371,7 @@ public class BMCStandardIO extends BMC {
 			}
 			if (retval) {
 				outPortsTimestamps[port] = System.currentTimeMillis();
-				alertListener(port, true);
+				generateEvent(port, true);
 			}
 		} else {
 			logger.error("Numero porta non valido: " + port);
@@ -540,7 +540,7 @@ public class BMCStandardIO extends BMC {
 	 * @param port numero della porta
 	 * @param isOutput true se si tratta di un'uscita, false se e' un ingresso.
 	 */
-	private void alertListener(int port, boolean isOutput) {
+	private void generateEvent(int port, boolean isOutput) {
 		String newValue, portId;
 		boolean val;
 		if (isOutput) {
@@ -555,7 +555,7 @@ public class BMCStandardIO extends BMC {
 		} else {
 			newValue = "off";
 		}
-		generateEvent(portId, newValue);
+		super.generateEvent(portId, newValue);
 	}
 
 	/**
@@ -570,7 +570,7 @@ public class BMCStandardIO extends BMC {
 	 * @param listener
 	 *            il DeviceListener a cui si comunicheranno
 	 */
-	public void makeSimulated(DeviceListener listener) {
+	public void makeSimulated() {
 		isReal = false;
 		// Togliamo tutti gli eventuali "dirty"
 		for (int i = 0; i < outPortsDirty.length; i++) {

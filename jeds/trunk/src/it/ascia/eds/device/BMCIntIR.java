@@ -52,14 +52,14 @@ public class BMCIntIR extends BMC {
 	 * 
 	 * <p>Informa il listener che l'input a IR ha cambiato valore.</p>
 	 */
-	private void alertListener() {
+	private void generateEvent() {
 		String value;
 		if (irInput) {
 			value = "ON";
 		} else {
 			value = "OFF";
 		}
-		generateEvent(getInputPortId(0), value);
+		super.generateEvent(getInputPortId(0), value);
 	}
 	
 	public void messageSent(EDSMessage m) {
@@ -75,7 +75,7 @@ public class BMCIntIR extends BMC {
 			irInput = temp[0];
 			if (oldInput != irInput) {
 				irInputTimestamp = System.currentTimeMillis();
-				alertListener();
+				generateEvent();
 			}
 		}
 		break;

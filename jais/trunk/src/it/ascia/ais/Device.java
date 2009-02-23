@@ -113,13 +113,6 @@ public abstract class Device {
 	 * @throws un'eccezione se qualcosa va male.
 	 */
 	public abstract String peek(String portId) throws AISException;
-
-	/**
-     * Imposta un DeviceListener che ricevera' gli eventi di questo Device.
-     * 
-     * @param listener il DeviceListener che ricevera' gli eventi.
-     */
-    public abstract void setDeviceListener(DeviceListener listener);
     
     public void bindConnector(Connector connector) {
     	this.connector = connector;

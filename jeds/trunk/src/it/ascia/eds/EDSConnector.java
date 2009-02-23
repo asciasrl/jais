@@ -9,6 +9,7 @@ import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
+import it.ascia.ais.DeviceEvent;
 import it.ascia.ais.MessageInterface;
 import it.ascia.eds.device.*;
 import it.ascia.eds.msg.*;
@@ -214,7 +215,8 @@ public class EDSConnector extends it.ascia.ais.Connector {
     	}
     	devices.put(new Integer(deviceAddress), device);
     }
-    
+
+
     /*
     public Device[] getDevices(String address) {
     	Collection values = devices.values();

@@ -4,7 +4,6 @@
 package it.ascia.bentel;
 
 import it.ascia.ais.DeviceEvent;
-import it.ascia.ais.DeviceListener;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,7 +17,7 @@ import org.apache.log4j.PropertyConfigurator;
  * @author arrigo
  *
  */
-public class JBisKyoTest implements DeviceListener {
+public class JBisKyoTest {
 	static BufferedReader stdin;
 	static JBisKyoUnit b;
 	static JBisKyoDevice d;
@@ -78,7 +77,6 @@ public class JBisKyoTest implements DeviceListener {
 		try {
 			b = new JBisKyoUnit(1,4,"0025", "jbis");
 			d = (JBisKyoDevice)(b.getDevices("0")[0]);
-			d.setDeviceListener(new JBisKyoTest());
 			/*b.updateStatus();
 			if (b.hasAlarms()) {
 				System.out.println("Allarmi:");

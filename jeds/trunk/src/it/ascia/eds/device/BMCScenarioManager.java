@@ -100,7 +100,7 @@ public class BMCScenarioManager extends BMC {
 	 * @param port numero della porta
 	 * @param isOutput true se si tratta di un'uscita, false se e' un ingresso.
 	 */
-	private void alertListener(int port, boolean isOutput) {
+	private void generateEvent(int port, boolean isOutput) {
 		String newValue, portName;
 		boolean val;
 		if (isOutput) {
@@ -115,7 +115,7 @@ public class BMCScenarioManager extends BMC {
 		} else {
 			newValue = "off";
 		}
-		generateEvent(portName, newValue);
+		super.generateEvent(portName, newValue);
 	}
 	
 	public void messageSent(EDSMessage m) {
@@ -134,7 +134,7 @@ public class BMCScenarioManager extends BMC {
 				outPorts[i] = temp[i];
 				if (oldValue != outPorts[i]) {
 					outPortsTimestamps[i] = currentTime;
-					alertListener(i, true);
+					generateEvent(i, true);
 				}
 			}
 			temp = r.getInputs();
@@ -143,7 +143,7 @@ public class BMCScenarioManager extends BMC {
 				inPorts[i] = temp[i];
 				if (oldValue != inPorts[i]) {
 					inPortsTimestamps[i] = currentTime;
-					alertListener(i, false);
+					generateEvent(i, false);
 				}
 			}
 		}

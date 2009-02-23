@@ -52,7 +52,7 @@ public class BMCIR extends BMC {
 	 * 
 	 * @param port numero della porta
 	 */
-	private void alertListener(int port) {
+	private void generateEvent(int port) {
 		String portName, newValue;
 		portName = getInputPortId(port);
 		if (inPorts[port]) {
@@ -60,7 +60,7 @@ public class BMCIR extends BMC {
 		} else {
 			newValue = "off";
 		}
-		generateEvent(portName, newValue);
+		super.generateEvent(portName, newValue);
 	}
 	/**
 	 * Costruttore
@@ -106,7 +106,7 @@ public class BMCIR extends BMC {
 				inPorts[i] = temp[i];
 				if (oldValue != inPorts[i]) {
 					inPortsTimestamps[i] = currentTime;
-					alertListener(i);
+					generateEvent(i);
 				}
 			}
 		}

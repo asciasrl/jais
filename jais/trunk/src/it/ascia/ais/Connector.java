@@ -32,6 +32,11 @@ public abstract class Connector {
 	public Transport transport;
 
 	/**
+	 * Controller che ha instanziato il Connector
+	 */
+	public Controller controller;
+
+	/**
      * Il nostro logger.
      */
     protected Logger logger;
@@ -96,7 +101,11 @@ public abstract class Connector {
      */
     public abstract boolean sendMessage(MessageInterface m);
     
-    /**
+	public void onDeviceEvent(DeviceEvent event) {
+		controller.onDeviceEvent(event);
+	}
+
+	/**
      * Associa il Transport al Connector
      * @param transport Il Transport associato
      */
@@ -104,6 +113,5 @@ public abstract class Connector {
     	this.transport = transport;
     	transport.connector = this;
     }
-
 }
 

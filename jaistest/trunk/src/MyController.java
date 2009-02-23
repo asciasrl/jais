@@ -8,7 +8,6 @@ import it.ascia.ais.AISException;
 import it.ascia.ais.Controller;
 import it.ascia.ais.Device;
 import it.ascia.ais.DeviceEvent;
-import it.ascia.ais.DeviceListener;
 
 /**
  * Il controller di uno o piu' connector.
@@ -23,11 +22,11 @@ import it.ascia.ais.DeviceListener;
  * 
  * @author arrigo
  */
-public class MyController extends Controller implements DeviceListener {
+public class MyController extends Controller {
 	/**
 	 * Il nostro logger.
 	 */
-	private Logger logger;
+	protected Logger logger;
 	/**
 	 * Il nostro PIN.
 	 */
@@ -43,25 +42,12 @@ public class MyController extends Controller implements DeviceListener {
 		this.pin = pin;
 	}
 	
-	public void addConnector(Connector connector) {
-		registerConnector(connector);
-	}
-
-	/**
-	 * Associa se stesso a tutti i device di tutti i connector.
-	 */
-	public void setDevicesListener() throws AISException {
-		Device devices[] = findDevices("*");
-		for (int i = 0; i < devices.length; i++) {
-			devices[i].setDeviceListener(this);
-		}
-	}
-	
 	/**
 	 * Si auto-invia una richiesta.
 	 * 
 	 * <p>Questo metodo e' per uso interno: esegue una richiesta senza
 	 * controllare il pin.</p>
+	 * TODO spostare in HTTPServerControllerPlugin
 	 */
 	private String receiveAuthenticatedRequest(String command, String name,
 			String value) {

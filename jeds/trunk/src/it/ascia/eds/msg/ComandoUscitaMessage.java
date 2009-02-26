@@ -92,38 +92,34 @@ public class ComandoUscitaMessage extends PTPRequest
 
 	public String toString()	{
 		StringBuffer s = new StringBuffer();
-		s.append("Mittente: "+Mittente+"\r\n");
-		s.append("Destinatario: "+Destinatario+"\r\n");
-		s.append("Uscita: "+ getOutputPortNumber() +"\r\n");
+		s.append(super.toString());
+		s.append(" Uscita: "+ getOutputPortNumber());
 		if (isActivation()) {
-			s.append("Attivazione/Incremento\r\n");
+			s.append(" Attivazione/Incremento");
 		} else {
-			s.append("Disattivazione/Decremento\r\n");
+			s.append(" Disattivazione/Decremento");
 		}
 		int tempo = (Byte1 >> 3) & 0x0F;
-		s.append("Tempo attivazione: ");
 		switch (tempo) {
 		case 0:
-			s.append("Soft speed\r\n");
+			s.append(" Soft speed");
 			break;
 		case 1:
-			s.append("Istantaneo\r\n");
+			s.append(" Istantaneo");
 			break;
 		default:
-			s.append("Variazione 0-100% in "+(tempo/10)+"s\r\n");
+			s.append(" Variazione 0-100% in "+(tempo/10)+"s");
 			break;
 		}
 
 		int percentuale = getPercentage();
-		s.append("Percentuale: ");
 		if (percentuale == 0) {
-			s.append("modo rele'");
+			s.append(" Modo rele'");
 		} else if (percentuale > 100) {
-			s.append("Valore precedente");
+			s.append(" Valore precedente");
 		} else {
-			s.append("Accende al "+percentuale+"%\r\n");
+			s.append(" Accende al "+percentuale+"%");
 		}
-		s.append("\r\n");
 		return s.toString();
 	}
 

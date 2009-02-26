@@ -24,7 +24,7 @@ public class RichiestaStatoMessage extends PTPRequest
 	}
 
 	public String getMessageDescription() {
-		return "Richiesta uscite";
+		return "Richiesta stato";
 	}
 	
 	public boolean isAnsweredBy(PTPMessage m) {

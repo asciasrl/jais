@@ -1,1 +1,1 @@
-java -Djava.library.path=..\jais\lib -cp ..\jais\jais.jar;..\jeds\jeds.jar;..\jais\lib\*;aui.jar BusTest
+java -Djava.library.path=..\jais\lib -cp ..\jais\jais.jar;..\jeds\jeds.jar;..\jais\lib\*;aui.jar;JaisTest.jar BusTest

@@ -192,7 +192,7 @@ public class ControllerWDB extends MyController {
 	 	EDSConnector eds = null;
 	 	Transport transport = null;
 	 	try {
-	 		eds = new EDSConnector("0");
+	 		// FIXME eds = new EDSConnector("0");
 	 		transport = new SerialTransport(defaultPort);
 	 		//transport = new TCPSerialTransport(defaultPort, 2001, "0");
 	 		// transport = new SerialTransport(defaultPort, "0");

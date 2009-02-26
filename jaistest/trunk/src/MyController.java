@@ -23,10 +23,7 @@ import it.ascia.ais.DeviceEvent;
  * @author arrigo
  */
 public class MyController extends Controller {
-	/**
-	 * Il nostro logger.
-	 */
-	protected Logger logger;
+
 	/**
 	 * Il nostro PIN.
 	 */
@@ -38,7 +35,6 @@ public class MyController extends Controller {
 	 * @param pin il pin da richiedere; se null, qualunque pin verra' accettato.
 	 */
 	public MyController(String pin) {
-		logger = Logger.getLogger(getClass());
 		this.pin = pin;
 	}
 	

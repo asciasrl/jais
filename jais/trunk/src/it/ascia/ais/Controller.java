@@ -4,9 +4,15 @@
 package it.ascia.ais;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
 /**
@@ -25,9 +31,11 @@ public abstract class Controller {
 	/**
 	 * Plugins attivi
 	 */
-	private Map plugins;
+	private Set plugins;
 	
-	protected Logger logger; 
+	protected Logger logger;
+	
+	private XMLConfiguration config;
 	
 	/**
 	 * Rifa' String.split() per il GCJ che non ce l'ha.
@@ -70,12 +78,13 @@ public abstract class Controller {
 	public void loadPlugin(String name, String className) {
 		ClassLoader pluginLoader = ControllerPlugin.class.getClassLoader();
 		try {
+			logger.info("Caricamento plugin '"+name+"' da '"+className+"'");
 			Class pluginClass = pluginLoader.loadClass(className);
 			ControllerPlugin plugin = (ControllerPlugin) pluginClass.newInstance();
 			plugin.setController(this);
-			plugins.put(name, plugin);
-			logger.info("Caricato plugin '"+name+"' da '"+className+"'");
-			plugin.configure();
+			plugins.add(plugin);
+			plugin.configure(config);
+			logger.info("Caricato plugin '"+name+"'");
 		} catch (ClassNotFoundException e) {
 			logger.error("Fallito caricamento plugin '"+name+"': non trovata classe '"+className+"'");
 		} catch (InstantiationException e) {
@@ -123,6 +132,9 @@ public abstract class Controller {
 		return temp[1];
 	}
 
+	public Connector getConnector(String name) {
+		return (Connector) connectors.get(name);
+	}
 	
 	/**
 	 * Cerca uno o piu' Device a partire da un indirizzo.
@@ -192,11 +204,42 @@ public abstract class Controller {
 	}
 	
 	public Controller() {
-		connectors = new HashMap();
-		plugins = new HashMap();
-		logger = Logger.getLogger(getClass());
+		this("conf/jais.xml");
 	}
 	
+	/**
+	 * 
+	 * @param configurationFileName 
+	 * @throws ConfigurationException 
+	 */
+	public Controller(String configurationFileName) {
+		connectors = new HashMap();
+		plugins = new HashSet();
+		logger = Logger.getLogger(getClass());	
+		try {
+			config = new XMLConfiguration(configurationFileName);
+		} catch (ConfigurationException e) {
+			logger.fatal(e);
+		}
+		logger.info("Inizializzato controller.");
+	}
+
+	public void configure() {
+		try {
+			config.save("backup.xml");
+		} catch (ConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		List plugins = config.configurationsAt("plugins.plugin");
+		for(Iterator it = plugins.iterator(); it.hasNext();)
+		{
+		    HierarchicalConfiguration sub = (HierarchicalConfiguration) it.next();
+		    String name = sub.getString("name");
+		    String className = sub.getString("class");
+		    loadPlugin(name, className);
+		}		
+	}
 	/**
 	 * Il cuore del controllore: riceve la richiesta e produce una risposta.
 	 * 
@@ -214,7 +257,8 @@ public abstract class Controller {
 	 * @param event
 	 */
 	public void onDeviceEvent(DeviceEvent event) {
-		Iterator i = plugins.keySet().iterator();
+		logger.info("Ricevuto evento: "+event.getInfo());
+		Iterator i = plugins.iterator();
 		while (i.hasNext()) {
 			ControllerPlugin plugin = (ControllerPlugin) i.next();
 			plugin.onDeviceEvent(event);

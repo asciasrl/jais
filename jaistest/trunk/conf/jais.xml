@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!-- commento -->
+<jais>
+  <plugins>
+    <plugin>
+      <name>HTTPServer</name>
+      <class>it.ascia.ais.HTTPServerControllerPlugin</class>
+    </plugin>
+    <plugin>
+      <name>EDS</name>
+      <class>it.ascia.eds.EDSControllerPlugin</class>
+    </plugin>
+  </plugins>
+  <HTTPServer>
+    <port>80</port>
+    <root>../aui</root>    
+  </HTTPServer>
+  <EDS>
+    <connectors>
+      <connector>
+        <name>0</name>
+        <transport>
+          <type>serial</type>
+          <port>COM2</port>
+          <speed>9600</speed>
+        </transport>
+		    <computer>3</computer>
+		    <discover>3,4,5,6,7</discover> 
+      </connector>
+    </connectors> 
+  </EDS>      
+</jais>

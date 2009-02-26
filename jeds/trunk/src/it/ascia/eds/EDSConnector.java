@@ -9,6 +9,7 @@ import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
+import it.ascia.ais.Controller;
 import it.ascia.ais.DeviceEvent;
 import it.ascia.ais.MessageInterface;
 import it.ascia.eds.device.*;
@@ -30,7 +31,7 @@ public class EDSConnector extends it.ascia.ais.Connector {
 	 * 8 / 120 = 660 msec. In quello migliore (9600 bps), la trasmissione 
 	 * richiede 82 msec. Questa costante deve tener conto del caso migliore.</p>
 	 */
-	protected int RETRY_TIMEOUT = 500;
+	protected int RETRY_TIMEOUT = 200;
 
 	/**
 	 * Quante volte provare a reinviare un messaggio che richiede una risposta.
@@ -60,32 +61,19 @@ public class EDSConnector extends it.ascia.ais.Connector {
      * Il BMC "finto" che corrisponde a questo.
      */
     private BMCComputer bmcComputer;
-    /**
-     * Il nostro nome secondo AUI.
-     */
-    private String name;
     
     /**
      * Connettore per il BUS EDS.
      * 
-     * @param name il nome del transport, che sara' la parte iniziale degli indirizzi
-     * di tutti i Device collegati a questo transport.
+     * @param name il nome del Connector, che sara' la parte iniziale degli indirizzi
+     * di tutti i Device collegati a questo Connector.
      */
-    public EDSConnector(String name) {
-        devices = new HashMap();
+    public EDSConnector(String name, Controller controller) {
+    	super(name,controller);
         bmcComputer = null;
 		mp = new MessageParser();
-		logger = Logger.getLogger(getClass());
-		this.name = name;
     }
     
-    
-    /**
-     * Ritorna il nome di questa istanza di connettore.
-     */
-    public String getName() {
-    	return name;
-    }
     
     /**
      * Imposta il BMCComputer del connector.
@@ -96,6 +84,10 @@ public class EDSConnector extends it.ascia.ais.Connector {
     	devices.put(new Integer(bmcComputer.getAddress()), bmcComputer);
     }
     
+    public BMCComputer getBMCComputer() {
+    	return this.bmcComputer;
+    }
+        
     /**
      * Ritorna l'indirizzo del BMCComputer del connettore.
      * 
@@ -125,6 +117,7 @@ public class EDSConnector extends it.ascia.ais.Connector {
 //  				if (!m.getTipoMessaggio().equals("Aknowledge")) {
 //  				System.out.println((new Date()).toString() + "\r\n" + m);
 //  				}
+    				//logger.trace("dispatchMessage: "+m);
     				if (m != null) {
     					dispatchMessage(m);
     				}

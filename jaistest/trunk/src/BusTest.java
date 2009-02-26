@@ -129,118 +129,17 @@ public class BusTest extends MyController {
 	 */
 	public static void main(String[] args) throws AISException {
 
-		// TODO inizializzazione da file di configurazione
-		
 	    // Inizializzazione logger
 	    PropertyConfigurator.configure("conf/log4j.conf");
-
-		busController = new BusTest(null /* "1" */);
-		busController.loadPlugin("Default");
-		// TODO caricare dati da files di configurazione
-		// TODO fare EDSControllerPlugin 
-		busController.loadPlugin("EDS");
-		// TODO fare BentelControllerPlugin 
-		busController.loadPlugin("Bentel");
-		// TODO fare HTPSServerControllerPlugin 
-		busController.loadPlugin("HTTPServer");
-
-		//String defaultPort = "ascia.homeip.net";
-		String defaultPort = "COM1";
-		Integer tcpPort = null;
-		int httpPort = 80;
-		String documentRoot = "../aui";
-		//ConfigurationFile cfgFile = null;
-		Logger log = Logger.getLogger(BusTest.class);
-	 	if (args.length > 0) {
-	 		for (int i = 0; i < args.length; i++) {
-				log.debug("Parametro "+i+"="+args[i]);
-			}
-		    if (args[0].contains(":")) {
-		    	String[] s2 = args[0].split(":",2);
-		    	defaultPort = s2[0];
-		    	tcpPort = new Integer(Integer.parseInt(s2[1]));
-		    	log.info("Connessione al BUS tramite TCP/IP su "+defaultPort+":"+tcpPort);
-		    } else {
-		    	defaultPort = args[0];
-		    	log.info("Connessione al BUS tramite seriale "+defaultPort);
-		    }
-		    if (args.length > 1) {
-		    	httpPort = Integer.parseInt(args[1]);
-		    }
-	    	log.info("Server HTTP su porta "+httpPort);
-		    if (args.length > 2) {
-		    	documentRoot = args[2];
-		    }
-	    	log.info("Cartella files http "+documentRoot);
-		}
-	 	EDSConnector eds = null;
-	 	Transport transport = null;
-	 	try {
-	 		eds = new EDSConnector("EDSConnector0");
-	 		if (tcpPort != null) {
-	 			transport = new TCPSerialTransport(defaultPort, tcpPort.intValue());
-	 			log.info("Connesso via socket a "+defaultPort+" porta "+tcpPort);
-	 		} else {
-	 			transport = new SerialTransport(defaultPort);
-	 			log.info("Connesso via seriale a "+defaultPort);
-	 		}
-	 		eds.bindTransport(transport);
-	 		//transport.bind(eds);
-	 	} catch (EDSException e) {
-	 		log.fatal(e.getMessage());
-	 		System.exit(-1);
-	 	}
-		busController.registerConnector(eds);
-		try {
-			if (httpPort > 0) {
-				server = new HTTPServer(httpPort, busController, documentRoot);
-			}
-		} catch (AISException e) {
-			System.err.println(e.getMessage());
-			System.exit(-1);
-		}
-	 	bmcComputer = new BMCComputer(0);
-	 	eds.setBMCComputer(bmcComputer);
-	 	// File di configurazione
-//	 	try {
-//			cfgFile = new ConfigurationFile("conf/tavola20071207.xml");
-//		} catch (EDSException e) {
-//			System.err.println(e.getMessage());
-//			System.exit(-1);
-//		}
-		// cfgFile.createBMCs(transport);
-		//System.out.println(cfgFile.getSystemName());
-	 	// Discovery
-	 	log.info("Discovery su "+eds.getName() + " tramite " + transport);
-	 	for (int i = 0; i < 8; i++) {
-	 		if ((i != 1) && (i != 4)) {
-	 			// Evitiamo gli indirizzi non assegnati
-	 			BMC bmc = bmcComputer.discoverBMC(i); 
-	 			if (bmc != null) {
-	 				log.info("Indirizzo "+i+" : "+bmc.getInfo());
-	 			} else {
-	 				log.debug("Nessun BMC all'indirizzo "+i);
-	 			}
-	 		}
-	 	}
-	 	// Dimmer avanzato
-	 	bmcComputer.discoverBMC(255);
-	 	// BMC virtuale
-	 	/* for (int i = 64; i < 104; i++) {
-	 		makeVirtualBMC(i);
-	 	} */
-	 	// testBMCStandardIO();
-	 	// testBMCDimmer();
-	 	// testBMCChronoTerm();
-	 	/*
-	 	try {
-			busController.setDevicesListener();
-		} catch (AISException e) {
-			System.err.println(e.getMessage());
-			System.exit(-1);
-		}
-		*/
+	    Logger log = Logger.getLogger(BusTest.class);
+	    
+	    // TODO eliminare i controller "specifici" (va tutto nei plugin)
+		busController = new BusTest(null);
+		busController.configure();
+		
 	 	// La palla all'utente
+	 	EDSConnector eds = (EDSConnector) busController.getConnector("0");
+	 	bmcComputer = eds.getBMCComputer();
 		int dest = 1;
 		while (dest > 0) {
 			dest = Stdio.inputInteger("Indirizzo da pingare (0 per terminare):");
@@ -248,13 +147,13 @@ public class BusTest extends MyController {
 					BMC bmc = bmcComputer.discoverBMC(dest); 
 					if ( bmc != null) {
 						System.out.println(bmc.getInfo());
+						testBMCStandardIO(dest,bmcComputer.getConnector());
 					} else {
 						System.out.println("Non trovato!");
 					}
 				}
 		}
-		if (server != null) server.close();
-		transport.close();
+		// TODO chiusura del controller
 		log.info("Termine programma");
 	}
 	

@@ -1,5 +1,6 @@
 package it.ascia.ais;
 
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
 /**
@@ -12,6 +13,8 @@ import org.apache.log4j.Logger;
 public abstract class ControllerPlugin {
 
     protected Logger logger;
+    
+    protected XMLConfiguration config;
     
     /**
      * Riferimento al controller che ha instanziato il plugin
@@ -47,9 +50,6 @@ public abstract class ControllerPlugin {
 	/**
 	 * (ri)configura il plugin
 	 */
-	public void configure() {
-		// TODO Auto-generated method stub
-		
-	}
+	public abstract void configure(XMLConfiguration config);
 	
 }

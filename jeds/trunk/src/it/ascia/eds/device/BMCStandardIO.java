@@ -111,11 +111,11 @@ public class BMCStandardIO extends BMC {
 	public void messageReceived(EDSMessage m) {
 		long currentTime = System.currentTimeMillis();
 		switch (m.getMessageType()) {
-		case EDSMessage.MSG_COMANDO_USCITA: {
+		case EDSMessage.MSG_COMANDO_USCITA:
 			ComandoUscitaMessage cmd = (ComandoUscitaMessage) m;
 			int uscita = cmd.getOutputPortNumber();
 			boolean oldValue = outPorts[uscita];
-			// TODO gestire configurazione delle uscite (passo-passo, ecc.)
+			// TODO gestire configurazione delle uscite (passo-passo, con timer, ecc.)
 			outPorts[uscita] = cmd.isActivation();
 			if (isReal) {
 				// L'attuazione viene richiesta, non sappiamo se sara'
@@ -133,9 +133,8 @@ public class BMCStandardIO extends BMC {
 				outPortsTimestamps[uscita] = currentTime;
 				generateEvent(uscita, true);
 			}
-		}
 			break;
-		case EDSMessage.MSG_COMANDO_BROADCAST: {
+		case EDSMessage.MSG_COMANDO_BROADCAST:
 			// Messaggio broadcast: potrebbe interessare alcune porte.
 			ComandoBroadcastMessage bmsg = (ComandoBroadcastMessage) m;
 			int ports[] = getBoundOutputs(bmsg.getCommandNumber());
@@ -156,9 +155,8 @@ public class BMCStandardIO extends BMC {
 					}
 				} // cicla sulle porte interessate
 			} // if ports.length > 0
-		}
 			break;
-		case EDSMessage.MSG_VARIAZIONE_INGRESSO: {
+		case EDSMessage.MSG_VARIAZIONE_INGRESSO:
 			// Qualcuno ha premuto un interruttore, e la cosa ci interessa.
 			VariazioneIngressoMessage vmsg = (VariazioneIngressoMessage) m;
 			int port = vmsg.getOutputNumber();
@@ -175,9 +173,8 @@ public class BMCStandardIO extends BMC {
 			}
 			outPortsTimestamps[port] = currentTime;
 			generateEvent(port, true);
-		}
-		break;
-		case EDSMessage.MSG_RICHIESTA_MODELLO: {
+			break;
+		case EDSMessage.MSG_RICHIESTA_MODELLO:
 			// Ci chiedono chi siamo...
 			if (!isReal) {
 				// ...dobbiamo rispondere!
@@ -186,9 +183,8 @@ public class BMCStandardIO extends BMC {
 						getIntAddress(), model, 1);
 				connector.sendMessage(answer);
 			}
-		}
 			break;
-		case EDSMessage.MSG_RICHIESTA_ASSOCIAZIONE_BROADCAST: {
+		case EDSMessage.MSG_RICHIESTA_ASSOCIAZIONE_BROADCAST:
 			// Ci chiedono se abbiamo uscite associate a comandi broadcast...
 			if (!isReal) {
 				// ...dobbiamo rispondere!
@@ -209,7 +205,6 @@ public class BMCStandardIO extends BMC {
 						true, message);
 				connector.sendMessage(answer);
 			}
-		}
 			break;
 		case EDSMessage.MSG_RICHIESTA_STATO:
 			// Ci chiedono il nostro stato...
@@ -220,6 +215,7 @@ public class BMCStandardIO extends BMC {
 				answer = new RispostaStatoMessage(question, outPorts, inPorts);
 				connector.transport.write(answer.getBytesMessage());
 			}
+			break;
 		} // switch (m.getMessageType())
 	}
 
@@ -551,9 +547,9 @@ public class BMCStandardIO extends BMC {
 			portId = getInputPortId(port);
 		}
 		if (val) {
-			newValue = "on";
+			newValue = "Attiva";
 		} else {
-			newValue = "off";
+			newValue = "Disattiva";
 		}
 		super.generateEvent(portId, newValue);
 	}

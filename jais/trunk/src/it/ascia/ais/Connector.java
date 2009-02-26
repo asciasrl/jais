@@ -4,6 +4,7 @@
 package it.ascia.ais;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,6 +27,11 @@ import org.apache.log4j.Logger;
  */
 public abstract class Connector {
 	
+    /**
+     * Il nostro nome secondo AUI.
+     */
+    protected String name;
+    
 	/**
 	 * Transport con il quale il Connector comunica con il sistema
 	 */
@@ -46,7 +52,14 @@ public abstract class Connector {
 	 */
     protected Map devices;
 
-    /**
+    public Connector(String name, Controller controller) {
+		this.setName(name);
+		this.controller = controller;
+        devices = new HashMap();
+		logger = Logger.getLogger(getClass());
+	}
+
+	/**
      * Ritorna tutti i Device collegati che rispondono a un certo indirizzo.
      * 
      * <p>Questa funzione deve gestire anche wildcard.</p>
@@ -72,18 +85,11 @@ public abstract class Connector {
     }
     
     public void addDevice(Device device) {
+    	device.bindConnector(this);
     	String deviceAddress = device.getAddress();
     	devices.put(new Integer(deviceAddress), device);    	
     }
-    
-    /**
-     * Ritorna il nome del Connector, nella forma "tipo.numero".
-     * 
-     * <p>Questo nome e' parte dell'indirizzo dei Device collegati al 
-     * Connector.</p>
-     */
-    public abstract String getName();
-    
+        
     /**
      * Legge e interpreta i dati in arrivo.
      * 
@@ -113,5 +119,14 @@ public abstract class Connector {
     	this.transport = transport;
     	transport.connector = this;
     }
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
+	}
+
 }
 

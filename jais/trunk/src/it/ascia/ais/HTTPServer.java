@@ -33,11 +33,11 @@ public class HTTPServer {
 	/**
 	 * L'handler che serve file per AUI.
 	 */
-	private DefaultServlet fileServlet;
+	//private DefaultServlet fileServlet;
 	/**
 	 * L'handler che serve le richieste di AUI.
 	 */
-	private AUIRequestServlet auiRequestServlet;
+	//private AUIRequestServlet auiRequestServlet;
 	/**
 	 * Il nostro server.
 	 */
@@ -79,8 +79,8 @@ public class HTTPServer {
 		HttpServlet defaultServlet = new DefaultServlet();
 		ServletHolder defaultHolder = new ServletHolder(defaultServlet);
 		defaultHolder.setInitParameter("resourceBase", auiDirectory);		 
-		defaultHolder.setInitParameter("dirAllowed", "true");
-		defaultHolder.setInitParameter("redirectWelcome", "true");		 
+		defaultHolder.setInitParameter("dirAllowed", "false");
+		defaultHolder.setInitParameter("redirectWelcome", "false");		 
 		rootContext.addServlet(defaultHolder, "/");
 		try {
 			logger.info("Avvio server HTTP...");

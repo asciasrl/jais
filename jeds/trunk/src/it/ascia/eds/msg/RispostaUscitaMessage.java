@@ -23,7 +23,7 @@ public class RispostaUscitaMessage extends PTPMessage
 	
 	public String toString()	{
 		StringBuffer s = new StringBuffer();
-		s.append(Mittente+" -> "+Destinatario);
+		s.append(super.toString());
 		s.append(" Uscita ");
 		s.append(isOn() ? "ON ": "OFF");
 		switch (getTipoUscita()) {

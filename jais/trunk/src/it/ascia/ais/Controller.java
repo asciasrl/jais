@@ -15,11 +15,11 @@ import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
 import org.apache.log4j.Logger;
 
 /**
- * Questa classe deve essere estesa da controllori per bus domotici.
+ * Controllore del sistema di integrazione, esteso tramite moduli.
  * 
  * @author arrigo
  */
-public abstract class Controller {
+public class Controller {
 	/**
 	 * Connector registrati.
 	 * 
@@ -28,11 +28,11 @@ public abstract class Controller {
 	private Map connectors;
 	
 	/**
-	 * Plugins attivi
+	 * Moduli del controllore
 	 */
 	private Map modules;
 	
-	protected Logger logger;
+	private Logger logger;
 	
 	private XMLConfiguration config;
 
@@ -83,11 +83,6 @@ public abstract class Controller {
 		connectors.put(connector.getName(), connector);
 	}
 	
-	public void loadModule(String name) throws AISException {
-		String className = "it.ascia.ais."+name+"ControllerModule"; 
-		loadModule(name, className);
-	}
-	
 	public ControllerModule getModule(String name) {
 		return (ControllerModule) modules.get(name);
 	}
@@ -99,15 +94,16 @@ public abstract class Controller {
 	 * @param className Classe che implementa il modulo
 	 * @throws AISException 
 	 */
-	public void loadModule(String name, String className) throws AISException {
+	private void loadModule(String name, String className) throws AISException {
 		if (modules.containsKey(name)) {
 			throw(new AISException("Nome modulo duplicato: '"+name+"'"));
 		}
 		ClassLoader moduleLoader = ControllerModule.class.getClassLoader();
+		ControllerModule module = null;
 		try {
 			logger.info("Caricamento modulo '"+name+"' da '"+className+"'");
 			Class moduleClass = moduleLoader.loadClass(className);
-			ControllerModule module = (ControllerModule) moduleClass.newInstance();
+			module = (ControllerModule) moduleClass.newInstance();
 			module.setController(this);
 			module.configure(config);
 			modules.put(name,module);
@@ -232,7 +228,6 @@ public abstract class Controller {
 	
 	public Controller() {
 		this("conf/jais.xml");
-		Controller.setController(this);
 	}
 	
 	/**
@@ -251,6 +246,7 @@ public abstract class Controller {
 		} catch (ConfigurationException e) {
 			logger.fatal(e);
 		}
+		Controller.setController(this);
 		logger.info("Inizializzato controller.");
 	}
 
@@ -274,16 +270,6 @@ public abstract class Controller {
 			}
 		}		
 	}
-	/**
-	 * Il cuore del controllore: riceve la richiesta e produce una risposta.
-	 * 
-	 * @param command comando
-	 * @param name indirizzo del/dei device interessati
-	 * @param value parametri del comando (puo' essere null)
-	 * @param pin pin
-	 */
-	public abstract String receiveRequest(String command, String name, 
-			String value, String pin);
 
 	/**
 	 * Comunica l'evento a tutti i moduli
@@ -297,6 +283,28 @@ public abstract class Controller {
 			ControllerModule module = (ControllerModule) i.next();
 			module.onDeviceEvent(event);
 		}
+	}
+
+	/**
+	 * Avvia tutti i moduli
+	 */
+	public void start() {
+		Iterator i = modules.keySet().iterator();
+		while (i.hasNext()) {
+			ControllerModule module = getModule((String) i.next());
+			module.start();			
+		}
+	}
+
+	/**
+	 * Ferma tutti i moduli
+	 */
+	public void stop() {
+		Iterator i = modules.keySet().iterator();
+		while (i.hasNext()) {
+			ControllerModule module = getModule((String) i.next());
+			module.stop();			
+		}		
 	}
 }
 

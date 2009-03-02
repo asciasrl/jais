@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<aui:configuration>
+	<appbar default="lights" simple="false">
+		<service img="..../ascia.jpg" name="scenes" />
+    	<service img="..../light.jpg" name="lights" />
+    	<service img="..../scenari.jpg" name="blinds" />
+  	</appbar>
+  	<map smallmapfile="custom/images/assonometria320x370.png">
+  		<map smallmapfile="custom/images/planimetria.png" bigmapfile="custom/images/planimetria-big.png">
+			<layer service="lights">
+				<control class="it.ascia.aui.Light">
+					<param name="type" value="relay" />
+					<param name="label" value="Applique" />
+					<param name="x" value="100" />
+					<param name="y" value="100" />
+					<param name="address" value="0.3:Out1" />
+				</control>
+				<control class="it.ascia.aui.Light">
+					<param name="type" value="relay" />
+					<param name="label" value="Luce pitosforo" />
+					<param name="x" value="300" />
+					<param name="y" value="100" />
+					<param name="address" value="0.3:Out2" />
+				</control>
+				<control class="it.ascia.aui.Dimmer">
+					<param name="type" value="dimmer" />
+					<param name="label" value="Dimmer allarme" />
+					<param name="x" value="100" />
+					<param name="y" value="340" />
+					<param name="address" value="0.5:Out1" />
+				</control>
+				<control class="it.ascia.aui.Dimmer">
+					<param name="type" value="dimmer" />
+					<param name="label" value="Dimmer BMC virtuale" />
+					<param name="x" value="300" />
+					<param name="y" value="340" />
+					<param name="address" value="0.5:Out2" />
+				</control>
+			</layer>
+			<layer service="blinds">
+				<control class="it.ascia.aui.TwoPortBlind">
+					<param name="label" value="Tapparella verde" />
+					<param name="x" value="460" />
+					<param name="y" value="40" />
+					<param name="addressopen" value="0.3:Out1" />
+					<param name="addressclose" value="0.3:Out2" />
+				</control>
+			</layer>
+			<layer service="video">
+				<control class="it.ascia.aui.TwoPortScreen">
+					<param name="label" value="Schermo" />
+					<param name="x" value="295" />
+					<param name="y" value="70" />
+					<param name="addressopen" value="0.5:Out1" />
+					<param name="addressclose" value="0.5:Out2" />
+				</control>
+			</layer>
+		</map>
+	</map>
+</aui:configuration>

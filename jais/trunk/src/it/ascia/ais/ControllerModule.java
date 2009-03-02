@@ -4,31 +4,31 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
 /**
- * I plugin del controller sono elementi di codice caricati dinamicamente
+ * I moduli del controller sono elementi di codice caricati dinamicamente
  * in base alle impostazioni presenti nel file di configurazione del sistema
  * 
  * @author sergio
  *
  */
-public abstract class ControllerPlugin {
+public abstract class ControllerModule {
 
     protected Logger logger;
     
     protected XMLConfiguration config;
     
     /**
-     * Riferimento al controller che ha instanziato il plugin
+     * Riferimento al controller che ha instanziato il modulo
      */
     protected Controller controller;
 
-	public ControllerPlugin() {
+	public ControllerModule() {
 		logger = Logger.getLogger(getClass());
 	}
 	
 	/**
 	 * Gestisce un evento generato da un device di campo.
 	 * 
-	 * E' il controller che notifica l'evento a tutti i plugin.
+	 * E' il controller che notifica l'evento a tutti i moduli.
 	 * 
 	 * @param event
 	 */
@@ -41,14 +41,14 @@ public abstract class ControllerPlugin {
 	 */
 	
 	/**
-	 * Registra il riferimento al controller che ha instanziato il plugin
+	 * Registra il riferimento al controller che ha instanziato il modulo
 	 */
 	public void setController(Controller controller) {
 		this.controller = controller;		
 	}
 
 	/**
-	 * (ri)configura il plugin
+	 * (ri)configura il modulo
 	 */
 	public abstract void configure(XMLConfiguration config);
 	

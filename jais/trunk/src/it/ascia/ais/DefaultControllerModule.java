@@ -2,7 +2,7 @@ package it.ascia.ais;
 
 import org.apache.commons.configuration.XMLConfiguration;
 
-public class DefaultControllerPlugin extends ControllerPlugin {
+public class DefaultControllerModule extends ControllerModule {
 
 	public void onDeviceEvent(DeviceEvent event) {
 		logger.info("Ricevuto evento: "+event.getInfo());

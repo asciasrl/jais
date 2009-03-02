@@ -43,7 +43,7 @@ public class MyController extends Controller {
 	 * 
 	 * <p>Questo metodo e' per uso interno: esegue una richiesta senza
 	 * controllare il pin.</p>
-	 * TODO spostare in HTTPServerControllerPlugin
+	 * TODO spostare in HTTPServerControllerModule
 	 */
 	private String receiveAuthenticatedRequest(String command, String name,
 			String value) {

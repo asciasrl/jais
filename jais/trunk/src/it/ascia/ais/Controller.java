@@ -4,15 +4,14 @@
 package it.ascia.ais;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
 import org.apache.log4j.Logger;
 
 /**
@@ -31,11 +30,25 @@ public abstract class Controller {
 	/**
 	 * Plugins attivi
 	 */
-	private Set plugins;
+	private Map modules;
 	
 	protected Logger logger;
 	
 	private XMLConfiguration config;
+
+	private static Controller controller;
+		
+	public static Controller getController() {
+		return controller;
+	}
+
+	private static void setController(Controller c) {
+		controller = c;
+	}
+	
+	public XMLConfiguration getConfig() {
+		return config;
+	}
 	
 	/**
 	 * Rifa' String.split() per il GCJ che non ce l'ha.
@@ -70,27 +83,41 @@ public abstract class Controller {
 		connectors.put(connector.getName(), connector);
 	}
 	
-	public void loadPlugin(String name) {
-		String className = "it.ascia.ais."+name+"ControllerPlugin"; 
-		loadPlugin(name, className);
+	public void loadModule(String name) throws AISException {
+		String className = "it.ascia.ais."+name+"ControllerModule"; 
+		loadModule(name, className);
 	}
 	
-	public void loadPlugin(String name, String className) {
-		ClassLoader pluginLoader = ControllerPlugin.class.getClassLoader();
+	public ControllerModule getModule(String name) {
+		return (ControllerModule) modules.get(name);
+	}
+	
+	
+	/**
+	 * Carica il modulo, lo instanzia, ne effettua la configurazione e quindi lo avvia. 
+	 * @param name Nome (unico) del modulo
+	 * @param className Classe che implementa il modulo
+	 * @throws AISException 
+	 */
+	public void loadModule(String name, String className) throws AISException {
+		if (modules.containsKey(name)) {
+			throw(new AISException("Nome modulo duplicato: '"+name+"'"));
+		}
+		ClassLoader moduleLoader = ControllerModule.class.getClassLoader();
 		try {
-			logger.info("Caricamento plugin '"+name+"' da '"+className+"'");
-			Class pluginClass = pluginLoader.loadClass(className);
-			ControllerPlugin plugin = (ControllerPlugin) pluginClass.newInstance();
-			plugin.setController(this);
-			plugins.add(plugin);
-			plugin.configure(config);
-			logger.info("Caricato plugin '"+name+"'");
+			logger.info("Caricamento modulo '"+name+"' da '"+className+"'");
+			Class moduleClass = moduleLoader.loadClass(className);
+			ControllerModule module = (ControllerModule) moduleClass.newInstance();
+			module.setController(this);
+			module.configure(config);
+			modules.put(name,module);
+			logger.info("Caricato modulo '"+name+"'");
 		} catch (ClassNotFoundException e) {
-			logger.error("Fallito caricamento plugin '"+name+"': non trovata classe '"+className+"'");
+			logger.error("Fallito caricamento modulo '"+name+"': non trovata classe '"+className+"'");
 		} catch (InstantiationException e) {
-			logger.error("Fallito caricamento plugin '"+name+"': errore instanzazione classe '"+className+"'");
+			logger.error("Fallito caricamento modulo '"+name+"': errore instanzazione classe '"+className+"'");
 		} catch (IllegalAccessException e) {
-			logger.error("Fallito caricamento plugin '"+name+"': accesso negato alla classe '"+className+"'");
+			logger.error("Fallito caricamento modulo '"+name+"': accesso negato alla classe '"+className+"'");
 		}
 	}
 	
@@ -205,6 +232,7 @@ public abstract class Controller {
 	
 	public Controller() {
 		this("conf/jais.xml");
+		Controller.setController(this);
 	}
 	
 	/**
@@ -214,10 +242,12 @@ public abstract class Controller {
 	 */
 	public Controller(String configurationFileName) {
 		connectors = new HashMap();
-		plugins = new HashSet();
+		modules = new HashMap();
 		logger = Logger.getLogger(getClass());	
 		try {
 			config = new XMLConfiguration(configurationFileName);
+			config.setDelimiterParsingDisabled(true);
+			config.setReloadingStrategy(new FileChangedReloadingStrategy());
 		} catch (ConfigurationException e) {
 			logger.fatal(e);
 		}
@@ -231,13 +261,17 @@ public abstract class Controller {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		List plugins = config.configurationsAt("plugins.plugin");
-		for(Iterator it = plugins.iterator(); it.hasNext();)
+		List modules = config.configurationsAt("modules.module");
+		for(Iterator it = modules.iterator(); it.hasNext();)
 		{
 		    HierarchicalConfiguration sub = (HierarchicalConfiguration) it.next();
 		    String name = sub.getString("name");
 		    String className = sub.getString("class");
-		    loadPlugin(name, className);
+		    try {
+				loadModule(name, className);
+			} catch (AISException e) {
+				logger.fatal(e);
+			}
 		}		
 	}
 	/**
@@ -252,16 +286,16 @@ public abstract class Controller {
 			String value, String pin);
 
 	/**
-	 * Comunica l'evento a tutti i plugin
+	 * Comunica l'evento a tutti i moduli
 	 * 
 	 * @param event
 	 */
 	public void onDeviceEvent(DeviceEvent event) {
 		logger.info("Ricevuto evento: "+event.getInfo());
-		Iterator i = plugins.iterator();
+		Iterator i = modules.keySet().iterator();
 		while (i.hasNext()) {
-			ControllerPlugin plugin = (ControllerPlugin) i.next();
-			plugin.onDeviceEvent(event);
+			ControllerModule module = (ControllerModule) i.next();
+			module.onDeviceEvent(event);
 		}
 	}
 }

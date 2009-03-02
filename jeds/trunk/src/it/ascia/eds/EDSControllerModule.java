@@ -8,14 +8,14 @@ import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.ControllerPlugin;
+import it.ascia.ais.ControllerModule;
 import it.ascia.ais.DeviceEvent;
 import it.ascia.ais.SerialTransport;
 import it.ascia.ais.TCPSerialTransport;
 import it.ascia.ais.Transport;
 import it.ascia.eds.device.BMCComputer;
 
-public class EDSControllerPlugin extends ControllerPlugin {
+public class EDSControllerModule extends ControllerModule {
 
 	public void onDeviceEvent(DeviceEvent event) {
 		logger.info("Ricevuto evento: "+event.getInfo());
@@ -23,7 +23,7 @@ public class EDSControllerPlugin extends ControllerPlugin {
 
 	public void configure(XMLConfiguration config) {
 		List connectors = config.configurationsAt("EDS.connectors.connector");
-		for(Iterator c = connectors.iterator(); c.hasNext();)
+		for (Iterator c = connectors.iterator(); c.hasNext();)
 		{
 		    HierarchicalConfiguration sub = (HierarchicalConfiguration) c.next();
 		 	EDSConnector eds = null;
@@ -63,6 +63,11 @@ public class EDSControllerPlugin extends ControllerPlugin {
 		 		logger.fatal(e.getMessage());
 			}
 		}				
+	}
+	
+	public void run() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

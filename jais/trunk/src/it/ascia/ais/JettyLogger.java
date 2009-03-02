@@ -62,6 +62,10 @@ public class JettyLogger implements org.mortbay.log.Logger  {
 		return debugging;
 	}
 
+	public boolean isTraceEnabled() {
+		return debugging;
+	}
+
 	public void setDebugEnabled(boolean arg0) {
 		debugging = arg0;
 	}

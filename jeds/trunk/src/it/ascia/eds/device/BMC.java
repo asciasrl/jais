@@ -3,16 +3,13 @@
  */
 package it.ascia.eds.device;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
-import it.ascia.ais.Controller;
 import it.ascia.ais.Device;
 import it.ascia.ais.DeviceEvent;
 import it.ascia.eds.*;

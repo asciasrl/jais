@@ -2,7 +2,7 @@
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
-import it.ascia.ais.HTTPServer;
+import it.ascia.ais.Controller;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.device.BMC;
@@ -19,10 +19,9 @@ import org.apache.log4j.PropertyConfigurator;
  * @author arrigo
  * 
  */
-public class BusTest extends MyController {
+public class BusTest {
 	static BMCComputer bmcComputer;
-	static HTTPServer server;
-	static BusTest busController;
+	static Controller busController;
 	
 	
 	static void makeVirtualBMC(int address, EDSConnector connector) {
@@ -129,8 +128,9 @@ public class BusTest extends MyController {
 	    PropertyConfigurator.configure("conf/log4j.conf");
 	    Logger log = Logger.getLogger(BusTest.class);
 	    
-		busController = new BusTest(null);
+		busController = new Controller();
 		busController.configure();
+		busController.start();
 		
 	 	// La palla all'utente
 	 	EDSConnector eds = (EDSConnector) busController.getConnector("0");
@@ -153,10 +153,8 @@ public class BusTest extends MyController {
 				}
 		}
 		// TODO chiusura del controller
+		busController.stop();
 		log.info("Termine programma");
 	}
 	
-	public BusTest(String pin) {
-		super(pin);
-	}
 }

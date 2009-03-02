@@ -32,7 +32,7 @@ public abstract class ControllerModule {
 	 * 
 	 * @param event
 	 */
-	public abstract void onDeviceEvent(DeviceEvent event);
+	public void onDeviceEvent(DeviceEvent event) { };
 	
 	/**
 	 * TODO aggiungere altri eventi tipo:
@@ -50,6 +50,12 @@ public abstract class ControllerModule {
 	/**
 	 * (ri)configura il modulo
 	 */
-	public abstract void configure(XMLConfiguration config);
+	public void configure(XMLConfiguration config) {
+		this.config = config;
+	}
 	
+	public void start() {}
+	
+	public void stop() {};
+		
 }

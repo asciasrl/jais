@@ -65,9 +65,4 @@ public class EDSControllerModule extends ControllerModule {
 		}				
 	}
 	
-	public void run() {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

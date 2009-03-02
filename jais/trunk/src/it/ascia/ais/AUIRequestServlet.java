@@ -23,12 +23,12 @@ public class AUIRequestServlet extends HttpServlet {
 	/**
 	 * Il nostro controller.
 	 */
-	private Controller controller;
+	private HTTPServerControllerModule controller;
 	/**
 	 * Costruttore.
 	 * @param controller il controller del bus.
 	 */
-	public AUIRequestServlet(Controller controller) {
+	public AUIRequestServlet(HTTPServerControllerModule controller) {
 		this.controller = controller;
 	}
 	

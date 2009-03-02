@@ -134,17 +134,21 @@ public class BusTest extends MyController {
 		
 	 	// La palla all'utente
 	 	EDSConnector eds = (EDSConnector) busController.getConnector("0");
-	 	bmcComputer = eds.getBMCComputer();
+	 	if ( eds != null) {
+	 	  bmcComputer = eds.getBMCComputer();
+	 	}
 		int dest = 1;
 		while (dest > 0) {
 			dest = Stdio.inputInteger("Indirizzo da pingare (0 per terminare):");
 				if (dest > 0) {
-					BMC bmc = bmcComputer.discoverBMC(dest); 
-					if ( bmc != null) {
-						System.out.println(bmc.getInfo());
-						testBMCStandardIO(dest,bmcComputer.getConnector());
-					} else {
-						System.out.println("Non trovato!");
+					if (bmcComputer != null) {
+						BMC bmc = bmcComputer.discoverBMC(dest); 
+						if ( bmc != null) {
+							System.out.println(bmc.getInfo());
+							testBMCStandardIO(dest,bmcComputer.getConnector());
+						} else {
+							System.out.println("Non trovato!");
+						}
 					}
 				}
 		}

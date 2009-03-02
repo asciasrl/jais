@@ -2,7 +2,7 @@ package it.ascia.ais;
 
 import org.apache.commons.configuration.XMLConfiguration;
 
-public class HTTPServerControllerPlugin extends ControllerPlugin {
+public class HTTPServerControllerModule extends ControllerModule {
 
 	public HTTPServer server;
 	

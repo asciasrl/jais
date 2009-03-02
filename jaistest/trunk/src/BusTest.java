@@ -1,12 +1,8 @@
 
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Transport;
 import it.ascia.ais.Connector;
 import it.ascia.ais.HTTPServer;
-import it.ascia.ais.SerialTransport;
-import it.ascia.ais.TCPSerialTransport;
-// import it.ascia.eds.ConfigurationFile;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.EDSException;
 import it.ascia.eds.device.BMC;
@@ -133,7 +129,6 @@ public class BusTest extends MyController {
 	    PropertyConfigurator.configure("conf/log4j.conf");
 	    Logger log = Logger.getLogger(BusTest.class);
 	    
-	    // TODO eliminare i controller "specifici" (va tutto nei plugin)
 		busController = new BusTest(null);
 		busController.configure();
 		

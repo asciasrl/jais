@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!-- commento -->
 <jais>
-  <plugins>
-    <plugin>
+  <modules>
+    <module>
       <name>HTTPServer</name>
-      <class>it.ascia.ais.HTTPServerControllerPlugin</class>
-    </plugin>
-    <plugin>
+      <class>it.ascia.ais.HTTPServerControllerModule</class>
+    </module>
+    <module>
       <name>EDS</name>
-      <class>it.ascia.eds.EDSControllerPlugin</class>
-    </plugin>
-  </plugins>
+      <class>it.ascia.eds.EDSControllerModule</class>
+    </module>
+    <module>
+      <name>AUI</name>
+      <class>it.ascia.aui.AUIControllerModule</class>
+    </module>
+  </modules>
   <HTTPServer>
     <port>80</port>
     <root>../aui</root>    
@@ -24,9 +28,138 @@
           <port>COM2</port>
           <speed>9600</speed>
         </transport>
-		    <computer>3</computer>
+		    <computer>0</computer>
 		    <discover>3,4,5,6,7</discover> 
       </connector>
     </connectors> 
   </EDS>      
+  <AUI>
+    <page>screensaver</page>
+    <title>ASCIA HomeInTheBox [AUI 0.1]</title>
+    <!-- definizione di tutti i tipi di controlli -->
+    <types>    
+      <type>
+        <id>light</id>        
+      </type>
+    </types>
+    <!-- definizione di tutti i layers utilizzabili nelle mappe -->
+    <layers>
+      <layer>
+        <id>scenari</id>
+        <icon>images/scenari.png</icon>
+      </layer>
+      <layer>
+        <id>illuminazione</id>
+        <icon>images/illuminazione.png</icon>
+      </layer>
+      <layer>
+        <id>serramenti</id>
+        <icon>images/serramenti.png</icon>
+      </layer>
+      <layer>
+        <id>sicurezza</id>
+        <icon>images/serramenti.png</icon>
+      </layer>
+      <layer>
+        <id>video</id>
+        <icon>images/video.png</icon>
+      </layer>
+      <layer>
+        <id>clima</id>
+        <icon>images/clima.png</icon>
+      </layer>
+      <layer>
+        <id>audio</id>
+        <icon>images/audio.png</icon>
+      </layer>
+      <layer>
+        <id>energia</id>
+        <icon>images/energia.png</icon>
+      </layer>
+      <layer>
+        <id>scenari</id>
+        <icon>images/scenari.png</icon>
+      </layer>
+    </layers>
+    <pages>
+      <page>
+        <id>screensaver</id>
+        <type>screensaver</type>
+        <title>AUI screensaver - clicca per accedere</title>
+        <src>images/ascia_logo_home.png</src>
+        <page>piani</page>
+      </page>      
+      <page>    
+        <id>piani</id>
+        <type>map</type>
+        <title>Piani</title>
+        <src>custom/images/assonometria320x370.png</src>
+        <area>
+          <title>Piani</title>
+          <coords>0,0,60,60</coords>
+          <page>screensaver</page>
+        </area>
+        <area>
+          <title>Primo piano</title>
+          <coords>0,0,320,120</coords>
+          <page>pianoT</page>
+        </area>
+        <area>
+          <title>Piano terra</title>
+          <coords>0,121,320,240</coords>
+          <page>pianoT</page>
+        </area>
+        <area>
+          <title>Piano interrato</title>
+          <coords>0,241,320,370</coords>
+          <page>pianoT</page>
+        </area>
+      </page>      
+      <page>    
+        <id>pianoT</id>
+        <type>map</type>
+        <map>main</map>
+        <title>Mappa piano terra</title>
+        <src>custom/images/planimetria-big.png</src>
+        <area>
+          <title>Piani</title>
+          <coords>0,0,60,60</coords>
+          <page>piani</page>
+        </area>
+      </page>
+      <page>
+        <type>prova</type>
+      </page>     
+    </pages>
+    <map>
+      <id>main</id>
+      <layers>scenari,illuminazione,serramenti</layers>
+    </map>
+    <controls>
+      <control>
+        <id>m1l1</id>
+        <type>light</type>
+        <map>main</map>        
+        <layer>illuminazione</layer>
+        <position>100,100</position>
+        <address>0.3:Out5</address>
+      </control>      
+      <control>
+        <id>m1b1</id>
+        <type>blind</type>
+        <map>main</map>        
+        <layer>serramenti</layer>
+        <position>100,200</position>
+        <address>0.3:Out1,0.3:Out2</address>
+      </control>      
+      <control>
+        <id>m1b2</id>
+        <type>blind</type>
+        <map>main</map>        
+        <layer>serramenti</layer>
+        <position>300,200</position>
+        <address>0.3:Out3,0.3:Out4</address>
+      </control>      
+    </controls>
+  </AUI>
 </jais>

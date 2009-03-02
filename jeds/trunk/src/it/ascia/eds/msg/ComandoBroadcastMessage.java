@@ -57,7 +57,6 @@ public class ComandoBroadcastMessage extends BroadcastMessage
 	public String toString()	{
 		StringBuffer s = new StringBuffer();
 		s.append(b2h(Mittente)+":"+b2h(Destinatario)+" "+getMessageDescription()+ " ["+b2h(Byte1)+":"+b2h(Byte2)+" "+Byte1+":"+Byte2+"]");
-		//s.append("Timestamp: "+((Mittente & 0xFF) * 0x100 + (Destinatario & 0xFF)) +"\r\n");
 		s.append(" Gruppo "+ getCommandNumber());
 		if (isActivation()) {
 			s.append(" Attiva");

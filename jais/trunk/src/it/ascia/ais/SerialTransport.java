@@ -54,8 +54,6 @@ public class SerialTransport extends Transport implements SerialPortEventListene
 		try {
 			portId = CommPortIdentifier.getPortIdentifier(portName);
 		} catch (NoSuchPortException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 	    	portList = CommPortIdentifier.getPortIdentifiers();
 	    	while (portList.hasMoreElements()) {
 	    	    portId = (CommPortIdentifier) portList.nextElement();

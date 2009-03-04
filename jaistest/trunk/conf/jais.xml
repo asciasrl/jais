@@ -29,59 +29,71 @@
           <speed>9600</speed>
         </transport>
 		    <computer>0</computer>
-		    <discover>3,4,5,6,7</discover> 
+		    <discover>3;4;5;6;7</discover> 
       </connector>
     </connectors> 
   </EDS>      
   <AUI>
-    <page>screensaver</page>
+    <startPage>pianoT</startPage>
     <title>ASCIA HomeInTheBox [AUI 0.1]</title>
     <!-- definizione di tutti i tipi di controlli -->
-    <types>    
-      <type>
-        <id>light</id>        
-      </type>
-    </types>
+    <controls>
+      <page>
+        <src>images/key_back.png</src>
+      </page>    
+      <light>
+        <src>images/luce_off.png</src>
+        <on>images/luce_on.png</on>
+        <off>images/luce_off.png</off>  
+      </light>
+      <dimmer>
+        <src>images/luce_off.png</src>
+        <on>images/luce_on.png</on>
+        <off>images/luce_off.png</off>
+        <up>images/luce_up.png</up>
+        <down>images/luce_down.png</down>  
+      </dimmer>
+      <blind>
+        <src>images/serranda_ferma.png</src>
+        <stopped>images/serranda_ferma.png</stopped>
+        <open>images/serranda_open.png</open>
+        <opening>images/serranda_sale.png</opening>
+        <opened>images/serranda_opened.png</opened>
+        <close>images/serranda_close.png</close>
+        <closing>images/serranda_scende.png</closing>
+        <closed>images/serranda_closed.png</closed>
+      </blind>
+    </controls>
     <!-- definizione di tutti i layers utilizzabili nelle mappe -->
     <layers>
-      <layer>
-        <id>scenari</id>
+      <scenari>
         <icon>images/scenari.png</icon>
-      </layer>
-      <layer>
-        <id>illuminazione</id>
+      </scenari>
+      <illuminazione>
         <icon>images/illuminazione.png</icon>
-      </layer>
-      <layer>
-        <id>serramenti</id>
+      </illuminazione>
+      <serramenti>
         <icon>images/serramenti.png</icon>
-      </layer>
-      <layer>
-        <id>sicurezza</id>
+      </serramenti>
+      <sicurezza>
         <icon>images/serramenti.png</icon>
-      </layer>
-      <layer>
-        <id>video</id>
+      </sicurezza>
+      <video>
         <icon>images/video.png</icon>
-      </layer>
-      <layer>
-        <id>clima</id>
+      </video>
+      <clima>
         <icon>images/clima.png</icon>
-      </layer>
-      <layer>
-        <id>audio</id>
+      </clima>
+      <audio>
         <icon>images/audio.png</icon>
-      </layer>
-      <layer>
-        <id>energia</id>
+      </audio>
+      <energia>
         <icon>images/energia.png</icon>
-      </layer>
-      <layer>
-        <id>scenari</id>
+      </energia>
+      <scenari>
         <icon>images/scenari.png</icon>
-      </layer>
+      </scenari>
     </layers>
-    <pages>
       <page>
         <id>screensaver</id>
         <type>screensaver</type>
@@ -91,7 +103,7 @@
       </page>      
       <page>    
         <id>piani</id>
-        <type>map</type>
+        <type>imgmap</type>
         <title>Piani</title>
         <src>custom/images/assonometria320x370.png</src>
         <area>
@@ -110,7 +122,7 @@
           <page>pianoT</page>
         </area>
         <area>
-          <title>Piano interrato</title>
+          <title>Seminterrato</title>
           <coords>0,241,320,370</coords>
           <page>pianoT</page>
         </area>
@@ -119,47 +131,73 @@
         <id>pianoT</id>
         <type>map</type>
         <map>main</map>
-        <title>Mappa piano terra</title>
-        <src>custom/images/planimetria-big.png</src>
-        <area>
-          <title>Piani</title>
-          <coords>0,0,60,60</coords>
-          <page>piani</page>
-        </area>
       </page>
-      <page>
-        <type>prova</type>
-      </page>     
-    </pages>
+    <map>
+      <id>test</id>
+      <control>
+        <id>test</id>
+        <type>light</type>
+      </control>
+    </map>
     <map>
       <id>main</id>
-      <layers>scenari,illuminazione,serramenti</layers>
+			<title>Mappa piano terra</title>
+			<src>custom/images/planimetria-big.png</src>
+      	<control>
+  	      <id>back</id>
+  	      <title>Torna alla selezione dei piani</title>
+	        <type>page</type>
+	        <page>piani</page>
+        	<left>0</left>
+        	<top>0</top>
+	      </control>      
+  	    <control>
+	        <id>lc</id>
+  	      <title>Luce camera</title>
+  	      <type>light</type>
+      	  <layer>illuminazione</layer>
+        	<left>150</left>
+        	<top>160</top>
+	        <address>0.3:Out5</address>
+  	    </control>      
+    	  <control>
+	        <id>tc</id>
+  	      <title>Tapparella camera</title>
+  	      <type>blind</type>
+      	  <layer>serramenti</layer>
+      	  <left>145</left>
+        	<top>50</top>
+	        <addressup>0.3:Out1</addressup>
+	        <addressdown>0.3:Out2</addressdown>
+  	    </control>      
+  	    <control>
+	        <id>lb</id>
+  	      <title>Luce bagno</title>
+  	      <type>light</type>
+      	  <layer>illuminazione</layer>
+        	<left>280</left>
+        	<top>150</top>
+	        <address>0.3:Out5</address>
+  	    </control>      
+    	  <control>
+	        <id>bb</id>
+  	      <title>Tapparella bagno</title>
+  	      <type>blind</type>
+      	  <layer>serramenti</layer>
+      	  <left>295</left>
+        	<top>50</top>
+	        <addressup>0.3:Out1</addressup>
+	        <addressdown>0.3:Out2</addressdown>
+  	    </control>      
+  	    <control>
+	        <id>m1l2</id>
+  	      <title>Luce scale</title>
+  	      <type>dimmer</type>
+      	  <layer>illuminazione</layer>
+        	<left>100</left>
+        	<top>300</top>
+	        <address>0.5:Out0</address>
+  	    </control>      
     </map>
-    <controls>
-      <control>
-        <id>m1l1</id>
-        <type>light</type>
-        <map>main</map>        
-        <layer>illuminazione</layer>
-        <position>100,100</position>
-        <address>0.3:Out5</address>
-      </control>      
-      <control>
-        <id>m1b1</id>
-        <type>blind</type>
-        <map>main</map>        
-        <layer>serramenti</layer>
-        <position>100,200</position>
-        <address>0.3:Out1,0.3:Out2</address>
-      </control>      
-      <control>
-        <id>m1b2</id>
-        <type>blind</type>
-        <map>main</map>        
-        <layer>serramenti</layer>
-        <position>300,200</position>
-        <address>0.3:Out3,0.3:Out4</address>
-      </control>      
-    </controls>
   </AUI>
 </jais>

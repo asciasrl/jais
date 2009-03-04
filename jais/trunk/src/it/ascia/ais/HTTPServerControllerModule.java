@@ -1,11 +1,16 @@
 package it.ascia.ais;
 
-import java.io.PrintStream;
+import it.ascia.aui.AUIControllerModule;
+
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Enumeration;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.jasper.servlet.JspServlet;
 import org.apache.log4j.Logger;
 import org.mortbay.jetty.Server;
@@ -21,17 +26,6 @@ public class HTTPServerControllerModule extends ControllerModule {
 	 */
 	private Server server;
 	
-	/**
-	 * Il nostro PIN.
-	 */
-	private String pin;
-	
-	
-	public void configure(XMLConfiguration config) {
-		super.configure(config);
-		pin = config.getString("AUI.pin");
-	}
-
 	public void onDeviceEvent(DeviceEvent event) {
 		// TODO Auto-generated method stub
 	}
@@ -52,9 +46,9 @@ public class HTTPServerControllerModule extends ControllerModule {
 		ServletHolder jspHolder = new ServletHolder(jspServlet);
 		rootContext.addServlet(jspHolder, "*.jsp");
 		// La nostra AUIRequestServlet e il suo contesto.
-		HttpServlet auiRequestServlet = new AUIRequestServlet(this);
+		HttpServlet jaisServlet = new HTTPServerControllerModule.JaisServlet();
 		Context jaisContext = new Context(contexts, "/jais", Context.SESSIONS);
-		ServletHolder jaisHolder = new ServletHolder(auiRequestServlet);
+		ServletHolder jaisHolder = new ServletHolder(jaisServlet);
 		jaisContext.addServlet(jaisHolder, "/*");
 		// La fileServlet e il suo contesto
 		HttpServlet defaultServlet = new DefaultServlet();
@@ -80,80 +74,58 @@ public class HTTPServerControllerModule extends ControllerModule {
 	}
 	
 	/**
-	 * Il cuore del controllore: riceve la richiesta e produce una risposta.
+	 * Ruota un comando ad un modulo
+	 * TODO gestire il routing dinamico, non solo ad AUI
+	 * @param command
+	 * @param params
+	 * @return
+	 * @throws AISException 
 	 */
-	public String receiveRequest(String command, String name, String value,
-			String pin) {
-		if ((this.pin != null) && (!this.pin.equals(pin))) {
-			logger.warn("Richiesta con PIN errato:  \"" + command + "\" \"" +
-					name + "\" \"" + value + "\"");
-			return "ERROR: PIN errato.";
-		}
-		return receiveAuthenticatedRequest(command, name, value);
-	}
-
-	/**
-	 * Si auto-invia una richiesta.
-	 * 
-	 * <p>Questo metodo e' per uso interno: esegue una richiesta senza
-	 * controllare il pin.</p>
-	 * TODO spostare in HTTPServerControllerModule
-	 */
-	private String receiveAuthenticatedRequest(String command, String name,
-			String value) {
-		String retval;
-		logger.debug("Comando: \"" + command + "\" \"" + name + "\" \"" +
-				value + "\"");
-		try {
-			if (command.equals("get")) {
-				// Comando "get"
-					String deviceAddress = controller.getDeviceFromAddress(name);
-					String portName = controller.getPortFromAddress(name);
-					Device devices[] = controller.findDevices(deviceAddress);
-					if (devices.length > 0) {
-						retval = "";
-						for (int i = 0; i < devices.length; i++) {
-							retval += devices[i].getStatus(portName, 0);
-						}
-					} else {
-						retval = "ERROR: address " + name + " not found.";
-					}
-			} else if (command.equals("getAll")) {
-				// Comando "getAll": equivale a "get *:*"
-					retval = System.currentTimeMillis() + "\n";
-					Device[] devices = controller.findDevices("*");
-					long timestamp = 0;
-					if (name.equals("timestamp")) {
-						try {
-							timestamp = Long.parseLong(value);
-						} catch (NumberFormatException e) {
-							// Manteniamo il valore di default: zero
-						}
-					}
-					for (int i = 0; i < devices.length; i++) {
-						retval += devices[i].getStatus("*", timestamp);
-					}
-			} else if (command.equals("set")) {
-				// Comando "set"
-					String deviceAddress = controller.getDeviceFromAddress(name);
-					String portName = controller.getPortFromAddress(name);
-					Device devices[] = controller.findDevices(deviceAddress);
-					if (devices.length == 1) {
-						devices[0].poke(portName, value);
-						retval = "OK";
-					} else {
-						retval = "ERROR: indirizzo ambiguo";
-					}
-			} else {
-				retval = "ERROR: Unknown command \"" + command + "\".";
-			}
-		} catch (AISException e) {
-			logger.error(e.getMessage());
-			retval = "ERROR: " + e.getMessage();
-		}
-		return retval;
+	public String doCommand(String command, HashMap params) throws AISException {		
+		return ((AUIControllerModule)controller.getModule("AUI")).doCommand(command, params);
 	}
 	
+	private class JaisServlet extends HttpServlet {
+		
+		public void doGet(HttpServletRequest request, HttpServletResponse response) {
+			PrintWriter out;
+			try {
+				out = response.getWriter();
+				// Ritorniamo sempre & solo testo
+				response.setContentType("text/plain");
+				// Va sempre tutto bene (gli errori li scriviamo dentro)
+				Enumeration parameterNames = request.getParameterNames();
+				HashMap params = new HashMap();
+				while (parameterNames.hasMoreElements()) {
+					String parameterName = (String) parameterNames.nextElement();
+					params.put(parameterName, request.getParameter(parameterName));
+				}
+				String uri = request.getRequestURI();
+				int index = uri.lastIndexOf("/");
+				String command = "";
+				if (index > 0) {
+					command = uri.substring(index + 1);
+				} else {
+					command = uri;
+				}
+				logger.info("Comando '"+command+"':"+params.toString());
+				String res;
+				try {
+					res = doCommand(command, params);
+					response.setStatus(HttpServletResponse.SC_OK);					
+					logger.trace(res);
+				} catch (AISException e) {
+					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+					logger.error(e);
+					res = e.getMessage();
+				}
+				out.println(res);
+			} catch (IOException e) {
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				logger.error(e);
+			}
+		}
+	}
 
 
 }

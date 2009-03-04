@@ -54,7 +54,7 @@ public class Controller {
 	 * Rifa' String.split() per il GCJ che non ce l'ha.
 	 */
 	private static String[] splitString(String s, String separator) {
-		String retval[], current = "";
+		String retval[];
 		int i = 0, strings = 1, stringNo = 0, lastIndex = 0;
 		i = s.indexOf(separator, i);
 		while (i != -1) {
@@ -101,11 +101,11 @@ public class Controller {
 		ClassLoader moduleLoader = ControllerModule.class.getClassLoader();
 		ControllerModule module = null;
 		try {
-			logger.info("Caricamento modulo '"+name+"' da '"+className+"'");
+			logger.debug("Caricamento modulo '"+name+"' da '"+className+"'");
 			Class moduleClass = moduleLoader.loadClass(className);
 			module = (ControllerModule) moduleClass.newInstance();
 			module.setController(this);
-			module.configure(config);
+			module.setConfiguration(config);
 			modules.put(name,module);
 			logger.info("Caricato modulo '"+name+"'");
 		} catch (ClassNotFoundException e) {
@@ -125,7 +125,7 @@ public class Controller {
 	 * 
 	 * @throws un'eccezione se l'indirizzo non e' valido.
 	 */
-	protected String getDeviceFromAddress(String address) throws AISException {
+	public String getDeviceFromAddress(String address) throws AISException {
 		String temp[];
 		// Prima cosa: trovare i ":" per dividere porte e device.
 		temp = splitString(address, ":");
@@ -144,7 +144,7 @@ public class Controller {
 	 * 
 	 * @throws un'eccezione se l'indirizzo non e' valido.
 	 */
-	protected String getPortFromAddress(String address) throws AISException {
+	public String getPortFromAddress(String address) throws AISException {
 		String temp[];
 		// Prima cosa: trovare i ":" per dividere porte e device.
 		temp = splitString(address, ":");
@@ -169,7 +169,7 @@ public class Controller {
 	 * 
 	 * @return i Device rispondenti all'indirizzo indicato.
 	 */
-	protected Device[] findDevices(String address) throws AISException {
+	public Device[] findDevices(String address) throws AISException {
 		String connectorName = null;
 		String deviceAddress = null;
 		Connector connector = null;
@@ -240,8 +240,8 @@ public class Controller {
 		modules = new HashMap();
 		logger = Logger.getLogger(getClass());	
 		try {
+			XMLConfiguration.setDefaultListDelimiter(';');
 			config = new XMLConfiguration(configurationFileName);
-			config.setDelimiterParsingDisabled(true);
 			config.setReloadingStrategy(new FileChangedReloadingStrategy());
 		} catch (ConfigurationException e) {
 			logger.fatal(e);
@@ -251,12 +251,6 @@ public class Controller {
 	}
 
 	public void configure() {
-		try {
-			config.save("backup.xml");
-		} catch (ConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		List modules = config.configurationsAt("modules.module");
 		for(Iterator it = modules.iterator(); it.hasNext();)
 		{
@@ -270,7 +264,7 @@ public class Controller {
 			}
 		}		
 	}
-
+	
 	/**
 	 * Comunica l'evento a tutti i moduli
 	 * 
@@ -280,7 +274,8 @@ public class Controller {
 		logger.info("Ricevuto evento: "+event.getInfo());
 		Iterator i = modules.keySet().iterator();
 		while (i.hasNext()) {
-			ControllerModule module = (ControllerModule) i.next();
+			String moduleName = (String) i.next();
+			ControllerModule module = getModule(moduleName);
 			module.onDeviceEvent(event);
 		}
 	}
@@ -292,7 +287,7 @@ public class Controller {
 		Iterator i = modules.keySet().iterator();
 		while (i.hasNext()) {
 			ControllerModule module = getModule((String) i.next());
-			module.start();			
+			module.start();		
 		}
 	}
 

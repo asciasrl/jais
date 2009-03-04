@@ -1,4 +1,48 @@
 body {
-	background-color: white; 
+	background-color: black; 
 	font-family: "Lucida Grande", Geneva, "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	margin: 0px;
+	-webkit-tap-highlight-color:rgba(1,1,1,0.5);	
+}
+
+#header-out {
+	display: none; 
+	position: absolute; 
+	z-index: 30; 
+	width: 320px; 
+	height: 40px;
+	filter: alpha(opacity='60');
+	opacity: 0.6;
+}	
+
+#header-bk {
+	position: absolute;
+	width: 320px;
+}
+
+#header {
+	position: absolute; 
+	margin: 9px 0px; 
+	height: 22px; 
+	width: 320px; 
+	text-align: center;
+}
+
+div.page {
+}
+
+div.control {
+	position: absolute;
+}
+
+div.control img {
+	position: absolute;
+}
+
+div.control span {
+	position: absolute;
+	color: white;
+}
+
+div.control-type-page {
 }

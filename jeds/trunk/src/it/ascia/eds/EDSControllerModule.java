@@ -1,11 +1,11 @@
 package it.ascia.eds;
 
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
-import org.apache.commons.configuration.XMLConfiguration;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.ControllerModule;
@@ -21,7 +21,7 @@ public class EDSControllerModule extends ControllerModule {
 		logger.info("Ricevuto evento: "+event.getInfo());
 	}
 
-	public void configure(XMLConfiguration config) {
+	public void start() {
 		List connectors = config.configurationsAt("EDS.connectors.connector");
 		for (Iterator c = connectors.iterator(); c.hasNext();)
 		{
@@ -63,6 +63,16 @@ public class EDSControllerModule extends ControllerModule {
 		 		logger.fatal(e.getMessage());
 			}
 		}				
+	}
+
+	public void stop() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public String doCommand(String command, HashMap params) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

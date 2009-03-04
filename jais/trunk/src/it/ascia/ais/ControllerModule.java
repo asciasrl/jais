@@ -1,5 +1,9 @@
 package it.ascia.ais;
 
+import java.io.Writer;
+import java.util.HashMap;
+
+import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
@@ -14,7 +18,7 @@ public abstract class ControllerModule {
 
     protected Logger logger;
     
-    protected XMLConfiguration config;
+    protected HierarchicalConfiguration config;
     
     /**
      * Riferimento al controller che ha instanziato il modulo
@@ -32,7 +36,12 @@ public abstract class ControllerModule {
 	 * 
 	 * @param event
 	 */
-	public void onDeviceEvent(DeviceEvent event) { };
+	public abstract void onDeviceEvent(DeviceEvent event);
+	
+	/**
+	 * TODO Obbligatorio ?
+	 */
+	//public abstract String doCommand(String command, HashMap params);
 	
 	/**
 	 * TODO aggiungere altri eventi tipo:
@@ -40,22 +49,16 @@ public abstract class ControllerModule {
 	 * - 
 	 */
 	
-	/**
-	 * Registra il riferimento al controller che ha instanziato il modulo
-	 */
+	public abstract void start();
+	
+	public abstract void stop();
+
 	public void setController(Controller controller) {
 		this.controller = controller;		
 	}
 
-	/**
-	 * (ri)configura il modulo
-	 */
-	public void configure(XMLConfiguration config) {
+	public void setConfiguration(HierarchicalConfiguration config) {
 		this.config = config;
 	}
-	
-	public void start() {}
-	
-	public void stop() {};
 		
 }

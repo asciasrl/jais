@@ -5,14 +5,14 @@ package it.ascia.eds.device;
 
 
 import it.ascia.ais.AISException;
+import it.ascia.ais.Connector;
 import it.ascia.eds.EDSConnector;
-import it.ascia.eds.EDSException;
 import it.ascia.eds.msg.CronotermMessage;
 import it.ascia.eds.msg.ImpostaSetPointMessage;
 import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.RichiestaSetPointMessage;
 import it.ascia.eds.msg.RichiestaStatoTermostatoMessage;
-import it.ascia.eds.msg.TemperatureMessage;
+import it.ascia.eds.msg.RispostaStatoTermostatoMessage;
 import it.ascia.eds.msg.VariazioneIngressoMessage;
 
 /**
@@ -56,7 +56,7 @@ public class BMCChronoTerm extends BMC {
 	 */
 	public static final int STATE_WINTER_MODE = 9;
 	/**
-	 * Crono.
+	 * Modo cronotermostato
 	 */
 	public static final int STATE_CHRONO = 12;
 	/**
@@ -142,10 +142,10 @@ public class BMCChronoTerm extends BMC {
 	 * Costruttore
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
+	 * @throws AISException 
 	 */
-	public BMCChronoTerm(int address, int model, String name) {
-		// FIXME: quante uscite ha un BMCChronoTerm?
-		super(address, model, name);
+	public BMCChronoTerm(Connector connector, String address, int model, String name) throws AISException {
+		super(connector, address, model, name);
 		switch(model) {
 		case 127:
 			break;
@@ -153,12 +153,16 @@ public class BMCChronoTerm extends BMC {
 			logger.error("Errore: modello di BMCChronoTerm sconosciuto:" +
 					model);
 		}
+		// TODO da levare, lasciare solo addPort() 
 		state = STATE_OFF; // Un valore qualunque
 		dirtyState = true;
 		temperature = 0; // Di default fa molto freddo. ;-)
 		dirtyTemperature = true;
 		setPoint = 0; // Di default vogliamo che faccia molto freddo. ;-)
 		dirtySetPoint = true;
+		addPort(port_setpoint);
+		addPort(port_state);
+		addPort(port_temperature);
 	}
 	
 	/* (non-Javadoc)
@@ -196,54 +200,57 @@ public class BMCChronoTerm extends BMC {
 		}
 	}
 	
-	public void messageSent(EDSMessage m) {
+	public void messageSent(EDSMessage m) throws AISException {
+		// TODO logger.trace("messageSent:0");
 		switch (m.getMessageType()) {
-		case EDSMessage.MSG_TEMPERATURA: {
+		case EDSMessage.MSG_RISPOSTA_STATO_TERMOSTATO:
+			// TODO logger.trace("messageSent:1.1");
+			updating = true;
 			// Questo messaggio contiene il nostro stato
-			TemperatureMessage tm = (TemperatureMessage) m;
-			int oldState = state;
-			double oldTemp = temperature;
+			RispostaStatoTermostatoMessage tm = (RispostaStatoTermostatoMessage) m;
 			temperature = tm.getChronoTermTemperature();
-			if (temperature != oldTemp) {
-				temperatureTimestamp = System.currentTimeMillis();
-				generateEvent(port_temperature, 
-						String.valueOf(temperature));
-			}
-			dirtyTemperature = false;
 			switch (tm.getMode()) {
-			case TemperatureMessage.MODE_ANTI_FREEZE:
+			case RispostaStatoTermostatoMessage.MODE_ANTI_FREEZE:
 				state = STATE_TEMP_ANTIFREEZE;
 				break;
-			case TemperatureMessage.MODE_CHRONO:
+			case RispostaStatoTermostatoMessage.MODE_CHRONO:
 				state = STATE_CHRONO;
 				break;
-			case TemperatureMessage.MODE_MANUAL:
+			case RispostaStatoTermostatoMessage.MODE_MANUAL:
 				state = STATE_MANUAL;
 				break;
-			case TemperatureMessage.MODE_TIME:
-				state = STATE_CHRONO; // FIXME: che significa?
+			case RispostaStatoTermostatoMessage.MODE_TIME:
+				state = STATE_CHRONO;
 				break;
 			}
-			if (state != oldState) {
-				stateTimestamp = System.currentTimeMillis();
-				generateEvent(port_state, getStateAsString());
-			}
-			dirtyState = false;
-		}
-		break;
-		case EDSMessage.MSG_LETTURA_SET_POINT: {
+			// TODO logger.trace("messageSent:1.2");
+			setPortValue(port_state,getStateAsString());
+			// TODO logger.trace("messageSent:1.3");
+			setPortValue(port_temperature,new Double(temperature));
+			updating = false;
+			// TODO logger.trace("messageSent:1.4");
+			break;
+		case EDSMessage.MSG_LETTURA_SET_POINT:
+			// TODO logger.trace("messageSent:2.1");
+			updating = true;
 			// Vediamo qual e' il nostro set-point.
 			CronotermMessage ctm = (CronotermMessage) m;
-			double oldSetPoint = setPoint;
+			//double oldSetPoint = setPoint;
 			setPoint = ctm.getSetPoint();
+			// TODO logger.trace("messageSent:2.2");
+			setPortValue(port_setpoint,new Double(setPoint));
+			// TODO logger.trace("messageSent:2.3");
+			/*
 			if (setPoint != oldSetPoint) {
 				setPointTimestamp = System.currentTimeMillis();
 				generateEvent(port_setpoint, String.valueOf(setPoint));
 			}
 			dirtySetPoint = false;
-		}
+			updating = false;
+			*/
 		break;
 		}
+		// TODO logger.trace("messageSent:3");	
 	}
 	
 	public String getInfo() {
@@ -254,19 +261,26 @@ public class BMCChronoTerm extends BMC {
 	 * Aggiorna lo stato del termostato.
 	 */
 	public void updateTermStatus() {
-		connector.sendMessage(new RichiestaStatoTermostatoMessage(getIntAddress(), getBMCComputerAddress()));
+		getConnector().sendMessage(new RichiestaStatoTermostatoMessage(getIntAddress(), getBMCComputerAddress()));
 	}
 	
 	/**
 	 * Aggiorna il set point corrente.
 	 */
 	public void updateSetPoint() {
-		connector.sendMessage(new RichiestaSetPointMessage(getIntAddress(), getBMCComputerAddress()));
+		getConnector().sendMessage(new RichiestaSetPointMessage(getIntAddress(), getBMCComputerAddress()));
 	}
 	
-	public void updateStatus() {
+	public long updateStatus() {
+		// FIXME calcolare il timeout oggettivamente
+		long timeout = 2 * 2 * ((EDSConnector)getConnector()).getRetryTimeout();		
+		if (updating) {
+			logger.trace("update in corso, richiesta omessa");
+			return timeout;
+		}		
 		updateTermStatus();
 		updateSetPoint();
+		return timeout;
 	}
 	
 	/**
@@ -279,7 +293,7 @@ public class BMCChronoTerm extends BMC {
 	public boolean setSetPoint(double temperature) {
 		ImpostaSetPointMessage m;
 		m = new ImpostaSetPointMessage(getIntAddress(), getBMCComputerAddress(), temperature);
-		return connector.sendMessage(m);
+		return getConnector().sendMessage(m);
 	}
 	
 	/**
@@ -294,7 +308,7 @@ public class BMCChronoTerm extends BMC {
 	public boolean setState(int state) {
 		VariazioneIngressoMessage m;
 		m = new VariazioneIngressoMessage(getIntAddress(), getBMCComputerAddress(),state);
-		return connector.sendMessage(m);
+		return getConnector().sendMessage(m);
 	}
 	
 	/**
@@ -310,10 +324,10 @@ public class BMCChronoTerm extends BMC {
 		}
 	}
 
-	// Attenzione:
+	// TODO eliminare i caching, usare solo DevicePort
 	public String getStatus(String port, long timestamp) {
 		String retval = "";
-		String busName = connector.getName();
+		String busName = getConnector().getName();
 		String compactName = busName + "." + getAddress();
 		if (dirtySetPoint) {
 			updateSetPoint();
@@ -339,13 +353,13 @@ public class BMCChronoTerm extends BMC {
 		return retval;
 	}
 
+	// TODO Eliminare getFirstInputPortNumber()
 	public int getFirstInputPortNumber() {
 		return 1;
 	}
 
+	// TODO Eliminare getOutPortsNumber()
 	public int getOutPortsNumber() {
-		// FIXME: e' vero?
-		//return 11;
 		return 0;
 	}
 	
@@ -368,7 +382,7 @@ public class BMCChronoTerm extends BMC {
 	 * @param port nome della porta.
 	 * @param value valore da impostare.
 	 */
-	public void setPort(String port, String value) throws EDSException {
+	public void setPort(String port, String value) throws AISException {
 		boolean success = false;
 		if (port.equals(port_setpoint)) {
 			// Impostiamo il setpoint
@@ -376,7 +390,7 @@ public class BMCChronoTerm extends BMC {
 			try {
 				setPoint = Double.parseDouble(value);
 			} catch (NumberFormatException e) {
-				throw new EDSException("Invalid temperature: " + value);
+				throw new AISException("Invalid temperature: " + value);
 			}
 			success = setSetPoint(setPoint);
 		} else if (port.equals(port_state)) {
@@ -397,14 +411,14 @@ public class BMCChronoTerm extends BMC {
 			if (requiredState != -1) {
 				success = setState(requiredState);
 			} else {
-				throw new EDSException("Invalid state: " + value);
+				throw new AISException("Invalid state: " + value);
 			}
 		} else {
 			// Non impostiamo niente: la richiesta e' errata.
-			throw new EDSException("Invalid port: " + port);
+			throw new AISException("Invalid port: " + port);
 		}
 		if (!success) {
-			throw new EDSException("Il device non risponde");
+			throw new AISException("Il device non risponde");
 		}
 	}
 
@@ -412,13 +426,4 @@ public class BMCChronoTerm extends BMC {
 		return 0;
 	}
 
-	public String peek(String portId) throws AISException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void poke(String portId, String value) throws AISException {
-		// TODO Auto-generated method stub
-		
-	}
 }

@@ -5,9 +5,8 @@ package it.ascia.eds.device;
 
 import java.util.*;
 
-import com.sun.net.httpserver.Authenticator.Retry;
-
 import it.ascia.ais.AISException;
+import it.ascia.ais.Connector;
 import it.ascia.ais.Device;
 import it.ascia.eds.msg.BroadcastMessage;
 import it.ascia.eds.msg.EDSMessage;
@@ -19,7 +18,6 @@ import it.ascia.eds.msg.RichiestaUscitaMessage;
 import it.ascia.eds.msg.RispostaAssociazioneUscitaMessage;
 import it.ascia.eds.msg.RispostaModelloMessage;
 import it.ascia.eds.EDSConnector;
-import it.ascia.eds.EDSException;
 
 /**
  * Il rappresentante di questo computer sul transport EDS.
@@ -54,9 +52,10 @@ public class BMCComputer extends BMC {
 	 * 
 	 * @param transport il transport a cui siamo collegati
 	 * @param address l'indirizzo di questo device sul transport
+	 * @throws AISException 
 	 */
-	public BMCComputer(int address) {
-		super(address, -1, "Computer");
+	public BMCComputer(Connector connector, String address) throws AISException {
+		super(connector, address, -1, "Computer");
 		inbox = new LinkedList();
 		messageToBeAnswered = null;
 	}
@@ -68,9 +67,10 @@ public class BMCComputer extends BMC {
 	 *   <li>Se il messaggio e' una risposta a richiesta modello, agiunge un BMC</li>
 	 *   <li>Conferma che il messaggio e' stato ricevuto</li>
 	 * </ol>  
+	 * @throws AISException 
 	 * @see it.ascia.eds.device.Device#receiveMessage(it.ascia.eds.msg.EDSMessage)
 	 */
-	public synchronized void messageReceived(EDSMessage m) {
+	public void messageReceived(EDSMessage m) throws AISException {
 		// Tutti i messaggi ricevuti devono finire nella inbox. Ma non troppi.
 		inbox.addFirst(m);
 		while (inbox.size() > MAX_INBOX_SIZE) {
@@ -82,22 +82,25 @@ public class BMCComputer extends BMC {
 			if (RispostaModelloMessage.class.isInstance(ptpm)) {
 				//logger.trace("Ricevuto modello");
 				RispostaModelloMessage risposta = (RispostaModelloMessage) ptpm;
-				try {
-					BMC bmc = BMC.createBMC(risposta.getSender(), risposta.getModello(), null, true);
+				Device bmc = getConnector().getDevice(risposta.getSource());
+				if (bmc == null) {
+					bmc = BMC.createBMC(getConnector(), risposta.getSource(), risposta.getModello(), null, true);
 					logger.info("Creato BMC "+bmc);
-					connector.addDevice(bmc);
-				} catch (EDSException e) {
-					logger.warn(e);
-				// Se il device e' gia' sul transport, non e' un errore.
 				}
 			}
 			// Attendiamo risposte?
+			// FIXME gestire una coda
 			if (messageToBeAnswered != null) {
 				if (messageToBeAnswered.isAnsweredBy(ptpm)) {
 					//logger.trace("Ricevuta risposta a richiesta");
-					messageToBeAnswered.answered = true;
+					// TODO logger.trace("OK, ricevuto: "+ptpm+" Richiesta: "+m);
 					// sveglia sendPTPRequest
-					notify();
+					synchronized (messageToBeAnswered) {
+						messageToBeAnswered.answered = true;
+						messageToBeAnswered.notify(); 						
+					}
+				} else if (ptpm.getMessageType() != m.getMessageType()){
+					logger.error("Ricevuto: "+ptpm+" Richiesta: "+m);
 				}
 			}
 		} // if m è un PTPMessage
@@ -134,28 +137,36 @@ public class BMCComputer extends BMC {
      * 
      * <p>Il messaggio di risposta viene riconosciuto da dispatchMessage().</p>
 	 */
-	private synchronized boolean sendPTPRequest(PTPRequest m) {
+	private boolean sendPTPRequest(PTPRequest m) {
     	int tries;
     	boolean received = false;
+    	EDSConnector connector = (EDSConnector)getConnector();  
+		if (messageToBeAnswered != null) {
+			logger.fatal("messageToBeAnswered non nullo!");
+			return false;
+		}
     	messageToBeAnswered = m;
-    	try {
+    	synchronized (messageToBeAnswered) {
     		for (tries = 1;
     			(tries <= m.getMaxSendTries()) && (!m.answered); 
     			tries++) {
-    			if (tries > 1) {
-    				logger.trace("Invio "+tries+" di "+m.getMaxSendTries()+" "+m.toHexString());    			
-    			}
+    			// TODO logger.trace("Invio "+tries+" di "+m.getMaxSendTries()+" "+m.toHexString());    			
     			connector.transport.write(m.getBytesMessage());
-    			// si mette in attesa, ma se nel frattempo arriva la risposta 
-    			wait((long)(((EDSConnector)connector).getRetryTimeout() * (1 + 0.2 * Math.random())));
+    			// si mette in attesa, ma se nel frattempo arriva la risposta viene avvisato
+    			// TODO logger.trace("sendPTPRequest wait:1");
+    	    	try {
+    	    		messageToBeAnswered.wait((long)(100 * connector.getRetryTimeout() * (1 + 0.2 * Math.random())));
+    	    	} catch (InterruptedException e) {
+    				logger.trace("sendPTPRequest wait:2");
+    	    	}
+    			// TODO logger.trace("sendPTPRequest wait:3");
     		}
-    	} catch (InterruptedException e) {
+	    	received = m.answered;
+	    	messageToBeAnswered = null;
     	}
-    	received = m.answered;
     	if (! received) {
     		logger.error("Messaggio non risposto: "+m);
     	}
-    	messageToBeAnswered = null;
 		return received;
     }
 	
@@ -167,10 +178,11 @@ public class BMCComputer extends BMC {
 	 */
 	private void sendBroadcastMessage(BroadcastMessage m) {
 		int tries = m.getSendTries();
+		EDSConnector connector = (EDSConnector)getConnector();
 		for (int i = 0; i < tries; i++) {
 			m.randomizeHeaders();
 			try {
-				Thread.sleep(((EDSConnector)connector).getRetryTimeout());
+				Thread.sleep(connector.getRetryTimeout());
 			} catch (InterruptedException e) {
 			}
 			connector.transport.write(m.getBytesMessage());
@@ -199,7 +211,7 @@ public class BMCComputer extends BMC {
 				retval = sendPTPRequest((PTPRequest) ptpm);
 			} else {
 				// Invio nudo e crudo
-				connector.transport.write(m.getBytesMessage());
+				getConnector().transport.write(m.getBytesMessage());
 				// non c'e' modo di sapere se e' arrivato; siamo ottimisti.
 				retval = true;
 			}
@@ -224,35 +236,35 @@ public class BMCComputer extends BMC {
      * @return il BMC se trovato o registrato, oppure null.
      */
     public BMC discoverBMC(int address) {
-    	BMC retval;
-    	Device temp[];
+    	BMC bmc;
+    	Device devices[];
     	// Gia' abbiamo il BMC in lista?
-    	temp = connector.getDevices(String.valueOf(address));
-    	if (temp.length == 0) {
+    	devices = getConnector().getDevices(String.valueOf(address));
+    	if (devices.length == 0) {
     		// No!
     		logger.trace("Ricerca del BMC con indirizzo " + address);
     		if (sendPTPRequest(new RichiestaModelloMessage(address, 
     				getIntAddress()))) {
-    			temp = connector.getDevices(String.valueOf(address));
-    			if (temp.length > 0) {
-    				retval = (BMC)temp[0];
-    				logger.info("Trovato BMC "+retval.getInfo());
-    				discoverUscite(retval);
-    				discoverBroadcastBindings(retval);
+    			devices = getConnector().getDevices(String.valueOf(address));
+    			if (devices.length > 0) {
+    				bmc = (BMC)devices[0];
+    				logger.info("Trovato BMC "+bmc.getInfo());
+    				// TODO gestire risposte a discoverUscite(bmc);
+    				// TODO gestire risposte a discoverBroadcastBindings(bmc);
     			} else {
     				// Molto strano: l'ACK del messaggio e' arrivato, ma non 
     				// abbiamo nessun BMC.
     				logger.warn("Sembra che ci siano problemi sulla " +
     						"connessione");
-    				retval = null;
+    				bmc = null;
     			}
     		} else {
-    			retval = null;
+    			bmc = null;
     		}
     	} else {
-    		retval = (BMC)temp[0];
+    		bmc = (BMC)devices[0];
     	}
-    	return retval;
+    	return bmc;
     }
     
     /**
@@ -295,8 +307,9 @@ public class BMCComputer extends BMC {
     	}
     }
 
-	public void updateStatus() {
+	public long updateStatus() {
 		logger.error("updateStatus non implementato su BMCComputer.");
+		return 0;
 	}
 
 	// Niente da dichiarare.
@@ -312,20 +325,25 @@ public class BMCComputer extends BMC {
 	}
 
 	public int getOutPortsNumber() {
-		return 0; // per ora...
+		return 8;
 	}
 
-	public void poke(String port, String value) throws EDSException {
-		throw new EDSException("Unimplemented.");
+	public void poke(String port, String value) throws AISException {
+		throw new AISException("Unimplemented.");
 	}
 
 	public int getInPortsNumber() {
 		return 8;
 	}
 
-	public String peek(String portId) throws AISException {
+	public long updatePort(String portId) throws AISException {
+		setPortValue(portId, new Boolean(false));
+		return 0;
+	}
+
+	public void writePort(String portId, Object newValue) throws AISException {
 		// TODO Auto-generated method stub
-		return null;
+		
 	}
 
 }

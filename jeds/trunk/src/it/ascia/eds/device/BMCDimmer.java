@@ -4,7 +4,8 @@
 package it.ascia.eds.device;
 
 import it.ascia.ais.AISException;
-import it.ascia.eds.EDSException;
+import it.ascia.ais.Connector;
+import it.ascia.eds.EDSConnector;
 import it.ascia.eds.msg.ComandoBroadcastMessage;
 import it.ascia.eds.msg.ComandoUscitaDimmerMessage;
 import it.ascia.eds.msg.ComandoUscitaMessage;
@@ -35,19 +36,19 @@ public class BMCDimmer extends BMC {
 	/**
 	 * Uscite. Possono assumere un valore 0-100 oppure -1 (OFF).
 	 */
-	private int[] outPorts;
+	//private int[] outPorts;
 	/**
 	 * La conoscenza delle uscite puo' essere errata?
 	 * 
 	 * <p>Questa array ha un elemento per ogni porta.</p>
 	 */
-	private boolean dirty[];
+	//private boolean dirty[];
 	/**
 	 * Timestamp di aggiornamento per le porte di uscita.
 	 * 
 	 * <p>Questa array ha un elemento per ogni porta.</p>
 	 */
-	private long outPortsTimestamps[];
+	//private long outPortsTimestamps[];
 	/**
 	 * Potenza in uscita [Watt] o -1 se l'uscita è 0-10 V
 	 */
@@ -61,9 +62,10 @@ public class BMCDimmer extends BMC {
 	 * Costruttore
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
+	 * @throws AISException 
 	 */
-	public BMCDimmer(int address, int model, String name) {
-		super(address, model, name);
+	public BMCDimmer(Connector connector, String address, int model, String name) throws AISException {
+		super(connector, address, model, name);
 		switch(model) {
 		case 101:
 			outPortsNum = 2;
@@ -101,73 +103,36 @@ public class BMCDimmer extends BMC {
 			power = outPortsNum = 0;
 			modelName = "Dimmer sconosciuto";
 		}
-		if (outPortsNum > 0) {
-			outPorts = new int[outPortsNum];
-			dirty = new boolean[outPortsNum];
-			outPortsTimestamps = new long[outPortsNum];
-		}
 		for (int i = 0; i < outPortsNum; i++) {
-			dirty[i] = true;
-			outPortsTimestamps[i] = 0;
+			addPort(getOutputPortId(i));
 		}
-	}
-	
-	/**
-	 * Proxy per generateEvent.
-	 * 
-	 * @param portNumber numero della porta che ha cambiato valore.
-	 */
-	private void generateEvent(int portNumber) {
-		generateEvent(getOutputPortId(portNumber), 
-				String.valueOf(outPorts[portNumber]));
 	}
 	
 	/* (non-Javadoc)
 	 * @see it.ascia.eds.device.BMC#receiveMessage(it.ascia.eds.msg.Message)
 	 */
-	public void messageReceived(EDSMessage m) {
-		int uscita, valore;
+	public void messageReceived(EDSMessage m) throws AISException {
+		int uscita;
 		ComandoBroadcastMessage bmsg;
 		VariazioneIngressoMessage vmsg;
 		int[] ports;
 //		logger.debug("Ricevuto un messaggio di tipo " + m.getTipoMessaggio());
 		switch (m.getMessageType()) {
-		case EDSMessage.MSG_COMANDO_USCITA_DIMMER: {
+		case EDSMessage.MSG_COMANDO_USCITA_DIMMER:
 			// L'attuazione viene richiesta, non sappiamo se sara' 
 			// effettuata
 			ComandoUscitaDimmerMessage cmdDimmer = 
 				(ComandoUscitaDimmerMessage) m;
-			int oldValue;
 			uscita = cmdDimmer.getOutputPortNumber();
-			valore = cmdDimmer.getValue();
-			oldValue = outPorts[uscita];
-			outPorts[uscita] = valore;
-			if (oldValue != valore) {
-				outPortsTimestamps[uscita] = System.currentTimeMillis();
-				generateEvent(uscita);
-			}
-			dirty[uscita] = true;
-		}
-		break;
-		case EDSMessage.MSG_COMANDO_USCITA: {
+			invalidate(getOutputPortId(uscita));
+			break;
+		case EDSMessage.MSG_COMANDO_USCITA:
 			// L'attuazione viene richiesta, non sappiamo se sara' 
 			// effettuata.
 			ComandoUscitaMessage cmd = (ComandoUscitaMessage) m;
-			int oldValue;
 			uscita = cmd.getOutputPortNumber();
-			oldValue = outPorts[uscita];
-			valore = cmd.getPercentage();
-			if (!cmd.isActivation()) {
-				valore = 0;
-			}
-			outPorts[uscita] = valore;
-			if (oldValue != valore) {
-				outPortsTimestamps[uscita] = System.currentTimeMillis();
-				generateEvent(uscita);
-			}
-			dirty[uscita] = true;
-		}
-		break;
+			invalidate(getOutputPortId(uscita));
+			break;
 		case EDSMessage.MSG_COMANDO_BROADCAST:
 			// Messaggio broadcast: potrebbe interessare alcune porte.
 			bmsg = (ComandoBroadcastMessage) m;
@@ -175,23 +140,19 @@ public class BMCDimmer extends BMC {
 			if (ports.length > 0) {
 				logger.trace("Ricevuto un comando broadcast che ci interessa");
 				for (int i = 0; i < ports.length; i++) {
-					dirty[ports[i]] = true;
-					// Non aggiorniamo i timestamp, perché tanto non sappiamo
-					// i valori che le porte prenderanno.
+					invalidate(getOutputPortId(i));
 				}
 			}
 			break;
 		case EDSMessage.MSG_VARIAZIONE_INGRESSO:
 			// Qualcuno ha premuto un interruttore, e la cosa ci interessa.
 			vmsg = (VariazioneIngressoMessage) m;
-			dirty[vmsg.getOutputNumber()] = true;
-			// FIXME: come facciamo a generare un evento? Ci serve il nuovo
-			// valore! Perciò non aggiorniamo neanche il timestamp.
+			invalidate(getOutputPortId(vmsg.getOutputNumber()));
 			break;
 		}
 	}
 	
-	public void messageSent(EDSMessage m) {
+	public void messageSent(EDSMessage m) throws AISException {
 		RispostaStatoDimmerMessage r;
 		RispostaAssociazioneUscitaMessage ra;
 		switch(m.getMessageType()) {
@@ -201,16 +162,11 @@ public class BMCDimmer extends BMC {
 			// prendere solo quelli effettivamente presenti sul BMC
 			int temp[];
 			int i;
-			long currentTime = System.currentTimeMillis();
 			temp = r.getOutputs();
 			for (i = 0; i < outPortsNum; i++) {
-				int oldValue = outPorts[i];
-				outPorts[i] = temp[i];
-				if (oldValue != outPorts[i]) {
-					outPortsTimestamps[i] = currentTime;
-					generateEvent(i);
-				}
-				dirty[i] = false;
+				String portId = getOutputPortId(i);
+				// TODO gestire lo stato "in variazione" del dimmer
+				setPortValue(portId, new Integer(temp[i]));
 			}
 			break;
 		case EDSMessage.MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST: 
@@ -234,14 +190,11 @@ public class BMCDimmer extends BMC {
 		return retval;
 	}
 	
-	public void printStatus() {
+	public void printStatus() throws AISException {
 		int i;
 		System.out.print("Uscite:");
 		for (i = 0; i < outPortsNum; i++) {
-			System.out.print(" " + outPorts[i]);
-			if (dirty[i]) {
-				System.out.print("?");
-			}
+			System.out.print(" " + getPortValue(getOutputPortId(i)));
 		}
 		System.out.println();
 		// Stampiamo anche i binding, ordinati per segnale
@@ -258,17 +211,20 @@ public class BMCDimmer extends BMC {
 	 	}
 	}
 		
-	public void updateStatus() {
+	public long updateStatus() {
 		PTPRequest m;
+		EDSConnector connector = (EDSConnector) getConnector();
 		// Il protocollo permette di scegliere più uscite. Qui chiediamo solo le
 		// prime due.
 		m = new RichiestaStatoMessage(getIntAddress(),getBMCComputerAddress(), 3);
 		connector.sendMessage(m);
+		return connector.getRetryTimeout() * m.getMaxSendTries(); 
 	}
 
 	/**
 	 * Ritorna true se almeno un dato e' contrassegnato come "dirty".
 	 */
+	/*
 	public boolean hasDirtyCache() {
 		boolean retval = false;
 		for (int i = 0; (i < outPortsNum) && !retval; i++) {
@@ -276,20 +232,19 @@ public class BMCDimmer extends BMC {
 		}
 		return retval;
 	}
+	*/
 
-	public String getStatus(String port, long timestamp) {
+
+	public String getStatus(String port, long timestamp) throws AISException {
 		int i;
 		String retval = "";
-		String busName = connector.getName();
-		String compactName = busName + "." + getAddress();
-		if (hasDirtyCache()) {
-			updateStatus();
-		}
+		String fullAddress = getFullAddress();
 		for (i = 0; i < outPortsNum; i++) {
-			if ((timestamp <= outPortsTimestamps[i]) &&
-					(port.equals("*") || port.equals(getOutputPortId(i)))){
-				retval += compactName + ":" + getOutputPortId(i) + "=" +
-					outPorts[i] + "\n";
+			String portId = getOutputPortId(i);
+			if ((timestamp <= getPortTimestamp(portId)) &&
+					(port.equals("*") || port.equals(portId))){
+				retval += fullAddress + ":" + portId + "=" +
+					getPortValue(portId) + "\n";
 			}
 		}
 		return retval;
@@ -313,7 +268,7 @@ public class BMCDimmer extends BMC {
 				ComandoUscitaMessage m;
 				m = new ComandoUscitaMessage(getIntAddress(), getBMCComputerAddress(), 0, output, value, 
 						(value > 0)? 1 : 0);
-				retval = connector.sendMessage(m);
+				retval = getConnector().sendMessage(m);
 			} else {
 				logger.error("Valore non valido per canale dimmer: " +
 						value);
@@ -339,7 +294,7 @@ public class BMCDimmer extends BMC {
 				ComandoUscitaDimmerMessage m;
 				m = new ComandoUscitaDimmerMessage(getIntAddress(), 
 						getBMCComputerAddress(), output, value);
-				connector.sendMessage(m);
+				getConnector().sendMessage(m);
 			} else {
 				logger.error("Valore non valido per canale dimmer: " +
 						value);
@@ -373,11 +328,11 @@ public class BMCDimmer extends BMC {
 	 * @param port il nome compatto della porta.
 	 * @value un numero, un valore percentuale o "OFF"
 	 */
-	public void poke(String port, String value) throws EDSException {
+	public void writePort(String port, String value) throws AISException {
 		int outPort, numericValue;
 		outPort = getOutputNumberFromPortId(port);
 		if (outPort == -1) {
-			throw new EDSException("Porta non valida: " + port);
+			throw new AISException("Porta non valida: " + port);
 		}
 		// Trattiamo percentuali e numeri
 		if (value.endsWith("%")) {
@@ -389,7 +344,7 @@ public class BMCDimmer extends BMC {
 			try {
 				numericValue = Integer.parseInt(value);
 			} catch (NumberFormatException e) {
-				throw new EDSException("Valore non valido: " + value);
+				throw new AISException("Valore non valido: " + value);
 			}
 		}
 		setOutputRealTime(outPort, numericValue);
@@ -397,11 +352,6 @@ public class BMCDimmer extends BMC {
 
 	public int getInPortsNumber() {
 		return 0;
-	}
-
-	public String peek(String portId) throws AISException {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

@@ -4,8 +4,7 @@
 package it.ascia.eds.device;
 
 import it.ascia.ais.AISException;
-import it.ascia.eds.EDSConnector;
-import it.ascia.eds.EDSException;
+import it.ascia.ais.Connector;
 import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.RispostaStatoMessage;
 
@@ -66,9 +65,10 @@ public class BMCIR extends BMC {
 	 * Costruttore
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
+	 * @throws AISException 
 	 */
-	public BMCIR(int address, int model, String name) {
-		super(address, model, name);
+	public BMCIR(Connector connector, String address, int model, String name) throws AISException {
+		super(connector, address, model, name);
 		switch(model) {
 		case 41:
 		case 61:
@@ -122,14 +122,13 @@ public class BMCIR extends BMC {
 	// Attenzione: chiama sempre updateStatus() !
 	public String getStatus(String port, long timestamp) {
 		String retval = "";
-		String busName = connector.getName();
 		int i;
-		String compactName = busName + "." + getAddress();
+		String fullAddress = getFullAddress();
 		updateStatus();
 		for (i = 0; i < inPortsNum; i++) {
 			if ((timestamp <= inPortsTimestamps[i]) &&
 					(port.equals("*") || port.equals(getInputPortId(i)))) {
-				retval += compactName + ":" + getInputPortId(i) + "=" + 
+				retval += fullAddress + ":" + getInputPortId(i) + "=" + 
 					(inPorts[i]? "ON" : "OFF") + "\n";
 			}
 		}
@@ -149,19 +148,11 @@ public class BMCIR extends BMC {
 		return 0;
 	}
 
-	public void setPort(String port, String value) throws EDSException {
-		throw new EDSException("Not implemented.");
+	public void setPort(String port, String value) throws AISException {
+		throw new AISException("Not implemented.");
 	}
 	
 	public int getInPortsNumber() {
 		return inPortsNum;
-	}
-	public String peek(String portId) throws AISException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	public void poke(String portId, String value) throws AISException {
-		// TODO Auto-generated method stub
-		
 	}
 }

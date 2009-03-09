@@ -4,14 +4,13 @@
 package it.ascia.eds.device;
 
 import it.ascia.ais.AISException;
-import it.ascia.eds.EDSConnector;
-import it.ascia.eds.EDSException;
+import it.ascia.ais.Connector;
 import it.ascia.eds.msg.ImpostaParametroMessage;
 import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.RichiestaParametroMessage;
 import it.ascia.eds.msg.RichiestaStatoTermostatoMessage;
 import it.ascia.eds.msg.RispostaParametroMessage;
-import it.ascia.eds.msg.TemperatureMessage;
+import it.ascia.eds.msg.RispostaStatoTermostatoMessage;
 
 /**
  * @author capoccia
@@ -107,9 +106,11 @@ public class BMCTemperatureSensor extends BMC {
 	
 	/**
 	 * Costruttore.
+	 * @param connector 
+	 * @throws AISException 
 	 */
-	public BMCTemperatureSensor(int address, int model,  String name) {
-		super(address, model, name);
+	public BMCTemperatureSensor(Connector connector, String address, int model,  String name) throws AISException {
+		super(connector, address, model, name);
 		dirtyAutoSendTime = true;
 		dirtyAlarmTemperature = true;
 		dirtyTemperature = true;
@@ -207,8 +208,8 @@ public class BMCTemperatureSensor extends BMC {
 			}
 			break;
 		}
-		case EDSMessage.MSG_TEMPERATURA: {
-			TemperatureMessage mesg = (TemperatureMessage) m;
+		case EDSMessage.MSG_RISPOSTA_STATO_TERMOSTATO: {
+			RispostaStatoTermostatoMessage mesg = (RispostaStatoTermostatoMessage) m;
 			double oldTemp = temperature;
 			int oldMode = mode;
 			temperature = mesg.getSensorTemperature();
@@ -247,8 +248,10 @@ public class BMCTemperatureSensor extends BMC {
 	/**
 	 * Aggiorna lo stato del sensore (temperatura, modalita' di funzionamento).
 	 */
-	public void updateTermStatus() {
-		connector.sendMessage(new RichiestaStatoTermostatoMessage(getIntAddress(), getBMCComputerAddress()));
+	public long updateTermStatus() {
+		getConnector().sendMessage(new RichiestaStatoTermostatoMessage(getIntAddress(), getBMCComputerAddress()));
+		// FIXME calcolare il timeout
+		return 300;
 	}
 	
 	/**
@@ -256,9 +259,12 @@ public class BMCTemperatureSensor extends BMC {
 	 * 
 	 * <p>Invia un messaggio al BMC richiedendo il valore del parametro.</p>
 	 */
-	public void updateAlarmTemperature() {
-		connector.sendMessage(new RichiestaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
-				RichiestaParametroMessage.PARAM_TERM_ALARM_TEMPERATURE));
+	public long updateAlarmTemperature() {
+		RichiestaParametroMessage m = new RichiestaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
+				RichiestaParametroMessage.PARAM_TERM_ALARM_TEMPERATURE);
+		getConnector().sendMessage(m);
+		// FIXME calcolare il timeout
+		return 300;
 	}
 	
 	/**
@@ -266,15 +272,19 @@ public class BMCTemperatureSensor extends BMC {
 	 * 
 	 * <p>Invia un messaggio al BMC richiedendo il valore del parametro.</p>
 	 */
-	public void updateAutoSendTime() {
-		connector.sendMessage(new RichiestaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
+	public long updateAutoSendTime() {
+		getConnector().sendMessage(new RichiestaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
 				RichiestaParametroMessage.PARAM_TERM_AUTO_SEND_TIME));
+		// FIXME calcolare il timeout
+		return 300;
 	}
 	
-	public void updateStatus() {
-		updateAlarmTemperature();
-		updateAutoSendTime();
-		updateTermStatus();
+	public long updateStatus() {
+		long timeout = 0;
+		timeout += updateAlarmTemperature();
+		timeout += updateAutoSendTime();
+		timeout += updateTermStatus();
+		return timeout;
 	}
 	
 	/**
@@ -298,7 +308,7 @@ public class BMCTemperatureSensor extends BMC {
 	 * @return true se il BMC ha risposto.
 	 */
 	public boolean setAlarmTemperature(int temp) {
-		return connector.sendMessage(new ImpostaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
+		return getConnector().sendMessage(new ImpostaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
 				RichiestaParametroMessage.PARAM_TERM_ALARM_TEMPERATURE,
 				temp,
 				ImpostaParametroMessage.PARM_TYPE_TEMPERATURE));
@@ -312,7 +322,7 @@ public class BMCTemperatureSensor extends BMC {
 	 * @return true se il BMC ha risposto.
 	 */
 	public boolean setAutoSendTime(int time) {
-		return connector.sendMessage(new ImpostaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
+		return getConnector().sendMessage(new ImpostaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
 				RichiestaParametroMessage.PARAM_TERM_ALARM_TEMPERATURE,
 				time,
 				ImpostaParametroMessage.PARM_TYPE_TIME));
@@ -323,8 +333,7 @@ public class BMCTemperatureSensor extends BMC {
 	 */
 	public String getStatus(String port, long timestamp) {
 		String retval = "";
-		String busName = connector.getName();
-		String compactName = busName + "." + getAddress();
+		String fullAddress = getFullAddress();
 		if (dirtyAlarmTemperature) {
 			updateAlarmTemperature();
 		}
@@ -334,22 +343,22 @@ public class BMCTemperatureSensor extends BMC {
 		updateTermStatus();
 		if ((timestamp <= temperatureTimestamp) && 
 				(port.equals("*") || port.equals(port_temperature))) {
-			retval += compactName + ":" + port_temperature + "=" + temperature + 
+			retval += fullAddress + ":" + port_temperature + "=" + temperature + 
 				"\n";
 		}
 		if ((timestamp <= alarmTemperatureTimestamp) && 
 				(port.equals("*") || port.equals(port_alarmTemp))) {
-			retval += compactName + ":" + port_alarmTemp + "=" + 
+			retval += fullAddress + ":" + port_alarmTemp + "=" + 
 				alarmTemperature + "\n";
 		}
 		if ((timestamp <= autoSendTimeTimestamp) && 
 				(port.equals("*") || port.equals(port_autoSendTime))) {
-			retval += compactName + ":" + port_autoSendTime + "=" +
+			retval += fullAddress + ":" + port_autoSendTime + "=" +
 				autoSendTime + "\n";
 		}
 		if ((timestamp <= modeTimestamp) && 
 				(port.equals("*") || port.equals(port_mode))) {
-			retval += compactName + ":" + port_mode + "=" + 
+			retval += fullAddress + ":" + port_mode + "=" + 
 				getModeAsString() + "\n";
 		}
 		return retval;
@@ -366,7 +375,7 @@ public class BMCTemperatureSensor extends BMC {
 			try {
 				alarmTemp = (int)(Double.parseDouble(value));
 			} catch (NumberFormatException e) {
-				throw new EDSException("Invalid alarm temperature: " + value);
+				throw new AISException("Invalid alarm temperature: " + value);
 			}
 			success = setAlarmTemperature(alarmTemp);
 		} else if (port.equals(port_autoSendTime)) {
@@ -375,18 +384,18 @@ public class BMCTemperatureSensor extends BMC {
 			try {
 				time = (int)(Double.parseDouble(value));
 			} catch (NumberFormatException e) {
-				throw new EDSException("Invalid auto send time: " + value);
+				throw new AISException("Invalid auto send time: " + value);
 			}
 			if (time <= 0) {
-				throw new EDSException("Illegal value: " + value);
+				throw new AISException("Illegal value: " + value);
 			}
 			success = setAutoSendTime(time);
 		} else {
 			// Non impostiamo niente: la richiesta e' errata.
-			throw new EDSException("Invalid port: " + port);
+			throw new AISException("Invalid port: " + port);
 		}
 		if (!success) {
-			throw new EDSException("Il device non risponde");
+			throw new AISException("Il device non risponde");
 		}
 	}
 	
@@ -404,12 +413,12 @@ public class BMCTemperatureSensor extends BMC {
 		return 0;
 	}
 
-	public String peek(String portId) throws AISException {
+	public long updatePort(String portId) throws AISException {
 		// TODO Auto-generated method stub
-		return null;
+		return 0;
 	}
 
-	public void poke(String portId, String value) throws AISException {
+	public void writePort(String portId, Object newValue) throws AISException {
 		// TODO Auto-generated method stub
 		
 	}

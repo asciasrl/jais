@@ -3,8 +3,6 @@
  */
 package it.ascia.eds.msg;
 
-import it.ascia.ais.MessageInterface;
-
 /**
  * Lettura dello stato del cronotermostato o della sonda termica.
  *
@@ -14,8 +12,7 @@ import it.ascia.ais.MessageInterface;
  * 
  * <p>Codice EDS: 201.</p>
  */
-public class TemperatureMessage	extends PTPMessage 
-	implements MessageInterface {
+public class RispostaStatoTermostatoMessage	extends PTPMessage {
 	/**
 	 * Modalita' antigelo (cronotermostato).
 	 */
@@ -37,12 +34,12 @@ public class TemperatureMessage	extends PTPMessage
 	 */
 	public static final int MODE_TIME = 3;
 
-	public TemperatureMessage(int[] message) {
+	public RispostaStatoTermostatoMessage(int[] message) {
 		load(message);
 	}
 
 	public String getMessageDescription() {
-		return "Stato termostato";
+		return "Risposta stato termostato";
 	}
 	
 	/**
@@ -109,10 +106,11 @@ public class TemperatureMessage	extends PTPMessage
 		s.append("T="+ getChronoTermTemperature()+"°C");
 		s.append(isOn()?" ON ":" OFF ");
 		s.append(getModeDescription());
+		s.append(" allarme:"+(getAlarm() ? "ON" : "OFF"));
 		return s.toString();
 	}
 
 	public int getMessageType() {
-		return MSG_TEMPERATURA;
+		return MSG_RISPOSTA_STATO_TERMOSTATO;
 	}
 }

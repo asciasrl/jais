@@ -150,7 +150,7 @@ public class BMCComputer extends BMC {
     		for (tries = 1;
     			(tries <= m.getMaxSendTries()) && (!m.answered); 
     			tries++) {
-    			// TODO logger.trace("Invio "+tries+" di "+m.getMaxSendTries()+" "+m.toHexString());    			
+    			logger.trace("Invio "+tries+" di "+m.getMaxSendTries()+" : "+m.toHexString());    			
     			connector.transport.write(m.getBytesMessage());
     			// si mette in attesa, ma se nel frattempo arriva la risposta viene avvisato
     			// TODO logger.trace("sendPTPRequest wait:1");

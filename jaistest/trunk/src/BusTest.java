@@ -4,7 +4,6 @@ import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.Controller;
 import it.ascia.eds.EDSConnector;
-import it.ascia.eds.EDSException;
 import it.ascia.eds.device.BMC;
 import it.ascia.eds.device.BMCChronoTerm;
 import it.ascia.eds.device.BMCComputer;
@@ -24,49 +23,48 @@ public class BusTest {
 	static Controller busController;
 	
 	
-	static void makeVirtualBMC(int address, EDSConnector connector) {
-		// Lo creiamo noi il BMC!
-		try {
-			BMCStandardIO bmc = new BMCStandardIO(address, 88, "BMCFinto"); 
-			connector.addDevice(bmc);
-			bmc.makeSimulated();
-		} catch (EDSException e) {
-			System.err.println(e.getMessage());
-			System.exit(-1);
-		}
+	static void makeVirtualBMC(String address, EDSConnector connector) throws AISException {
+		BMCStandardIO bmc = new BMCStandardIO(connector,address, 88, "BMCFinto"); 
+		bmc.makeSimulated();
 	}
 	
-	static void testBMCStandardIO(int address, Connector connector) {
+	static void testBMCStandardIO(int address, Connector connector) throws AISException {
 		int porta, valore;
  		// Prova su BMC modello 88, indirizzo 3
  		BMCStandardIO bmc = 
  			(BMCStandardIO)connector.getDevices(String.valueOf(address))[0];
  		System.out.println();
  		System.out.println("Prova BMC Standard I/O");
- 		System.out.println("Discovery...");
- 		bmcComputer.discoverBroadcastBindings(bmc);
+ 		//System.out.println("Discovery...");
+ 		//bmcComputer.discoverBroadcastBindings(bmc);
  		porta = 0;
  		while ((porta >= 0) && (porta < 8)) {
  			porta = Stdio.inputInteger("Porta (<0 esce): ");
  			if (porta >= 0) {
+ 	 			System.out.println("Stato del BMC: ");
+ 				bmc.printStatus();
  				valore = -1;
  				while ((valore != 0) && (valore != 1)) {
  					valore = Stdio.inputInteger("Valore (0 o 1): ");
  				}
  				bmc.setOutPort(porta, (valore == 1));
+ 	 			System.out.println("Stato del BMC: ");
+ 				bmc.printStatus();
+ 				/*
  				try {
- 					Thread.sleep(500);
+ 					Thread.sleep(1000);
  				} catch (InterruptedException e) { }
- 				bmc.printStatus();
- 				bmc.updateStatus();
- 				System.out.println("Stato del BMC aggiornato: ");
- 				bmc.printStatus();
+ 				*/
+ 				//bmc.printStatus();
+ 				//bmc.updateStatus();
+ 				//bmc.printStatus();
+ 				//bmc.printStatus();
  			} // if porta >= 0
  		}
  			
 	}
 	
-	static void testBMCDimmer(Connector connector) {
+	static void testBMCDimmer(Connector connector) throws AISException {
 		String address = "5";
 		int output = 0, value = 0;
  		// Prova su BMC modello 88, indirizzo 3

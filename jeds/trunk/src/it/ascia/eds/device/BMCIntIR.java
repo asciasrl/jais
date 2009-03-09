@@ -4,8 +4,7 @@
 package it.ascia.eds.device;
 
 import it.ascia.ais.AISException;
-import it.ascia.eds.EDSConnector;
-import it.ascia.eds.EDSException;
+import it.ascia.ais.Connector;
 import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.RispostaStatoMessage;
 
@@ -28,12 +27,14 @@ public class BMCIntIR extends BMC {
 	
 	/**
 	 * Costruttore.
+	 * @param connector 
 	 * 
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
+	 * @throws AISException 
 	 */
-	public BMCIntIR(int address, int model, String name) {
-		super(address, model, name);
+	public BMCIntIR(Connector connector, String address, int model, String name) throws AISException {
+		super(connector, address, model, name);
 		if (model != 131) {
 			logger.error("Errore: modello di BMC Int IR sconosciuto:" + 
 					model);
@@ -87,11 +88,10 @@ public class BMCIntIR extends BMC {
 	}
 
 	public String getStatus(String port, long timestamp) { // TODO
-		String busName = connector.getName();
-		String compactName = busName + "." + getAddress();
+		String fullAddress = getFullAddress();
 		if ((timestamp <= irInputTimestamp) &&
 				(port.equals("*") || port.equals(getInputPortId(0)))) {
-			return compactName + ":" + getInputPortId(0) +
+			return fullAddress + ":" + getInputPortId(0) +
 			"=" + (irInput? "ON" : "OFF") + "\n";
 		} else {
 			return "";
@@ -110,18 +110,13 @@ public class BMCIntIR extends BMC {
 		return 0;
 	}
 
-	public void poke(String port, String value) throws EDSException {
-		throw new EDSException("Not implemented.");
+	public void poke(String port, String value) throws AISException {
+		throw new AISException("Not implemented.");
 	}
 
 	public int getInPortsNumber() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	public String peek(String portId) throws AISException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 }

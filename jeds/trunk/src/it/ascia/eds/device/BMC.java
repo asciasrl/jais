@@ -10,8 +10,11 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
+
+import it.ascia.ais.AISException;
+import it.ascia.ais.Connector;
 import it.ascia.ais.Device;
-import it.ascia.ais.DeviceEvent;
 import it.ascia.eds.*;
 import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.PTPRequest;
@@ -69,16 +72,19 @@ public abstract class BMC extends Device {
 	 * Il nostro logger.
 	 */
 	protected Logger logger;
+
+	protected boolean updating = false;
 	
 	/**
 	 * Costruttore.
 	 * 
-	 * @param address l'indirizzo di questo BMC
+	 * @param bmcAddress l'indirizzo di questo BMC
 	 * @param model il modello di questo BMC
 	 * @param name il nome di questo BMC (dal file di configurazione)
+	 * @throws AISException 
 	 */
-	public BMC(int address, int model, String name) {
-		this.address = String.valueOf(address);
+	public BMC(Connector connector, String bmcAddress, int model, String name) throws AISException {
+		super(connector, bmcAddress);
 		this.model = model;
 		this.name = name;
 		broadcastBindingsBySignal = new Set[32];
@@ -105,14 +111,14 @@ public abstract class BMC extends Device {
      * "a nome" del BMCComputer.</p>
      */
     public int getBMCComputerAddress() {
-    	return ((EDSConnector)connector).getBMCComputerAddress();
+    	return ((EDSConnector)getConnector()).getBMCComputerAddress();
     }
 	
 	/**
 	 * Ritorna l'indirizzo (int) di questo BMC sul bus EDS.
 	 */
 	public int getIntAddress() {
-		return Integer.parseInt(address);
+		return Integer.parseInt(getAddress());
 	}
 	
 	/**
@@ -134,11 +140,12 @@ public abstract class BMC extends Device {
 	 * BMC possono essere simulati.
 	 * 
 	 * @return the newly created BMC or null if the model is unknown.
+	 * @throws AISException 
 	 * 
 	 * @throws an exception if the address is already in use by another BMC.
 	 */
-	public static BMC createBMC(int bmcAddress, int model, String name, boolean isReal) 
-		throws EDSException {
+	public static BMC createBMC(Connector connector, String bmcAddress, int model, String name, boolean isReal) 
+		throws AISException {
 		Logger logger = Logger.getLogger("BMC.createBMC");
 		BMC bmc;
 		switch(model) {
@@ -150,7 +157,7 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "StandardIO" + bmcAddress;
 			}
-			bmc = new BMCStandardIO(bmcAddress, model, name);
+			bmc = new BMCStandardIO(connector, bmcAddress, model, name);
 			break;
 		case 41:
 		case 61:
@@ -158,7 +165,7 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "IR" + bmcAddress;
 			}
-			bmc = new BMCIR(bmcAddress, model, name);
+			bmc = new BMCIR(connector, bmcAddress, model, name);
 			break;
 		case 101:
 		case 102:
@@ -169,13 +176,13 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "Dimmer" + bmcAddress;
 			}
-			bmc = new BMCDimmer(bmcAddress, model, name);
+			bmc = new BMCDimmer(connector, bmcAddress, model, name);
 			break;
 		case 131:
 			if (name == null) {
 				name = "IntIR" + bmcAddress;
 			}
-			bmc = new BMCIntIR(bmcAddress, model, name);
+			bmc = new BMCIntIR(connector, bmcAddress, model, name);
 			break;
 		case 152:
 		case 154:
@@ -184,19 +191,19 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "ScenarioManager" + bmcAddress;
 			}
-			bmc = new BMCScenarioManager(bmcAddress, model, name);
+			bmc = new BMCScenarioManager(connector, bmcAddress, model, name);
 			break;
 		case 121:
 			if (name == null) {
 				name = "TemperatureSensor" + bmcAddress; 
 			}
-			bmc = new BMCTemperatureSensor(bmcAddress, model, name);
+			bmc = new BMCTemperatureSensor(connector, bmcAddress, model, name);
 			break;
 		case 127:
 			if (name == null) {
 				name = "ChronoTerm" + bmcAddress;
 			}
-			bmc = new BMCChronoTerm(bmcAddress, model, name);
+			bmc = new BMCChronoTerm(connector, bmcAddress, model, name);
 			break;
 		default:
 			logger.error("Modello di BMC sconosciuto: " + 
@@ -216,8 +223,9 @@ public abstract class BMC extends Device {
 	 * <p>Dovrebbe essere chiamato solo dal transport.</p>
 	 * 
 	 * @param m il messaggio ricevuto.
+	 * @throws AISException 
 	 */
-	public abstract void messageReceived(EDSMessage m);
+	public abstract void messageReceived(EDSMessage m) throws AISException;
 	
 	/** 
 	 * Il BMC (fisico) ha inviato un messaggio sul transport.
@@ -228,8 +236,9 @@ public abstract class BMC extends Device {
 	 * <p>Dovrebbe essere chiamato solo dal transport.</p>
 	 * 
 	 * @param m il messaggio inviato.
+	 * @throws AISException 
 	 */
-	public abstract void messageSent(EDSMessage m);
+	public abstract void messageSent(EDSMessage m) throws AISException;
 	
 	/**
 	 * Ritorna una descrizione del BMC.
@@ -244,12 +253,20 @@ public abstract class BMC extends Device {
 	 * informazioni.</p>
 	 * 
 	 * <p>Il metodo di default manda un RichiestaStatoMessage per BMC.</p>
+	 * 
+	 * @return Tempo previsto per l'aggiornamento
 	 */
-	public void updateStatus() {
-		PTPRequest m;
-		m = new RichiestaStatoMessage(getIntAddress(), 
-				((EDSConnector)connector).getBMCComputerAddress(), 0);
-		connector.sendMessage(m);
+	public long updateStatus() {
+		EDSConnector connector = (EDSConnector) getConnector();
+		PTPRequest m = new RichiestaStatoMessage(getIntAddress(), 
+				((EDSConnector)getConnector()).getBMCComputerAddress(), 0);
+		long timeout = connector.getRetryTimeout() * m.getMaxSendTries(); 
+		if (updating) {
+			logger.trace("update in corso, richiesta omessa");
+			return timeout;
+		}
+		getConnector().sendMessage(m);
+		return timeout;		
 	}
 	
 	/**
@@ -288,8 +305,9 @@ public abstract class BMC extends Device {
 	 * 
 	 * <p>NOTA: per le singole porte, il nome da visualizzare deve essere quello
 	 * generato da getInputCompactName() e getOutputCompactName().</p>
+	 * @throws AISException 
 	 */
-	public void printStatus() {
+	public void printStatus() throws AISException {
 		logger.error("printStatus() non implementata");
 	}
 	
@@ -298,8 +316,9 @@ public abstract class BMC extends Device {
 	 * 
 	 * @param number il numero della porta (inizia da 0)
 	 * @param name il nome da assegnare.
+	 * @throws AISException 
 	 */
-	public void setInputName(int number, String name) {
+	public void setInputName(int number, String name) throws AISException {
 		setPortName(getInputPortId(number), name);
 	}
 	
@@ -308,24 +327,27 @@ public abstract class BMC extends Device {
 	 * 
 	 * @param number the port number.
 	 * @param name the name to assign.
+	 * @return 
+	 * @throws AISException
 	 */
-	public boolean setOutputName(int number, String portName) {
-		return setPortName(getOutputPortId(number), portName);
+	public void setOutputName(int number, String portName) throws AISException {
+		setPortName(getOutputPortId(number), portName);
 	}
 			
 	/**
 	 * Genera un nome compatto per una porta di ingresso.
 	 */
 	protected static String getInputPortId(int number) {
-		return "Inp" + (number + 1);
+		return "Inp" + (number+1);
 	}
 
 	/**
 	 * Ritorna il nome di una porta di ingresso.
 	 * 
 	 * @param number il numero della porta di ingresso (a partire da 0).
+	 * @throws AISException 
 	 */
-	public String getInputName(int number) {
+	public String getInputName(int number) throws AISException {
 		String portId = getInputPortId(number);
 		return getPortName(portId);
 	}
@@ -335,15 +357,16 @@ public abstract class BMC extends Device {
 	 * Genera un nome compatto per una porta di uscita.
 	 */
 	protected static String getOutputPortId(int number) {
-		return "Out" + (number + 1);
+		return "Out" + (number +1);
 	}
 	
 	/**
 	 * Ritorna il nome di una porta di uscita.
 	 *
 	 * @return null se la porta non esiste
+	 * @throws AISException 
 	 */
-	public String getOutputName(int number) {
+	public String getOutputName(int number) throws AISException {
 		String portId = getOutputPortId(number);
 		return getPortName(portId);
 	}
@@ -438,19 +461,21 @@ public abstract class BMC extends Device {
 		return ports.contains(new Integer(outputPort));
 	}
 
-	/**
-	 * Genera un evento di tipo DeviceEvent per il Connector di questo BMC.
-	 * 
-	 * @param port nome della porta che ha cambiato valore.
-	 * @param value nuovo valore assunto dalla porta.
-	 */
-	protected void generateEvent(String port, String value) {
-		DeviceEvent event = new DeviceEvent(this, port, value);
-		connector.onDeviceEvent(event);
-	}
-	
 	public String toString() {
 		return getInfo();
 	}
+
+	public long updatePort(String portId) throws AISException {
+		return updateStatus();
+	}
+
+	public void writePort(String portId, String newValue) throws AISException {
+		logger.error("writePort() non implementata!");
+	}
 	
+	public void writePort(String portId, Object newValue) throws AISException {
+		writePort(portId,(String) newValue);
+	}
+
+
 }

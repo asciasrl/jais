@@ -4,8 +4,7 @@
 package it.ascia.eds.device;
 
 import it.ascia.ais.AISException;
-import it.ascia.eds.EDSConnector;
-import it.ascia.eds.EDSException;
+import it.ascia.ais.Connector;
 import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.RispostaStatoMessage;
 
@@ -47,11 +46,13 @@ public class BMCScenarioManager extends BMC {
 	
 	/**
 	 * Costruttore
+	 * @param connector 
 	 * @param address indirizzo del BMC
 	 * @param model numero del modello
+	 * @throws AISException 
 	 */
-	public BMCScenarioManager(int address, int model, String name) {
-		super(address, model, name);
+	public BMCScenarioManager(Connector connector, String address, int model, String name) throws AISException {
+		super(connector, address, model, name);
 		switch(model) {
 		case 152:
 			inPortsNum = 2;
@@ -156,24 +157,22 @@ public class BMCScenarioManager extends BMC {
 			" con " + inPortsNum + " ingressi digitali";
 	}
 
-	// Attenzione: chiama sempre updateStatus() !
 	public String getStatus(String port, long timestamp) {
-		String busName = connector.getName();
 		String retval = "";
 		int i;
-		String compactName = busName + "." + getAddress();
-		updateStatus();
+		String fullAddress = getFullAddress();
+		//updateStatus();
 		for (i = 0; i < inPortsNum; i++) {
 			if ((timestamp <= inPortsTimestamps[i]) &&
 					(port.equals("*") || port.equals(getInputPortId(i)))) {
-				retval += compactName + ":" + getInputPortId(i) + "=" + 
+				retval += fullAddress + ":" + getInputPortId(i) + "=" + 
 					(inPorts[i]? "ON" : "OFF") + "\n";
 			}
 		}
 	 	for (i = 0; i < outPortsNum; i++) {
 	 		if ((timestamp <= outPortsTimestamps[i]) &&
 	 				(port.equals("*") || port.equals(getOutputPortId(i)))){
-	 			retval += compactName + ":" + getOutputPortId(i) + "=" + 
+	 			retval += fullAddress + ":" + getOutputPortId(i) + "=" + 
 	 				(outPorts[i]? "ON" : "OFF") + "\n";
 	 		}
 		}
@@ -195,17 +194,6 @@ public class BMCScenarioManager extends BMC {
 		return 0;
 	}
 	
-
-	public void poke(String port, String value) throws EDSException {
-		throw new EDSException("Not implemented.");
-	}
-
-
-	public String peek(String portId) throws AISException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public int getInPortsNumber() {
 		return inPortsNum;
 	}

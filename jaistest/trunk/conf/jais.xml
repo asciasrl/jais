@@ -20,6 +20,7 @@
     <root>../aui</root>    
   </HTTPServer>
   <EDS>
+    <autoupdate>5</autoupdate>
     <connectors>
       <connector>
         <name>0</name>

@@ -3,8 +3,6 @@
  */
 package it.ascia.eds.msg;
 
-import it.ascia.ais.MessageInterface;
-
 /**
  * Comando broadcast.
  * 
@@ -13,8 +11,7 @@ import it.ascia.ais.MessageInterface;
  * 
  * @author sergio, arrigo
  */
-public class ComandoBroadcastMessage extends BroadcastMessage
-	implements MessageInterface {
+public class ComandoBroadcastMessage extends BroadcastMessage {
 
 	/**
 	 * Costruttore

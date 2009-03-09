@@ -3,16 +3,14 @@
  */
 package it.ascia.eds.msg;
 
-import it.ascia.ais.MessageInterface;
-import it.ascia.eds.EDSException;
+import it.ascia.ais.AISException;
 
 /**
  * Comando broadcast di inizio o chiusura programmazione.
  * 
  * @author sergio, arrigo
  */
-public class ProgrammazioneMessage extends BroadcastMessage
-	implements MessageInterface {
+public class ProgrammazioneMessage extends BroadcastMessage {
 	/**
 	 * Non cambia protocollo.
 	 */
@@ -33,7 +31,7 @@ public class ProgrammazioneMessage extends BroadcastMessage
 	 * @param protocollo (vedi le costanti statiche di questa classe)
 	 */
 	public ProgrammazioneMessage(boolean apertura, int protocollo)
-	  throws EDSException {
+	  throws AISException {
 		randomizeHeaders();
 		TipoMessaggio = getMessageType();
 		Byte1 = (apertura ? 1 : 0); 

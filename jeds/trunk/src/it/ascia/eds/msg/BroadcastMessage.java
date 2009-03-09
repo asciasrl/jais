@@ -28,6 +28,7 @@ public abstract class BroadcastMessage extends EDSMessage
 	 * Genera l'header con destinatario e mittente casuali.
 	 * 
 	 * <p>Questo metodo deve essere chiamato prima di ogni reinvio.</p>
+	 * TODO Spostare nel costruttore ed eliminare
 	 */
 	public void randomizeHeaders() {
 		Destinatario = r.nextInt() & 0xFF;

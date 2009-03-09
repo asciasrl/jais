@@ -3,8 +3,6 @@
  */
 package it.ascia.eds.msg;
 
-import it.ascia.ais.MessageInterface;
-
 /**
  * Lettura del set point del cronotermostato.
  * 
@@ -18,7 +16,7 @@ import it.ascia.ais.MessageInterface;
  * 
  * @see RichiestaSetPointMessage
  */
-public class CronotermMessage extends PTPMessage implements MessageInterface {
+public class CronotermMessage extends PTPMessage {
 
 	/*
 	public CronotermMessage(int d, int m, int Attivazione, int Uscita, int Variazione)

@@ -3,8 +3,6 @@
  */
 package it.ascia.eds.msg;
 
-import it.ascia.ais.MessageInterface;
-
 /**
  * Messaggio di impostazione parametri (per dimmer o sonda termica).
  * 
@@ -13,8 +11,7 @@ import it.ascia.ais.MessageInterface;
  * 
  * @author sergio, arrigo
  */
-public class ImpostaParametroMessage extends PTPRequest
-	implements MessageInterface {
+public class ImpostaParametroMessage extends PTPRequest {
 	/**
 	 * Temperatura. Puo' variare da -127 a 127.
 	 * 

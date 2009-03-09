@@ -3,15 +3,12 @@
  */
 package it.ascia.eds.msg;
 
-import it.ascia.ais.MessageInterface;
-
 /**
  * Messaggio di risposta a richiesta opzioni ingresso.
  * 
  * @author sergio
  */
-public class RispostaOpzioniIngressoMessage extends PTPMessage
-	implements MessageInterface {
+public class RispostaOpzioniIngressoMessage extends PTPMessage {
 	
 	public RispostaOpzioniIngressoMessage(int[] message) {
 		load(message);

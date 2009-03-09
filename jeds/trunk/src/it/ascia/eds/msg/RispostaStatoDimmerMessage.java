@@ -20,10 +20,8 @@ public class RispostaStatoDimmerMessage extends PTPMessage {
 
 	public String toString()	{
 		StringBuffer s = new StringBuffer();
-		s.append("Mittente: "+Mittente+"\r\n");
-		s.append("Destinatario: "+Destinatario+"\r\n");
-		s.append("Uscita 1: "+(Byte1 & 0x7F) +"%\r\n");
-		s.append("Uscita 2: "+(Byte2 & 0x7F) +"%\r\n");
+		s.append(super.toString());
+		s.append("Uscita 1: "+(Byte1 & 0x7F) +"% Uscita 2: "+(Byte2 & 0x7F) +"%");
 		return s.toString();
 	}
 	

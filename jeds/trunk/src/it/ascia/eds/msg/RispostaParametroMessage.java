@@ -3,8 +3,6 @@
  */
 package it.ascia.eds.msg;
 
-import it.ascia.ais.MessageInterface;
-
 /**
  * Messaggio di risposta a richiesta di lettura parametri (per dimmer o sonda 
  * termica).
@@ -14,8 +12,7 @@ import it.ascia.ais.MessageInterface;
  * 
  * @author arrigo
  */
-public class RispostaParametroMessage extends PTPMessage
-	implements MessageInterface {
+public class RispostaParametroMessage extends PTPMessage {
 	
 /*	public ImpostaParametroDimmerMessage(int d, int m, int Tempo, int Uscita, int Percentuale, int Attivazione) {
 		Destinatario = d & 0xFF;

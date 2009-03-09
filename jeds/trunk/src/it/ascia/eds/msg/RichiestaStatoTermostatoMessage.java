@@ -3,15 +3,12 @@
  */
 package it.ascia.eds.msg;
 
-import it.ascia.ais.MessageInterface;
-
 /**
  * Messaggio di richiesta stato per cronotermostato o sonda termica.
  * 
  * <p>Codice EDS: 200.</p>
  */
-public class RichiestaStatoTermostatoMessage extends PTPRequest
-	implements MessageInterface {
+public class RichiestaStatoTermostatoMessage extends PTPRequest {
 
 	public RichiestaStatoTermostatoMessage(int d, int m) {
 		Destinatario = d & 0xFF;
@@ -30,7 +27,7 @@ public class RichiestaStatoTermostatoMessage extends PTPRequest
 	}
 	
 	public boolean isAnsweredBy(PTPMessage m) {
-		if (m.getMessageType() == EDSMessage.MSG_TEMPERATURA) {
+		if (m.getMessageType() == EDSMessage.MSG_RISPOSTA_STATO_TERMOSTATO) {
 			if ((getSender() == m.getRecipient()) &&
 					(getRecipient() == m.getSender())) {
 				answered = true;
@@ -45,7 +42,7 @@ public class RichiestaStatoTermostatoMessage extends PTPRequest
 	 * <p>Per richiedere uno stato non bisogna insistere.</p>
 	 */
 	public int getMaxSendTries() {
-		return 2;
+		return 3;
 	}
 
 	public int getMessageType() {

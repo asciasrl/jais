@@ -3,13 +3,10 @@
  */
 package it.ascia.eds.msg;
 
-import it.ascia.ais.MessageInterface;
-
 /**
  * Messaggio di richiesta stato.
  */
-public class RichiestaStatoMessage extends PTPRequest
-	implements MessageInterface {
+public class RichiestaStatoMessage extends PTPRequest {
 
 	public RichiestaStatoMessage(int d, int m, int Uscite) {
 		Destinatario = d & 0xFF;

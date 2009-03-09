@@ -1,7 +1,5 @@
 package it.ascia.eds.msg;	
 
-import it.ascia.ais.MessageInterface;
-
 /**
  * Imposta l'uscita di un BMC Standard I/O oppure dimmer.
  * 
@@ -16,8 +14,7 @@ import it.ascia.ais.MessageInterface;
  * 
  * @author sergio, arrigo
  */
-public class ComandoUscitaMessage extends PTPRequest
-	implements MessageInterface {
+public class ComandoUscitaMessage extends PTPRequest {
 
 	/**
 	 * Costruttore per messaggio per dimmer.

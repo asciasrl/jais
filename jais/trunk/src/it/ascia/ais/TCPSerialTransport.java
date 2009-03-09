@@ -59,7 +59,7 @@ public class TCPSerialTransport extends Transport {
 		public TCPSerialBusReader(Selector selector, TCPSerialTransport bus, 
 				SocketChannel sock) {
 			this.selector = selector;
-			this.bus = bus;
+			this.bus = bus; // FIXME serve ?  Cmq rinominare 
 			this.sock = sock;
 			logger = Logger.getLogger(getClass());
 		}
@@ -79,7 +79,7 @@ public class TCPSerialTransport extends Transport {
 					sock.read(bb);
 					bb.flip();
 					bus.setByteBuffer(bb);
-					bus.connector.readData();
+					// FIXME bus.connector.readData();
 					keys.clear();
 				}
 			} catch (IOException e) {
@@ -121,8 +121,8 @@ public class TCPSerialTransport extends Transport {
      * 
      * @throws un'Exception se incontra un errore
      */
-    public TCPSerialTransport(String hostName, int port) 
-    	throws AISException {
+    public TCPSerialTransport(Connector connector, String hostName, int port) throws AISException {
+    	super(connector);
     	this.tcpPort = port;
     	name = hostName + ":" + port;
 		try {

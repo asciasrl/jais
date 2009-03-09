@@ -7,6 +7,7 @@ package it.ascia.ais;
  * Evento generato da Device: una porta ha cambiato valore.
  * 
  * @author arrigo
+ * TODO Usare l'oggetto DevicePort al posto di DeviceEvent
  *
  */
 public class DeviceEvent {
@@ -18,23 +19,24 @@ public class DeviceEvent {
 	/**
 	 * Porta del device che ha cambiato valore.
 	 */
-	private String port;
-	
+	private String portId;
+		
 	/**
 	 * Nuovo valore assunto dalla porta del device.
 	 */
-	private String newValue;
+	private Object value;
 	
 	/**
 	 * Costruttore.
 	 * @param device device che genera l'evento.
 	 * @param port porta che ha cambiato valore.
+	 * @param 
 	 * @param newValue nuovo valore assunto dalla porta.
 	 */
-	public DeviceEvent(Device device, String port, String newValue) {
+	public DeviceEvent(Device device, String portId, Object newValue) {
 		this.device = device;
-		this.port = port;
-		this.newValue = newValue;
+		this.portId = portId;
+		this.value = newValue;
 	}
 
 	/**
@@ -48,14 +50,14 @@ public class DeviceEvent {
 	 * @return the port
 	 */
 	public String getPort() {
-		return port;
+		return portId;
 	}
 
 	/**
 	 * @return the newValue
 	 */
-	public String getNewValue() {
-		return newValue;
+	public Object getValue() {
+		return value;
 	}
 	
 	/**
@@ -64,6 +66,7 @@ public class DeviceEvent {
 	 * @return una stringa: "indirizzo_device:porta = nuovo_valore".
 	 */
 	public String getInfo() {
-		return device.connector.getName() + "." + device.getAddress() + ":" + getPort() + " = " + getNewValue();
+		return device.getFullAddress() + ":" + getPort() + " = " + getValue();
 	}
+
 }

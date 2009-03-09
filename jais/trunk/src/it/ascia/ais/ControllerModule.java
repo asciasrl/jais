@@ -1,10 +1,6 @@
 package it.ascia.ais;
 
-import java.io.Writer;
-import java.util.HashMap;
-
 import org.apache.commons.configuration.HierarchicalConfiguration;
-import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
 /**

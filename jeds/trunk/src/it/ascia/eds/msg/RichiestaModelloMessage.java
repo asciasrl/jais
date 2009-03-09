@@ -1,14 +1,11 @@
 package it.ascia.eds.msg;
 
-import it.ascia.ais.MessageInterface;
-
 /**
  * Un messaggio di richiesta modello e revisione.
  * 
  * @author sergio
  */
-public class RichiestaModelloMessage extends PTPRequest
-	implements MessageInterface {
+public class RichiestaModelloMessage extends PTPRequest {
 
 	/**
 	 * Costruttore.

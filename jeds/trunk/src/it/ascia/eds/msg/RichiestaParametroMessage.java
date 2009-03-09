@@ -3,8 +3,6 @@
  */
 package it.ascia.eds.msg;
 
-import it.ascia.ais.MessageInterface;
-
 /**
  * Messaggio di richiesta di lettura parametri (per dimmer o sonda 
  * termica).
@@ -13,8 +11,7 @@ import it.ascia.ais.MessageInterface;
  * 
  * @author arrigo
  */
-public class RichiestaParametroMessage extends PTPRequest
-	implements MessageInterface {
+public class RichiestaParametroMessage extends PTPRequest {
 	/**
 	 * Tempo di auto-invio della temperatura, per una sonda termica.
 	 */

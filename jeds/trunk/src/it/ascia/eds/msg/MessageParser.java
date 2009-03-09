@@ -145,8 +145,8 @@ public class MessageParser {
 			return new ImpostaParametroMessage(message);
 		case EDSMessage.MSG_RICHIESTA_STATO_TERMOSTATO:
 			return new RichiestaStatoTermostatoMessage(message);
-		case EDSMessage.MSG_TEMPERATURA: 
-			return new TemperatureMessage(message);
+		case EDSMessage.MSG_RISPOSTA_STATO_TERMOSTATO: 
+			return new RispostaStatoTermostatoMessage(message);
 		case EDSMessage.MSG_IMPOSTA_SET_POINT:
 			return new ImpostaSetPointMessage(message);
 		case EDSMessage.MSG_RICHIESTA_SET_POINT:

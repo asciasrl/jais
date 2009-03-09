@@ -3,8 +3,6 @@
  */
 package it.ascia.eds.msg;
 
-import it.ascia.ais.MessageInterface;
-
 /**
  * Impostazione valore del set point.
  * 
@@ -13,8 +11,7 @@ import it.ascia.ais.MessageInterface;
  * 
  * Codice EDS 202.
  */
-public class ImpostaSetPointMessage extends PTPRequest 
-	implements MessageInterface {
+public class ImpostaSetPointMessage extends PTPRequest {
 
 	public ImpostaSetPointMessage(int d, int m, double temperatura) {
 		Destinatario = d & 0xFF;

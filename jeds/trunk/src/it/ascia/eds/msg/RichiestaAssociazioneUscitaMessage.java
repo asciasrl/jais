@@ -3,8 +3,6 @@
  */
 package it.ascia.eds.msg;
 
-import it.ascia.ais.MessageInterface;
-
 /**
  * Richiede a quale gruppo di attuazione multipla appartiene un'uscita.
  * 
@@ -22,8 +20,7 @@ import it.ascia.ais.MessageInterface;
  * 
  * Codice EDS: 15.
  */
-public class RichiestaAssociazioneUscitaMessage extends PTPRequest
-	implements MessageInterface {	
+public class RichiestaAssociazioneUscitaMessage extends PTPRequest {	
 	/**
 	 * Costruttore.
 	 * 

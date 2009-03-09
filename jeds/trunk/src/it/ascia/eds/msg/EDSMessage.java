@@ -4,7 +4,7 @@
 package it.ascia.eds.msg;
 
 
-import it.ascia.ais.MessageInterface;
+import it.ascia.ais.Message;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -13,7 +13,7 @@ import java.io.OutputStream;
  * 
  * @author sergio, arrigo
  */
-public abstract class EDSMessage implements MessageInterface {
+public abstract class EDSMessage extends Message {
 	/**
 	 * Richiesta modello e revisione.
 	 */
@@ -124,7 +124,7 @@ public abstract class EDSMessage implements MessageInterface {
 	/**
 	 * Lettura dello stato del cronotermostato (monitoraggio).
 	 */
-	public final static int MSG_TEMPERATURA = 201;
+	public final static int MSG_RISPOSTA_STATO_TERMOSTATO = 201;
 	/**
 	 * Impostazione valore del setpoint del cronotermostato.
 	 * 
@@ -181,12 +181,29 @@ public abstract class EDSMessage implements MessageInterface {
 
 	/**
 	 * Ritorna l'indirizzo del destinatario del messaggio.
+	 * TODO @deprecated usare getDestination()
 	 */
 	public int getRecipient() {
 		return Destinatario;
 	}
+
 	/**
 	 * Ritorna l'indirizzo del mittente del messaggio.
+	 */
+	public String getSource() {
+		return (new Integer(Mittente)).toString();
+	}
+	
+	/**
+	 * Ritorna l'indirizzo del destinatario del messaggio.
+	 */
+	public String getDestination() {
+		return (new Integer(Destinatario)).toString();
+	}
+	
+	/**
+	 * Ritorna l'indirizzo del mittente del messaggio.
+	 * TODO @deprecated usare getSource()
 	 */
 	public int getSender() {
 		return Mittente;

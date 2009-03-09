@@ -43,7 +43,7 @@ public class RispostaStatoMessage extends PTPMessage {
 
 	public String toString()	{
 		StringBuffer s = new StringBuffer();
-		s.append(Mittente+" -> "+Destinatario);
+		s.append(super.toString());
 		s.append(" Entrate:");
 		for (int i = 0; i <= 7; i++) {
 			s.append(((Byte2 >> i) & 0x01));

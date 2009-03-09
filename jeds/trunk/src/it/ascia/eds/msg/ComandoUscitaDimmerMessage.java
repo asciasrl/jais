@@ -3,8 +3,6 @@
  */
 package it.ascia.eds.msg;
 
-import it.ascia.ais.MessageInterface;
-
 /**
  * Comando per impostare l'uscita di un dimmer.
  * 
@@ -12,8 +10,7 @@ import it.ascia.ais.MessageInterface;
  * 
  * Codice EDS: 51.
  */
-public class ComandoUscitaDimmerMessage extends PTPMessage
-	implements MessageInterface {
+public class ComandoUscitaDimmerMessage extends PTPMessage {
 	
 	public ComandoUscitaDimmerMessage(int d, int m, int Uscita, int Percentuale) {
 		Destinatario = d & 0xFF;
@@ -33,9 +30,8 @@ public class ComandoUscitaDimmerMessage extends PTPMessage
 
 	public String toString()	{
 		StringBuffer s = new StringBuffer();
-		s.append("Mittente: "+Mittente+"\r\n");
-		s.append("Destinatario: "+Destinatario+"\r\n");
-		s.append("Uscita "+(Byte2 + 1)+": "+Byte1+"%\r\n");
+		s.append(super.toString());
+		s.append("Uscita "+(Byte2 + 1)+": "+Byte1+"%");
 		return s.toString();
 	}
 	

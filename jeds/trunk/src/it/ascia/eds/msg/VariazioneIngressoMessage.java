@@ -3,7 +3,6 @@
  */
 package it.ascia.eds.msg;
 
-import it.ascia.ais.MessageInterface;
 import it.ascia.eds.device.BMCChronoTerm;
 
 /**

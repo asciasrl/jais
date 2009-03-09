@@ -1,9 +1,6 @@
 package it.ascia.eds.msg;
 
-import it.ascia.ais.MessageInterface;
-
-public class RichiestaIngressoIRMessage extends PTPRequest
-	implements MessageInterface {
+public class RichiestaIngressoIRMessage extends PTPRequest {
 
 	public RichiestaIngressoIRMessage(int d, int m, int Uscita) {
 		Destinatario = d & 0xFF;

@@ -3,8 +3,7 @@
  */
 package it.ascia.eds.msg;
 
-import it.ascia.ais.MessageInterface;
-import it.ascia.eds.EDSException;
+import it.ascia.ais.AISException;
 
 /**
  * Il transport deve cambiare velocita'.
@@ -12,15 +11,14 @@ import it.ascia.eds.EDSException;
  * @author sergio, arrigo
  */
 public class CambioVelocitaMessage extends BroadcastMessage 
-	implements MessageInterface
 	{
 
 	/**
 	 * 
-	 * @throws EDSException
+	 * @throws AISException
 	 */
 	public CambioVelocitaMessage(int Velocita)
-	  throws EDSException {
+	  throws AISException {
 		randomizeHeaders();
 		TipoMessaggio = 27;
 		Byte1 = (Velocita & 0x03); 

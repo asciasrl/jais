@@ -38,6 +38,10 @@ public class Controller {
 
 	private static Controller controller;
 		
+	/**
+	 * Controller singleton
+	 * @return
+	 */
 	public static Controller getController() {
 		return controller;
 	}
@@ -226,16 +230,20 @@ public class Controller {
 		return retval;
 	}
 	
-	public Controller() {
+	public Controller() throws AISException {
 		this("conf/jais.xml");
 	}
 	
 	/**
 	 * 
 	 * @param configurationFileName 
+	 * @throws AISException 
 	 * @throws ConfigurationException 
 	 */
-	public Controller(String configurationFileName) {
+	public Controller(String configurationFileName) throws AISException {
+		if (Controller.getController() != null) {
+			throw(new AISException("Controller gia' inizializzato"));
+		}
 		connectors = new HashMap();
 		modules = new HashMap();
 		logger = Logger.getLogger(getClass());	
@@ -271,7 +279,7 @@ public class Controller {
 	 * @param event
 	 */
 	public void onDeviceEvent(DeviceEvent event) {
-		logger.info("Ricevuto evento: "+event.getInfo());
+		//logger.info("Ricevuto evento: "+event.getInfo());
 		Iterator i = modules.keySet().iterator();
 		while (i.hasNext()) {
 			String moduleName = (String) i.next();
@@ -285,10 +293,17 @@ public class Controller {
 	 */
 	public void start() {
 		Iterator i = modules.keySet().iterator();
+		logger.info("Avvio di "+modules.size()+" moduli");
+		long start = System.currentTimeMillis();
 		while (i.hasNext()) {
-			ControllerModule module = getModule((String) i.next());
+			long start1 = System.currentTimeMillis();
+			String moduleName = (String) i.next();
+			ControllerModule module = getModule(moduleName);
+			logger.info("Avvio modulo "+moduleName);
 			module.start();		
+			logger.info("Avviato modulo "+moduleName+" in "+(System.currentTimeMillis()-start1)/1000.0+" secondi.");
 		}
+		logger.info("Avviati "+modules.size()+" moduli in "+(System.currentTimeMillis()-start)/1000.0+" secondi.");
 	}
 
 	/**

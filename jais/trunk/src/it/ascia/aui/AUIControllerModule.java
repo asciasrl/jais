@@ -1,20 +1,12 @@
 package it.ascia.aui;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Writer;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
 import org.json.simple.JSONObject;
-import org.mortbay.log.Log;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.ControllerModule;
@@ -120,6 +112,7 @@ public class AUIControllerModule extends ControllerModule  {
 			if (name == null) {
 				throw(new AISException("Parametro 'name' richiesto"));
 			}
+			// TODO semplificare
 			String deviceAddress = controller.getDeviceFromAddress(name);
 			String portName = controller.getPortFromAddress(name);
 			Device devices[] = controller.findDevices(deviceAddress);
@@ -144,7 +137,7 @@ public class AUIControllerModule extends ControllerModule  {
 				}
 			}
 			for (int i = 0; i < devices.length; i++) {
-				retval += devices[i].getStatus("*", timestamp);
+				retval += devices[i].getStatus(timestamp);
 			}
 		} else if (command.equals("set")) {
 			// Comando "set"
@@ -156,11 +149,12 @@ public class AUIControllerModule extends ControllerModule  {
 			if (value == null) {
 				throw(new AISException("Parametro 'value' richiesto"));
 			}
+			// TODO semplificare
 			String deviceAddress = controller.getDeviceFromAddress(name);
-			String portName = controller.getPortFromAddress(name);
+			String portId = controller.getPortFromAddress(name);
 			Device devices[] = controller.findDevices(deviceAddress);
 			if (devices.length == 1) {
-				devices[0].poke(portName, value);
+				devices[0].poke(portId, value);
 				retval = "OK";
 			} else {
 				throw(new AISException("ERROR: indirizzo ambiguo"));

@@ -3,6 +3,7 @@
  */
 package it.ascia.eds;
 
+import it.ascia.ais.AISException;
 import it.ascia.eds.device.BMC;
 
 import java.io.File;
@@ -52,7 +53,7 @@ public class ConfigurationFile {
 	 * Costruttore.
 	 * @param fileName the configuration file name.
 	 */
-	public ConfigurationFile(String fileName) throws EDSException {
+	public ConfigurationFile(String fileName) throws AISException {
 		this.fileName = fileName;
 		logger = Logger.getLogger(getClass());
 		parse();
@@ -70,19 +71,19 @@ public class ConfigurationFile {
 	 * 
 	 * Questo metodo viene chiamato solo dal costruttore.
 	 */
-	private void parseDocument() throws EDSException {
+	private void parseDocument() throws AISException {
 		Element element;
 		NodeList list;
 		element = document.getDocumentElement();
 		// Primo tag: <home>
 		if (!element.getTagName().equals("home")) {
-			throw new EDSException("Primo tag non riconosciuto: " +
+			throw new AISException("Primo tag non riconosciuto: " +
 					element.getTagName());
 		}
 		// Secondo tag: <edsnetwork nome="systemName">
 		list = element.getElementsByTagName("edsnetwork");
 		if (list.getLength() < 1) {
-			throw new EDSException("Il tag <edsnetwork> e' vuoto!");
+			throw new AISException("Il tag <edsnetwork> e' vuoto!");
 		}
 		element = (Element)list.item(0);
 		systemName = element.getAttribute("nome");
@@ -96,7 +97,7 @@ public class ConfigurationFile {
 	 * L'operazione di lettura dei dati e' affidata a parseDocument() e a
 	 * createBMCs().
 	 */
-	private void parse() throws EDSException {
+	private void parse() throws AISException {
 		try {
 			DocumentBuilderFactory factory;
 			DocumentBuilder builder;
@@ -105,17 +106,17 @@ public class ConfigurationFile {
 			document = builder.parse(new File(fileName));
 			parseDocument();
 		} catch (SAXParseException e) {
-			throw new EDSException("Errore durante il parsing, linea " +
+			throw new AISException("Errore durante il parsing, linea " +
 					e.getLineNumber() + ", uri " + e.getSystemId() + ": " +
 					e.getMessage());
 		} catch (SAXException e) {
-			throw new EDSException("Errore SAX durante il parsing: " +
+			throw new AISException("Errore SAX durante il parsing: " +
 					e.getMessage());
 		} catch (ParserConfigurationException e) {
-			throw new EDSException("Errore di configurazione del parser: " +
+			throw new AISException("Errore di configurazione del parser: " +
 					e.getMessage());
 		} catch (IOException e) {
-			throw new EDSException("Errore di I/O durante il parsing: " +
+			throw new AISException("Errore di I/O durante il parsing: " +
 					e.getMessage());
 		}
 	}
@@ -152,7 +153,7 @@ public class ConfigurationFile {
 				int address = getIntegerTagContent(dispositivoElement, 
 						"indirizzo"); 
 				int model = getIntegerTagContent(dispositivoElement, "modello");
-				bmc = BMC.createBMC(address, model, name, true);
+				bmc = BMC.createBMC(bus, (new Integer(address)).toString(), model, name, true);
 				if (bmc != null) {
 					int j;
 					NodeList lista;
@@ -178,7 +179,7 @@ public class ConfigurationFile {
 						bmc.setOutputName(number, portName);
 					}
 				} // if bmc != null
-			} catch (EDSException e) {
+			} catch (Exception e) {
 				logger.error("Durante la lettura del file di config.: " +
 						e.getMessage());
 			}

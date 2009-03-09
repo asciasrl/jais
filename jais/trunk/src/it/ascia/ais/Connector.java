@@ -3,12 +3,7 @@
  */
 package it.ascia.ais;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -50,10 +45,15 @@ public abstract class Connector {
 	/**
 	 * I dispositivi presenti nel sistema.
 	 */
-    protected Map devices;
+    private HashMap devices;
 
+    /**
+     * 
+     * @param name Nome del connettore
+     * @param controller Controller del sistema
+     */
     public Connector(String name, Controller controller) {
-		this.setName(name);
+		this.name = name;
 		this.controller = controller;
         devices = new HashMap();
 		logger = Logger.getLogger(getClass());
@@ -65,39 +65,49 @@ public abstract class Connector {
      * <p>Questa funzione deve gestire anche wildcard.</p>
      * 
      * @param deviceAddress l'indirizzo da cercare.
-     * 
      * @return un'array di Device, eventualmente di lunghezza zero.
+     * TODO gestire wildcards tipo 1.0.* o 1.*.0
      */
     public Device[] getDevices(String deviceAddress) {
-		Collection values = devices.values();
 		if (deviceAddress.equals("*")) {
-			return (Device[]) values.toArray(new Device[values.size()]);
-		}
-		List devices = new LinkedList();
-		Iterator it = values.iterator();
-		while (it.hasNext()) {
-			Device device =  (Device)it.next();
-			if (device.getAddress().equals(deviceAddress)) {
-				devices.add(device);
+			return (Device[]) devices.values().toArray(new Device[devices.size()]);
+		} else {
+			Device device = getDevice(deviceAddress);
+			if (device == null) {
+				return new Device[] {};
+			} else {
+				return new Device[] {device};
 			}
+				
 		}
-		return (Device[]) devices.toArray(new Device[devices.size()]);
     }
     
-    public void addDevice(Device device) {
-    	device.bindConnector(this);
-    	String deviceAddress = device.getAddress();
-    	devices.put(new Integer(deviceAddress), device);    	
+    /**
+     * Aggiunge un dispositivo all'elenco di quelli gestiti
+     * @param device
+     * @throws AISException
+     */
+    void addDevice(Device device) throws AISException {
+    	String address = device.getAddress();
+    	if (devices.containsKey(address)) {
+    		throw(new AISException("Dispositivo duplicato con indirizzo "+address+" connettore "+getName()));
+    	}
+    	devices.put(address, device);
+    }
+    
+    /**
+     * Ottiene il device con il nome specificato, o null se non esiste 
+     * @param address
+     * @return
+     */
+    public Device getDevice(String address) {
+    	return (Device) devices.get(address);
+    }
+
+    public HashMap getDevices() {
+		return devices;
     }
         
-    /**
-     * Legge e interpreta i dati in arrivo.
-     * 
-     * <p>Questa funzione viene invocata dal Transport quando ci sono dati da leggere con readByte().</p>
-     * 
-     */
-    public abstract void readData();
-
     /**
      * Invia un messaggio e attende una risposta dal destinatario, se il
      * messaggio lo richiede.
@@ -105,9 +115,13 @@ public abstract class Connector {
      * @return true se il messaggio di risposta e' arrivato, o se l'invio e'
      * andato a buon fine.
      */
-    public abstract boolean sendMessage(MessageInterface m);
+    public abstract boolean sendMessage(Message m);
     
-	public void onDeviceEvent(DeviceEvent event) {
+	/**
+	 * Propaga l'evento al controller
+	 * @param event
+	 */
+    public void onDeviceEvent(DeviceEvent event) {
 		controller.onDeviceEvent(event);
 	}
 
@@ -120,13 +134,16 @@ public abstract class Connector {
     	transport.connector = this;
     }
 
-	public void setName(String name) {
-		this.name = name;
-	}
 
+    /**
+     * Resituisce il nome del controllore, come specificato alla creazione
+     * @return
+     */
 	public String getName() {
 		return name;
 	}
+
+	public abstract void received(byte b);
 
 }
 

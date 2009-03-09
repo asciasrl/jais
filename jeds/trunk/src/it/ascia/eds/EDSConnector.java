@@ -4,14 +4,10 @@
 package it.ascia.eds;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Iterator;
-
-import org.apache.log4j.Logger;
-
+import it.ascia.ais.AISException;
 import it.ascia.ais.Controller;
-import it.ascia.ais.DeviceEvent;
-import it.ascia.ais.MessageInterface;
+import it.ascia.ais.Message;
 import it.ascia.eds.device.*;
 import it.ascia.eds.msg.*;
 
@@ -77,11 +73,10 @@ public class EDSConnector extends it.ascia.ais.Connector {
     
     /**
      * Imposta il BMCComputer del connector.
+     * @throws AISException 
      */
-    public void setBMCComputer(BMCComputer bmcComputer) {
-    	bmcComputer.bindConnector(this);
+    public void setBMCComputer(BMCComputer bmcComputer) throws AISException {
     	this.bmcComputer = bmcComputer;
-    	devices.put(new Integer(bmcComputer.getAddress()), bmcComputer);
     }
     
     public BMCComputer getBMCComputer() {
@@ -107,6 +102,7 @@ public class EDSConnector extends it.ascia.ais.Connector {
      * 
      * <p>I messaggi decodificati vengono passati a dispatchMessage().</p>
      */
+    /* TODO eliminare readData ?
     public void readData() {
     	while (transport.hasData()) {
     		try {
@@ -114,19 +110,35 @@ public class EDSConnector extends it.ascia.ais.Connector {
     			mp.push(b);
     			if (mp.isValid()) {
     				EDSMessage m = mp.getMessage();
-//  				if (!m.getTipoMessaggio().equals("Aknowledge")) {
-//  				System.out.println((new Date()).toString() + "\r\n" + m);
-//  				}
-    				//logger.trace("dispatchMessage: "+m);
+    				// TODO logger.trace("dispatchMessage: "+m);
     				if (m != null) {
     					dispatchMessage(m);
     				}
-    				//mp.clear();
     			}
     		} catch (IOException e) {
     			logger.error("Errore di lettura: " + e.getMessage());
-    		}
+    		} catch (AISException e) {
+    			logger.error("Errore: " + e.getMessage());
+			}
     	} // while hasData()
+    }
+    */
+    
+    /**
+     * Gestisce ogni byte ricevuto
+     */
+    public void received(byte b) {
+		mp.push(b);
+		if (mp.isValid()) {
+			EDSMessage m = mp.getMessage();
+			if (m != null) {
+				try {
+					dispatchMessage(m);
+				} catch (AISException e) {
+	    			logger.error("Errore: " + e.getMessage());
+				}
+			}
+		}    	
     }
 
     /**
@@ -141,39 +153,52 @@ public class EDSConnector extends it.ascia.ais.Connector {
      * <p>Il BMCComputer riceve tutti i messaggi.</p>
      * 
      * @param m il messaggio da inviare
+     * @throws AISException 
      */
-    private void dispatchMessage(EDSMessage m) {
+    private void dispatchMessage(EDSMessage m) throws AISException {
     	int rcpt = m.getRecipient();
     	int sender = m.getSender();
-    	// logger.trace("Messaggio da " + sender + " per " + rcpt);
+    	// TODO logger.trace("Dispath: BEGIN da " + sender + " per " + rcpt);
     	if (BroadcastMessage.class.isInstance(m)) { 
     		// Mandiamo il messaggio a tutti
-    		Iterator it = devices.values().iterator();
+    		Iterator it = getDevices().entrySet().iterator();
     		while (it.hasNext()) {
     			BMC bmc = (BMC)it.next();
     			bmc.messageReceived(m);
     		}
     	} else { 
-    		// Non e' un messaggio broadcast: va mandato al destinatario...
-    		BMC bmc = (BMC)devices.get(new Integer(rcpt));
-    		if (bmc != null) {
-    			bmc.messageReceived(m);
-    		} else {
-    			/*logger.error("Ricevuto un messaggio per il BMC " + 
-    					rcpt + " che non conosco:");*/    		}
-    		// ...e al mittente
-    		bmc = (BMC)devices.get(new Integer(sender));
-    		if (bmc != null) {
-    			bmc.messageSent(m);
-    		} else {
-    			/*logger.error("Ricevuto un messaggio inviato dal BMC " + 
-    					rcpt + " che non conosco:");*/
+    		if ((bmcComputer != null) && (sender == bmcComputer.getIntAddress())) {
+    			// TODO logger.trace("Messaggio da BMCComputer, non dispacciato");
+    			return;
     		}
+
+    		BMC bmc;
+    		
+    		// Al mittente 
+    		bmc = (BMC)getDevice((new Integer(sender)).toString());
+    		if (bmc != null) {
+    			// TODO logger.trace("Dispatch:1 messagesent a:"+bmc.getAddress());
+    			bmc.messageSent(m);
+    			// TODO logger.trace("Dispatch:2 messagesent a:"+bmc.getAddress());
+    		}
+
+    		// Al destinatario 
+    		bmc = (BMC)getDevice((new Integer(rcpt)).toString());
+    		if (bmc != null) {
+    			// TODO logger.trace("Dispatch messageReceived:1 a:"+bmc.getAddress());
+    			bmc.messageReceived(m);
+    			// TODO logger.trace("Dispatch messageReceived:2 a:"+bmc.getAddress());
+    		}
+
+
     		// Lo mandiamo anche al BMCComputer, se non era per lui
+    		/*
     		if ((bmcComputer != null) && 
     				(rcpt != bmcComputer.getIntAddress())) { 
     	   		bmcComputer.messageReceived(m);
     		}
+    		*/
+    		// TODO logger.trace("Dispatch:END");    		
     	}
     }
 
@@ -184,49 +209,14 @@ public class EDSConnector extends it.ascia.ais.Connector {
      * @return true se il messaggio di risposta e' arrivato, o se l'invio e'
      * andato a buon fine.
      */
-    public boolean sendMessage(MessageInterface m) {
+    public boolean sendMessage(Message m) {
     	if (bmcComputer != null) {
     		return bmcComputer.sendMessage((EDSMessage)m);
     	} else {
-    		logger.error("Il transport non ha un BMCComputer!");
+    		logger.error("Il connector non ha un BMCComputer!");
     		return false;
     	}
     }
-    
-    /**
-     * Aggiunge un Device collegato al bus.
-     * 
-     * @param device il Device da aggiungere.
-     * 
-     * @throws un'EDSException se esiste gia' un device con lo stesso indirizzo.
-     */    
-    public void addDevice(BMC device) throws EDSException {
-    	String deviceAddress = device.getAddress();
-    	if (getDevices(deviceAddress).length != 0) {
-    		throw new EDSException("Un BMC con indirizzo " + deviceAddress +
-    				" esiste gia'.");
-    	}
-    	devices.put(new Integer(deviceAddress), device);
-    }
-
-
-    /*
-    public Device[] getDevices(String address) {
-    	Collection values = devices.values();
-    	if (address.equals("*")) {
-    		return (BMC[]) values.toArray(new BMC[values.size()]);
-    	}
-    	List devices = new LinkedList();
-    	Iterator it = values.iterator();
-    	while (it.hasNext()) {
-    		BMC device =  (BMC)it.next();
-    		if (device.getAddress().equals(address)) {
-    			devices.add(device);
-    		}
-    	}
-    	return (BMC[]) devices.toArray(new BMC[devices.size()]);
-    }
-    */
     
     public int getRetryTimeout() {
     	return RETRY_TIMEOUT;

@@ -31,19 +31,11 @@ public abstract class Transport {
      * Costruttore.
      * @param connector Il connettore associato
      */
-    public Transport() {
+    public Transport(Connector connector) {
 		logger = Logger.getLogger(getClass());
+		this.connector = connector;		
     }
 
-    /**
-     * Associa il Transport al Connector
-     * @param connector Il connettore associato
-     */
-    public void bind(Connector connector) {
-    	this.connector = connector;
-    	connector.transport = this;
-    }
-    
     public String toString()
     {
     	return name;
@@ -54,7 +46,7 @@ public abstract class Transport {
      * 
      * @return true se ci sono dati leggibili da readByte()
      */
-    public abstract boolean hasData();
+    // TODO public abstract boolean hasData();
     
     /**
      * Ritorna il prossimo byte ricevuto.
@@ -62,7 +54,7 @@ public abstract class Transport {
      * 
      * @return il dato ricevuto.
      */
-    public abstract byte readByte() throws IOException;
+    // TODO public abstract byte readByte() throws IOException;
     
 	/**
      * Invia un messaggio sul transport.

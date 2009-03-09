@@ -12,17 +12,16 @@ import java.util.TooManyListenersException;
 import gnu.io.*;
 
 /**
- * Gestisce la comunicazione con il bs EDS attraverso un convertitore seriale.
+ * Gestisce la comunicazione con il bus EDS attraverso una porta seriale locale.
  * 
  * Tutti i messaggi che passano vengono smistati all'oggetto BMCComputer 
  * passato al costruttore.
  * 
  * @author sergio, arrigo
  */
-public class SerialTransport extends Transport implements SerialPortEventListener {
+public class SerialTransport extends Transport implements Runnable {
 
-    private static CommPortIdentifier portId;
-    private static Enumeration	      portList;
+    private static Enumeration portList;
     /**
      * Dove scrivere i messaggi.
      */
@@ -31,11 +30,10 @@ public class SerialTransport extends Transport implements SerialPortEventListene
      * Da dove leggere i messaggi.
      */
     private InputStream inputStream;
-    private static boolean	      outputBufferEmptyFlag = false;
-    private SerialPort		      serialPort;
+    private SerialPort serialPort;
 
-    public SerialTransport(String portName) throws AISException {
-    	this(portName, 9600);
+    public SerialTransport(Connector connector, String portName) throws AISException {
+    	this(connector, portName, 9600);
     }
 
     /**
@@ -47,7 +45,8 @@ public class SerialTransport extends Transport implements SerialPortEventListene
      * 
      * @throws un'Exception se incontra un errore
      */
-    public SerialTransport(String portName, int portSpeed) throws AISException {
+    public SerialTransport(Connector connector, String portName, int portSpeed) throws AISException {
+    	super(connector);
         name = portName;  
     	logger.info("Connessione a " + portName + " speed " +  portSpeed);    	
     	CommPortIdentifier portId;
@@ -78,21 +77,17 @@ public class SerialTransport extends Transport implements SerialPortEventListene
 		}
 		
 		try {
-		    serialPort.addEventListener(this);
-		} catch (TooManyListenersException e) {
-			throw new AISException("Troppi listeners sulla porta:" + 
-					e.getMessage());
-		}
-
-		serialPort.notifyOnDataAvailable(true);
-
-		try {
 		    serialPort.setSerialPortParams(portSpeed, SerialPort.DATABITS_8, 
 						   SerialPort.STOPBITS_1, 
 						   SerialPort.PARITY_NONE);
 		} catch (UnsupportedCommOperationException e) {
-					e.getMessage();
+			throw new AISException("Impossibile configurare la porta: " + 
+					e.getMessage());
 		}
+		
+		Thread readThread = new Thread(this);
+		readThread.setName("SerialTransport-"+portName);
+	    readThread.start();
     }
 
 
@@ -106,47 +101,9 @@ public class SerialTransport extends Transport implements SerialPortEventListene
      */
     public synchronized void write(byte[] b) {
     	try {
-			outputBufferEmptyFlag = false;
 			outputStream.write(b);
-		} catch (IOException e) {    		
-		}
-    }
-
-    /**
-     * Evento ricevuto dalla porta seriale
-     *
-     * @param event l'evento ricevuto
-     *
-     */
-    public void serialEvent(SerialPortEvent event) {
-    	switch (event.getEventType()) {
-
-		case SerialPortEvent.BI:
-	
-		case SerialPortEvent.OE:
-	
-		case SerialPortEvent.FE:
-	
-		case SerialPortEvent.PE:
-	
-		case SerialPortEvent.CD:
-	
-		case SerialPortEvent.CTS:
-	
-		case SerialPortEvent.DSR:
-	
-		case SerialPortEvent.RI:
-	
-		    break;
-		    
-		case SerialPortEvent.OUTPUT_BUFFER_EMPTY:
-			outputBufferEmptyFlag = true;
-		    break;
-	
-		case SerialPortEvent.DATA_AVAILABLE:
-			// La superclasse sa che cosa fare
-		    connector.readData();	
-		    break;
+		} catch (IOException e) {
+			logger.error("Errore scrittura");
 		}
     }
         
@@ -157,17 +114,21 @@ public class SerialTransport extends Transport implements SerialPortEventListene
     	serialPort.close();
     }
 
-	public boolean hasData() {
-		try {
-			return (inputStream.available() > 0);
-		} catch (IOException e) {
-			logger.error("Impossibile verificare la presenza di dati:" +
-					e.getMessage());
-			return false;
+	public void run() {
+		logger.info("Running");
+		while (true) {
+			try {
+				int i = inputStream.read();
+				if (i == -1) {
+					//TODO logger.trace("Nessun dato ricevuto");					
+				} else {
+					connector.received((byte)i);
+				}
+			} catch (IOException e) {
+    			logger.error("Errore di lettura: " + e.getMessage());
+    			// FIXME Gestire riconnessione
+			}
 		}
-	}
 
-	public byte readByte() throws IOException {
-		return (byte)inputStream.read();
 	}
 }

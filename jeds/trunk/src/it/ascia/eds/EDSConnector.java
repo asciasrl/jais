@@ -167,38 +167,25 @@ public class EDSConnector extends it.ascia.ais.Connector {
     			bmc.messageReceived(m);
     		}
     	} else { 
-    		if ((bmcComputer != null) && (sender == bmcComputer.getIntAddress())) {
-    			// TODO logger.trace("Messaggio da BMCComputer, non dispacciato");
-    			return;
-    		}
-
     		BMC bmc;
     		
     		// Al mittente 
     		bmc = (BMC)getDevice((new Integer(sender)).toString());
     		if (bmc != null) {
-    			// TODO logger.trace("Dispatch:1 messagesent a:"+bmc.getAddress());
     			bmc.messageSent(m);
-    			// TODO logger.trace("Dispatch:2 messagesent a:"+bmc.getAddress());
     		}
 
     		// Al destinatario 
     		bmc = (BMC)getDevice((new Integer(rcpt)).toString());
     		if (bmc != null) {
-    			// TODO logger.trace("Dispatch messageReceived:1 a:"+bmc.getAddress());
     			bmc.messageReceived(m);
-    			// TODO logger.trace("Dispatch messageReceived:2 a:"+bmc.getAddress());
     		}
 
-
     		// Lo mandiamo anche al BMCComputer, se non era per lui
-    		/*
     		if ((bmcComputer != null) && 
     				(rcpt != bmcComputer.getIntAddress())) { 
     	   		bmcComputer.messageReceived(m);
     		}
-    		*/
-    		// TODO logger.trace("Dispatch:END");    		
     	}
     }
 

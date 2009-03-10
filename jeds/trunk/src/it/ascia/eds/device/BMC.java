@@ -239,12 +239,7 @@ public abstract class BMC extends Device {
 	 * @throws AISException 
 	 */
 	public abstract void messageSent(EDSMessage m) throws AISException;
-	
-	/**
-	 * Ritorna una descrizione del BMC.
-	 */
-	public abstract String getInfo();
-	
+		
 	/**
 	 * Aggiorna la rappresentazione interna delle porte.
 	 * 

@@ -3,12 +3,7 @@
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.Controller;
-import it.ascia.eds.EDSConnector;
-import it.ascia.eds.device.BMC;
-import it.ascia.eds.device.BMCChronoTerm;
-import it.ascia.eds.device.BMCComputer;
-import it.ascia.eds.device.BMCDimmer;
-import it.ascia.eds.device.BMCStandardIO;
+import it.ascia.ais.Device;
 
 
 import org.apache.log4j.Logger;
@@ -19,15 +14,18 @@ import org.apache.log4j.PropertyConfigurator;
  * 
  */
 public class BusTest {
-	static BMCComputer bmcComputer;
+	//static BMCComputer bmcComputer;
 	static Controller busController;
 	
 	
+	/*
 	static void makeVirtualBMC(String address, EDSConnector connector) throws AISException {
 		BMCStandardIO bmc = new BMCStandardIO(connector,address, 88, "BMCFinto"); 
 		bmc.makeSimulated();
 	}
+	*/
 	
+	/*
 	static void testBMCStandardIO(int address, Connector connector) throws AISException {
 		int porta, valore;
  		// Prova su BMC modello 88, indirizzo 3
@@ -50,11 +48,6 @@ public class BusTest {
  				bmc.setOutPort(porta, (valore == 1));
  	 			System.out.println("Stato del BMC: ");
  				bmc.printStatus();
- 				/*
- 				try {
- 					Thread.sleep(1000);
- 				} catch (InterruptedException e) { }
- 				*/
  				//bmc.printStatus();
  				//bmc.updateStatus();
  				//bmc.printStatus();
@@ -63,7 +56,9 @@ public class BusTest {
  		}
  			
 	}
+	*/
 	
+	/*
 	static void testBMCDimmer(Connector connector) throws AISException {
 		String address = "5";
 		int output = 0, value = 0;
@@ -90,7 +85,9 @@ public class BusTest {
  			} // if output >= 0
 		}
 	}
+	*/
 	
+	/*
 	static void testBMCChronoTerm(Connector connector) {
 		String address = "7";
 		double setPoint = 0;
@@ -114,6 +111,7 @@ public class BusTest {
 		bmc.updateStatus();
 		bmc.printStatus();
 	}
+	*/
 	
 	/**
 	 * @param args
@@ -126,31 +124,53 @@ public class BusTest {
 	    PropertyConfigurator.configure("conf/log4j.conf");
 	    Logger log = Logger.getLogger(BusTest.class);
 	    
+	    // Inizializzazione: tutto in base al file di configurazione
 		busController = new Controller();
 		busController.configure();
 		busController.start();
 		
 	 	// La palla all'utente
-	 	EDSConnector eds = (EDSConnector) busController.getConnector("0");
-	 	if ( eds != null) {
-	 	  bmcComputer = eds.getBMCComputer();
-	 	}
-		int dest = 1;
-		while (dest > 0) {
-			dest = Stdio.inputInteger("Indirizzo da pingare (0 per terminare):");
-				if (dest > 0) {
-					if (bmcComputer != null) {
-						BMC bmc = bmcComputer.discoverBMC(dest); 
-						if ( bmc != null) {
-							System.out.println(bmc.getInfo());
-							testBMCStandardIO(dest,bmcComputer.getConnector());
-						} else {
-							System.out.println("Non trovato!");
-						}
+		while (true) {
+			String dest = Stdio.inputString("Indirizzo dispositivo (invio per uscire):");
+			if (dest.equals("")) {
+				break;
+			} else {				
+				Device[] devices = null;
+				try {
+					devices = busController.findDevices(dest);
+				} catch (Exception e) {
+					devices = new Device[0];
+				}					
+				if ( devices.length == 0) {
+					System.out.println("Device non trovato!");
+				} else if (devices.length > 1 ){
+					for (int i = 0; i < devices.length; i++) {
+						Device device = devices[i];							
+						System.out.println(device.getFullAddress());
+					}
+				} else {
+					Device d = devices[0];
+					while (d != null) {
+			 			System.out.println(d.getInfo());
+						String portId = Stdio.inputString("Porta (invio per uscire): ");
+			 			if (portId.equals("")) {
+			 				d = null;
+			 			} else {
+				 			String pn = d.getPortName(portId);
+				 			if (pn == null) {
+				 				System.out.println("Il device "+d.getFullAddress()+" hon ha la porta "+portId);
+				 			} else {
+				 				String newValue = "";
+				 				newValue = Stdio.inputString("Nuovo valore (invio esce): ");
+					 			if (! newValue.equals("")) {
+					 				d.poke(portId, newValue);
+					 			}
+				 			}
+			 			}
 					}
 				}
+			}
 		}
-		// TODO chiusura del controller
 		busController.stop();
 		log.info("Termine programma");
 	}

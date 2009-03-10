@@ -316,5 +316,14 @@ public class Controller {
 			module.stop();			
 		}		
 	}
+
+	public Device getDevice(String address) throws AISException {
+		Device[] devices = findDevices(address);
+		if (devices.length == 1) {
+			return devices[0];
+		} else {
+			return null;
+		}
+	}
 }
 

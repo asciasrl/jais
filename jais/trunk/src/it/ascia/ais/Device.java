@@ -74,7 +74,12 @@ public abstract class Device {
 	public Connector getConnector() {
 		return connector;
 	}
-	
+
+	/**
+	 * Ritorna una descrizione del dispositivo.
+	 */
+	public abstract String getInfo();
+
 	/**
 	 * Ritorna lo stato del device cambiato rispetto a un certo istante,
 	 * in formato utile per AUI.

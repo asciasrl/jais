@@ -31,13 +31,22 @@ public class HTTPServerControllerModule extends ControllerModule {
 	}
 
 	public void start() {
+		//logger = Logger.getLogger(getClass());
+		logger.info("Avvio server HTTP...");
 		int port = config.getInt("HTTPServer.port",80);
 		String root = config.getString("HTTPServer.root","../aui");
-		// Scegliamo il nostro logger anziche' quello predefinito di Jetty
-		System.setProperty("org.mortbay.log.class", "it.ascia.ais.JettyLogger");
-		ContextHandlerCollection contexts = new ContextHandlerCollection();
-		logger = Logger.getLogger(getClass());
+		logger.info("Porta="+port+" Root="+root);
+		// configurazione livelli di log di Jetty e Jasper
+		if (config.getBoolean("HTTPServer.debug", false)) {
+			logger.info("Jetty Debug");
+			System.setProperty("DEBUG","true");			
+		}
+		if (config.getBoolean("HTTPServer.verbose", false)) {
+			logger.info("Jetty Verbose");
+			System.setProperty("VERBOSE","true");			
+		}
 		server = new Server(port);
+		ContextHandlerCollection contexts = new ContextHandlerCollection();
 		server.setHandler(contexts);
 		// contesto servito da jspservlet
 		Context rootContext = new Context(contexts, "/", Context.SESSIONS);
@@ -55,12 +64,11 @@ public class HTTPServerControllerModule extends ControllerModule {
 		ServletHolder defaultHolder = new ServletHolder(defaultServlet);
 		rootContext.addServlet(defaultHolder, "/");
 		try {
-			logger.info("Avvio server HTTP...");
 			server.start();
-			logger.info("Avviato server HTTP");
 		} catch (Exception e) {
 			logger.fatal("Errore avvio server HTTP: "+e.getMessage());
 		}		
+		logger.info("Avviato server HTTP");
 	}
 
 	public void stop() {

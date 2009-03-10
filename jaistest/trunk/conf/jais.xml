@@ -17,7 +17,9 @@
   </modules>
   <HTTPServer>
     <port>80</port>
-    <root>../aui</root>    
+    <root>../aui</root>
+    <debug>false</debug>
+    <verbose>false</verbose>
   </HTTPServer>
   <EDS>
     <autoupdate>5</autoupdate>

@@ -270,6 +270,7 @@ public abstract class BMC extends Device {
 	 * <p>Questo metodo e' necessario perche' quasi tutti i modelli di BMC hanno
 	 * gli ingressi numerati a partire da 1. Gli ingressi delle porte a
 	 * infrarossi, invece, possono valere anche 0.</p>
+	 * @deprecated
 	 */
 	public abstract int getFirstInputPortNumber();
 
@@ -280,6 +281,7 @@ public abstract class BMC extends Device {
 	 * <p>Attenzione: questa funzione viene chiamata dal costruttore di BMC! 
 	 * Quindi <i>non</i> deve contare su eventuali elaborazioni fatte dal
 	 * costruttore della sottoclasse!</p>
+	 * @deprecated
 	 */
 	public abstract int getInPortsNumber();
 	
@@ -289,6 +291,7 @@ public abstract class BMC extends Device {
 	 * <p>Attenzione: questa funzione viene chiamata dal costruttore di BMC! 
 	 * Quindi <i>non</i> deve contare su eventuali elaborazioni fatte dal
 	 * costruttore della sottoclasse!</p>
+	 * @deprecated
 	 */
 	public abstract int getOutPortsNumber();
 
@@ -312,6 +315,7 @@ public abstract class BMC extends Device {
 	 * @param number il numero della porta (inizia da 0)
 	 * @param name il nome da assegnare.
 	 * @throws AISException 
+	 * @deprecated
 	 */
 	public void setInputName(int number, String name) throws AISException {
 		setPortName(getInputPortId(number), name);
@@ -324,6 +328,7 @@ public abstract class BMC extends Device {
 	 * @param name the name to assign.
 	 * @return 
 	 * @throws AISException
+	 * @deprecated
 	 */
 	public void setOutputName(int number, String portName) throws AISException {
 		setPortName(getOutputPortId(number), portName);
@@ -370,6 +375,7 @@ public abstract class BMC extends Device {
 	 * Ritorna il numero di una porta di uscita a partire dal nome compatto.
 	 * 
 	 * @return il numero della porta, oppure -1 se non e' stata trovata.
+	 * @deprecated
 	 */
 	public int getOutputNumberFromPortId(String portId) {
 		int retval = -1;
@@ -403,6 +409,9 @@ public abstract class BMC extends Device {
 	 * @param outPortNumber numero della porta che risponde al messaggio.
 	 */
 	protected void bindOutput(int message, int outPortNumber) {
+		if (message == 0) {
+			return;
+		}
 		broadcastBindingsBySignal[message].add(new Integer(outPortNumber));
 		broadcastBindingsByPort[outPortNumber].add(new Integer(message));
 	}

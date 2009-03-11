@@ -93,39 +93,9 @@ public class EDSConnector extends it.ascia.ais.Connector {
     public int getBMCComputerAddress() {
     	return bmcComputer.getIntAddress();
     }
-    
+        
     /**
-     * Legge e interpreta i dati in arrivo.
-     * 
-     * <p>Questa funzione deve essere chiamata dalla sottoclasse, quando ci
-     * sono dati pronti da leggere con readByte().</p>
-     * 
-     * <p>I messaggi decodificati vengono passati a dispatchMessage().</p>
-     */
-    /* TODO eliminare readData ?
-    public void readData() {
-    	while (transport.hasData()) {
-    		try {
-    			byte b = transport.readByte();
-    			mp.push(b);
-    			if (mp.isValid()) {
-    				EDSMessage m = mp.getMessage();
-    				// TODO logger.trace("dispatchMessage: "+m);
-    				if (m != null) {
-    					dispatchMessage(m);
-    				}
-    			}
-    		} catch (IOException e) {
-    			logger.error("Errore di lettura: " + e.getMessage());
-    		} catch (AISException e) {
-    			logger.error("Errore: " + e.getMessage());
-			}
-    	} // while hasData()
-    }
-    */
-    
-    /**
-     * Gestisce ogni byte ricevuto
+     * Gestisce ogni byte ricevuto finchè compone un messaggio e quindi ne effettua il dispacciamento
      */
     public void received(byte b) {
 		mp.push(b);
@@ -158,10 +128,9 @@ public class EDSConnector extends it.ascia.ais.Connector {
     private void dispatchMessage(EDSMessage m) throws AISException {
     	int rcpt = m.getRecipient();
     	int sender = m.getSender();
-    	// TODO logger.trace("Dispath: BEGIN da " + sender + " per " + rcpt);
     	if (BroadcastMessage.class.isInstance(m)) { 
     		// Mandiamo il messaggio a tutti
-    		Iterator it = getDevices().entrySet().iterator();
+    		Iterator it = getDevices().values().iterator();
     		while (it.hasNext()) {
     			BMC bmc = (BMC)it.next();
     			bmc.messageReceived(m);

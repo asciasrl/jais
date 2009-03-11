@@ -131,7 +131,7 @@ public class BMCStandardIO extends BMC {
 				for (int i = 0; i < ports.length; i++) {
 					if (isReal) {
 						// Non sappiamo bene che succede
-						invalidate(getOutputPortId(i));
+						invalidate(getOutputPortId(ports[i]));
 					} else {
 						// Decidiamo noi che cosa succede
 						generateEvent(getOutputPortId(i), new Boolean(bmsg.isActivation()));

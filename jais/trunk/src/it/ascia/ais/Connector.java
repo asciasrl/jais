@@ -145,5 +145,10 @@ public abstract class Connector {
 
 	public abstract void received(byte b);
 
+	public void close() {
+		transport.close();
+	}
+        
+
 }
 

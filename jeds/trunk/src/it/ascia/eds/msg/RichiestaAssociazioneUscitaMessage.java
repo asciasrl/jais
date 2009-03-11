@@ -70,8 +70,8 @@ public class RichiestaAssociazioneUscitaMessage extends PTPRequest {
 			RispostaAssociazioneUscitaMessage r = 
 				(RispostaAssociazioneUscitaMessage) m;
 			if ((getSender() == r.getRecipient()) &&
-					(getRecipient() == r.getSender()) &&
-					(getUscita() == r.getUscita())) {
+					(getRecipient() == r.getSender()) 
+					 /* && (getUscita() == r.getUscita()) */ ) {
 				answered = true;
 			}
 		}
@@ -89,5 +89,12 @@ public class RichiestaAssociazioneUscitaMessage extends PTPRequest {
 
 	public int getMessageType() {
 		return MSG_RICHIESTA_ASSOCIAZIONE_BROADCAST;
+	}
+	
+	public String toString() {
+		StringBuffer s = new StringBuffer();
+		s.append(super.toString());
+		s.append(" Uscita:" + getUscita() + " Casella:"+getCasella());
+		return s.toString();		
 	}
 }

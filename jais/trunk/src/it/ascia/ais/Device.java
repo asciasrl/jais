@@ -140,11 +140,11 @@ public abstract class Device {
 	}
 
 	/**
-	 * 
+	 * Aggiunge una porta con il valore di default per il nome, che è nella forma <connector>.<address>:<portId>
 	 * @param portId
 	 */
 	protected void addPort(String portId) {
-		addPort(portId, null);		
+		addPort(portId, getFullAddress()+":"+portId);		
 	}
 	
 	/**
@@ -226,17 +226,6 @@ public abstract class Device {
 		p.invalidate();
 	}
     
-	/**
-	 * 
-	 * @param connector
-	 * @deprecated il connettore deve essere un parametro del costruttore
-	 */
-    /*
-	public void setConnector(Connector connector) {
-    	this.connector = connector;
-    }
-    */
-
     /**
      * Scrive un nuovo valore sulla porta del dispositivo fisico 
      * @param portId

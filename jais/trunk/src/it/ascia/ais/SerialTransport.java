@@ -19,7 +19,7 @@ import gnu.io.*;
  * 
  * @author sergio, arrigo
  */
-public class SerialTransport extends Transport implements Runnable {
+public class SerialTransport extends Transport {
 
     private static Enumeration portList;
     /**
@@ -67,15 +67,7 @@ public class SerialTransport extends Transport implements Runnable {
     	} catch (PortInUseException e) {
 	    	throw new AISException("Porta "+portName+" in uso: " + e.toString());
     	}
-
-		try {
-		    inputStream = serialPort.getInputStream();
-		    outputStream = serialPort.getOutputStream();
-		} catch (IOException e) {
-			throw new AISException("Impossibile ottenere gli stream: " + 
-					e.getMessage());
-		}
-		
+    	
 		try {
 		    serialPort.setSerialPortParams(portSpeed, SerialPort.DATABITS_8, 
 						   SerialPort.STOPBITS_1, 
@@ -85,9 +77,26 @@ public class SerialTransport extends Transport implements Runnable {
 					e.getMessage());
 		}
 		
-		Thread readThread = new Thread(this);
-		readThread.setName("SerialTransport-"+portName);
-	    readThread.start();
+    	try {
+    		serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
+    	} catch (UnsupportedCommOperationException e) {  
+	    	throw new AISException("Porta "+portName+" errore impostazione flow control: " + e.toString());
+    	}
+    	
+		try {
+		    inputStream = serialPort.getInputStream();
+		    outputStream = serialPort.getOutputStream();
+		} catch (IOException e) {
+			throw new AISException("Impossibile ottenere gli stream: " + 
+					e.getMessage());
+		}
+		
+		try {
+			serialPort.addEventListener(new SerialListener());
+		} catch (TooManyListenersException e) {
+			throw new AISException("Troppi listeners sulla porta:" + e.getMessage());
+		}
+        serialPort.notifyOnDataAvailable(true);
     }
 
 
@@ -114,21 +123,25 @@ public class SerialTransport extends Transport implements Runnable {
     	serialPort.close();
     }
 
-	public void run() {
-		logger.info("Running");
-		while (true) {
-			try {
-				int i = inputStream.read();
-				if (i == -1) {
-					//TODO logger.trace("Nessun dato ricevuto");					
-				} else {
-					connector.received((byte)i);
-				}
-			} catch (IOException e) {
-    			logger.error("Errore di lettura: " + e.getMessage());
-    			// FIXME Gestire riconnessione
-			}
-		}
+	private class SerialListener implements SerialPortEventListener {
 
+		public void serialEvent(SerialPortEvent event) {
+            if (event.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
+            	try {
+					while (inputStream.available() > 0) {
+						int i = inputStream.read();
+						if (i == -1) {
+							logger.error("Nessun dato ricevuto");					
+						} else {					
+							connector.received((byte)i);
+						}
+					}
+				} catch (IOException e) {
+	    			logger.error("Errore di lettura: " + e.getMessage());
+				}
+            }
+		}
 	}
 }
+
+

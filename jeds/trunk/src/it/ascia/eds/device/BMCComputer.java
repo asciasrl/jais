@@ -1,9 +1,9 @@
 /**
  * COPYRIGHT (C) 2008 ASCIA S.R.L.
+ * 
+ * TODO Valutare quali metodi / logica spostare nel connector
  */
 package it.ascia.eds.device;
-
-import java.util.*;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
@@ -34,14 +34,6 @@ import it.ascia.eds.EDSConnector;
  */
 public class BMCComputer extends BMC {
 	/**
-	 * Dimensione massima della inbox.
-	 */
-	private final int MAX_INBOX_SIZE = 100;
-	/**
-	 * Queue dei messaggi ricevuti. I piu' recenti sono all'inizio.
-	 */
-	private LinkedList inbox;
-	/**
      * Il messaggio di tipo ACK che stiamo mandando, per il quale aspettiamo
      * una risposta.
      */
@@ -56,7 +48,6 @@ public class BMCComputer extends BMC {
 	 */
 	public BMCComputer(Connector connector, String address) throws AISException {
 		super(connector, address, -1, "Computer");
-		inbox = new LinkedList();
 		messageToBeAnswered = null;
 	}
 
@@ -71,16 +62,12 @@ public class BMCComputer extends BMC {
 	 * @see it.ascia.eds.device.Device#receiveMessage(it.ascia.eds.msg.EDSMessage)
 	 */
 	public void messageReceived(EDSMessage m) throws AISException {
-		// Tutti i messaggi ricevuti devono finire nella inbox. Ma non troppi.
-		inbox.addFirst(m);
-		while (inbox.size() > MAX_INBOX_SIZE) {
-			inbox.removeLast();
-		}
-		if (!m.isBroadcast()) {
+		if (m.isBroadcast()) {
+			// TODO propagare alle uscite
+		} else {
 			PTPMessage ptpm = (PTPMessage) m;
 			// Aggiungiamo i BMC che si presentano
 			if (RispostaModelloMessage.class.isInstance(ptpm)) {
-				//logger.trace("Ricevuto modello");
 				RispostaModelloMessage risposta = (RispostaModelloMessage) ptpm;
 				Device bmc = getConnector().getDevice(risposta.getSource());
 				if (bmc == null) {
@@ -89,40 +76,35 @@ public class BMCComputer extends BMC {
 				}
 			}
 			// Attendiamo risposte?
-			// FIXME gestire una coda
 			if (messageToBeAnswered != null) {
 				if (messageToBeAnswered.isAnsweredBy(ptpm)) {
-					//logger.trace("Ricevuta risposta a richiesta");
-					// TODO logger.trace("OK, ricevuto: "+ptpm+" Richiesta: "+m);
+					if (RispostaAssociazioneUscitaMessage.class.isInstance(ptpm)) {
+						RispostaAssociazioneUscitaMessage mrisp = (RispostaAssociazioneUscitaMessage) ptpm;
+						RichiestaAssociazioneUscitaMessage mrich = (RichiestaAssociazioneUscitaMessage) messageToBeAnswered;
+						EDSConnector conn = (EDSConnector) getConnector();
+						//String address = conn.getFullAddress(mrisp.getSource());
+						String address = mrisp.getSource();
+						int gruppo = mrisp.getComandoBroadcast();
+						if (gruppo > 0) {
+							int outPortNumber = mrich.getUscita();
+							int casella = mrich.getCasella();
+							BMC bmc = (BMC) conn.getDevice(address);
+							logger.info("Associazione dispositivo:"+bmc.getName()+" uscita:"+getOutputPortId(outPortNumber)+" casella:"+casella+" gruppo:"+gruppo);
+							bmc.bindOutput(gruppo, outPortNumber);
+						}
+					}
 					// sveglia sendPTPRequest
 					synchronized (messageToBeAnswered) {
 						messageToBeAnswered.answered = true;
 						messageToBeAnswered.notify(); 						
 					}
-				} else if (ptpm.getMessageType() != m.getMessageType()){
-					logger.error("Ricevuto: "+ptpm+" Richiesta: "+m);
 				}
 			}
-		} // if m è un PTPMessage
+		} // if e' un PTPMessage
 	}
 	
 	public void messageSent(EDSMessage m) {
 		// Sappiamo quello che abbiamo inviato.
-	}
-	
-	/**
-	 * Restituisce il primo messaggio nella coda "inbox".
-	 * 
-	 * @return il messaggio oppure null se la coda è vuota.
-	 */
-	public EDSMessage getNextMessage() {
-		EDSMessage retval;
-		try {
-			retval = (EDSMessage) inbox.removeFirst();
-		} catch (NoSuchElementException e) {
-			retval = null;
-		}
-		return retval;
 	}
 	
 	public String getInfo() {
@@ -153,13 +135,11 @@ public class BMCComputer extends BMC {
     			logger.trace("Invio "+tries+" di "+m.getMaxSendTries()+" : "+m.toHexString());    			
     			connector.transport.write(m.getBytesMessage());
     			// si mette in attesa, ma se nel frattempo arriva la risposta viene avvisato
-    			// TODO logger.trace("sendPTPRequest wait:1");
     	    	try {
-    	    		messageToBeAnswered.wait((long)(100 * connector.getRetryTimeout() * (1 + 0.2 * Math.random())));
+    	    		messageToBeAnswered.wait((long)(1000 * connector.getRetryTimeout() * (1 + 0.2 * Math.random())));
     	    	} catch (InterruptedException e) {
     				logger.trace("sendPTPRequest wait:2");
     	    	}
-    			// TODO logger.trace("sendPTPRequest wait:3");
     		}
 	    	received = m.answered;
 	    	messageToBeAnswered = null;
@@ -250,7 +230,8 @@ public class BMCComputer extends BMC {
     				bmc = (BMC)devices[0];
     				logger.info("Trovato BMC "+bmc.getInfo());
     				// TODO gestire risposte a discoverUscite(bmc);
-    				// TODO gestire risposte a discoverBroadcastBindings(bmc);
+    				// TODO gestire risposte a 
+    				discoverBroadcastBindings(bmc);
     			} else {
     				// Molto strano: l'ACK del messaggio e' arrivato, ma non 
     				// abbiamo nessun BMC.

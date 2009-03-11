@@ -26,7 +26,7 @@ public class TCPSerialTransport extends Transport {
 	/**
 	 * Un thread che attende i dati dalla rete e li manda al transport.
 	 */
-	private static class TCPSerialBusReader implements Runnable {
+	private class TCPSerialBusReader implements Runnable {
 		/**
 		 * Dimensioni del buffer che riceve i dati.
 		 */
@@ -42,7 +42,7 @@ public class TCPSerialTransport extends Transport {
 		/**
 		 * Il nostro transport.
 		 */
-		private TCPSerialTransport bus;
+		//private TCPSerialTransport bus;
 
 		/**
 		 * Il nostro logger.
@@ -59,7 +59,7 @@ public class TCPSerialTransport extends Transport {
 		public TCPSerialBusReader(Selector selector, TCPSerialTransport bus, 
 				SocketChannel sock) {
 			this.selector = selector;
-			this.bus = bus; // FIXME serve ?  Cmq rinominare 
+			//this.bus = bus; // FIXME serve ?  Cmq rinominare 
 			this.sock = sock;
 			logger = Logger.getLogger(getClass());
 		}
@@ -78,8 +78,11 @@ public class TCPSerialTransport extends Transport {
 					ByteBuffer bb = ByteBuffer.allocate(BUF_SIZE);
 					sock.read(bb);
 					bb.flip();
-					bus.setByteBuffer(bb);
-					// FIXME bus.connector.readData();
+					//bus.setByteBuffer(bb);
+					while (bb.hasRemaining()) {
+						byte b = bb.get();
+						connector.received(b);
+					}
 					keys.clear();
 				}
 			} catch (IOException e) {

@@ -56,15 +56,15 @@ public class RispostaAssociazioneUscitaMessage extends PTPMessage {
 
 	public String toString()	{
 		StringBuffer s = new StringBuffer();
-		s.append(Mittente + " -> "+Destinatario+" ");
-		s.append("Out " + getUscita() + ","+getCasellaBMC()+"/"+getCasellaDimmer()+" ");
-		s.append("Gruppo: " + getComandoBroadcast()+" ");
+		s.append(super.toString());
+		s.append(" Uscita:" + getUscita() + " Casella:"+getCasellaBMC()+"/"+getCasellaDimmer()+" ");
+		s.append(" Gruppo:" + getComandoBroadcast()+" ");
 		if (activatesBMC()) {
 			s.append("Attiva");
 		} else {
 			s.append("Disattiva");
 		}
-		s.append(" Velocita': " + getVelocita());
+		s.append(" Velocita':" + getVelocita());
 		return s.toString();
 	}
 	

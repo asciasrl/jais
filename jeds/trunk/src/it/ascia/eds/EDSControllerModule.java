@@ -4,6 +4,7 @@ package it.ascia.eds;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
 
@@ -16,7 +17,7 @@ import it.ascia.ais.Transport;
 import it.ascia.eds.device.BMCComputer;
 
 public class EDSControllerModule extends ControllerModule {
-
+	
 	public void onDeviceEvent(DeviceEvent event) {
 		//logger.info("Ricevuto evento: "+event.getInfo());
 	}
@@ -56,18 +57,14 @@ public class EDSControllerModule extends ControllerModule {
 					bmcComputer.discoverBMC(new Integer((String) i.next()).intValue());
 				}
 			 	// registra il connector
-				controller.registerConnector(eds);			 	
+				controller.registerConnector(eds);		
+				myConnectors.add(eds);
 		 	} catch (AISException e) {
 		 		logger.fatal(e.getMessage());
 		 	}
 		}				
  		int autoupdate = config.getInt("EDS.autoupdate",0);
 		new AutoUpdater(autoupdate);
-	}
-
-	public void stop() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public String doCommand(String command, HashMap params) {

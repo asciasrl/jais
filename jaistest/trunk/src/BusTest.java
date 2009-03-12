@@ -18,101 +18,6 @@ public class BusTest {
 	static Controller busController;
 	
 	
-	/*
-	static void makeVirtualBMC(String address, EDSConnector connector) throws AISException {
-		BMCStandardIO bmc = new BMCStandardIO(connector,address, 88, "BMCFinto"); 
-		bmc.makeSimulated();
-	}
-	*/
-	
-	/*
-	static void testBMCStandardIO(int address, Connector connector) throws AISException {
-		int porta, valore;
- 		// Prova su BMC modello 88, indirizzo 3
- 		BMCStandardIO bmc = 
- 			(BMCStandardIO)connector.getDevices(String.valueOf(address))[0];
- 		System.out.println();
- 		System.out.println("Prova BMC Standard I/O");
- 		//System.out.println("Discovery...");
- 		//bmcComputer.discoverBroadcastBindings(bmc);
- 		porta = 0;
- 		while ((porta >= 0) && (porta < 8)) {
- 			porta = Stdio.inputInteger("Porta (<0 esce): ");
- 			if (porta >= 0) {
- 	 			System.out.println("Stato del BMC: ");
- 				bmc.printStatus();
- 				valore = -1;
- 				while ((valore != 0) && (valore != 1)) {
- 					valore = Stdio.inputInteger("Valore (0 o 1): ");
- 				}
- 				bmc.setOutPort(porta, (valore == 1));
- 	 			System.out.println("Stato del BMC: ");
- 				bmc.printStatus();
- 				//bmc.printStatus();
- 				//bmc.updateStatus();
- 				//bmc.printStatus();
- 				//bmc.printStatus();
- 			} // if porta >= 0
- 		}
- 			
-	}
-	*/
-	
-	/*
-	static void testBMCDimmer(Connector connector) throws AISException {
-		String address = "5";
-		int output = 0, value = 0;
- 		// Prova su BMC modello 88, indirizzo 3
-		BMCDimmer bmc = (BMCDimmer)connector.getDevices(address)[0];
-		System.out.println();
-		System.out.println("Prova Dimmer");
-		System.out.println("Discovery...");
- 		bmcComputer.discoverBroadcastBindings(bmc);
-		while ((output >= 0) && (output < 2)) {
-			bmc.printStatus();
- 			output = Stdio.inputInteger("output (<0 esce): ");
- 			if (output >= 0) {
- 				value = -101;
- 				while ((value < -100) || (value > 100)) {
- 					value = Stdio.inputInteger("Valore (0 - 100): ");
- 				}
- 				bmc.setOutputRealTime(output, value);
- 				bmc.printStatus();
- 				bmc.updateStatus();
- 		 		System.out.println("Stato del BMC dopo la richiesta: ");
- 		 		bmc.printStatus();
- 		 		System.out.println(bmc.getStatus("*", 0));
- 			} // if output >= 0
-		}
-	}
-	*/
-	
-	/*
-	static void testBMCChronoTerm(Connector connector) {
-		String address = "7";
-		double setPoint = 0;
- 		// Prova su BMC modello 127, indirizzo 7
-		BMCChronoTerm bmc = (BMCChronoTerm)connector.getDevices(address)[0];
-		System.out.println();
-		System.out.println("Prova Cronotermostato");
-		while (setPoint >= 0.0) {
-			bmc.printStatus();
- 			setPoint = Stdio.inputDouble("set point (<0 esce): ");
- 			if (setPoint >= 0.0) {
- 				bmc.setSetPoint(setPoint);
- 				bmc.printStatus();
- 				bmc.updateStatus();
- 		 		System.out.println("Stato del BMC dopo la richiesta: ");
- 		 		bmc.printStatus();
- 		 		System.out.println(bmc.getStatus("*", 0));
- 			} // if output >= 0
-		}
-		bmc.printStatus();
-		bmc.updateStatus();
-		bmc.printStatus();
-	}
-	*/
-	
 	/**
 	 * @param args
 	 *            porta seriale
@@ -131,7 +36,7 @@ public class BusTest {
 		
 	 	// La palla all'utente
 		while (true) {
-			String dest = Stdio.inputString("Indirizzo dispositivo (invio per uscire):");
+			String dest = Stdio.inputString("Indirizzo dispositivo (invio per terminare programma):");
 			if (dest.equals("")) {
 				break;
 			} else {				
@@ -152,16 +57,21 @@ public class BusTest {
 					Device d = devices[0];
 					while (d != null) {
 			 			System.out.println(d.getInfo());
-						String portId = Stdio.inputString("Porta (invio per uscire): ");
+			 			System.out.println(d.getStatus());
+						String portId = Stdio.inputString("Porta di "+d.getFullAddress()+" (invio per cambiare device): ");
 			 			if (portId.equals("")) {
 			 				d = null;
 			 			} else {
-				 			String pn = d.getPortName(portId);
+			 				String pn = null;
+			 				try {
+					 			pn = d.getPortName(portId);								
+							} catch (AISException e) {								
+							}
 				 			if (pn == null) {
 				 				System.out.println("Il device "+d.getFullAddress()+" hon ha la porta "+portId);
 				 			} else {
 				 				String newValue = "";
-				 				newValue = Stdio.inputString("Nuovo valore (invio esce): ");
+				 				newValue = Stdio.inputString("Nuovo valore per "+pn+" (invio per non variare): ");
 					 			if (! newValue.equals("")) {
 					 				d.poke(portId, newValue);
 					 			}

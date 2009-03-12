@@ -28,36 +28,48 @@
         <name>0</name>
         <transport>
           <type>serial</type>
-          <port>COM2</port>
+          <port>COM1</port>
           <speed>9600</speed>
         </transport>
-		    <computer>0</computer>
+		    <computer>249</computer>
 		    <discover>3;4;5;6;7</discover> 
       </connector>
+			<!--
+      <connector>
+        <name>1</name>
+        <transport>
+          <type>tcp</type>
+          <host>192.168.52.103</host>
+          <port>10001</port>
+        </transport>
+		    <computer>250</computer>
+		    <discover>3;4;5;6;7</discover> 
+      </connector>
+      -->
     </connectors> 
   </EDS>      
   <AUI>
-    <startPage>pianoT</startPage>
+    <startPage>Hbox</startPage>
     <title>ASCIA HomeInTheBox [AUI 0.1]</title>
     <!-- definizione di tutti i tipi di controlli -->
     <controls>
       <page>
-        <src>images/key_back.png</src>
+        <default>images/key_back.png</default>
       </page>    
       <light>
-        <src>images/luce_off.png</src>
+        <default>images/luce_off.png</default>
         <on>images/luce_on.png</on>
         <off>images/luce_off.png</off>  
       </light>
       <dimmer>
-        <src>images/luce_off.png</src>
+        <default>images/luce_off.png</default>
         <on>images/luce_on.png</on>
         <off>images/luce_off.png</off>
         <up>images/luce_up.png</up>
         <down>images/luce_down.png</down>  
       </dimmer>
       <blind>
-        <src>images/serranda_ferma.png</src>
+        <default>images/serranda_ferma.png</default>
         <stopped>images/serranda_ferma.png</stopped>
         <open>images/serranda_open.png</open>
         <opening>images/serranda_sale.png</opening>
@@ -135,6 +147,11 @@
         <type>map</type>
         <map>main</map>
       </page>
+      <page>
+      	<id>Hbox</id>
+      	<type>map</type>
+      	<map>Hbox</map>
+      </page>
     <map>
       <id>test</id>
       <control>
@@ -201,6 +218,47 @@
         	<top>300</top>
 	        <address>0.5:Out0</address>
   	    </control>      
+    </map>
+    <map>
+      <id>Hbox</id>
+			<title>Home in The Box</title>
+			<src>images/HBox.jpg</src>
+			<control>
+			 	<id>l1</id>
+			 	<title>Luce scale</title>
+			 	<type>light</type>
+			 	<layer>illuminazione</layer>
+			 	<top>145</top>
+			 	<left>105</left>
+			 	<address>0.3:Out5</address>
+			</control>
+			<control>
+			 	<id>l2</id>
+			 	<title>Luce ingresso</title>
+			 	<type>dimmer</type>
+			 	<layer>illuminazione</layer>
+			 	<top>225</top>
+			 	<left>495</left>
+			 	<address>0.5:Out1</address>
+			</control>
+			<control>
+			 	<id>t1</id>
+			 	<title>Tapparella lunga</title>
+			 	<type>blind</type>
+			 	<layer>blinds</layer>
+			 	<top>45</top>
+			 	<left>15</left>
+			 	<address>0.3:Out1</address>
+			</control>
+			<control>
+			 	<id>t2</id>
+			 	<title>Tapparella corta</title>
+			 	<type>blind</type>
+			 	<layer>blinds</layer>
+			 	<top>20</top>
+			 	<left>95</left>
+			 	<address>0.3:Out3</address>
+			</control>
     </map>
   </AUI>
 </jais>

@@ -10,10 +10,9 @@ function changePage(da,a) {
 	a_el.style.display='';
 }
 
-function touchControl(event,control) {
+function touchControl(event,id) {
 	event.preventDefault();
 	event.stopPropagation();
-	var id = control.id;
 	var control = controls[id];
 	if (control == null) {
 		return;
@@ -23,19 +22,17 @@ function touchControl(event,control) {
 	var newstatus = status;
 	switch (type) {
 	case "light":
-		if (status == "ON") {
-			controls[id].status = "OFF";
-			document.getElementById(id+"-img").src = control.off;
+		if (status == "on") {
+			newstatus = "off";
 		} else {
-			controls[id].status = "ON";
-			document.getElementById(id+"-img").src = control.on;
+			newstatus = "on";
 		}
 		break;
 
 	case "blind":
 		switch (status) {
 		case "opening":
-			newstatus = "stopped";
+			newstatus = "opened";
 			break;
 		case "opened":
 			newstatus = "closing";
@@ -44,7 +41,7 @@ function touchControl(event,control) {
 			newstatus = "opening";
 			break;
 		case "closing":
-			newstatus = "stopped";
+			newstatus = "closed";
 			break;
 		default:
 			newstatus = "opening";

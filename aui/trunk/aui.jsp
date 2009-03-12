@@ -94,27 +94,21 @@ for (Iterator it = pages.iterator(); it.hasNext();) {
 					HierarchicalConfiguration controlConfig = (HierarchicalConfiguration) ic.next();
 					String id = "control-" + mapId + "-" + controlConfig.getString("id");
 					String type = controlConfig.getString("type");
-					String onClick = null;
-					String onTouchStart = null;
+					String onEvent = null;
+					String eventType = "ontouchstart";
 					if (type.equals("page")) {
-						onTouchStart = "void(0)";
-						onClick = "changePage('page-"+pageId+"','page-"+controlConfig.getString("page")+"')";
+						onEvent = "changePage('page-"+pageId+"','page-"+controlConfig.getString("page")+"')";
+						eventType = "onclick";
 					} else {
-						onTouchStart = "touchControl(event, this)";
+						onEvent = "touchControl(event, '"+id+"')";
 					}
-					if (!mobile && onClick == null) {
-						onClick=onTouchStart;						
-					}
-					if (onClick == null) {
-						onClick = "void(0)";
-					}
-					if (onTouchStart == null) {
-						onTouchStart = "void(0)";
+					if (!mobile) {
+						eventType="onclick";						
 					}
 %>
-<div id="<%= id %>" class="control control-type-<%= type %>" style="left: <%= controlConfig.getString("left") %>px; top: <%= controlConfig.getString("top") %>px;" onclick="<%= onClick %>" ontouchstart="<%= onTouchStart %>">
-	<img id="<%= id %>-img" src="<%= auiConfig.getString("controls."+type+".src") %>" title="<%= controlConfig.getString("title",type) %>" border="0" alt="<%= type %>"/>
-	<span id="<%= id %>-label"  />
+<div id="<%= id %>" class="control control-type-<%= type %>" style="left: <%= controlConfig.getString("left") %>px; top: <%= controlConfig.getString("top") %>px;" <%= eventType %>="<%= onEvent %>">
+	<img id="<%= id %>-img" src="<%= auiConfig.getString("controls."+type+".default") %>" title="<%= controlConfig.getString("title",type) %>" border="0" alt="<%= type %>"/>
+	<span id="<%= id %>-label" ></span>
 </div>
 <%				
 				} // controls

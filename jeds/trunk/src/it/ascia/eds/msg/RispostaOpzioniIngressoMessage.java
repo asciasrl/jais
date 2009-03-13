@@ -20,8 +20,8 @@ public class RispostaOpzioniIngressoMessage extends PTPMessage {
 	
 	public String toString()	{
 		StringBuffer s = new StringBuffer();
-		s.append(Mittente+" -> "+Destinatario);
-		s.append(" Opzioni Inp"+Byte1);
+		s.append(super.toString());
+		s.append(" Opzioni Inp"+(Byte1+1));
 		if ((Byte2 & 0x08) != 0) {
 			s.append(" Invertito");
 		}

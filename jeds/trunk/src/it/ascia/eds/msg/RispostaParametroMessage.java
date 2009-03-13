@@ -94,31 +94,27 @@ public class RispostaParametroMessage extends PTPMessage {
 	
 	public String toString()	{
 		StringBuffer s = new StringBuffer();
-		s.append("Mittente: "+Mittente+"\r\n");
-		s.append("Destinatario: "+Destinatario+"\r\n");
+		s.append(super.toString());
 		switch (getParameter()) {
 			case 1:
-				s.append("Dimmer:\r\n Soft time: "+Byte2+"\r\n");
-				s.append("Sonda termica:\r\n");
-				s.append(" Tempo di auto-invio: " + getAutoSendTime() + 
-						"sec\r\n");		
+				s.append(" Dimmer Soft time: "+Byte2);
+				s.append(" Tempo di auto-invio temperatura: " + getAutoSendTime() + "s");		
 				break;
 			case 3:
-				s.append("Dimmer:\r\n Ritardo variazione: "+Byte2+"\r\n");
-				s.append("Sonda termica:\r\n Temperatura di allarme: " + 
-						getAlarmTemperature() +	"gradi C\r\n");
+				s.append(" Dimmer: Ritardo variazione: "+Byte2);
+				s.append(" Temperatura di allarme: " + getAlarmTemperature() +	"gradi C");
 				break;
 			case 11:
-				s.append("Dimmer:\r\n Minimo: "+Byte2+"\r\n");
+				s.append(" Dimmer: Minimo: "+Byte2);
 				break;
 			case 12:
-				s.append("Dimmer:\r\n Massimo: "+Byte2+"\r\n");
+				s.append(" Dimmer: Massimo: "+Byte2);
 				break;
 			case 22:
-				s.append("Dimmer:\r\n Sensibilita: "+Byte2+"\r\n");
+				s.append(" Dimmer: Sensibilita: "+Byte2);
 				break;
 			default:
-				s.append("Parametro sconosciuto (" + getParameter() + 
+				s.append(" Parametro sconosciuto (" + getParameter() + 
 						") con valore: " + Byte2);
 				break;
 		}

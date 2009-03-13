@@ -85,8 +85,7 @@ public class MessageParser {
 				return;
 			}
 			message = createMessage(buff);
-			//logger.trace(message.toHexString());
-			logger.trace(message.toString());
+			logger.trace(message.toHexString());
 			valid = true;
 			return;
 		}

@@ -13,7 +13,7 @@ import java.io.OutputStream;
  * 
  * @author sergio, arrigo
  */
-public abstract class EDSMessage extends Message {
+public abstract class EDSMessage extends Message implements Comparable {
 	/**
 	 * Richiesta modello e revisione.
 	 */
@@ -241,16 +241,6 @@ public abstract class EDSMessage extends Message {
 		return (new Integer((Stx+Destinatario+Mittente+TipoMessaggio+Byte1+Byte2) & 0xff)).byteValue();
 	}
 
-	/*
-	public String toString() {
-		StringBuffer s = new StringBuffer();
-		s.append(toHexString() + "\r\n");
-		s.append("Tipo Messaggio: "+getTipoMessaggio()+"\r\n");
-		s.append(toHumanReadable());
-		return s.toString();
-	}
-	*/
-	
 	/**
 	 * Ritorna il messaggio riportandone i campi in esadecimale.
 	 */
@@ -333,4 +323,14 @@ public abstract class EDSMessage extends Message {
 	 * Ritorna il codice del tipo di messaggio.
 	 */
 	public abstract int getMessageType();
+	
+	public int compareTo(java.lang.Object arg0) {
+		if (arg0.getClass() == getClass()) {
+			EDSMessage m = (EDSMessage) arg0;
+			if (m.toHexString().equals(toHexString())) {
+				return 0;
+			}
+		}
+		return 1;
+	}
 }

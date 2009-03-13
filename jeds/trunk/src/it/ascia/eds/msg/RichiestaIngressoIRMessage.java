@@ -20,9 +20,8 @@ public class RichiestaIngressoIRMessage extends PTPRequest {
 
 	public String toString()	{
 		StringBuffer s = new StringBuffer();
-		s.append("Mittente: "+Mittente+"\r\n");
-		s.append("Destinatario: "+Destinatario+"\r\n");
-		s.append("Ingresso IR: "+(Byte1 & 0xFF) + "\r\n");
+		s.append(super.toString());
+		s.append(" Ingresso IR: "+(Byte1 & 0xFF));
 		return s.toString();
 	}
 

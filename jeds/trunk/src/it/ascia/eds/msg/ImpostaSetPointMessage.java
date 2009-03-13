@@ -38,9 +38,8 @@ public class ImpostaSetPointMessage extends PTPRequest {
 
 	public String toString()	{
 		StringBuffer s = new StringBuffer();
-		s.append("Mittente: "+Mittente+"\r\n");
-		s.append("Destinatario: "+Destinatario+"\r\n");
-		s.append("Temperatura: " + (Byte2 / 10.0) + Byte1 + "\r\n");
+		s.append(super.toString());
+		s.append(" Temperatura: " + (Byte2 / 10.0) + Byte1);
 		return s.toString();
 	}
 

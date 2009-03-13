@@ -39,7 +39,7 @@ public class RispostaParametroMessage extends PTPMessage {
 	 * @see #getAutoSendTime()
 	 */
 	public boolean hasAutoSendTime() {
-		return (Byte1 == RichiestaParametroMessage.PARAM_TERM_AUTO_SEND_TIME);
+		return (Byte1 == ImpostaParametroMessage.PARAM_TERM_AUTO_SEND_TIME);
 	}
 	
 	/**
@@ -68,7 +68,7 @@ public class RispostaParametroMessage extends PTPMessage {
 	 */
 	public boolean hasAlarmTemperature() {
 		return (Byte1 == 
-			RichiestaParametroMessage.PARAM_TERM_ALARM_TEMPERATURE);
+			ImpostaParametroMessage.PARAM_TERM_ALARM_TEMPERATURE);
 	}
 	
 	/**

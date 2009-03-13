@@ -107,7 +107,7 @@ public class VariazioneIngressoMessage extends PTPRequest
 	public String toString()	{
 		StringBuffer s = new StringBuffer();
 		s.append(super.toString());
-		s.append(" Out"+ getOutputNumber());
+		s.append(" Out"+ (getOutputNumber()+1));
 		if (isActivation()) {
 			s.append(" Attiva");
 		} else {

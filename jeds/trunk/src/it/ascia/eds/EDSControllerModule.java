@@ -4,12 +4,13 @@ package it.ascia.eds;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
 
 import it.ascia.ais.AISException;
+import it.ascia.ais.Connector;
 import it.ascia.ais.ControllerModule;
+import it.ascia.ais.Device;
 import it.ascia.ais.DeviceEvent;
 import it.ascia.ais.SerialTransport;
 import it.ascia.ais.TCPSerialTransport;
@@ -18,6 +19,8 @@ import it.ascia.eds.device.BMCComputer;
 
 public class EDSControllerModule extends ControllerModule {
 	
+	private AutoUpdater autoupdater;
+
 	public void onDeviceEvent(DeviceEvent event) {
 		//logger.info("Ricevuto evento: "+event.getInfo());
 	}
@@ -64,7 +67,9 @@ public class EDSControllerModule extends ControllerModule {
 		 	}
 		}				
  		int autoupdate = config.getInt("EDS.autoupdate",0);
-		new AutoUpdater(autoupdate);
+ 		autoupdater = new AutoUpdater(autoupdate);
+ 		autoupdater.start();
+ 		logger.info("Completato start");
 	}
 
 	public String doCommand(String command, HashMap params) {
@@ -72,14 +77,18 @@ public class EDSControllerModule extends ControllerModule {
 		return null;
 	}
 	
-	private class AutoUpdater implements Runnable {
+	protected class AutoUpdater extends Thread {
 		
-		int autoupdate;
+		int autoupdate = 0;
 
-		public AutoUpdater(int autoupdate) {
-			this.autoupdate = autoupdate;
+		public AutoUpdater(int a) {
+			autoupdate = a;
 		}
 
+		/**
+		 * Aggiorna automaticamente i device connessi
+		 * @see Thread.run()
+		 */
 		public void run() {
 			if (autoupdate > 0) {
 				logger.info("Autoupdate ogni "+autoupdate+" secondi.");				
@@ -89,6 +98,21 @@ public class EDSControllerModule extends ControllerModule {
 					} catch (InterruptedException e) {
 					}
 					logger.trace("Autoupdate");
+					for (Iterator c = myConnectors.iterator(); c.hasNext();)
+					{
+						Connector connector = (Connector) c.next();
+						HashMap devices = connector.getDevices();
+						for (Iterator iterator = devices.values().iterator(); iterator
+								.hasNext();) {
+							Device device = (Device) iterator.next();
+							try {
+								device.getStatus();
+							} catch (AISException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					}
 				}
 			} else {
 				logger.info("Autoupdate non attivo");				
@@ -96,5 +120,6 @@ public class EDSControllerModule extends ControllerModule {
 		}
 		
 	}
+
 	
 }

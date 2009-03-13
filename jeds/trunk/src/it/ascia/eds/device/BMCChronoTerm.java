@@ -246,8 +246,8 @@ public class BMCChronoTerm extends BMC {
 				generateEvent(port_setpoint, String.valueOf(setPoint));
 			}
 			dirtySetPoint = false;
-			updating = false;
 			*/
+			updating = false;
 		break;
 		}
 		// TODO logger.trace("messageSent:3");	

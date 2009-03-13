@@ -13,15 +13,6 @@ package it.ascia.eds.msg;
  */
 public class RichiestaParametroMessage extends PTPRequest {
 	/**
-	 * Tempo di auto-invio della temperatura, per una sonda termica.
-	 */
-	public static final int PARAM_TERM_AUTO_SEND_TIME = 1;
-	/**
-	 * Temperatura di allarme, per una sonda termica.
-	 */
-	public static final int PARAM_TERM_ALARM_TEMPERATURE = 3;
-	
-	/**
 	 * Costruttore.
 	 * 
 	 * @param d destinatario
@@ -54,14 +45,13 @@ public class RichiestaParametroMessage extends PTPRequest {
 	
 	public String toString()	{
 		StringBuffer s = new StringBuffer();
-		s.append("Mittente: "+Mittente+"\r\n");
-		s.append("Destinatario: "+Destinatario+"\r\n");
+		s.append(super.toString());
 		s.append("Parametro richiesto: ");
 		switch (getParameter()) {
-			case PARAM_TERM_AUTO_SEND_TIME:
+			case ImpostaParametroMessage.PARM_TIME:
 				s.append("tempo di auto-invio (sonda termica)");		
 				break;
-			case PARAM_TERM_ALARM_TEMPERATURE:
+			case ImpostaParametroMessage.PARAM_TERM_ALARM_TEMPERATURE:
 				s.append("temperatura di allarme (sonda termica) ");
 				break;
 			default:

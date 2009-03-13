@@ -12,21 +12,35 @@ package it.ascia.eds.msg;
  * @author sergio, arrigo
  */
 public class ImpostaParametroMessage extends PTPRequest {
+
 	/**
 	 * Temperatura. Puo' variare da -127 a 127.
 	 * 
 	 * <p>Il bit piu' significativo viene posto a 1 se il valore e' negativo.
 	 * </p>
 	 */
-	public final static int PARM_TYPE_TEMPERATURE = 0;
+	public final static int PARM_TEMPERATURE = 0;
+
+	/**
+	 * Tempo di auto-invio della temperatura, per una sonda termica.
+	 */
+	public static final int PARAM_TERM_AUTO_SEND_TIME = 1;
+
 	/**
 	 * Tempo. Puo' variare da 1 secondo a 127 minuti.
 	 * 
 	 * <p>Il bit piu' significativo viene posto a 1 se il tempo e' in secondi,
 	 * a 0 se il tempo e' in minuti.</p>
 	 */
-	public final static int PARM_TYPE_TIME = 1;
+	public final static int PARM_TIME = 1;
 	
+	/**
+	 * Temperatura di allarme, per una sonda termica.
+	 */
+	public static final int PARAM_TERM_ALARM_TEMPERATURE = 3;
+	
+	
+		
 	/**
 	 * Costruttore.
 	 * 
@@ -34,23 +48,21 @@ public class ImpostaParametroMessage extends PTPRequest {
 	 * @param m mittente
 	 * @param parametro numero del parametro da impostare
 	 * @param valore valore da impostare
-	 * @param parameterType una delle costanti PARM_TYPE_* di questa classe.
 	 */
-	public ImpostaParametroMessage(int d, int m, int parametro, int valore,
-			int parameterType) {
+	public ImpostaParametroMessage(int d, int m, int parametro, int valore) {
 		Destinatario = d & 0xFF;
 		Mittente = m & 0xFF;
 		TipoMessaggio = getMessageType();
 		Byte1 = parametro & 0xff;
-		switch (parameterType) {
-		case PARM_TYPE_TEMPERATURE:
+		switch (parametro) {
+		case PARM_TEMPERATURE:
 			Byte2 = Math.abs(valore) & 0x7f;
 			if (valore < 0) {
 				// Bit di segno
 				Byte2 |= 0x80;
 			}
 			break;
-		case PARM_TYPE_TIME:
+		case PARM_TIME:
 			if ((valore & 0xff) <= 127) {
 				// Secondi: impostiamo il MSB
 				Byte2 = valore | 0x80;
@@ -82,7 +94,7 @@ public class ImpostaParametroMessage extends PTPRequest {
 	 * @see #getAutoSendTime()
 	 */
 	public boolean hasAutoSendTime() {
-		return (Byte1 == RichiestaParametroMessage.PARAM_TERM_AUTO_SEND_TIME);
+		return (Byte1 == ImpostaParametroMessage.PARAM_TERM_AUTO_SEND_TIME);
 	}
 	
 	/**
@@ -110,7 +122,7 @@ public class ImpostaParametroMessage extends PTPRequest {
 	 * @see #getAlarmTemperature()
 	 */
 	public boolean hasAlarmTemperature() {
-		return (Byte1 == RichiestaParametroMessage.PARAM_TERM_ALARM_TEMPERATURE);
+		return (Byte1 == ImpostaParametroMessage.PARAM_TERM_ALARM_TEMPERATURE);
 	}
 	
 	/**
@@ -131,11 +143,11 @@ public class ImpostaParametroMessage extends PTPRequest {
 		StringBuffer s = new StringBuffer();
 		s.append(super.toString());
 		switch (Byte1) {
-			case 1:
+			case PARM_TIME:
 				s.append(" Dimmer: Soft time = "+Byte2);
 				s.append(" Sonda termica: Tempo di auto-invio = " + getAutoSendTime() + "sec");		
 				break;
-			case 3:
+			case PARAM_TERM_ALARM_TEMPERATURE:
 				s.append(" Dimmer: Ritardo variazione = "+Byte2);
 				s.append(" Sonda termica: Temperatura di allarme = " + getAlarmTemperature() +	"gradi C");
 				break;

@@ -124,7 +124,12 @@ public class BMCComputer extends BMC {
     	boolean received = false;
     	EDSConnector connector = (EDSConnector)getConnector();  
 		if (messageToBeAnswered != null) {
-			logger.fatal("messageToBeAnswered non nullo!");
+			if (messageToBeAnswered.compareTo(m) == 0) {
+				logger.debug("Messaggio gia' inviato in attesa di risposta: "+m);				
+			} else {
+				logger.fatal("messageToBeAnswered non nullo: "+messageToBeAnswered);
+				logger.fatal("Messaggio non inviato: "+m);
+			}
 			return false;
 		}
     	messageToBeAnswered = m;

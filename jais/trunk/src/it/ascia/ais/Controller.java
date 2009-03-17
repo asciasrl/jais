@@ -3,6 +3,8 @@
  */
 package it.ascia.ais;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -37,7 +39,9 @@ public class Controller {
 	private XMLConfiguration config;
 
 	private static Controller controller;
-		
+
+	protected final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+
 	/**
 	 * Controller singleton
 	 * @return
@@ -273,19 +277,22 @@ public class Controller {
 		}		
 	}
 	
+	public void addPropertyChangeListener( PropertyChangeListener listener )
+    {
+        this.pcs.addPropertyChangeListener( listener );
+    }
+
+    public void removePropertyChangeListener( PropertyChangeListener listener )
+    {
+        this.pcs.removePropertyChangeListener( listener );
+    }
+	
 	/**
-	 * Comunica l'evento a tutti i moduli
+	 * Comunica l'evento a tutti i Listener registrati con addPropertyChangeListener(PropertyChangeListener)
 	 * 
-	 * @param event
 	 */
-	public void onDeviceEvent(DeviceEvent event) {
-		//logger.info("Ricevuto evento: "+event.getInfo());
-		Iterator i = modules.keySet().iterator();
-		while (i.hasNext()) {
-			String moduleName = (String) i.next();
-			ControllerModule module = getModule(moduleName);
-			module.onDeviceEvent(event);
-		}
+	public void fireDevicePortChangeEvent(DevicePortChangeEvent evt) {
+		this.pcs.firePropertyChange(evt);
 	}
 
 	/**
@@ -317,8 +324,8 @@ public class Controller {
 		}		
 	}
 
-	public Device getDevice(String address) throws AISException {
-		Device[] devices = findDevices(address);
+	public Device getDevice(String fullAddress) throws AISException {
+		Device[] devices = findDevices(fullAddress);
 		if (devices.length == 1) {
 			return devices[0];
 		} else {

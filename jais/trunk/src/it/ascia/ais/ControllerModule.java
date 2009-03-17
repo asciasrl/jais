@@ -1,5 +1,6 @@
 package it.ascia.ais;
 
+import java.beans.PropertyChangeListener;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -30,21 +31,7 @@ public abstract class ControllerModule {
 	public ControllerModule() {
 		logger = Logger.getLogger(getClass());
 	}
-	
-	/**
-	 * Gestisce un evento generato da un device di campo.
-	 * 
-	 * E' il controller che notifica l'evento a tutti i moduli.
-	 * 
-	 * @param event
-	 */
-	public abstract void onDeviceEvent(DeviceEvent event);
-	
-	/**
-	 * TODO Obbligatorio ?
-	 */
-	//public abstract String doCommand(String command, HashMap params);
-	
+
 	/**
 	 * TODO aggiungere altri eventi tipo:
 	 * - nuovo device

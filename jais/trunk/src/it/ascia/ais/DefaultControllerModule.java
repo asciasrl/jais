@@ -4,10 +4,6 @@ import java.util.HashMap;
 
 public class DefaultControllerModule extends ControllerModule {
 
-	public void onDeviceEvent(DeviceEvent event) {
-		logger.info("Ricevuto evento: "+event.getInfo());
-	}
-
 	public void start() {
 		// TODO Auto-generated method stub
 		

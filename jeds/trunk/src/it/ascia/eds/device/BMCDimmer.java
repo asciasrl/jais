@@ -5,6 +5,7 @@ package it.ascia.eds.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
+import it.ascia.ais.DevicePort;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.msg.ComandoBroadcastMessage;
 import it.ascia.eds.msg.ComandoUscitaDimmerMessage;
@@ -33,22 +34,6 @@ public class BMCDimmer extends BMC {
 	 * Numero di uscite digitali.
 	 */
 	protected int outPortsNum;
-	/**
-	 * Uscite. Possono assumere un valore 0-100 oppure -1 (OFF).
-	 */
-	//private int[] outPorts;
-	/**
-	 * La conoscenza delle uscite puo' essere errata?
-	 * 
-	 * <p>Questa array ha un elemento per ogni porta.</p>
-	 */
-	//private boolean dirty[];
-	/**
-	 * Timestamp di aggiornamento per le porte di uscita.
-	 * 
-	 * <p>Questa array ha un elemento per ogni porta.</p>
-	 */
-	//private long outPortsTimestamps[];
 	/**
 	 * Potenza in uscita [Watt] o -1 se l'uscita è 0-10 V
 	 */
@@ -165,8 +150,17 @@ public class BMCDimmer extends BMC {
 			temp = r.getOutputs();
 			for (i = 0; i < outPortsNum; i++) {
 				String portId = getOutputPortId(i);
-				// TODO gestire lo stato "in variazione" del dimmer
-				setPortValue(portId, new Integer(temp[i]));
+				DevicePort p = getPort(portId);
+				Integer newValue = new Integer(temp[i]);
+				Integer oldValue = (Integer) p.getCachedValue();
+				// TODO gestire meglio lo stato "in variazione" del dimmer
+				if (p.getCachedValue() != null && (p.isDirty() || ! newValue.equals(oldValue))) {
+					p.setCacheRetention(100);
+				} else {
+					long ret = p.getCacheRetention() * 3;
+					p.setCacheRetention(Math.min(ret,DevicePort.DEFAULT_CACHE_RETENTION));
+				}
+				p.setValue(newValue);
 			}
 			break;
 		case EDSMessage.MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST: 
@@ -221,20 +215,6 @@ public class BMCDimmer extends BMC {
 		return connector.getRetryTimeout() * m.getMaxSendTries(); 
 	}
 
-	/**
-	 * Ritorna true se almeno un dato e' contrassegnato come "dirty".
-	 */
-	/*
-	public boolean hasDirtyCache() {
-		boolean retval = false;
-		for (int i = 0; (i < outPortsNum) && !retval; i++) {
-			retval = retval || dirty[i];
-		}
-		return retval;
-	}
-	*/
-
-
 	public String getStatus(String port, long timestamp) throws AISException {
 		int i;
 		String retval = "";
@@ -246,35 +226,6 @@ public class BMCDimmer extends BMC {
 				retval += fullAddress + ":" + portId + "=" +
 					getPortValue(portId) + "\n";
 			}
-		}
-		return retval;
-	}
-
-	
-	/**
-	 * Manda un messaggio per impostare un canale del dimmer.
-	 * 
-	 * La velocità di accensione/spegnimento e' quella di default.
-	 * 
-	 * @return true se è arrivato un ACK del messaggio
-	 *
-	 * @param output il numero dell'uscita (di solito 0 o 1)
-	 * @param value il valore da impostare (da 0 a 100, dove 0 e' OFF)
-	 */
-	public boolean setOutput(int output, int value) {
-		boolean retval = false;
-		if ((output >= 0) && (output <= outPortsNum)) {
-			if ((value >= 0) && (value <= 100)) {
-				ComandoUscitaMessage m;
-				m = new ComandoUscitaMessage(getIntAddress(), getBMCComputerAddress(), 0, output, value, 
-						(value > 0)? 1 : 0);
-				retval = getConnector().sendMessage(m);
-			} else {
-				logger.error("Valore non valido per canale dimmer: " +
-						value);
-			}
-		} else {
-			logger.error("Porta dimmer non valida: " + output);
 		}
 		return retval;
 	}
@@ -328,7 +279,8 @@ public class BMCDimmer extends BMC {
 	 * @param port il nome compatto della porta.
 	 * @value un numero, un valore percentuale o "OFF"
 	 */
-	public void writePort(String port, String value) throws AISException {
+	public boolean writePort(String port, Object o) throws AISException {
+		String value = o.toString();
 		int outPort, numericValue;
 		outPort = getOutputNumberFromPortId(port);
 		if (outPort == -1) {
@@ -347,7 +299,9 @@ public class BMCDimmer extends BMC {
 				throw new AISException("Valore non valido: " + value);
 			}
 		}
-		setOutputRealTime(outPort, numericValue);
+		ComandoUscitaMessage m = new ComandoUscitaMessage(getIntAddress(), getBMCComputerAddress(), 0, outPort, numericValue, 
+				(numericValue > 0)? 1 : 0);
+		return getConnector().sendMessage(m);		
 	}
 
 	public int getInPortsNumber() {

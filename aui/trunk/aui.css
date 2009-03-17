@@ -42,6 +42,7 @@ div.control img {
 div.control span {
 	position: absolute;
 	color: white;
+	background-color: black;
 }
 
 div.control-type-page {

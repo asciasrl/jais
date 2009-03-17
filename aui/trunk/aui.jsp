@@ -1,7 +1,5 @@
 <!-- (C) Copyright 2007,2009 Ascia S.r.l. -->
 <%@ page import="it.ascia.ais.Controller, it.ascia.aui.AUIControllerModule, org.apache.commons.configuration.HierarchicalConfiguration, java.util.*,org.apache.log4j.Logger, org.json.simple.JSONObject" %>
-<%@ include file="constants.jsp" %>
-<%@ include file="custom/config.jsp" %>
 <%
 /**
  * Se riceviamo il parametro "nomobile" allora siamo sul fisso.
@@ -15,7 +13,6 @@ boolean mobile;
 		mobile = false;
 	}
 }
-initAUI();
 %>
 <%
 Controller c = Controller.getController(); 
@@ -35,13 +32,7 @@ HashMap pagesMap = new HashMap();
 <link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
 </head>
 <body>
-<div 
-  xongesturestart="gestureStart(event);"
-  xongesturechange="gestureChange(event);"
-  xongestureend="gestureEnd(event);"
-  xontouchstart="touchStart(event);"
-  xontouchmove="touchMove(event);"
->  
+<div>
 <div id="header-out">
 	<div id="header-bk"><img src="images/barratesti.png" /></div>
 	<div id="header"><b>barra di stato</b></div>
@@ -128,24 +119,7 @@ for (Iterator it = pages.iterator(); it.hasNext();) {
 
 <script language="javascript">
 var controls = <%= auiControllerModule.getControls() %>;
-
-var startX = 0;
-var startY = 0;
-
-function touchStart(event,control) {
-  event.preventDefault();
-	startX = event.targetTouches[0].pageX;
-	startY = event.targetTouches[0].pageY;	
-}
-
-function touchMove(event) {
-    event.preventDefault();
-    curX = event.targetTouches[0].pageX - startX;
-    curY = event.targetTouches[0].pageY - startY;
-    event.targetTouches[0].target.style.webkitTransform = 'translate(' + curX + 'px, ' + curY + 'px)';
-		console.log("X="+curX+" Y="+curY);
-}
-
+var addresses = <%= auiControllerModule.getAddresses() %>;
 </script>
 <%!
 /**
@@ -160,61 +134,7 @@ String includeScript(String scriptName) {
 }
 %>
 
-<script type="" language="javascript">
-	const IMG_LIGHT_ON = "<%= IMG_LIGHT_ON %>";
-	const IMG_LIGHT_OFF = "<%= IMG_LIGHT_OFF %>";
-	const IMG_POWER_ON = "<%= IMG_POWER_ON %>";
-	const IMG_POWER_OFF = "<%= IMG_POWER_OFF %>";
-	const IMG_THERMO_ON = "<%= IMG_THERMO_ON %>";
-	const IMG_THERMO_OFF = "<%= IMG_THERMO_OFF %>";
-	const IMG_BLIND_STILL = "<%= IMG_BLIND_STILL %>";
-	const IMG_BLIND_OPENING = "<%= IMG_BLIND_OPENING %>";
-	const IMG_BLIND_CLOSING = "<%= IMG_BLIND_CLOSING %>";
-	const STATUS_BAR_HEIGHT = <%= STATUS_BAR_HEIGHT %>;
-	const STATUS_BAR_OPACITY = "<%= STATUS_BAR_OPACITY %>";
-	const APPBAR_START_POSITION = <%= APPBAR_START_POSITION %>;
-	const DIMMER_SLIDER_HEIGHT = <%= DIMMER_SLIDER_HEIGHT %>;
-	const DIMMER_TOP_MIN = <%= IMG_DIMMER_SLIDER_TOP_HEIGHT - DIMMER_SLIDER_CORNER_HEIGHT %>;
-	const DIMMER_TOP_MAX = <%= IMG_DIMMER_SLIDER_TOP_HEIGHT - DIMMER_SLIDER_CORNER_HEIGHT  + DIMMER_SLIDER_HEIGHT - IMG_DIMMER_CURSOR_HEIGHT %>;
-	const DIMMER_CURSOR_MIDDLE = <%= IMG_DIMMER_CURSOR_HEIGHT / 2 %>;
-	const DIMMER_SLIDER_TOTAL_HEIGHT = <%= IMG_DIMMER_SLIDER_TOP_HEIGHT + DIMMER_SLIDER_HEIGHT - 2 * DIMMER_SLIDER_CORNER_HEIGHT + IMG_DIMMER_SLIDER_BOTTOM_HEIGHT %>;
-	const DIMMER_SLIDER_WIDTH = <%= DIMMER_WIDTH %>;
-	const IMG_BLIND_CONTROL = "<%= IMG_BLIND_CONTROL %>";
-	const BLIND_UP_TOP = <%= BLIND_UP_TOP %>;
-	const BLIND_LEFT = <%= BLIND_LEFT %>;
-	const BLIND_UP_BOTTOM = <%= BLIND_UP_BOTTOM %>;
-	const BLIND_RIGHT = <%= BLIND_RIGHT %>;
-	const BLIND_DOWN_TOP = <%= BLIND_DOWN_TOP %>;
-	const BLIND_DOWN_BOTTOM = <%= BLIND_DOWN_BOTTOM %>;
-	const BLIND_CONTROL_HEIGHT = <%= IMG_BLIND_CONTROL_HEIGHT %>;
-	const BLIND_CONTROL_WIDTH = <%= IMG_BLIND_CONTROL_WIDTH %>;
-	const MAP_AREA_WIDTH = <%= IPOD_VIEWPORT_WIDTH %>;
-	const MAP_AREA_HEIGHT = <%= IPOD_MAP_AREA_HEIGHT %>;
-	const IMG_LOCK_OPEN = "<%= IMG_LOCK_OPEN %>";
-	const IMG_LOCK_CLOSE = "<%= IMG_LOCK_CLOSE %>";
-	const IMG_DOOR_OPEN = "<%= IMG_DOOR_OPEN %>";
-	const IMG_DOOR_CLOSE = "<%= IMG_DOOR_CLOSE %>";
-	const IMG_DOOR_OPEN_ALARM = "<%= IMG_DOOR_OPEN_ALARM %>";
-	const IMG_DOOR_CLOSE_OK = "<%= IMG_DOOR_CLOSE_OK %>";
-</script>
-
 <%= includeScript("aui.js") %>
-<%= includeScript("aui_old.js") %>
-<%= includeScript("statusbar.js") %>
-<%= includeScript("comm.js") %>
-<%= includeScript("map.js") %>
-<%= includeScript("appbar_common.js") %>
-<%
-if (auiConfig.getString("appbar","default").equals("simple")) {
-	out.print(includeScript("appbar_simple.js"));
-} else {
-	out.print(includeScript("appbar.js"));
-}
-%>
-<%= includeScript("services.js") %>
-<%= includeScript("dimmer_slider.js") %>
-<%= includeScript("blind.js") %>
-<%= includeScript("keypad.js") %>
-<%= includeScript("alarm.js") %>
+
 </body>
 </html>

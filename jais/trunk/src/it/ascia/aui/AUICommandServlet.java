@@ -65,7 +65,7 @@ public class AUICommandServlet extends HttpServlet {
 			} catch (AISException e) {
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 				logger.error(e);
-				res = e.getMessage();
+				res = "ERROR: "+e.getMessage();
 			}
 			out.println(res);
 		} catch (IOException e) {

@@ -187,8 +187,11 @@ public class AUIControllerModule extends ControllerModule implements PropertyCha
 			String portId = controller.getPortFromAddress(fullAddress);
 			Device devices[] = controller.findDevices(deviceAddress);
 			if (devices.length == 1) {
-				devices[0].writePort(portId, value);
-				retval = "OK";
+				if (devices[0].writePort(portId, value)) {
+					retval = "OK";
+				} else {
+					retval = "ERROR";
+				}
 			} else {
 				throw(new AISException("ERROR: indirizzo ambiguo"));
 			}			

@@ -1,6 +1,5 @@
 package it.ascia.ais;
 
-import java.beans.PropertyChangeListener;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;

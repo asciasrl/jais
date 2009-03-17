@@ -292,6 +292,8 @@ public class BMCDimmer extends BMC {
 		}
 		if (value.toUpperCase().equals("OFF")) {
 			numericValue = 0;
+		} else if (value.toUpperCase().equals("ON")) {
+			numericValue = 100;
 		} else {
 			try {
 				numericValue = Integer.parseInt(value);

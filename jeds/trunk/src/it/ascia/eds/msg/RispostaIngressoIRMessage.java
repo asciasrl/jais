@@ -1,6 +1,6 @@
 package it.ascia.eds.msg;
 
-public class RispostaIngressoIRMessage extends PTPMessage {
+public class RispostaIngressoIRMessage extends PTPResponse {
 
 	public RispostaIngressoIRMessage(int d, int m, int Address, int Command) {
 		Destinatario = d & 0xFF;

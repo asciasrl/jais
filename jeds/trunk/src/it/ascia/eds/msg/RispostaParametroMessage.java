@@ -12,7 +12,7 @@ package it.ascia.eds.msg;
  * 
  * @author arrigo
  */
-public class RispostaParametroMessage extends PTPMessage {
+public class RispostaParametroMessage extends PTPResponse {
 	
 /*	public ImpostaParametroDimmerMessage(int d, int m, int Tempo, int Uscita, int Percentuale, int Attivazione) {
 		Destinatario = d & 0xFF;

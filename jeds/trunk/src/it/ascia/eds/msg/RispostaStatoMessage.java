@@ -6,7 +6,7 @@ package it.ascia.eds.msg;
 /**
  * Risposta lettura stato dispositivo.
  */
-public class RispostaStatoMessage extends PTPMessage {
+public class RispostaStatoMessage extends PTPResponse {
 
 	/**
 	 * Costruttore.

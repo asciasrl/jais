@@ -36,7 +36,6 @@ public class RichiestaAssociazioneUscitaMessage extends PTPRequest {
 		TipoMessaggio = 15;
 		Byte1 = uscita & 7;
 		Byte2 = casella & 7;
-		answered = false;
 	}
 	
 	public RichiestaAssociazioneUscitaMessage(int[] message) {
@@ -72,10 +71,10 @@ public class RichiestaAssociazioneUscitaMessage extends PTPRequest {
 			if ((getSender() == r.getRecipient()) &&
 					(getRecipient() == r.getSender()) 
 					 /* && (getUscita() == r.getUscita()) */ ) {
-				answered = true;
+				return true;
 			}
 		}
-		return answered;
+		return false;
 	}
 	
 	/**

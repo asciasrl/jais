@@ -1,6 +1,6 @@
 package it.ascia.eds.msg;
 
-public class RispostaStatoDimmerMessage extends PTPMessage {
+public class RispostaStatoDimmerMessage extends PTPResponse {
 
 	public RispostaStatoDimmerMessage(int d, int m, int Modello, int Versione) {
 		Destinatario = d & 0xFF;

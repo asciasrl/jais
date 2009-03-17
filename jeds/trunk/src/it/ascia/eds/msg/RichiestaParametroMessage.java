@@ -67,10 +67,10 @@ public class RichiestaParametroMessage extends PTPRequest {
 			if ((getSender() == ack.getRecipient()) &&
 					(getRecipient() == ack.getSender()) &&
 					(ack.getParameter() == getParameter())) {
-				answered = true;
+				return true;
 			}
 		}
-		return answered;
+		return false;
 	}
 	
 	public int getMessageType() {

@@ -16,7 +16,7 @@ package it.ascia.eds.msg;
  * 
  * @see RichiestaSetPointMessage
  */
-public class CronotermMessage extends PTPMessage {
+public class CronotermMessage extends PTPResponse {
 
 	/*
 	public CronotermMessage(int d, int m, int Attivazione, int Uscita, int Variazione)

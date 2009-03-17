@@ -238,7 +238,8 @@ public abstract class EDSMessage extends Message implements Comparable {
 	 * Calcola il checksum.
 	 */
 	public int checkSum() {
-		return (new Integer((Stx+Destinatario+Mittente+TipoMessaggio+Byte1+Byte2) & 0xff)).byteValue();
+		return (Stx+Destinatario+Mittente+TipoMessaggio+Byte1+Byte2) & 0xff; 
+		//return (new Integer((Stx+Destinatario+Mittente+TipoMessaggio+Byte1+Byte2) & 0xff)).byteValue();
 	}
 
 	/**
@@ -302,12 +303,16 @@ public abstract class EDSMessage extends Message implements Comparable {
 	 * Carica i dati da un'array di interi.
 	 * 
 	 * ATTENZIONE: non verifica che il tipo sia coerente!
+	 * @throws Exception 
 	 */
 	protected void load(int[] message) {
 		rawmessage = message;
 		Destinatario = message[1];
 		Mittente = message[2];
 		TipoMessaggio = message[3];
+		if (TipoMessaggio != getMessageType()) {
+			System.err.println("Tipo messaggio non corrisponde: "+TipoMessaggio+" <> "+getMessageType());
+		}
 		Byte1 = message[4];
 		Byte2 = message[5];
 	}

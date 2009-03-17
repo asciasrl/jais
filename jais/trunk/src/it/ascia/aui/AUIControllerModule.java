@@ -2,24 +2,17 @@ package it.ascia.aui;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
 import org.json.simple.JSONObject;
-import org.mortbay.util.ajax.JSONObjectConvertor;
-
 import it.ascia.ais.AISException;
 import it.ascia.ais.ControllerModule;
 import it.ascia.ais.Device;
-import it.ascia.ais.DevicePortChangeEvent;
 
 public class AUIControllerModule extends ControllerModule implements PropertyChangeListener {
 	
@@ -194,7 +187,7 @@ public class AUIControllerModule extends ControllerModule implements PropertyCha
 			String portId = controller.getPortFromAddress(fullAddress);
 			Device devices[] = controller.findDevices(deviceAddress);
 			if (devices.length == 1) {
-				devices[0].poke(portId, value);
+				devices[0].writePort(portId, value);
 				retval = "OK";
 			} else {
 				throw(new AISException("ERROR: indirizzo ambiguo"));

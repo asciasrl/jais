@@ -11,19 +11,13 @@ import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.ControllerModule;
 import it.ascia.ais.Device;
-import it.ascia.ais.DeviceEvent;
 import it.ascia.ais.SerialTransport;
 import it.ascia.ais.TCPSerialTransport;
 import it.ascia.ais.Transport;
-import it.ascia.eds.device.BMCComputer;
 
 public class EDSControllerModule extends ControllerModule {
 	
 	private AutoUpdater autoupdater;
-
-	public void onDeviceEvent(DeviceEvent event) {
-		//logger.info("Ricevuto evento: "+event.getInfo());
-	}
 
 	public void start() {
 		List connectors = config.configurationsAt("EDS.connectors.connector");
@@ -34,9 +28,7 @@ public class EDSControllerModule extends ControllerModule {
 		 	Transport transport = null;
 		 	try {
 		 		eds = new EDSConnector(sub.getString("name"),controller);
-		 		// crea il BMC Computer		 		
-				BMCComputer bmcComputer = new BMCComputer(eds,sub.getString("computer","250"));
-			 	eds.setBMCComputer(bmcComputer);
+		 		eds.setAddress(sub.getInt("computer",250));
 		 		// attiva il transport
 		 		String type = sub.getString("transport.type");
 		 		if (type.equals("serial")) {
@@ -57,7 +49,7 @@ public class EDSControllerModule extends ControllerModule {
 			 	// effettua il discovery
 			 	List discover = sub.getList("discover");
 				for(Iterator i = discover.iterator(); i.hasNext();) {
-					bmcComputer.discoverBMC(new Integer((String) i.next()).intValue());
+					eds.discoverBMC(new Integer((String) i.next()).intValue());
 				}
 			 	// registra il connector
 				controller.registerConnector(eds);		
@@ -68,6 +60,7 @@ public class EDSControllerModule extends ControllerModule {
 		}				
  		int autoupdate = config.getInt("EDS.autoupdate",0);
  		autoupdater = new AutoUpdater(autoupdate);
+ 		autoupdater.setName("autoupdater");
  		autoupdater.start();
  		logger.info("Completato start");
 	}
@@ -91,27 +84,30 @@ public class EDSControllerModule extends ControllerModule {
 		 */
 		public void run() {
 			if (autoupdate > 0) {
-				logger.info("Autoupdate ogni "+autoupdate+" secondi.");				
+				logger.info("Autoupdate ogni "+autoupdate+"mS");				
 				while(true) {
 					try {
-						Thread.sleep(1000*autoupdate);
-					} catch (InterruptedException e) {
-					}
-					logger.trace("Autoupdate");
-					for (Iterator c = myConnectors.iterator(); c.hasNext();)
-					{
-						Connector connector = (Connector) c.next();
-						HashMap devices = connector.getDevices();
-						for (Iterator iterator = devices.values().iterator(); iterator
-								.hasNext();) {
-							Device device = (Device) iterator.next();
-							try {
-								device.getStatus();
-							} catch (AISException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+						synchronized (this) {
+							wait(autoupdate);							
+						}
+						//logger.trace("Autoupdate");
+						for (Iterator c = myConnectors.iterator(); c.hasNext();)
+						{
+							Connector connector = (Connector) c.next();
+							HashMap devices = connector.getDevices();
+							for (Iterator iterator = devices.values().iterator(); iterator
+									.hasNext();) {
+								Device device = (Device) iterator.next();
+								try {
+									device.getStatus();
+								} catch (AISException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 							}
 						}
+					} catch (Exception e) {
+						logger.error(e);
 					}
 				}
 			} else {

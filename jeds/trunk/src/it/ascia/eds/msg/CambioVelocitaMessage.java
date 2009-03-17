@@ -19,7 +19,6 @@ public class CambioVelocitaMessage extends BroadcastMessage
 	 */
 	public CambioVelocitaMessage(int Velocita)
 	  throws AISException {
-		randomizeHeaders();
 		TipoMessaggio = 27;
 		Byte1 = (Velocita & 0x03); 
 		Byte2 = 0;

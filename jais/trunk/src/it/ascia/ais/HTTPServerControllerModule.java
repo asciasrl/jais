@@ -1,20 +1,8 @@
 package it.ascia.ais;
 
-import it.ascia.aui.AUIControllerModule;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.MalformedURLException;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.jasper.servlet.JspServlet;
 import org.mortbay.jetty.Server;
@@ -22,8 +10,6 @@ import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.DefaultServlet;
 import org.mortbay.jetty.servlet.ServletHolder;
-import org.mortbay.xml.XmlConfiguration;
-import org.xml.sax.SAXException;
 
 public class HTTPServerControllerModule extends ControllerModule {
 

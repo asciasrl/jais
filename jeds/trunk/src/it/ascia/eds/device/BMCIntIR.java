@@ -52,18 +52,19 @@ public class BMCIntIR extends BMC {
 	 * Proxy per generateEvent.
 	 * 
 	 * <p>Informa il listener che l'input a IR ha cambiato valore.</p>
+	 * @throws AISException 
 	 */
-	private void generateEvent() {
+	private void generateEvent() throws AISException {
 		String value;
 		if (irInput) {
 			value = "ON";
 		} else {
 			value = "OFF";
 		}
-		super.generateEvent(getInputPortId(0), value);
+		setPortValue(getInputPortId(0), value);
 	}
 	
-	public void messageSent(EDSMessage m) {
+	public void messageSent(EDSMessage m) throws AISException {
 		switch (m.getMessageType()) {
 		case EDSMessage.MSG_RISPOSTA_STATO: {
 			RispostaStatoMessage r;
@@ -108,10 +109,6 @@ public class BMCIntIR extends BMC {
 
 	public int getOutPortsNumber() {
 		return 0;
-	}
-
-	public void poke(String port, String value) throws AISException {
-		throw new AISException("Not implemented.");
 	}
 
 	public int getInPortsNumber() {

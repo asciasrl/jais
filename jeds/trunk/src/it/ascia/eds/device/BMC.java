@@ -7,11 +7,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
-
 import org.apache.log4j.Logger;
-
-import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
-
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.Device;
@@ -40,11 +36,7 @@ public abstract class BMC extends Device {
 	 * Il modello di questo BMC.
 	 */
 	protected int model;
-	/**
-	 * Il bus a cui il dispositivo e' collegato.
-	 */
-	//protected EDSConnector connector;
-
+	
 	/**
 	 * Il nome che AUI da' a questo BMC.
 	 */
@@ -56,7 +48,7 @@ public abstract class BMC extends Device {
 	 * <p>Questo e' un'array di Set di Integer, indicizzato per numero di
 	 * messaggio broadcast.</p>
 	 */
-	private Set broadcastBindingsBySignal[];
+	protected Set broadcastBindingsBySignal[];
 	/**
 	 * Binding tra porte di output e messaggi broadcast.
 	 * 
@@ -66,7 +58,23 @@ public abstract class BMC extends Device {
 	 * <p>L'ordine di binding e' importante. La superclasse utilizzata deve
 	 * tenerne conto.</p>
 	 */
-	private Set broadcastBindingsByPort[];
+	protected Set broadcastBindingsByPort[];
+
+	/**
+	 * Tempo (in millisecondi) del timer della porta
+	 * Viene utilizzato per aggiornare con piu' frequenza le porte che hanno un timer associato  
+	 */
+	protected Long[] portTimer;
+
+	/**
+	 * Questo BMC e' fisicamente presente sul transport?
+	 * 
+	 * <p>
+	 * Se questo attributo e' false, allora bisogna simulare l'esistenza di
+	 * questo BMC.
+	 * </p>
+	 */
+	protected boolean isReal = true;
 
 	/**
 	 * Il nostro logger.
@@ -89,6 +97,7 @@ public abstract class BMC extends Device {
 		this.name = name;
 		broadcastBindingsBySignal = new Set[32];
 		broadcastBindingsByPort = new Set[getOutPortsNumber()];
+		portTimer = new Long[getOutPortsNumber()];
 		for (int i = 0; i < broadcastBindingsBySignal.length; i++) {
 			broadcastBindingsBySignal[i] = new HashSet();
 		}
@@ -111,7 +120,7 @@ public abstract class BMC extends Device {
      * "a nome" del BMCComputer.</p>
      */
     public int getBMCComputerAddress() {
-    	return ((EDSConnector)getConnector()).getBMCComputerAddress();
+    	return ((EDSConnector)getConnector()).getMyAddress();
     }
 	
 	/**
@@ -220,7 +229,7 @@ public abstract class BMC extends Device {
 	 * <p>Questo metodo deve leggere il contenuto del messaggio e aggiornare lo 
 	 * stato interno.</p>
 	 * 
-	 * <p>Dovrebbe essere chiamato solo dal transport.</p>
+	 * <p>Dovrebbe essere chiamato solo dal Connector.</p>
 	 * 
 	 * @param m il messaggio ricevuto.
 	 * @throws AISException 
@@ -233,7 +242,7 @@ public abstract class BMC extends Device {
 	 * <p>Questo metodo deve leggere il contenuto del messaggio e aggiornare lo 
 	 * stato interno.</p>
 	 * 
-	 * <p>Dovrebbe essere chiamato solo dal transport.</p>
+	 * <p>Dovrebbe essere chiamato solo dal Connector.</p>
 	 * 
 	 * @param m il messaggio inviato.
 	 * @throws AISException 
@@ -250,11 +259,12 @@ public abstract class BMC extends Device {
 	 * <p>Il metodo di default manda un RichiestaStatoMessage per BMC.</p>
 	 * 
 	 * @return Tempo previsto per l'aggiornamento
+	 * @throws AISException 
 	 */
 	public long updateStatus() {
 		EDSConnector connector = (EDSConnector) getConnector();
 		PTPRequest m = new RichiestaStatoMessage(getIntAddress(), 
-				((EDSConnector)getConnector()).getBMCComputerAddress(), 0);
+				((EDSConnector)getConnector()).getMyAddress(), 0);
 		long timeout = connector.getRetryTimeout() * m.getMaxSendTries(); 
 		if (updating) {
 			logger.trace("update in corso, richiesta omessa");
@@ -270,9 +280,12 @@ public abstract class BMC extends Device {
 	 * <p>Questo metodo e' necessario perche' quasi tutti i modelli di BMC hanno
 	 * gli ingressi numerati a partire da 1. Gli ingressi delle porte a
 	 * infrarossi, invece, possono valere anche 0.</p>
-	 * @deprecated
+	 * TODO usare solo questi metodi getter
+	 * FIXME Sicuro ???
 	 */
-	public abstract int getFirstInputPortNumber();
+	public int getFirstInputPortNumber() {
+		return 1; 
+	}
 
 	
 	/**
@@ -281,7 +294,7 @@ public abstract class BMC extends Device {
 	 * <p>Attenzione: questa funzione viene chiamata dal costruttore di BMC! 
 	 * Quindi <i>non</i> deve contare su eventuali elaborazioni fatte dal
 	 * costruttore della sottoclasse!</p>
-	 * @deprecated
+	 * TODO usare solo questi metodi getter
 	 */
 	public abstract int getInPortsNumber();
 	
@@ -291,23 +304,10 @@ public abstract class BMC extends Device {
 	 * <p>Attenzione: questa funzione viene chiamata dal costruttore di BMC! 
 	 * Quindi <i>non</i> deve contare su eventuali elaborazioni fatte dal
 	 * costruttore della sottoclasse!</p>
-	 * @deprecated
+	 * TODO usare solo questi metodi getter
 	 */
 	public abstract int getOutPortsNumber();
 
-	
-	/**
-	 * Stampa una descrizione dello stato del BMC (facoltativa).
-	 * 
-	 * <p>Questa funzione ha senso solo se implementata dalle sottoclassi.</p>
-	 * 
-	 * <p>NOTA: per le singole porte, il nome da visualizzare deve essere quello
-	 * generato da getInputCompactName() e getOutputCompactName().</p>
-	 * @throws AISException 
-	 */
-	public void printStatus() throws AISException {
-		logger.error("printStatus() non implementata");
-	}
 	
 	/**
 	 * Imposta il nome assegnato a una  porta di ingresso.
@@ -315,7 +315,6 @@ public abstract class BMC extends Device {
 	 * @param number il numero della porta (inizia da 0)
 	 * @param name il nome da assegnare.
 	 * @throws AISException 
-	 * @deprecated
 	 */
 	public void setInputName(int number, String name) throws AISException {
 		setPortName(getInputPortId(number), name);
@@ -328,7 +327,6 @@ public abstract class BMC extends Device {
 	 * @param name the name to assign.
 	 * @return 
 	 * @throws AISException
-	 * @deprecated
 	 */
 	public void setOutputName(int number, String portName) throws AISException {
 		setPortName(getOutputPortId(number), portName);
@@ -375,7 +373,6 @@ public abstract class BMC extends Device {
 	 * Ritorna il numero di una porta di uscita a partire dal nome compatto.
 	 * 
 	 * @return il numero della porta, oppure -1 se non e' stata trovata.
-	 * @deprecated
 	 */
 	public int getOutputNumberFromPortId(String portId) {
 		int retval = -1;
@@ -473,12 +470,8 @@ public abstract class BMC extends Device {
 		return updateStatus();
 	}
 
-	public void writePort(String portId, String newValue) throws AISException {
-		logger.error("writePort() non implementata!");
-	}
-	
-	public void writePort(String portId, Object newValue) throws AISException {
-		writePort(portId,(String) newValue);
+	public boolean writePort(String portId, Object newValue) throws AISException {
+		throw(new AISException("writePort() non implementata da "+getClass()));
 	}
 
 

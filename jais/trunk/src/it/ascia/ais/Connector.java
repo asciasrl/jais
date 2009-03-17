@@ -4,6 +4,7 @@
 package it.ascia.ais;
 
 import java.util.HashMap;
+import java.util.concurrent.Semaphore;
 
 import org.apache.log4j.Logger;
 
@@ -30,7 +31,9 @@ public abstract class Connector {
 	/**
 	 * Transport con il quale il Connector comunica con il sistema
 	 */
-	public Transport transport;
+	protected Transport transport;
+	
+	protected Semaphore transportSemaphore;
 
 	/**
 	 * Controller che ha instanziato il Connector
@@ -57,6 +60,7 @@ public abstract class Connector {
 		this.controller = controller;
         devices = new HashMap();
 		logger = Logger.getLogger(getClass());
+		transportSemaphore = new Semaphore(1,true);
 	}
 
 	/**
@@ -114,6 +118,7 @@ public abstract class Connector {
      * 
      * @return true se il messaggio di risposta e' arrivato, o se l'invio e'
      * andato a buon fine.
+     * @throws AISException 
      */
     public abstract boolean sendMessage(Message m);
     

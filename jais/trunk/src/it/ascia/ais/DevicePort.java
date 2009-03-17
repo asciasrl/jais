@@ -1,8 +1,5 @@
 package it.ascia.ais;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-
 import org.apache.log4j.Logger;
 
 public class DevicePort {
@@ -25,11 +22,13 @@ public class DevicePort {
 
 	private String portName;
 	
-	private long timestamp;
+	private long timeStamp;
 
 	private Logger logger;
 
-	private long cacheRetention = 60000;
+	public static long DEFAULT_CACHE_RETENTION = 60000;
+
+	private long cacheRetention = DEFAULT_CACHE_RETENTION;
 	
 	public long getCacheRetention() {
 		return cacheRetention;
@@ -57,15 +56,11 @@ public class DevicePort {
 		} else {
 			this.portName = portName;
 		}
-		timestamp = 0;
+		timeStamp = 0;
 	}
 		
 	public String getStatus() throws AISException {
 		return getFullAddress() + "=" + getValue();
-	}
-
-	public long getTimestamp() {
-		return timestamp;
 	}
 
 	public String getName() {
@@ -112,7 +107,7 @@ public class DevicePort {
 		if (isDirty() || oldValue == null || ! oldValue.equals(newValue)) {
 			changed = true;
 		}
-		timestamp = System.currentTimeMillis();
+		timeStamp = System.currentTimeMillis();
 		cachedValue = newValue;
 		dirty = false;
 		// sveglia getValue()
@@ -164,8 +159,8 @@ public class DevicePort {
 	}
 
 	public boolean isExpired() {
-		if ((System.currentTimeMillis() - timestamp) > cacheRetention ) {
-			logger.trace("Expired "+getFullAddress()+" "+((1.0 + System.currentTimeMillis()-timestamp)/1000.0));
+		if ((System.currentTimeMillis() - timeStamp) > cacheRetention ) {
+			logger.trace("Expired "+getFullAddress()+" "+((1.0 + System.currentTimeMillis()-timeStamp)/1000.0));
 			return true;
 		} else {
 			return false;
@@ -185,11 +180,11 @@ public class DevicePort {
 	 * @param i
 	 */
 	public void expire(long i) {
-		timestamp = System.currentTimeMillis() - cacheRetention + i;
+		timeStamp = System.currentTimeMillis() - cacheRetention + i;
 	}
 
 	public long getTimeStamp() {
-		return timestamp;
+		return timeStamp;
 	}
 
 }

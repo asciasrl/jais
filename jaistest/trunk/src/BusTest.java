@@ -1,11 +1,8 @@
 
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Connector;
 import it.ascia.ais.Controller;
 import it.ascia.ais.Device;
-
-
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -73,7 +70,7 @@ public class BusTest {
 				 				String newValue = "";
 				 				newValue = Stdio.inputString("Nuovo valore per "+pn+" (invio per non variare): ");
 					 			if (! newValue.equals("")) {
-					 				d.poke(portId, newValue);
+					 				d.writePort(portId, newValue);
 					 			}
 				 			}
 			 			}

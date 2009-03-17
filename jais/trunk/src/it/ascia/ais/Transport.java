@@ -1,7 +1,5 @@
 package it.ascia.ais;
 
-import java.io.IOException;
-
 import org.apache.log4j.Logger;
 
 /**

@@ -8,7 +8,7 @@ package it.ascia.eds.msg;
  * 
  * @author sergio
  */
-public class RispostaUscitaMessage extends PTPMessage {
+public class RispostaUscitaMessage extends PTPResponse {
 	
 	public RispostaUscitaMessage(int[] message) {
 		load(message);
@@ -110,6 +110,13 @@ public class RispostaUscitaMessage extends PTPMessage {
 		return (Byte1 & 0x01) == 1;		
 	}
 	
+	public long getMillisecTimer() {
+		if (Byte2 > 0x7f) {
+			return 60000L * (Byte2 & 0x7f);
+		} else {
+			return 1000L * Byte2;
+		}		
+	}
 	
 	public String getTimer() {
 		if (Byte2 > 0x7f) {

@@ -12,7 +12,7 @@ package it.ascia.eds.msg;
  * 
  * <p>Codice EDS: 201.</p>
  */
-public class RispostaStatoTermostatoMessage	extends PTPMessage {
+public class RispostaStatoTermostatoMessage	extends PTPResponse {
 	/**
 	 * Modalita' antigelo (cronotermostato).
 	 */

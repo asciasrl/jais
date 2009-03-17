@@ -12,7 +12,7 @@ public abstract class PTPRequest extends PTPMessage {
 	/**
 	 * True se il messaggio ha ricevuto una risposta.
 	 */
-	public boolean answered = false;
+	private boolean isAnswered = false;
 	
 	/**
 	 * Verifica se un messaggio risponde a questo.
@@ -47,5 +47,19 @@ public abstract class PTPRequest extends PTPMessage {
 	
 	public final boolean wantsReply() {
 		return true;
+	}
+
+	/**
+	 * @param isAnswered the isAnswered to set
+	 */
+	public void setAnswered(boolean isAnswered) {
+		this.isAnswered = isAnswered;
+	}
+
+	/**
+	 * @return the isAnswered
+	 */
+	public boolean isAnswered() {
+		return isAnswered;
 	}
 }

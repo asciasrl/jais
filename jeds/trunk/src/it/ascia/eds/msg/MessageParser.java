@@ -32,8 +32,9 @@ public class MessageParser {
 		clear();
 	}
 
-	public void dumpBuffer() {
+	public String dumpBuffer() {
 		StringBuffer s = new StringBuffer();
+		s.append("i="+ibuff+" ");
 		s.append("STX:0x"+Integer.toHexString(buff[0])+" ");
 		s.append("DST:0x"+Integer.toHexString(buff[1])+" ");
 		s.append("MIT:0x"+Integer.toHexString(buff[2])+" ");
@@ -42,7 +43,7 @@ public class MessageParser {
 		s.append("BY2:0x"+Integer.toHexString(buff[5])+" ");
 		s.append("CHK:0x"+Integer.toHexString(buff[6])+" ");
 		s.append("ETX:0x"+Integer.toHexString(buff[7])+" ");
-		logger.debug(s);
+		return s.toString();
 	}
 
 	/**
@@ -73,7 +74,7 @@ public class MessageParser {
 			}
 			if (chk != b) {
 				logger.warn("Errore checksum");
-				dumpBuffer();
+				logger.debug(dumpBuffer());
 				clear();
 				return;
 			}
@@ -171,6 +172,10 @@ public class MessageParser {
 		buff = new int[8];
 		valid = false;
 		message = null;
+	}
+	
+	public boolean isBusy() {
+		return ibuff > 0 && ! valid;
 	}
 
 }

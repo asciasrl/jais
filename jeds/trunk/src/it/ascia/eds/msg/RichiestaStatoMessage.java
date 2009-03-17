@@ -29,10 +29,10 @@ public class RichiestaStatoMessage extends PTPRequest {
 				(m.getMessageType() == EDSMessage.MSG_RISPOSTA_STATO_DIMMER)) {
 			if ((getSender() == m.getRecipient()) &&
 					(getRecipient() == m.getSender())) {
-				answered = true;
+				return true;
 			}
 		}
-		return answered;
+		return false;
 	}
 	
 	/**

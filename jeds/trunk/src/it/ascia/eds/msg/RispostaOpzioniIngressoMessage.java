@@ -8,7 +8,7 @@ package it.ascia.eds.msg;
  * 
  * @author sergio
  */
-public class RispostaOpzioniIngressoMessage extends PTPMessage {
+public class RispostaOpzioniIngressoMessage extends PTPResponse {
 	
 	public RispostaOpzioniIngressoMessage(int[] message) {
 		load(message);

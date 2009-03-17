@@ -10,7 +10,7 @@ package it.ascia.eds.msg;
  * 
  * Codice EDS: 16.
  */
-public class RispostaAssociazioneUscitaMessage extends PTPMessage {
+public class RispostaAssociazioneUscitaMessage extends PTPResponse {
 
 	/**
 	 * Costruisce il messaggio a partire dai dati ricevuti.

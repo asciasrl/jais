@@ -28,10 +28,15 @@ public class RichiestaUscitaMessage extends PTPRequest {
 		if ((m.getMessageType() == EDSMessage.MSG_RISPOSTA_USCITA)) {
 			if ((getSender() == m.getRecipient()) &&
 					(getRecipient() == m.getSender())) {
-				answered = true;
+				return true;
 			}
 		}
-		return answered;
+		return false;
+	}
+	
+	public int getUscita()
+	{
+		return Byte1 & 0x07;
 	}
 	
 	public int getMessageType() {

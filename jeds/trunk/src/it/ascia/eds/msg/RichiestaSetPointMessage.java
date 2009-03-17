@@ -30,10 +30,10 @@ public class RichiestaSetPointMessage extends PTPRequest {
 		if (m.getMessageType() == EDSMessage.MSG_LETTURA_SET_POINT) {
 			if ((getSender() == m.getRecipient()) &&
 					(getRecipient() == m.getSender())) {
-				answered = true;
+				return true;
 			}
 		}
-		return answered;
+		return false;
 	}
 	
 	/**

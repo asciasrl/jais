@@ -30,10 +30,10 @@ public class RichiestaStatoTermostatoMessage extends PTPRequest {
 		if (m.getMessageType() == EDSMessage.MSG_RISPOSTA_STATO_TERMOSTATO) {
 			if ((getSender() == m.getRecipient()) &&
 					(getRecipient() == m.getSender())) {
-				answered = true;
+				return true;
 			}
 		}
-		return answered;
+		return false;
 	}
 	
 	/**

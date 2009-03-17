@@ -8,6 +8,12 @@ import java.util.Random;
  */
 public abstract class BroadcastMessage extends EDSMessage 
 	{
+
+	public BroadcastMessage() {
+		Destinatario = r.nextInt() & 0xFF;
+		Mittente = r.nextInt() & 0xFF;
+	}
+	
 	/**
 	 * La nostra fonte di numeri casuali.
 	 */
@@ -24,14 +30,4 @@ public abstract class BroadcastMessage extends EDSMessage
 		return true;
 	}
 	
-	/**
-	 * Genera l'header con destinatario e mittente casuali.
-	 * 
-	 * <p>Questo metodo deve essere chiamato prima di ogni reinvio.</p>
-	 * TODO Spostare nel costruttore ed eliminare
-	 */
-	public void randomizeHeaders() {
-		Destinatario = r.nextInt() & 0xFF;
-		Mittente = r.nextInt() & 0xFF;
-	}
 }

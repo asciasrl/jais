@@ -32,7 +32,6 @@ public class ProgrammazioneMessage extends BroadcastMessage {
 	 */
 	public ProgrammazioneMessage(boolean apertura, int protocollo)
 	  throws AISException {
-		randomizeHeaders();
 		TipoMessaggio = getMessageType();
 		Byte1 = (apertura ? 1 : 0); 
 		Byte2 = protocollo;

@@ -23,7 +23,6 @@ public class ComandoBroadcastMessage extends BroadcastMessage {
 	 */
 	public ComandoBroadcastMessage(int Numero, boolean Attivazione, int Modalita)
 	  throws Exception {
-		randomizeHeaders();
 		TipoMessaggio = EDSMessage.MSG_COMANDO_BROADCAST;
 		Byte1 = (Attivazione ? 0 : 1) & 0x01 + ((Modalita & 0x7F) << 1); 
 		Byte2 = Numero & 0x1F;

@@ -3,9 +3,10 @@
  */
 package it.ascia.eds;
 
-import java.io.IOException;
 import java.util.Iterator;
+import java.util.concurrent.LinkedBlockingQueue;
 import it.ascia.ais.AISException;
+import it.ascia.ais.Connector;
 import it.ascia.ais.Controller;
 import it.ascia.ais.Message;
 import it.ascia.eds.device.*;
@@ -19,8 +20,26 @@ import it.ascia.eds.msg.*;
  * @author arrigo
  *
  */
-public class EDSConnector extends it.ascia.ais.Connector {
+public class EDSConnector extends Connector {
+
 	/**
+     * Il messaggio che stiamo mandando, per il quale aspettiamo una risposta.
+     */
+    private PTPRequest messageToBeAnswered;
+    
+	private LinkedBlockingQueue receiveQueue;
+	private LinkedBlockingQueue sendQueue;
+
+    /**
+     * Indirizzo con cui il Connettore invia messaggi sul BUS
+     */
+    private int myAddress = 0;
+
+	public void setAddress(int myAddress) {
+		this.myAddress = myAddress; 		
+	}
+	
+    /**
 	 * Quanto tempo aspettare la risposta dopo l'invio di un messaggio.
 	 * 
 	 * <p>Nel caso peggiore (1200 bps), la trasmissione di un messaggio richiede 
@@ -56,7 +75,7 @@ public class EDSConnector extends it.ascia.ais.Connector {
     /**
      * Il BMC "finto" che corrisponde a questo.
      */
-    private BMCComputer bmcComputer;
+    //private BMCComputer bmcComputer;
     
     /**
      * Connettore per il BUS EDS.
@@ -66,32 +85,27 @@ public class EDSConnector extends it.ascia.ais.Connector {
      */
     public EDSConnector(String name, Controller controller) {
     	super(name,controller);
-        bmcComputer = null;
+        //bmcComputer = null;
 		mp = new MessageParser();
+		receiveQueue = new LinkedBlockingQueue();
+		Thread receivingThread = new ReceivingThread();
+		receivingThread.setName(getName()+"-receiving");
+		receivingThread.start();
+		sendQueue = new LinkedBlockingQueue();
+		Thread sendingThread = new SendingThread();
+		sendingThread.setName(getName()+"-sending");
+		sendingThread.start();
     }
-    
-    
+
     /**
-     * Imposta il BMCComputer del connector.
-     * @throws AISException 
-     */
-    public void setBMCComputer(BMCComputer bmcComputer) throws AISException {
-    	this.bmcComputer = bmcComputer;
-    }
-    
-    public BMCComputer getBMCComputer() {
-    	return this.bmcComputer;
-    }
-        
-    /**
-     * Ritorna l'indirizzo del BMCComputer del connettore.
+     * Ritorna l'indirizzo del connettore.
      * 
      * <p>Questo metodo e' utile per i BMC, quando devono richiedere 
      * informazioni sul proprio stato. I messaggi che inviano devono partire 
-     * "a nome" del BMCComputer.</p>
+     * "a nome" del connettore.</p>
      */
-    public int getBMCComputerAddress() {
-    	return bmcComputer.getIntAddress();
+    public int getMyAddress() {
+    	return myAddress;
     }
         
     /**
@@ -102,11 +116,7 @@ public class EDSConnector extends it.ascia.ais.Connector {
 		if (mp.isValid()) {
 			EDSMessage m = mp.getMessage();
 			if (m != null) {
-				try {
-					dispatchMessage(m);
-				} catch (AISException e) {
-	    			logger.error("Errore: " + e.getMessage());
-				}
+				receiveQueue.offer(m);
 			}
 		}    	
     }
@@ -128,6 +138,16 @@ public class EDSConnector extends it.ascia.ais.Connector {
     private void dispatchMessage(EDSMessage m) throws AISException {
     	int rcpt = m.getRecipient();
     	int sender = m.getSender();
+    	if (messageToBeAnswered != null 
+    			&& PTPResponse.class.isInstance(m) 
+    			&& messageToBeAnswered.isAnsweredBy((PTPResponse) m)) {
+    		((PTPResponse) m).setRequest(messageToBeAnswered);
+			// sveglia sendPTPRequest
+			synchronized (messageToBeAnswered) {
+	    		messageToBeAnswered.setAnswered(true);
+				messageToBeAnswered.notify(); 						
+			}
+    	}
     	if (BroadcastMessage.class.isInstance(m)) { 
     		// Mandiamo il messaggio a tutti
     		Iterator it = getDevices().values().iterator();
@@ -135,6 +155,15 @@ public class EDSConnector extends it.ascia.ais.Connector {
     			BMC bmc = (BMC)it.next();
     			bmc.messageReceived(m);
     		}
+    	} else if (RispostaModelloMessage.class.isInstance(m)) {
+			// Aggiungiamo i BMC che si presentano
+			RispostaModelloMessage risposta = (RispostaModelloMessage) m;
+			if (getDevice(risposta.getSource()) == null) {
+				BMC bmc = createBMC(risposta.getSource(), risposta.getModello());
+				logger.info("Creato BMC "+bmc);
+				discoverUscite(bmc);
+				discoverBroadcastBindings(bmc);				
+			}
     	} else { 
     		BMC bmc;
     		
@@ -149,33 +178,248 @@ public class EDSConnector extends it.ascia.ais.Connector {
     		if (bmc != null) {
     			bmc.messageReceived(m);
     		}
-
-    		// Lo mandiamo anche al BMCComputer, se non era per lui
-    		if ((bmcComputer != null) && 
-    				(rcpt != bmcComputer.getIntAddress())) { 
-    	   		bmcComputer.messageReceived(m);
-    		}
     	}
     }
 
-    /**
-     * Invia un messaggio e attende una risposta dal destinatario, se il
-     * messaggio lo richiede.
-     * 
-     * @return true se il messaggio di risposta e' arrivato, o se l'invio e'
-     * andato a buon fine.
-     */
+    private BMC createBMC(String source, int modello) throws AISException {
+    	return BMC.createBMC(this, source, modello, null, true);
+	}
+
+
+	public int getRetryTimeout() {
+    	return RETRY_TIMEOUT;
+    }
+
     public boolean sendMessage(Message m) {
-    	if (bmcComputer != null) {
-    		return bmcComputer.sendMessage((EDSMessage)m);
+    	if (EDSMessage.class.isInstance(m)) {
+    		return sendMessage((EDSMessage) m);
     	} else {
-    		logger.error("Il connector non ha un BMCComputer!");
     		return false;
     	}
     }
     
-    public int getRetryTimeout() {
-    	return RETRY_TIMEOUT;
+    /**
+	 * Invia un messaggio sul transport.
+	 * 
+	 * <p>Se il messaggio richiede una risposta, questa viene attesa seguendo i
+	 * timeout stabiliti.</p>
+	 * 
+	 * @return true se l'invio e' andato a buon fine; nel caso di richieste,
+	 * ritorna true se e' arrivata una risposta.
+	 */
+	public boolean sendMessage(EDSMessage m) {
+		boolean retval = false;
+		if (m.isBroadcast()) {
+			sendBroadcastMessage((BroadcastMessage) m);
+			retval = true;
+		} else { 
+			// E' un PTPMessage
+			PTPMessage ptpm = (PTPMessage) m;
+			if (ptpm.wantsReply()) {
+				// E' un PTPRequest
+				retval = sendPTPRequest((PTPRequest) ptpm);
+			} else {
+				// Invio nudo e crudo
+				try {
+					transportSemaphore.acquire();
+					transport.write(m.getBytesMessage());
+					transportSemaphore.release();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					logger.error(e);
+				}
+				// non c'e' modo di sapere se e' arrivato; siamo ottimisti.
+				retval = true;
+			}
+		}
+		return retval;
+	}
+
+	public void queueMessage(EDSMessage m) {
+		sendQueue.offer(m);
+		//logger.debug("Messaggi in coda da inviare: "+sendQueue.size());
+	}
+
+	/**
+	 * Invia un messaggio broadcast.
+	 * 
+	 * <p>Gli header0
+	 *  vengono ri-generati ad ogni invio.</p>
+	 */
+	private void sendBroadcastMessage(BroadcastMessage m) {
+		int tries = m.getSendTries();
+		try {
+			transportSemaphore.acquire();
+			for (int i = 0; i < tries; i++) {
+				try {
+					Thread.sleep(getRetryTimeout());
+				} catch (InterruptedException e) {
+				}
+				transport.write(m.getBytesMessage());
+			}
+			transportSemaphore.release();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		}
+	}
+	
+	/**
+	 * Invia un messaggio point-to-point e attende risposta.
+	 *
+	 * <p>Se la risposta non arriva dopo un certo tempo, essa viene ri-inviata 
+	 * un tot di volte.</p>
+     * 
+     * <p>Il messaggio di risposta viene riconosciuto da dispatchMessage().</p>
+	 */
+	private boolean sendPTPRequest(PTPRequest m) {
+    	int tries;
+    	boolean received = false;
+		if (messageToBeAnswered != null) {
+			if (messageToBeAnswered.compareTo(m) == 0) {
+				logger.debug("Messaggio gia' inviato in attesa di risposta: "+m);				
+				return true;
+			}
+		}
+		try {
+			transportSemaphore.acquire();
+			if (messageToBeAnswered != null) {
+				logger.error("messageToBeAnswered non nullo: "+messageToBeAnswered);
+				logger.error("Messaggio in attesa :"+m);
+				return false;
+			}
+        	messageToBeAnswered = m;
+	    	synchronized (messageToBeAnswered) {
+	    		for (tries = 1;
+	    			(tries <= m.getMaxSendTries()) && (!m.isAnswered()); 
+	    			tries++) {
+	    			logger.trace("Invio "+tries+" di "+m.getMaxSendTries()+" : "+m.toHexString());
+	    			while (mp.isBusy()) {
+	    				logger.trace("Delaying... "+mp.dumpBuffer());
+	    				Thread.sleep(100);
+	    			}
+	    			transport.write(m.getBytesMessage());
+	    			// si mette in attesa, ma se nel frattempo arriva la risposta viene avvisato
+	    	    	try {
+	    				//transportSemaphore.release();
+	    	    		messageToBeAnswered.wait((long)(getRetryTimeout() * (1 + 0.2 * Math.random())));
+	    				//transportSemaphore.acquire();
+	    	    	} catch (InterruptedException e) {
+	    				logger.trace("sendPTPRequest wait:2");
+	    	    	}
+	    		}
+		    	received = m.isAnswered();
+		    	messageToBeAnswered = null;
+	    	}
+			transportSemaphore.release();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		}
+    	if (! received) {
+    		logger.error("Messaggio non risposto: "+m);
+    	}
+		return received;
     }
+
+	/**
+     * "Scopre" il BMC indicato inviandogli un messaggio di richiesta modello.
+     * 
+     * <p>Se il BMC e' gia' in lista, non invia messaggi, ma ritorna le 
+     * informazioni gia' note.</p>
+     * 
+     * <p>Se il BMC non era gia' in lista, allora verra' inserito dal metodo 
+     * messageReceived(). Questo metodo chiama anche 
+     * @link{#discoverBroadcastBindings} per scoprire le associazioni del
+     * BMC ai comandi broadcast.
+     * 
+     * @param address l'indirizzo del BMC da "scoprire".
+     * 
+     * @return il BMC se trovato o registrato, oppure null.
+     */
+    public void discoverBMC(int address) {
+    	//sendPTPRequest(new RichiestaModelloMessage(address,getMyAddress()));
+    	queueMessage(new RichiestaModelloMessage(address,getMyAddress()));
+    }
+
+    /**
+     * Rileva le opzioni delle uscite.
+     * 
+     * <p>Questo metodo manda molti messaggi! Il metodo messageReceived() del 
+     * BMC deve interpretare i messaggi di risposta.</p>
+     *  
+     * {@link RispostaUscitaMessage}.
+     */
+    public void discoverUscite(BMC bmc){
+    	int outPort;
+    	for (outPort = 0; outPort < bmc.getOutPortsNumber(); outPort++) {
+    		RichiestaUscitaMessage m = new RichiestaUscitaMessage(bmc.getIntAddress(),
+    					getMyAddress(), outPort);
+    		//sendPTPRequest(m);
+    		queueMessage(m);
+    	}
+    }	       
+
+    /**
+     * Rileva le associazioni delle uscite con comandi broadcast.
+     * 
+     * <p>Questo metodo manda molti messaggi! Il metodo messageReceived() del 
+     * BMC deve interpretare i messaggi di risposta.</p>
+     *  
+     * {@link RispostaAssociazioneUscitaMessage}.
+     */
+    public void discoverBroadcastBindings(BMC bmc){
+    	int outPort;
+    	int casella;
+    	logger.debug("Richiesta associazioni broadcast BMC " + 
+    			bmc.getName());
+    	for (outPort = 0; outPort < bmc.getOutPortsNumber(); outPort++) {
+    		for (casella = 0; casella < bmc.getCaselleNumber(); casella++) {
+    			RichiestaAssociazioneUscitaMessage m;
+    			m = new RichiestaAssociazioneUscitaMessage(bmc.getIntAddress(),
+    					getMyAddress(), outPort, casella);
+    			//sendPTPRequest(m);
+        		queueMessage(m);
+    		}
+    	}
+    }
+    
+    private class ReceivingThread extends Thread {
+    
+    	public void run() {
+    		while (true) {
+    			EDSMessage m;
+				try {
+					//logger.debug("Messaggi in coda: "+receiveQueue.size());
+					m = (EDSMessage) receiveQueue.take();
+			    	logger.debug("Dispatching (+"+receiveQueue.size()+"): " + m);
+					dispatchMessage(m);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					logger.error(e);
+				} catch (AISException e) {
+					logger.error(e);
+				}
+    		}
+    	}
+    }
+
+    private class SendingThread extends Thread {
         
+    	public void run() {
+    		while (true) {
+    			EDSMessage m;
+				try {
+					//logger.debug("Messaggi in coda: "+sendQueue.size());
+					m = (EDSMessage) sendQueue.take();
+			    	logger.debug("Sending (+"+sendQueue.size()+"): " + m);
+					sendMessage(m);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					logger.error(e);
+				}
+    		}
+    	}
+    }
+
 }

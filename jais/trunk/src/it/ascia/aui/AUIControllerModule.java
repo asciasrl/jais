@@ -1,37 +1,49 @@
 package it.ascia.aui;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
 import org.json.simple.JSONObject;
+import org.mortbay.util.ajax.JSONObjectConvertor;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.ControllerModule;
 import it.ascia.ais.Device;
-import it.ascia.ais.DeviceEvent;
+import it.ascia.ais.DevicePortChangeEvent;
 
-public class AUIControllerModule extends ControllerModule  {
+public class AUIControllerModule extends ControllerModule implements PropertyChangeListener {
+	
+	/**
+	 * Code di streaming attive
+	 */
+	private ArrayList streams;
+	
+	public AUIControllerModule() {
+		super();
+		streams = new ArrayList();
+	}
 
 	public HierarchicalConfiguration getConfig() {
 		HierarchicalConfiguration cfg = config.configurationAt("AUI");
 		return cfg;
 	}
 
-	public void onDeviceEvent(DeviceEvent event) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	public void start() {
-		// TODO Auto-generated method stub
-		
+		controller.addPropertyChangeListener(this);
 	}
 
 	public void stop() {
-		// TODO Auto-generated method stub
+		controller.removePropertyChangeListener(this);
 	}
 	
 	/**
@@ -69,6 +81,10 @@ public class AUIControllerModule extends ControllerModule  {
 		return j.toJSONString();
 	}
 
+	/**
+	 * Proprieta' dei controlli presenti nelle mappe 
+	 * @return JSONString
+	 */
 	public String getControls() {
 		JSONObject j =new JSONObject();
 		HierarchicalConfiguration auiConfig = getConfig();
@@ -96,6 +112,30 @@ public class AUIControllerModule extends ControllerModule  {
 		}
 		return j.toJSONString();
 	}
+	
+	/**
+	 * Controlli corrispondenti agli indirizzi 
+	 * @return JSONString
+	 */
+	public String getAddresses() {
+		JSONObject j =new JSONObject();
+		HierarchicalConfiguration auiConfig = getConfig();
+		List maps = auiConfig.configurationsAt("map");
+		for (Iterator im = maps.iterator(); im.hasNext(); ) {
+			HierarchicalConfiguration mapConfig = (HierarchicalConfiguration) im.next();
+			String mapId = mapConfig.getString("id");
+			List controls = mapConfig.configurationsAt("control");
+			for (Iterator ic = controls.iterator(); ic.hasNext(); ) {
+				HierarchicalConfiguration controlConfig = (HierarchicalConfiguration) ic.next();
+				String id = "control-" + mapId + "-" + controlConfig.getString("id");
+				String address = controlConfig.getString("address");
+				if (address != null) {
+					j.put(address, id);
+				}
+			}
+		}
+		return j.toJSONString();
+	}
 
 	public String doCommand(String command, HashMap params) throws AISException {
 		String retval = "";
@@ -108,13 +148,13 @@ public class AUIControllerModule extends ControllerModule  {
 			}
 		} else if (command.equals("get")) {
 			// Comando "get"
-			String name = (String) params.get("name");
-			if (name == null) {
-				throw(new AISException("Parametro 'name' richiesto"));
+			String fullAddress = (String) params.get("address");
+			if (fullAddress == null) {
+				throw(new AISException("Parametro 'address' richiesto"));
 			}
 			// TODO semplificare
-			String deviceAddress = controller.getDeviceFromAddress(name);
-			String portName = controller.getPortFromAddress(name);
+			String deviceAddress = controller.getDeviceFromAddress(fullAddress);
+			String portName = controller.getPortFromAddress(fullAddress);
 			Device devices[] = controller.findDevices(deviceAddress);
 			if (devices.length > 0) {
 				retval = "";
@@ -122,7 +162,7 @@ public class AUIControllerModule extends ControllerModule  {
 					retval += devices[i].getStatus(portName, 0);
 				}
 			} else {
-				retval = "ERROR: address " + name + " not found.";
+				retval = "ERROR: address " + fullAddress + " not found.";
 			}
 		} else if (command.equals("getAll")) {
 			// Comando "getAll": equivale a "get *:*"
@@ -141,17 +181,17 @@ public class AUIControllerModule extends ControllerModule  {
 			}
 		} else if (command.equals("set")) {
 			// Comando "set"
-			String name = (String) params.get("name");
-			if (name == null) {
-				throw(new AISException("Parametro 'name' richiesto"));
+			String fullAddress = (String) params.get("address");
+			if (fullAddress == null) {
+				throw(new AISException("Parametro 'address' richiesto"));
 			}
 			String value = (String) params.get("value");
 			if (value == null) {
 				throw(new AISException("Parametro 'value' richiesto"));
 			}
 			// TODO semplificare
-			String deviceAddress = controller.getDeviceFromAddress(name);
-			String portId = controller.getPortFromAddress(name);
+			String deviceAddress = controller.getDeviceFromAddress(fullAddress);
+			String portId = controller.getPortFromAddress(fullAddress);
 			Device devices[] = controller.findDevices(deviceAddress);
 			if (devices.length == 1) {
 				devices[0].poke(portId, value);
@@ -163,7 +203,28 @@ public class AUIControllerModule extends ControllerModule  {
 			throw(new AISException("ERROR: comando '"+command+"' non implementato.")); 
 		}
 		return retval; 		
-	}	
-	
+	}
+
+	/**
+	 * Riceve un evento e lo inoltra alle code degli stream aperti
+	 */
+	public void propertyChange(PropertyChangeEvent evt) {
+		logger.info(evt.getPropertyName()+"="+evt.getOldValue()+" -> "+ evt.getNewValue());
+		logger.debug("Stream aperti: "+streams.size());
+		for (int i = 0; i < streams.size(); i++) {
+			LinkedBlockingQueue q = (LinkedBlockingQueue) streams.get(i);
+			q.offer(evt);
+			logger.trace("Coda "+i+", offerto evento "+evt.toString());
+		}
+	}
+
+	public void addStreamQueue(LinkedBlockingQueue q) {
+		streams.add(q);		
+	}
+
+	public void removeStreamQueue(LinkedBlockingQueue q) {
+		streams.remove(q);		
+	}
+
 
 }

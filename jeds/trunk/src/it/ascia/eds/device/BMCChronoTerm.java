@@ -6,6 +6,7 @@ package it.ascia.eds.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
+import it.ascia.ais.DevicePort;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.msg.CronotermMessage;
 import it.ascia.eds.msg.ImpostaSetPointMessage;
@@ -101,42 +102,7 @@ public class BMCChronoTerm extends BMC {
 	 */
 	private static final String port_state = "state";
 	
-	/**
-	 * Ingresso termometro.
-	 */
-	private double temperature;
-	/**
-	 * La temperatura non e' aggiornata.
-	 */
-	private boolean dirtyTemperature;
-	/**
-	 * Timestamp di aggiornamento della temperatura.
-	 */
-	private long temperatureTimestamp = 0;
-	/**
-	 * Temperatura di set point del termostato.
-	 */
-	private double setPoint;
-	/**
-	 * Il set point non è aggiornato.
-	 */
-	private boolean dirtySetPoint;
-	/**
-	 * Timestamp di aggiornamento del set point.
-	 **/
-	private long setPointTimestamp = 0;
-	/**
-	 * Stato del termostato.
-	 */
-	private int state;
-	/**
-	 * Lo stato del termostato non e' aggiornato.
-	 */
-	private boolean dirtyState;
-	/**
-	 * Timestamp di aggiornamento del termostato.
-	 */
-	private long stateTimestamp = 0;
+	private static final String port_season = "season";
 	
 	/**
 	 * Costruttore
@@ -153,48 +119,30 @@ public class BMCChronoTerm extends BMC {
 			logger.error("Errore: modello di BMCChronoTerm sconosciuto:" +
 					model);
 		}
-		// TODO da levare, lasciare solo addPort() 
-		state = STATE_OFF; // Un valore qualunque
-		dirtyState = true;
-		temperature = 0; // Di default fa molto freddo. ;-)
-		dirtyTemperature = true;
-		setPoint = 0; // Di default vogliamo che faccia molto freddo. ;-)
-		dirtySetPoint = true;
 		addPort(port_setpoint);
 		addPort(port_state);
 		addPort(port_temperature);
+		addPort(port_season);
 	}
 	
 	/* (non-Javadoc)
 	 * @see it.ascia.eds.device.BMC#receiveMessage(it.ascia.eds.msg.Message)
 	 */
 	// TODO: reagire a messaggi broadcast
-	public void messageReceived(EDSMessage m) {
+	public void messageReceived(EDSMessage m) throws AISException {
 		switch (m.getMessageType()) {
 		case EDSMessage.MSG_VARIAZIONE_INGRESSO: {
 			// Qualcuno ha premuto un interruttore. Siamo dirty, finche' non
 			// vedremo un acknowledge.
 			VariazioneIngressoMessage var = 
 				(VariazioneIngressoMessage) m;
-			int oldState = state;
-			state = var.getChronoTermState();
-			if (oldState != state) {
-				stateTimestamp = System.currentTimeMillis();
-				generateEvent(port_state, String.valueOf(state));
-			}
-			dirtyState = true;
+			setPortValue(port_state,new Integer(var.getChronoTermState()));
 		}
 		break;
 		case EDSMessage.MSG_IMPOSTA_SET_POINT: {
 			// Si vuole cambiare il set point
 			ImpostaSetPointMessage set = (ImpostaSetPointMessage) m;
-			double oldSetPoint = setPoint;
-			setPoint = set.getSetPoint();
-			if (oldSetPoint != setPoint) {
-				setPointTimestamp = System.currentTimeMillis();
-				generateEvent(port_setpoint, String.valueOf(setPoint));
-			}
-			dirtySetPoint = true;
+			setPortValue(port_setpoint,new Double(set.getSetPoint()));
 		}
 		break;
 		}
@@ -208,7 +156,8 @@ public class BMCChronoTerm extends BMC {
 			updating = true;
 			// Questo messaggio contiene il nostro stato
 			RispostaStatoTermostatoMessage tm = (RispostaStatoTermostatoMessage) m;
-			temperature = tm.getChronoTermTemperature();
+			double temperature = tm.getChronoTermTemperature();
+			int state = 0;
 			switch (tm.getMode()) {
 			case RispostaStatoTermostatoMessage.MODE_ANTI_FREEZE:
 				state = STATE_TEMP_ANTIFREEZE;
@@ -223,30 +172,17 @@ public class BMCChronoTerm extends BMC {
 				state = STATE_CHRONO;
 				break;
 			}
-			// TODO logger.trace("messageSent:1.2");
-			setPortValue(port_state,getStateAsString());
-			// TODO logger.trace("messageSent:1.3");
+			setPortValue(port_state,getStateAsString(state));
 			setPortValue(port_temperature,new Double(temperature));
 			updating = false;
 			// TODO logger.trace("messageSent:1.4");
 			break;
 		case EDSMessage.MSG_LETTURA_SET_POINT:
-			// TODO logger.trace("messageSent:2.1");
 			updating = true;
-			// Vediamo qual e' il nostro set-point.
 			CronotermMessage ctm = (CronotermMessage) m;
-			//double oldSetPoint = setPoint;
-			setPoint = ctm.getSetPoint();
-			// TODO logger.trace("messageSent:2.2");
+			double setPoint = ctm.getSetPoint();
 			setPortValue(port_setpoint,new Double(setPoint));
-			// TODO logger.trace("messageSent:2.3");
-			/*
-			if (setPoint != oldSetPoint) {
-				setPointTimestamp = System.currentTimeMillis();
-				generateEvent(port_setpoint, String.valueOf(setPoint));
-			}
-			dirtySetPoint = false;
-			*/
+			setPortValue(port_season,ctm.isWinter() ? "inverno" : "estate");
 			updating = false;
 		break;
 		}
@@ -314,43 +250,21 @@ public class BMCChronoTerm extends BMC {
 	/**
 	 * Ritorna lo stato del cronotermostato sotto forma di stringa.
 	 */
-	public String getStateAsString() {
+	public static String getStateAsString(int state) {
 		// Sanity check
 		if ((state >= 0) && (state < stateStrings.length)) {
 			return stateStrings[state];
-		} else {
-			logger.error("Internal state is invalid: " + state);
-			return "ERROR";
 		}
+		return null;
 	}
 
-	// TODO eliminare i caching, usare solo DevicePort
-	public String getStatus(String port, long timestamp) {
-		String retval = "";
-		String busName = getConnector().getName();
-		String compactName = busName + "." + getAddress();
-		if (dirtySetPoint) {
-			updateSetPoint();
+	public String getStatus(String portId, long timestamp) throws AISException {
+		DevicePort p = getPort(portId);
+		if (p.getTimeStamp() >= timestamp) {
+			return p.getFullAddress() + "=" + p.getValue();
+		} else {
+			return "";
 		}
-		if (dirtyState || dirtyTemperature) {
-			updateTermStatus();
-		}
-		if ((timestamp <= temperatureTimestamp) && 
-				(port.equals("*") || port.equals(port_temperature))) {
-			retval += compactName + ":" + port_temperature + "=" + temperature + 
-				"\n";
-		}
-		if ((timestamp <= setPointTimestamp) && 
-				(port.equals("*") || port.equals(port_setpoint))) {
-			retval += compactName + ":" + port_setpoint + "=" + setPoint + 
-				"\n";
-		}
-		if ((timestamp <= stateTimestamp) && 
-				(port.equals("*") || port.equals(port_state))) {
-			retval += compactName + ":" + port_state + "=" + 
-				getStateAsString() + "\n";
-		}
-		return retval;
 	}
 
 	// TODO Eliminare getFirstInputPortNumber()
@@ -363,15 +277,6 @@ public class BMCChronoTerm extends BMC {
 		return 0;
 	}
 	
-	public void printStatus() {
-		System.out.println("Stato: " + getStateAsString() + " (" + state + ")" + 
-				(dirtyState? "?" : ""));
-		System.out.println("Temperatura: " + temperature + 
-				(dirtyTemperature? "?" : ""));
-		System.out.println("Set point: " + setPoint + 
-				(dirtySetPoint? "?" : ""));
-	}
-
 	/**
 	 * Permette l'impostazione di temperatura o stato.
 	 * 

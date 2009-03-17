@@ -3,14 +3,9 @@
  */
 package it.ascia.ais;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
-
+import java.util.LinkedHashMap;
 import org.apache.log4j.Logger;
-
 
 /**
  * Device generico connesso a un Connector generico.
@@ -36,7 +31,7 @@ public abstract class Device {
 	/**
 	 * le porte del dispositivo.
 	 */
-	private HashMap ports = new HashMap();
+	private LinkedHashMap ports = new LinkedHashMap();
 
 	public Device(Connector connector) throws AISException {
 		this(connector,"");
@@ -48,9 +43,6 @@ public abstract class Device {
 		connector.addDevice(this);
 		logger = Logger.getLogger(getClass());
 	}
-	
-	// TODO Rendere parametrizzable da config cacheRetention 
-	private long cacheRetention = 60000; // millisecondi
 	
 	/**
 	 * Ritorna l'indirizzo del Device, senza considerare il connettore.
@@ -138,14 +130,14 @@ public abstract class Device {
 	 * @param portId
 	 * @param portName
 	 */
-	protected void addPort(String portId, String portName) {
+	public void addPort(String portId, String portName) {
 		ports.put(portId, new DevicePort(this, portId, portName));		
 	}
 
 	/**
 	 * @param portId
 	 */
-	protected void addPort(String portId) {
+	public void addPort(String portId) {
 		addPort(portId, null);		
 	}
 	
@@ -192,31 +184,6 @@ public abstract class Device {
 		p.setName(portName);
 	}
 	
-	/*
-	protected void generateEvent(String portId) throws AISException {
-		generateEvent(portId,getPortValue(portId));
-	}
-	*/
-		
-	/**
-	 * Imposta il valore di una porta di un device reale, gestendo la trasmissione del relativo messaggio
-	 * 
-	 * @param portId il nome della porta
-	 * @param value il valore da impostare
-	 * 
-	 * @throws un'eccezione se qualcosa va male.
-	 * @deprecated Basta il metodo writePort, che deve invalidare la cache se lo ritiene necessario
-	 * TODO da rivedere per semplificare l'annidazione, spostando quasi tutto qui e lasciando al codice dei figlio solo cose specifiche 
-	 */
-	public void poke(String portId, Object newValue) throws AISException {
-		DevicePort p = getPort(portId); 
-		p.invalidate();
-		writePort(portId, newValue);
-	}
-		
-	/**
-	 * 
-	 */
 	public void invalidate(String portId) throws AISException {
 		DevicePort p = (DevicePort) ports.get(portId); 
 		p.invalidate();
@@ -239,7 +206,7 @@ public abstract class Device {
 	
 	/**
 	 * Aggiorna il valore della porta
-	 * Se il valore della porta è modificato genera un deviceEvent
+	 * Se il valore della porta è modificato genera un DevicePortChangeEvent
 	 * @param portId
 	 * @param newValue
 	 * @throws AISException
@@ -257,7 +224,7 @@ public abstract class Device {
 	 * 
 	 * @throws un'eccezione se qualcosa va male.
 	 */	
-	protected Object getPortValue(String portId) throws AISException {
+	public Object getPortValue(String portId) throws AISException {
 		DevicePort p = (DevicePort) ports.get(portId);			
 		return p.getValue();
 	}
@@ -267,19 +234,12 @@ public abstract class Device {
 	 * @param portId
 	 * @return
 	 */
-	protected long getPortTimestamp(String portId) {
+	public long getPortTimestamp(String portId) {
 		DevicePort p = (DevicePort) ports.get(portId);			
-		return p.getTimestamp();
+		return p.getTimeStamp();
 	}
 
 	public void fireDevicePortChangeEvent(DevicePortChangeEvent evt) {
 		connector.fireDevicePortChangeEvent( evt );
 	}
-
-	/*
-	public void onDevicePortChangeEvent(DevicePortChangeEvent event) {
-		connector.onDevicePortChangeEvent(event);		
-	}
-	*/
-
 }

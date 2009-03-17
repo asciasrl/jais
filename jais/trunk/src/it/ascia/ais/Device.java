@@ -193,8 +193,9 @@ public abstract class Device {
      * Scrive un nuovo valore sulla porta del dispositivo fisico 
      * @param portId
      * @param newValue
+     * @return true se operazione andata a buon fine
      */
-	public abstract void writePort(String portId, Object newValue) throws AISException ;
+	public abstract boolean writePort(String portId, Object newValue) throws AISException ;
 	
 	/**
      * Legge dal dispositivo fisisco lo stato della porta ed aggiorna il valore corrispondente (portValues)  

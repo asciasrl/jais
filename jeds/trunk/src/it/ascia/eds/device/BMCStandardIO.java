@@ -5,15 +5,18 @@ package it.ascia.eds.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
+import it.ascia.ais.DevicePort;
 import it.ascia.eds.msg.AcknowledgeMessage;
 import it.ascia.eds.msg.ComandoBroadcastMessage;
 import it.ascia.eds.msg.ComandoUscitaMessage;
 import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.RichiestaAssociazioneUscitaMessage;
 import it.ascia.eds.msg.RichiestaStatoMessage;
+import it.ascia.eds.msg.RichiestaUscitaMessage;
 import it.ascia.eds.msg.RispostaAssociazioneUscitaMessage;
 import it.ascia.eds.msg.RispostaModelloMessage;
 import it.ascia.eds.msg.RispostaStatoMessage;
+import it.ascia.eds.msg.RispostaUscitaMessage;
 import it.ascia.eds.msg.VariazioneIngressoMessage;
 
 /**
@@ -34,44 +37,7 @@ import it.ascia.eds.msg.VariazioneIngressoMessage;
  * TODO gestire anche il caching (dirty) delle porte di ingresso
  */
 public class BMCStandardIO extends BMC {
-	/**
-	 * Numero di uscite digitali.
-	 */
-	protected int outPortsNum;
-	/**
-	 * Questo BMC e' fisicamente presente sul transport?
-	 * 
-	 * <p>
-	 * Se questo attributo e' false, allora bisogna simulare l'esistenza di
-	 * questo BMC.
-	 * </p>
-	 */
-	private boolean isReal;
-	/**
-	 * Numero di ingressi digitali.
-	 */
-	private int inPortsNum;
-	/**
-	 * Ingressi.
-	 */
-	//private boolean[] inPorts;
-	/**
-	 * Timestamp di aggiornamento degli ingressi.
-	 */
-	//private long inPortsTimestamps[];
-	/**
-	 * Uscite.
-	 */
-	//private boolean[] outPorts;
-	/**
-	 * I valori di outPorts non sono aggiornati.
-	 */
-	//private boolean[] outPortsDirty;
-	/**
-	 * Timestamp di aggiornamento delle uscite.
-	 */
-	//private long outPortsTimestamps[];
-
+	
 	/**
 	 * Costruttore.
 	 * 
@@ -90,15 +56,6 @@ public class BMCStandardIO extends BMC {
 	 */
 	public BMCStandardIO(Connector connector, String bmcAddress, int model, String name) throws AISException {
 		super(connector, bmcAddress, model, name);
-		this.isReal = true; // fino a prova contraria!
-		inPortsNum = getInPortsNumber();
-		outPortsNum = getOutPortsNumber();
-		for (int i = 0; i < inPortsNum; i++) {
-			addPort(getInputPortId(i));
-		}
-		for (int i = 0; i < outPortsNum; i++) {
-			addPort(getOutputPortId(i));
-		}
 	}
 
 	/**
@@ -134,7 +91,7 @@ public class BMCStandardIO extends BMC {
 						invalidate(getOutputPortId(ports[i]));
 					} else {
 						// Decidiamo noi che cosa succede
-						generateEvent(getOutputPortId(i), new Boolean(bmsg.isActivation()));
+						setPortValue(getOutputPortId(i), new Boolean(bmsg.isActivation()));
 					}
 				} // cicla sulle porte interessate
 			} // if ports.length > 0
@@ -149,7 +106,7 @@ public class BMCStandardIO extends BMC {
 				invalidate(getOutputPortId(vmsg.getOutputNumber()));
 			} else {
 				// Decidiamo noi cosa succede
-				generateEvent(getOutputPortId(port), new Boolean(vmsg.isActivation()));
+				setPortValue(getOutputPortId(port), new Boolean(vmsg.isActivation()));
 			}
 			// TODO impostare a dirty tutte le porte del mittente
 			break;
@@ -191,8 +148,8 @@ public class BMCStandardIO extends BMC {
 				// ...dobbiamo rispondere!
 				RichiestaStatoMessage question = (RichiestaStatoMessage) m;
 				// rispondiamo sempre tutti OFF
-				RispostaStatoMessage answer = new RispostaStatoMessage(question, new boolean[outPortsNum], new boolean[inPortsNum]);
-				getConnector().transport.write(answer.getBytesMessage());
+				RispostaStatoMessage answer = new RispostaStatoMessage(question, new boolean[getOutPortsNumber()], new boolean[getInPortsNumber()]);
+				getConnector().sendMessage(answer);
 			}
 			break;
 		} // switch (m.getMessageType())
@@ -218,145 +175,53 @@ public class BMCStandardIO extends BMC {
 				int i;
 				String portId;
 				temp = r.getInputs();
-				for (i = 0; i < inPortsNum; i++) {
+				for (i = 0; i < getInPortsNumber(); i++) {
 					portId = getInputPortId(i); 
 					setPortValue(portId, new Boolean(temp[i]));
 				}
 				temp = r.getOutputs();
-				for (i = 0; i < outPortsNum; i++) {
+				for (i = 0; i < getOutPortsNumber(); i++) {
 					portId = getOutputPortId(i); 
 					setPortValue(portId, new Boolean(temp[i]));
 				}
 				updating = false;
 				break;
-			case EDSMessage.MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST: {
+			case EDSMessage.MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST:
 				// Stiamo facendo un discovery delle associazioni.
-				RispostaAssociazioneUscitaMessage ra = (RispostaAssociazioneUscitaMessage) m;
-				if (ra.getComandoBroadcast() != 0) {
-					bindOutput(ra.getComandoBroadcast(), ra.getUscita());
+				RispostaAssociazioneUscitaMessage mrisp = (RispostaAssociazioneUscitaMessage) m;
+				int gruppo = mrisp.getComandoBroadcast();
+				if (gruppo > 0) {
+					RichiestaAssociazioneUscitaMessage mrich = (RichiestaAssociazioneUscitaMessage) mrisp.getRequest();
+					int outPortNumber = mrich.getUscita();
+					int casella = mrich.getCasella();
+					logger.info("Associazione uscita: "+getOutputPortId(outPortNumber)+" casella:"+casella+" al gruppo:"+gruppo);
+					bindOutput(gruppo, outPortNumber);
 				}
-			}
 				break;
+			case EDSMessage.MSG_RISPOSTA_USCITA:
+				// Stiamo facendo un discovery delle associazioni.
+				RispostaUscitaMessage ru = (RispostaUscitaMessage) m;
+				long t = ru.getMillisecTimer();
+				if (t > 0) {
+					RichiestaUscitaMessage req = (RichiestaUscitaMessage) ru.getRequest();
+					int uscita = req.getUscita();
+					portTimer[uscita] = new Long(t);
+					logger.info("Uscita "+uscita+" timer di "+t+"mS");
+				}
+				break;
+			case EDSMessage.MSG_ACKNOWLEDGE:
+				// TODO da gestire ?
+				break;
+			default:
+				logger.warn("Messaggio non gestito: "+m);
 			}
 		} // if isReal
 	}
 
-	/**
-	 * Ritorna lo stato degli ingressi.
-	 * 
-	 * @return un'array di booleani: true vuol dire acceso.
-	 */
-	/*
-	public boolean[] getInputs() {
-		return inPorts;
-	}
-	*/
-
-	/**
-	 * Ritorna lo stato delle uscite.
-	 * 
-	 * @return un'array di booleani: true vuol dire acceso.
-	 */
-	/*
-	public boolean[] getOutputs() {
-		return outPorts;
-	}
-	*/
 	
-	/**
-	 * Manda un messaggio di "variazione ingresso" per impostare il valore di 
-	 * un'uscita.
-	 * 
-	 * <p>Questo metodo deve essere usato quando si vuole simulare la pressione
-	 * di un interruttore da parte dell'utente.</p>
-	 * 
-	 * <p>
-	 * Se questo oggetto corrisponde a un BMC "vero", allora manda un messaggio
-	 * con mittente il BMCComputer. Altrimenti, l'uscita viene impostata
-	 * direttamente.
-	 * </p>
-	 * 
-	 * <p>Il valore dell'uscita viene impostato se la trasmissione ha successo
-	 * (o se il BMC e' virtuale).</p>
-	 * 
-	 * @param port
-	 *            numero della porta
-	 * @param value
-	 *            valore (true: acceso)
-	 * @return true se l'oggetto ha risposto (ACK)
-	 * 
-	 * @see #setOutPort
-	 */
-	/*
-	public boolean setOutputVariation(int port, boolean value) {
-		boolean retval = false;
-		if ((port >= 0) && (port < outPortsNum)) {
-			if (isReal) {
-				VariazioneIngressoMessage m;
-				m = new VariazioneIngressoMessage(getIntAddress(), 
-						getBMCComputerAddress(), value, port, 1);
-				// ComandoUscitaMessage m;
-				//m = new ComandoUscitaMessage(getIntAddress(), 
-				//		getConnector().getBMCComputerAddress(), port, value);
-				retval = getConnector().sendMessage(m);
-				outPortsDirty[port] = true;
-			} else { // The easy way
-				retval = true;
-			}
-			if (retval) {
-				boolean oldValue = outPorts[port];
-				outPorts[port] = value;
-				if (oldValue != value) {
-					outPortsTimestamps[port] = System.currentTimeMillis();
-					generateEvent(port, true);
-				}
-			}
-		} else {
-			logger.error("Numero porta non valido: " + port);
-		}
-		return retval;
-	}
-	*/
-
-	/**
-	 * Manda un messaggio per impostare direttamente il valore di un'uscita.
-	 * 
-	 * <p>
-	 * Se questo oggetto corrisponde a un BMC "vero", allora manda un messaggio
-	 * con mittente il BMCComputer. Altrimenti, l'uscita viene impostata
-	 * direttamente.
-	 * </p>
-	 * 
-	 * @param port
-	 *            numero della porta
-	 * @param value
-	 *            valore (true: acceso)
-	 * @return true se l'oggetto ha risposto (ACK)
-	 * @throws AISException 
-	 * 
-	 * @see #setOutputVariation
-	 */
-	public boolean setOutPort(int port, boolean value) throws AISException {
-		boolean retval = false;
-		int intValue = (value) ? 1 : 0;
-		if ((port >= 0) && (port < outPortsNum)) {
-			if (isReal) {
-				ComandoUscitaMessage m;
-				m = new ComandoUscitaMessage(getIntAddress(), getBMCComputerAddress(), 0, port, 0, intValue);
-				retval = getConnector().sendMessage(m);
-			} else { // The easy way
-				setPortValue(getOutputPortId(port),new Boolean(value));
-				retval = true;
-			}
-		} else {
-			logger.error("Numero porta non valido: " + port);
-		}
-		return retval;
-	}
-
 	public String getInfo() {
 		return getName() + ": BMC Standard I/O (modello " + model + ") con "
-				+ inPortsNum + " ingressi e " + outPortsNum
+				+ getInPortsNumber() + " ingressi e " + getOutPortsNumber()
 				+ " uscite digitali";
 	}
 
@@ -368,7 +233,7 @@ public class BMCStandardIO extends BMC {
 		int i;
 		System.out.print("Ingressi: ");
 		Boolean x;
-		for (i = 0; i < inPortsNum; i++) {
+		for (i = 0; i < getInPortsNumber(); i++) {
 			x = (Boolean) getPortValue(getInputPortId(i));
 			if (x == null) {
 				System.out.print("?");
@@ -378,7 +243,7 @@ public class BMCStandardIO extends BMC {
 		}
 		System.out.println();
 		System.out.print("Uscite:   ");
-		for (i = 0; i < outPortsNum; i++) {
+		for (i = 0; i < getOutPortsNumber(); i++) {
 			x = (Boolean) getPortValue(getOutputPortId(i));
 			if (x == null) {
 				System.out.print("?");
@@ -401,35 +266,6 @@ public class BMCStandardIO extends BMC {
 		}
 	}
 
-	/**
-	 * Ritorna lo stato delle porte cambiate dopo il timestamp
-	 * TODO spostare come metodo di Device
-	 */
-	/*
-	public String getStatus(String port, long timestamp) throws AISException {
-		String retval = "";
-		int i;
-		String compactName = getFullAddress();
-		for (i = 0; i < inPortsNum; i++) {
-			String portId = getInputPortId(i);
-			if ((timestamp <= getPortValueTimestamp(portId)) && 
-					(port.equals("*") || port.equals(portId))) {
-				retval += compactName + ":" + portId + "="
-						+ getPortValue(portId) + "\n";
-			}
-		}
-		for (i = 0; i < outPortsNum; i++) {
-			String portId = getOutputPortId(i);
-			if ((timestamp <= getPortValueTimestamp(portId)) && 
-					(port.equals("*") || port.equals(portId))){
-				retval += compactName + ":" + portId + "="
-						+ portId + "\n";
-			}
-		}
-		return retval;
-	}
-	*/
-	
 	public int getFirstInputPortNumber() {
 		return 1;
 	}
@@ -478,66 +314,6 @@ public class BMCStandardIO extends BMC {
 		}
 	}
 
-	/**
-	 * Imposta il valore di una porta.
-	 */
-	public void writePort(String portId, String value) throws AISException {
-		int portNumber;
-		boolean success;
-		boolean boolValue;
-		if (value.equals("1") || value.toUpperCase().equals("ON")) {
-			boolValue = true;
-		} else if (value.equals("0") || value.toUpperCase().equals("OFF")) {
-			boolValue = false;
-		} else {
-			throw new AISException("Valore non valido: " + value);
-		}
-		portNumber = getOutputNumberFromPortId(portId);
-		if (portNumber == -1) {
-			throw new AISException("Porta non valida: " + portId);
-		}
-		success = setOutPort(portNumber, boolValue);
-		if (!success) {
-			throw new AISException("Il device non risponde.");
-		}
-	}
-
-	/**
-	 * Avvisa il DeviceListener che una porta e' cambiata.
-	 * 
-	 * <p>
-	 * Questa funzione deve essere chiamata dopo che il	valore della porta viene
-	 * cambiato.
-	 * </p>
-	 * 
-	 * @param port numero della porta
-	 * @param isOutput true se si tratta di un'uscita, false se e' un ingresso.
-	 * @deprecated
-	 */
-	/*
-	private void generateEvent(int port, boolean isOutput) {
-		String newValue, portId;
-		boolean val;
-		if (isOutput) {
-			val = outPorts[port];
-			portId = getOutputPortId(port);
-			if (val) {
-				newValue = "Accesa";
-			} else {
-				newValue = "Spenta";
-			}
-		} else {
-			val = inPorts[port];
-			portId = getInputPortId(port);
-			if (val) {
-				newValue = "Chiuso";
-			} else {
-				newValue = "Aperto";
-			}
-		}
-		super.generateEvent(portId, newValue);
-	}
-	*/
 
 	/**
 	 * Cambia la modalita' di funzionamento del BMC in "simulazione".
@@ -553,24 +329,61 @@ public class BMCStandardIO extends BMC {
 	 */
 	public void makeSimulated() {
 		isReal = false;
-		// Togliamo tutti gli eventuali "dirty"
-		/*
-		for (int i = 0; i < outPortsDirty.length; i++) {
-			outPortsDirty[i] = false;
-		}
-		*/
 	}
 
 	public long updatePort(String portId) {
 		return updateStatus();
 	}
 
-	public void writePort(String portId, Object newValue) throws AISException {
-		try {
-			writePort(portId,(String)newValue);
-		} catch (AISException e) {
-			throw(new AISException(e.getMessage()));
-		}		
+	/**
+	 * Manda un messaggio per impostare direttamente il valore di un'uscita.
+	 * 
+	 * <p>
+	 * Se questo oggetto corrisponde a un BMC "vero", allora manda un messaggio
+	 * con mittente il BMCComputer. Altrimenti, l'uscita viene impostata
+	 * direttamente.
+	 * </p>
+	 * 
+	 * @param port
+	 *            numero della porta
+	 * @param value
+	 *            valore (true/1/on: acceso, false/0/off: spento)
+	 * @throws AISException 
+	 * 
+	 * @see #setOutputVariation
+	 */
+	public boolean writePort(String portId, Object newValue) throws AISException {
+		DevicePort p = getPort(portId);
+		if (isReal) {
+			int intValue = 0;
+			if (Boolean.class.isInstance(newValue)) {
+				intValue = ((Boolean)newValue).booleanValue() ? 1 : 0;
+			} else if (String.class.isInstance(newValue)) {
+				String s = (String) newValue;
+				if (s.equals("1") || s.toUpperCase().equals("ON")) {
+					intValue = 1;
+				} else if (s.equals("0") || s.toUpperCase().equals("OFF")) {
+					intValue = 0;
+				} else {
+					throw new AISException("Valore non valido: " + newValue);
+				}
+			} else {
+				throw new AISException("Valore non valido: " + newValue);
+			}
+			int portNumber = getOutputNumberFromPortId(portId);
+			if (portNumber == -1) {
+				throw new AISException("Porta non valida: " + portId);
+			}
+			ComandoUscitaMessage m = new ComandoUscitaMessage(getIntAddress(), getBMCComputerAddress(), 0, portNumber, 0, intValue);
+			if (getConnector().sendMessage(m)) {
+				p.invalidate();
+				return true;
+			}
+		} else {
+			p.setValue(newValue);
+			return true;
+		}
+		return false;
 	}
 
 }

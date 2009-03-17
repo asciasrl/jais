@@ -121,8 +121,8 @@ public abstract class Connector {
 	 * Propaga l'evento al controller
 	 * @param event
 	 */
-    public void onDeviceEvent(DeviceEvent event) {
-		controller.onDeviceEvent(event);
+	public void fireDevicePortChangeEvent(DevicePortChangeEvent evt) {
+		controller.fireDevicePortChangeEvent( evt );
 	}
 
 	/**
@@ -149,6 +149,5 @@ public abstract class Connector {
 		transport.close();
 	}
         
-
 }
 

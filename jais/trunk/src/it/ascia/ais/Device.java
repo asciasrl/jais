@@ -3,6 +3,9 @@
  */
 package it.ascia.ais;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -140,11 +143,10 @@ public abstract class Device {
 	}
 
 	/**
-	 * Aggiunge una porta con il valore di default per il nome, che è nella forma <connector>.<address>:<portId>
 	 * @param portId
 	 */
 	protected void addPort(String portId) {
-		addPort(portId, getFullAddress()+":"+portId);		
+		addPort(portId, null);		
 	}
 	
 	/**
@@ -153,12 +155,16 @@ public abstract class Device {
 	 * @return 
 	 * @throws AISException Se la porta non esite
 	 */
-	protected DevicePort getPort(String portId) throws AISException {
+	public DevicePort getPort(String portId) throws AISException {
 		if (ports.containsKey(portId)) {
 			return (DevicePort) ports.get(portId); 
 		} else {
 			throw(new AISException("Il device "+getFullAddress()+" non ha la porta "+portId));
 		}
+	}
+	
+	public DevicePort[] getPorts() {
+		return (DevicePort[]) ports.values().toArray(new DevicePort[ports.size()]);
 	}
 	
 	/**
@@ -186,21 +192,11 @@ public abstract class Device {
 		p.setName(portName);
 	}
 	
-	/**
-	 * Genera un evento di tipo DeviceEvent e lo invia al Connector di questo dispositivo
-	 * 
-	 * @param port nome della porta che ha cambiato valore.
-	 * @param value nuovo valore assunto dalla porta.
-	 */
-	protected void generateEvent(String portId, Object value) {
-		DeviceEvent event = new DeviceEvent(this, portId, value);
-		logger.info("Generato evento: "+event.getInfo());
-		connector.onDeviceEvent(event);
-	}
-	
+	/*
 	protected void generateEvent(String portId) throws AISException {
 		generateEvent(portId,getPortValue(portId));
 	}
+	*/
 		
 	/**
 	 * Imposta il valore di una porta di un device reale, gestendo la trasmissione del relativo messaggio
@@ -250,11 +246,7 @@ public abstract class Device {
 	 */
 	protected void setPortValue(String portId,Object newValue) throws AISException {
 		DevicePort p = getPort(portId);
-		Object oldValue = p.getCachedValue();
 		p.setValue(newValue);
-		if (p.isDirty() || oldValue == null || ! oldValue.equals(newValue)) {
-			generateEvent(portId, newValue);
-		}
 	}
 	
 	/**
@@ -280,131 +272,14 @@ public abstract class Device {
 		return p.getTimestamp();
 	}
 
-	protected class DevicePort {
-		
-		private String portId;
-		
-		private Object cachedValue;
-		
-		private boolean dirty = true;
-		
-		private Device device;
+	public void fireDevicePortChangeEvent(DevicePortChangeEvent evt) {
+		connector.fireDevicePortChangeEvent( evt );
+	}
 
-		private String portName;
-		
-		private long timestamp;
-		
-		public DevicePort(Device device, String portId, String portName) {
-			this.device = device;
-			this.portId = portId;
-			this.portName = portName;
-			timestamp = 0;
-		}
-			
-		public String getStatus() throws AISException {
-			return getFullAddress() + "=" + getValue();
-		}
+	/*
+	public void onDevicePortChangeEvent(DevicePortChangeEvent event) {
+		connector.onDevicePortChangeEvent(event);		
+	}
+	*/
 
-		public long getTimestamp() {
-			return timestamp;
-		}
-
-		public String getName() {
-			return portName;
-		}
-
-		public void setName(String portName) {
-			this.portName = portName;
-		}
-
-		/**
-		 * Ritorna il valore della porta.  Se il valore non risulta aggiornato, invoca Device.updatePort() per richiederne l'aggiornamento.
-		 * Questo metodo e' sincronizzato che setValue, che aggiorna il valore della porta
-		 * 
-		 * @return
-		 * @throws AISException 
-		 */
-		public Object getValue() throws AISException {
-			if (isDirty() || isExpired()) {
-				long timeout = device.updatePort(portId);
-				if (isDirty()) {
-					synchronized (this) {
-						try {
-							wait(timeout);
-						} catch (InterruptedException e) {
-						}
-					}
-				}	
-				if (isDirty() || isExpired()) {
-					logger.error("Non aggiornato valore porta "+getFullAddress());
-				}
-			}
-			return cachedValue;
-		}
-		
-		/**
-		 * Aggiorna la porta con il valore effettivo  
-		 * @param newValue
-		 */
-		public void setValue(Object newValue) {
-			// TODO logger.trace("setValue "+getFullAddress()+"="+newValue);
-			timestamp = System.currentTimeMillis();
-			cachedValue = newValue;
-			dirty = false;
-			// sveglia getValue()
-			synchronized (this) {
-				notify();								
-			}
-		}
-		
-		/**
-		 * Indica che il valore contenuto nella cache non è valido
-		 */
-		public void invalidate() {
-			if (!dirty) {
-				logger.trace("Invalidate "+getFullAddress());
-			}
-			dirty = true;
-		}
-
-		public Object getCachedValue() {
-			return cachedValue;
-		}
-		
-		/**
-		 * Questo metodo gestisce la logica di caching
-		 * Se ritorna true vuol dire che il valore non si deve ritenere
-		 * aggiornato
-		 * @return
-		 */
-		public boolean isDirty()
-		{
-			return dirty;
-		}
-
-		public boolean isExpired() {
-			if ((System.currentTimeMillis() - timestamp) > cacheRetention) {
-				logger.trace("Expired "+getFullAddress()+" "+((1.0 + System.currentTimeMillis()-timestamp)/1000.0));
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		/**
-		 * Restituisce l'indirizzo completo della porta
-		 * @return
-		 */
-		public String getFullAddress() {
-			return device.getFullAddress()+":"+portId;
-		}
-
-		/**
-		 * Imposta il timestamp in modo che scada dopo un tempo prefissato
-		 * @param i
-		 */
-		public void expire(long i) {
-			timestamp = System.currentTimeMillis() - cacheRetention + i;
-		}
-	}	
 }

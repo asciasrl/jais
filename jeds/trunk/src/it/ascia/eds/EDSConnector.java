@@ -174,8 +174,8 @@ public class EDSConnector extends Connector {
 				bmc = createBMC(risposta.getSource(), risposta.getModello());
 				if (bmc != null) {
 					logger.info("Creato BMC "+bmc);
-					discoverUscite(bmc);
-					discoverBroadcastBindings(bmc);
+					bmc.discoverUscite();
+					bmc.discoverBroadcastBindings();
 				}
 			} else {
 				bmc.messageSent(m);
@@ -355,44 +355,6 @@ public class EDSConnector extends Connector {
     	queueMessage(new RichiestaModelloMessage(address,getMyAddress()));
     }
 
-    /**
-     * Rileva le opzioni delle uscite.
-     * 
-     * <p>Questo metodo manda molti messaggi! Il metodo messageReceived() del 
-     * BMC deve interpretare i messaggi di risposta.</p>
-     *  
-     * {@link RispostaUscitaMessage}.
-     */
-    public void discoverUscite(BMC bmc){
-    	int outPort;
-    	for (outPort = 0; outPort < bmc.getOutPortsNumber(); outPort++) {
-    		RichiestaUscitaMessage m = new RichiestaUscitaMessage(bmc.getIntAddress(),
-    					getMyAddress(), outPort);
-    		queueMessage(m);
-    	}
-    }	       
-
-    /**
-     * Rileva le associazioni delle uscite con comandi broadcast.
-     * 
-     * <p>Questo metodo manda molti messaggi! Il metodo messageReceived() del 
-     * BMC deve interpretare i messaggi di risposta.</p>
-     *  
-     * {@link RispostaAssociazioneUscitaMessage}.
-     */
-    public void discoverBroadcastBindings(BMC bmc){
-    	int outPort;
-    	int casella;
-    	for (outPort = 0; outPort < bmc.getOutPortsNumber(); outPort++) {
-    		for (casella = 0; casella < bmc.getCaselleNumber(); casella++) {
-    			RichiestaAssociazioneUscitaMessage m;
-    			m = new RichiestaAssociazioneUscitaMessage(bmc.getIntAddress(),
-    					getMyAddress(), outPort, casella);
-        		queueMessage(m);
-    		}
-    	}
-    }
-    
     private class ReceivingThread extends Thread {
     
     	public void run() {

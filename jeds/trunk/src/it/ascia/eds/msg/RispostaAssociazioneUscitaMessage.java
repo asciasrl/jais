@@ -57,7 +57,7 @@ public class RispostaAssociazioneUscitaMessage extends PTPResponse {
 	public String toString()	{
 		StringBuffer s = new StringBuffer();
 		s.append(super.toString());
-		s.append(" Uscita:" + getUscita() + " Casella:"+getCasellaBMC()+"/"+getCasellaDimmer()+" ");
+		s.append(" Uscita:" + getUscita()+"/"+getUscitaT() + " Casella:"+getCasellaBMC()+"/"+getCasellaDimmer()+" ");
 		s.append(" Gruppo:" + getComandoBroadcast()+" ");
 		if (activatesBMC()) {
 			s.append("Attiva");
@@ -83,6 +83,13 @@ public class RispostaAssociazioneUscitaMessage extends PTPResponse {
 	 */
 	public int getUscita() {
 		return Byte1 & 7;
+	}
+
+	/**
+	 * Ritorna il numero dell'uscita del termostato (0 - 15).
+	 */
+	public int getUscitaT() {
+		return Byte1 & 15;
 	}
 	
 	/**

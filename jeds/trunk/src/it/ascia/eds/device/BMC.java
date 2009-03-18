@@ -14,7 +14,11 @@ import it.ascia.ais.Device;
 import it.ascia.eds.*;
 import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.PTPRequest;
+import it.ascia.eds.msg.RichiestaAssociazioneUscitaMessage;
 import it.ascia.eds.msg.RichiestaStatoMessage;
+import it.ascia.eds.msg.RichiestaUscitaMessage;
+import it.ascia.eds.msg.RispostaAssociazioneUscitaMessage;
+import it.ascia.eds.msg.RispostaUscitaMessage;
 
 /**
  * Un BMC, vero o simulato.
@@ -228,7 +232,50 @@ public abstract class BMC extends Device {
 		}
 		return bmc;
 	}	
-		
+
+    /**
+     * Rileva le opzioni delle uscite.
+     * 
+     * <p>Questo metodo manda molti messaggi! Il metodo messageReceived() del 
+     * BMC deve interpretare i messaggi di risposta.</p>
+     *  
+     * {@link RispostaUscitaMessage}.
+     */
+    public void discoverUscite(){
+    	int outPort;
+    	EDSConnector connector = (EDSConnector) getConnector();
+    	int connectorAddress = connector.getMyAddress();
+    	for (outPort = 0; outPort < getOutPortsNumber(); outPort++) {
+    		RichiestaUscitaMessage m = new RichiestaUscitaMessage(getIntAddress(),
+    					connectorAddress, outPort);
+    		connector.queueMessage(m);
+    	}
+    }	       
+
+    /**
+     * Rileva le associazioni delle uscite con comandi broadcast.
+     * 
+     * <p>Questo metodo manda molti messaggi! Il metodo messageReceived() del 
+     * BMC deve interpretare i messaggi di risposta.</p>
+     *  
+     * {@link RispostaAssociazioneUscitaMessage}.
+     */
+    public void discoverBroadcastBindings(){
+    	int outPort;
+    	int casella;
+    	EDSConnector connector = (EDSConnector) getConnector();
+    	int connectorAddress = connector.getMyAddress();
+    	for (outPort = 0; outPort < getOutPortsNumber(); outPort++) {
+    		for (casella = 0; casella < getCaselleNumber(); casella++) {
+    			RichiestaAssociazioneUscitaMessage m;
+    			m = new RichiestaAssociazioneUscitaMessage(getIntAddress(),
+    					connectorAddress, outPort, casella);
+        		connector.queueMessage(m);
+    		}
+    	}
+    }
+    
+	
 	
 	/** 
 	 * Il transport ha ricevuto un messaggio per questo BMC.
@@ -418,7 +465,7 @@ public abstract class BMC extends Device {
 		}
 		broadcastBindingsByGroup[gruppo].add(new Integer(outPortNumber));
 		broadcastBindingsByPort[outPortNumber].add(new Integer(gruppo));
-		logger.info("Uscita "+outPortNumber+" associata al gruppo "+gruppo);
+		logger.info(getFullAddress() + ":"+getOutputPortId(outPortNumber)+" associata al gruppo "+gruppo);
 	}
 	
 	/**

@@ -15,7 +15,7 @@ public class RispostaUscitaMessage extends PTPResponse {
 	}
 
 	public String getMessageDescription() {
-		return "Risposta opzioni uscita";
+		return "Risposta stato/configurazione uscita";
 	}
 	
 	public String toString()	{

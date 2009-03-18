@@ -21,7 +21,7 @@ public class RichiestaUscitaMessage extends PTPRequest {
 	}
 
 	public String getMessageDescription() {
-		return "Richiesta uscita";
+		return "Richiesta stato/configurazione uscita";
 	}
 	
 	public boolean isAnsweredBy(PTPMessage m) {

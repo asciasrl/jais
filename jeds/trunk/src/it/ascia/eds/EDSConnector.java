@@ -29,6 +29,9 @@ public class EDSConnector extends Connector {
     
 	private LinkedBlockingQueue receiveQueue;
 	private LinkedBlockingQueue sendQueue;
+	private Thread sendingThread;
+	private Thread receivingThread;
+	private boolean running = false;
 
     /**
      * Indirizzo con cui il Connettore invia messaggi sul BUS
@@ -87,16 +90,24 @@ public class EDSConnector extends Connector {
     	super(name,controller);
         //bmcComputer = null;
 		mp = new MessageParser();
+		running = true;
 		receiveQueue = new LinkedBlockingQueue();
-		Thread receivingThread = new ReceivingThread();
-		receivingThread.setName(getName()+"-receiving");
+		receivingThread = new ReceivingThread();
+		receivingThread.setName(getClass().getSimpleName()+"-"+getName()+"-receiving");
 		receivingThread.start();
 		sendQueue = new LinkedBlockingQueue();
-		Thread sendingThread = new SendingThread();
-		sendingThread.setName(getName()+"-sending");
+		sendingThread = new SendingThread();
+		sendingThread.setName(getClass().getSimpleName()+"-"+getName()+"-sending");
 		sendingThread.start();
     }
 
+    public void close()
+    {
+		super.close();
+		running = false;
+    	receivingThread.interrupt();
+		sendingThread.interrupt();
+    }
     /**
      * Ritorna l'indirizzo del connettore.
      * 
@@ -158,11 +169,16 @@ public class EDSConnector extends Connector {
     	} else if (RispostaModelloMessage.class.isInstance(m)) {
 			// Aggiungiamo i BMC che si presentano
 			RispostaModelloMessage risposta = (RispostaModelloMessage) m;
-			if (getDevice(risposta.getSource()) == null) {
-				BMC bmc = createBMC(risposta.getSource(), risposta.getModello());
-				logger.info("Creato BMC "+bmc);
-				discoverUscite(bmc);
-				discoverBroadcastBindings(bmc);				
+			BMC bmc = (BMC) getDevice(risposta.getSource()); 
+			if (bmc == null) {
+				bmc = createBMC(risposta.getSource(), risposta.getModello());
+				if (bmc != null) {
+					logger.info("Creato BMC "+bmc);
+					discoverUscite(bmc);
+					discoverBroadcastBindings(bmc);
+				}
+			} else {
+				bmc.messageSent(m);
 			}
     	} else { 
     		BMC bmc;
@@ -225,8 +241,7 @@ public class EDSConnector extends Connector {
 					transport.write(m.getBytesMessage());
 					transportSemaphore.release();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					logger.error(e);
+					logger.error("Interrupted:",e);
 				}
 				// non c'e' modo di sapere se e' arrivato; siamo ottimisti.
 				retval = true;
@@ -259,8 +274,7 @@ public class EDSConnector extends Connector {
 			}
 			transportSemaphore.release();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			logger.error(e);
+			logger.error("Interrupted:",e);
 		}
 	}
 	
@@ -313,8 +327,7 @@ public class EDSConnector extends Connector {
 	    	}
 			transportSemaphore.release();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			logger.error(e);
+			logger.error("Interrupted:",e);
 		}
     	if (! received) {
     		logger.error("Messaggio non risposto: "+m);
@@ -355,7 +368,6 @@ public class EDSConnector extends Connector {
     	for (outPort = 0; outPort < bmc.getOutPortsNumber(); outPort++) {
     		RichiestaUscitaMessage m = new RichiestaUscitaMessage(bmc.getIntAddress(),
     					getMyAddress(), outPort);
-    		//sendPTPRequest(m);
     		queueMessage(m);
     	}
     }	       
@@ -371,14 +383,11 @@ public class EDSConnector extends Connector {
     public void discoverBroadcastBindings(BMC bmc){
     	int outPort;
     	int casella;
-    	logger.debug("Richiesta associazioni broadcast BMC " + 
-    			bmc.getName());
     	for (outPort = 0; outPort < bmc.getOutPortsNumber(); outPort++) {
     		for (casella = 0; casella < bmc.getCaselleNumber(); casella++) {
     			RichiestaAssociazioneUscitaMessage m;
     			m = new RichiestaAssociazioneUscitaMessage(bmc.getIntAddress(),
     					getMyAddress(), outPort, casella);
-    			//sendPTPRequest(m);
         		queueMessage(m);
     		}
     	}
@@ -387,27 +396,28 @@ public class EDSConnector extends Connector {
     private class ReceivingThread extends Thread {
     
     	public void run() {
-    		while (true) {
+    		while (running) {
     			EDSMessage m;
 				try {
-					//logger.debug("Messaggi in coda: "+receiveQueue.size());
 					m = (EDSMessage) receiveQueue.take();
 			    	logger.debug("Dispatching (+"+receiveQueue.size()+"): " + m);
 					dispatchMessage(m);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					logger.error(e);
+					logger.debug("Interrotto.");
 				} catch (AISException e) {
-					logger.error(e);
+					logger.error(e.getMessage(),e);
+				} catch (Exception e) {
+					logger.fatal(e.getMessage(),e);
 				}
     		}
+			logger.debug("Stop.");
     	}
     }
 
     private class SendingThread extends Thread {
         
     	public void run() {
-    		while (true) {
+    		while (running) {
     			EDSMessage m;
 				try {
 					//logger.debug("Messaggi in coda: "+sendQueue.size());
@@ -415,10 +425,12 @@ public class EDSConnector extends Connector {
 			    	logger.debug("Sending (+"+sendQueue.size()+"): " + m);
 					sendMessage(m);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					logger.error(e);
+					logger.debug("Interrotto.");
+				} catch (Exception e) {
+					logger.fatal("Errore:",e);
 				}
     		}
+			logger.debug("Stop.");
     	}
     }
 

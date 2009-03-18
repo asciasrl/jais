@@ -17,7 +17,8 @@ import it.ascia.ais.Transport;
 
 public class EDSControllerModule extends ControllerModule {
 	
-	private AutoUpdater autoupdater;
+	private AutoUpdater autoUpdater;
+	private boolean running = false;
 
 	public void start() {
 		List connectors = config.configurationsAt("EDS.connectors.connector");
@@ -47,22 +48,37 @@ public class EDSControllerModule extends ControllerModule {
 		 		// associa transport e connector 
 		 		eds.bindTransport(transport);
 			 	// effettua il discovery
-			 	List discover = sub.getList("discover");
+			 	List discover = sub.getList("discover",null);
+			 	if (discover == null) {
+			 		logger.debug("Nessun dispositivo da ricercare (discover)");
+			 	}
 				for(Iterator i = discover.iterator(); i.hasNext();) {
-					eds.discoverBMC(new Integer((String) i.next()).intValue());
+					try {
+						eds.discoverBMC(new Integer((String) i.next()).intValue());						
+					} catch (NumberFormatException e) {
+						logger.error("Indirizzo dispositivo da cercare non corretto: "+e.getMessage());
+					}
 				}
 			 	// registra il connector
 				controller.registerConnector(eds);		
 				myConnectors.add(eds);
-		 	} catch (AISException e) {
-		 		logger.fatal(e.getMessage());
+		 	} catch (Exception e) {
+		 		logger.fatal("Errore durante inizializzazione:",e);
 		 	}
 		}				
  		int autoupdate = config.getInt("EDS.autoupdate",0);
- 		autoupdater = new AutoUpdater(autoupdate);
- 		autoupdater.setName("autoupdater");
- 		autoupdater.start();
+ 		autoUpdater = new AutoUpdater(autoupdate);
+ 		autoUpdater.setName(getClass().getSimpleName()+"-autoUpdater");
+ 		running = true;
+ 		autoUpdater.start();
  		logger.info("Completato start");
+	}
+	
+	public void stop()
+	{
+		running = false;
+		autoUpdater.interrupt();
+		super.stop();
 	}
 
 	public String doCommand(String command, HashMap params) {
@@ -85,7 +101,7 @@ public class EDSControllerModule extends ControllerModule {
 		public void run() {
 			if (autoupdate > 0) {
 				logger.info("Autoupdate ogni "+autoupdate+"mS");				
-				while(true) {
+				while (running) {
 					try {
 						synchronized (this) {
 							wait(autoupdate);							
@@ -101,15 +117,17 @@ public class EDSControllerModule extends ControllerModule {
 								try {
 									device.getStatus();
 								} catch (AISException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
+									logger.warn("Errore durante getStatus:",e);
 								}
 							}
 						}
+					} catch (InterruptedException e) {
+						logger.debug("Interrotto.");
 					} catch (Exception e) {
-						logger.error(e);
+						logger.error("Eccezione:",e);
 					}
 				}
+				logger.debug("Stop.");
 			} else {
 				logger.info("Autoupdate non attivo");				
 			}

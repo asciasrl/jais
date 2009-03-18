@@ -3,21 +3,28 @@
  */
 package it.ascia.eds.device;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
+import it.ascia.eds.EDSConnector;
 import it.ascia.eds.msg.ImpostaParametroMessage;
 import it.ascia.eds.msg.EDSMessage;
+import it.ascia.eds.msg.RichiestaAssociazioneUscitaMessage;
 import it.ascia.eds.msg.RichiestaParametroMessage;
+import it.ascia.eds.msg.RichiestaSetPointMessage;
 import it.ascia.eds.msg.RichiestaStatoTermostatoMessage;
 import it.ascia.eds.msg.RispostaAssociazioneUscitaMessage;
 import it.ascia.eds.msg.RispostaParametroMessage;
+import it.ascia.eds.msg.RispostaSetPointMessage;
 import it.ascia.eds.msg.RispostaStatoTermostatoMessage;
 
 /**
  * @author sergio
  *
  */
-public class BMCRegT22 extends BMC {
+public class BMCRegT22 extends BMCStandardIO {
 	/**
 	 * Array per trasformare la modalita' da numero a stringa.
 	 */
@@ -43,16 +50,25 @@ public class BMCRegT22 extends BMC {
 	 */
 	private static final String port_mode = "mode";
 	/**
+	 * Nome della porta della temperatura impostata.
+	 */
+	private static final String port_setPoint = "setPoint";
+	/**
 	 * Costruttore.
 	 * @param connector 
 	 * @throws AISException 
 	 */
 	public BMCRegT22(Connector connector, String address, int model,  String name) throws AISException {
 		super(connector, address, model, name);
+		broadcastBindingsByPort = new Set[16];
+		for (int i = 0; i < 16; i++) {
+			broadcastBindingsByPort[i] = new LinkedHashSet();
+		}
 		addPort(port_temperature);
 		addPort(port_mode);
 		addPort(port_alarmTemp);
 		addPort(port_autoSendTime);
+		addPort(port_setPoint);
 	}
 	
 	/* (non-Javadoc)
@@ -70,7 +86,7 @@ public class BMCRegT22 extends BMC {
 	 * @see it.ascia.eds.device.BMC#getOutPortsNumber()
 	 */
 	public int getOutPortsNumber() {
-		return 16;
+		return 2;
 	}
 
 
@@ -81,6 +97,25 @@ public class BMCRegT22 extends BMC {
 		return getName() + "BMC regolatore di temperatura (modello " + model + ")";
 	}
 
+	public void discoverUscite() {
+		// RegT non ha uscite configurabili
+	}
+	
+    public void discoverBroadcastBindings(){
+    	int outPort;
+    	int casella;
+    	EDSConnector connector = (EDSConnector) getConnector();
+    	int connectorAddress = connector.getMyAddress();
+    	for (outPort = 0; outPort < 16; outPort++) {
+    		for (casella = 0; casella < getCaselleNumber(); casella++) {
+    			RichiestaAssociazioneUscitaMessage m;
+    			m = new RichiestaAssociazioneUscitaMessage(getIntAddress(),
+    					connectorAddress, outPort, casella);
+        		connector.queueMessage(m);
+    		}
+    	}
+    }
+	
 	/* (non-Javadoc)
 	 * @see it.ascia.eds.device.BMC#messageReceived(it.ascia.eds.msg.Message)
 	 */
@@ -102,6 +137,7 @@ public class BMCRegT22 extends BMC {
 		case EDSMessage.MSG_RICHIESTA_ASSOCIAZIONE_BROADCAST:
 		case EDSMessage.MSG_CAMBIO_VELOCITA:
 		case EDSMessage.MSG_PROGRAMMAZIONE:
+		case EDSMessage.MSG_RICHIESTA_PARAMETRO:
 		case EDSMessage.MSG_RICHIESTA_STATO_TERMOSTATO:
 		case EDSMessage.MSG_RICHIESTA_SET_POINT:
 			// messaggi gestiti dal BMC reale
@@ -127,21 +163,17 @@ public class BMCRegT22 extends BMC {
 						"sconosciuto: " + m.toString());
 			}
 			break;
+		case EDSMessage.MSG_RISPOSTA_SET_POINT:
+			RispostaSetPointMessage rspm = (RispostaSetPointMessage) m;
+			setPortValue(port_setPoint,new Double(rspm.getSetPoint()));
+			break;
 		case EDSMessage.MSG_RISPOSTA_STATO_TERMOSTATO:
 			RispostaStatoTermostatoMessage rsttm = (RispostaStatoTermostatoMessage) m;
 			setPortValue(port_temperature,new Double(rsttm.getSensorTemperature()));
 			setPortValue(port_mode,getModeAsString(rsttm.getMode()));
 			break;
-		case EDSMessage.MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST:
-			RispostaAssociazioneUscitaMessage rab = (RispostaAssociazioneUscitaMessage) m;
-			bindOutput(rab.getComandoBroadcast(), rab.getUscitaT());
-			break;
-		case EDSMessage.MSG_RISPOSTA_MODELLO:
-		case EDSMessage.MSG_ACKNOWLEDGE:			
-			// messaggi non gestiti per scelta
-			break;
 		default:
-			logger.warn("Messaggio non gestito: " + m.toString());			
+			super.messageSent(m);
 		} // switch tipo di messaggio
 	}
 	
@@ -179,12 +211,49 @@ public class BMCRegT22 extends BMC {
 		return 300;
 	}
 	
+	/**
+	 * Richiede il setPoint.
+	 * 
+	 * <p>Invia un messaggio al BMC richiedendo il valore del parametro.</p>
+	 */
+	public long updateSetPoint() {
+		getConnector().sendMessage(new RichiestaSetPointMessage(getIntAddress(), getBMCComputerAddress()));
+		// FIXME calcolare il timeout
+		return 300;
+	}
+
 	public long updateStatus() {
 		long timeout = 0;
 		timeout += updateAlarmTemperature();
 		timeout += updateAutoSendTime();
 		timeout += updateTermStatus();
+		timeout += updateSetPoint();
 		return timeout;
+	}
+	
+	public long updatePort(String portId) {
+		if (portId.startsWith("Inp")) {
+			try {
+				setPortValue(portId, new Boolean(false));
+			} catch (AISException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			//FIXME Gestire aggiornamento stato, se applicabile
+			return 0;
+		} else if (portId.startsWith("Out")) {
+			// le porte "Out" sono "finte", quindi non possono essere aggiornate 
+			try {
+				setPortValue(portId, new Boolean(false));
+			} catch (AISException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return super.updateStatus();
+			//return 0;
+		} else {
+			return updateStatus();
+		}
 	}
 	
 	/**

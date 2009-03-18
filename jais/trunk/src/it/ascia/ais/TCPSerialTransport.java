@@ -218,7 +218,6 @@ public class TCPSerialTransport extends Transport {
      * Chiude la connessione.
      */
     public void close() {
-    	logger.info("Chiusura connessione seriale TCP ...");
     	try {
     		readSelector.close();
     		writeSelector.close();
@@ -227,5 +226,6 @@ public class TCPSerialTransport extends Transport {
     		logger.error("Errore durante la chiusura della connessione: " +
     				e.getMessage());
     	}
+    	logger.debug("Chiuso.");
     }
 }

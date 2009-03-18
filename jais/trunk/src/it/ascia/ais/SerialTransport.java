@@ -121,6 +121,7 @@ public class SerialTransport extends Transport {
      */
     public void close() {
     	serialPort.close();
+    	logger.debug("Chiuso.");
     }
 
 	private class SerialListener implements SerialPortEventListener {

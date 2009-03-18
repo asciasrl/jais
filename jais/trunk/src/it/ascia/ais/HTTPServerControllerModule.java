@@ -60,14 +60,11 @@ public class HTTPServerControllerModule extends ControllerModule {
 				servletContext.addServlet(servletHolder, "/*");
 				logger.info("Caricata servlet '"+context+"'");
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.fatal("Classe non trovata:",e);
 			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.fatal("Classe non instanziata:",e);
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.fatal("Classe non accessibile:",e);
 			}
 		}		
 		

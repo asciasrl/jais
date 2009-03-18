@@ -142,6 +142,11 @@ public abstract class EDSMessage extends Message implements Comparable {
 	 */
 	public final static int MSG_LETTURA_SET_POINT = 205;
 	/**
+	 * Risposta del set point del cronotermostato.
+	 */
+	public static final int MSG_RISPOSTA_SET_POINT = 206;
+	
+	/**
 	 * Rappresentazione 'raw' del messaggio.
 	 */
 	protected int[] rawmessage;
@@ -311,6 +316,7 @@ public abstract class EDSMessage extends Message implements Comparable {
 		Mittente = message[2];
 		TipoMessaggio = message[3];
 		if (TipoMessaggio != getMessageType()) {
+			// FIXME scrivere nel log
 			System.err.println("Tipo messaggio non corrisponde: "+TipoMessaggio+" <> "+getMessageType());
 		}
 		Byte1 = message[4];

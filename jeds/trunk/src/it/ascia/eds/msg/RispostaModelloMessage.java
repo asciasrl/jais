@@ -50,6 +50,12 @@ public class RispostaModelloMessage extends PTPResponse {
 			case 111:			
 				s.append("Dimmer 0-10 V con 1 out");
 				break;
+			case 121:			
+				s.append("Sonda di temperatura");
+				break;
+			case 122:			
+				s.append("Regolatore di temperatura");
+				break;
 			case 127:			
 				s.append("Cronotermostato");
 				break;

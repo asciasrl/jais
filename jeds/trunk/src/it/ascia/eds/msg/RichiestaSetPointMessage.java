@@ -14,7 +14,7 @@ public class RichiestaSetPointMessage extends PTPRequest {
 		Destinatario = d & 0xFF;
 		Mittente = m & 0xFF;
 		TipoMessaggio = getMessageType();
-		Byte1 = 0;
+		Byte1 = 248; // TODO perche' ?  Lo invia cosi' edsconfig
 		Byte2 = 0;
 	}
 	
@@ -27,7 +27,8 @@ public class RichiestaSetPointMessage extends PTPRequest {
 	}
 	
 	public boolean isAnsweredBy(PTPMessage m) {
-		if (m.getMessageType() == EDSMessage.MSG_LETTURA_SET_POINT) {
+		if (m.getMessageType() == EDSMessage.MSG_LETTURA_SET_POINT
+				|| m.getMessageType() == EDSMessage.MSG_RISPOSTA_SET_POINT) {
 			if ((getSender() == m.getRecipient()) &&
 					(getRecipient() == m.getSender())) {
 				return true;

@@ -64,13 +64,13 @@ public class AUICommandServlet extends HttpServlet {
 				//logger.trace(res);
 			} catch (AISException e) {
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				logger.error(e);
+				logger.error("Errore esecuzione comando "+command,e);
 				res = "ERROR: "+e.getMessage();
 			}
 			out.println(res);
 		} catch (IOException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			logger.error(e);
+			logger.fatal("Errore gestione richiesta:",e);
 		}
 	}
 

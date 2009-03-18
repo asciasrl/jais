@@ -3,8 +3,6 @@
  */
 package it.ascia.eds.msg;
 
-import it.ascia.eds.device.BMCChronoTerm;
-
 /**
  * Un ingresso e' cambiato, deve cambiare un'uscita.
  * 

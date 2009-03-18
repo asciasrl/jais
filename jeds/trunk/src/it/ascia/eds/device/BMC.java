@@ -48,12 +48,12 @@ public abstract class BMC extends Device {
 	 * <p>Questo e' un'array di Set di Integer, indicizzato per numero di
 	 * messaggio broadcast.</p>
 	 */
-	protected Set broadcastBindingsBySignal[];
+	protected Set broadcastBindingsByGroup[];
 	/**
 	 * Binding tra porte di output e messaggi broadcast.
 	 * 
 	 * <p>Questo e' un'array di Set di Integer. Contiene gli stessi valori di
-	 * {@link #broadcastBindingsBySignal} ma indicizzati per numero di porta.</p>
+	 * {@link #broadcastBindingsByGroup} ma indicizzati per numero di porta.</p>
 	 * 
 	 * <p>L'ordine di binding e' importante. La superclasse utilizzata deve
 	 * tenerne conto.</p>
@@ -95,11 +95,11 @@ public abstract class BMC extends Device {
 		super(connector, bmcAddress);
 		this.model = model;
 		this.name = name;
-		broadcastBindingsBySignal = new Set[32];
+		broadcastBindingsByGroup = new Set[32];
 		broadcastBindingsByPort = new Set[getOutPortsNumber()];
 		portTimer = new Long[getOutPortsNumber()];
-		for (int i = 0; i < broadcastBindingsBySignal.length; i++) {
-			broadcastBindingsBySignal[i] = new HashSet();
+		for (int i = 0; i < broadcastBindingsByGroup.length; i++) {
+			broadcastBindingsByGroup[i] = new HashSet();
 		}
 		for (int i = 0; i < getInPortsNumber(); i++) {
 			addPort(getInputPortId(i));
@@ -118,6 +118,7 @@ public abstract class BMC extends Device {
      * <p>Questo metodo e' utile per i BMC, quando devono richiedere 
      * informazioni sul proprio stato. I messaggi che inviano devono partire 
      * "a nome" del BMCComputer.</p>
+     * TODO rinominare come getConnectorAddress
      */
     public int getBMCComputerAddress() {
     	return ((EDSConnector)getConnector()).getMyAddress();
@@ -164,7 +165,7 @@ public abstract class BMC extends Device {
 		case 60:
 		case 44:
 			if (name == null) {
-				name = "StandardIO" + bmcAddress;
+				name = "IO-" +model+ bmcAddress;
 			}
 			bmc = new BMCStandardIO(connector, bmcAddress, model, name);
 			break;
@@ -172,7 +173,7 @@ public abstract class BMC extends Device {
 		case 61:
 		case 81:
 			if (name == null) {
-				name = "IR" + bmcAddress;
+				name = "IR-" + bmcAddress;
 			}
 			bmc = new BMCIR(connector, bmcAddress, model, name);
 			break;
@@ -183,13 +184,13 @@ public abstract class BMC extends Device {
 		case 106:
 		case 111:
 			if (name == null) {
-				name = "Dimmer" + bmcAddress;
+				name = "DIM-" + bmcAddress;
 			}
 			bmc = new BMCDimmer(connector, bmcAddress, model, name);
 			break;
 		case 131:
 			if (name == null) {
-				name = "IntIR" + bmcAddress;
+				name = "INT-IR-" + bmcAddress;
 			}
 			bmc = new BMCIntIR(connector, bmcAddress, model, name);
 			break;
@@ -198,7 +199,7 @@ public abstract class BMC extends Device {
 		case 156:
 		case 158:
 			if (name == null) {
-				name = "ScenarioManager" + bmcAddress;
+				name = "SC-" + bmcAddress;
 			}
 			bmc = new BMCScenarioManager(connector, bmcAddress, model, name);
 			break;
@@ -207,6 +208,12 @@ public abstract class BMC extends Device {
 				name = "TemperatureSensor" + bmcAddress; 
 			}
 			bmc = new BMCTemperatureSensor(connector, bmcAddress, model, name);
+			break;
+		case 122:
+			if (name == null) {
+				name = "REG-T-22-" + bmcAddress; 
+			}
+			bmc = new BMCRegT22(connector, bmcAddress, model, name);
 			break;
 		case 127:
 			if (name == null) {
@@ -402,15 +409,16 @@ public abstract class BMC extends Device {
 	/**
 	 * Registra il binding tra uscita e messaggio broadcast.
 	 *
-	 * @param message numero del messaggio broadcast (1-31).
+	 * @param gruppo numero del messaggio broadcast (1-31).
 	 * @param outPortNumber numero della porta che risponde al messaggio.
 	 */
-	protected void bindOutput(int message, int outPortNumber) {
-		if (message == 0) {
+	protected void bindOutput(int gruppo, int outPortNumber) {
+		if (gruppo == 0) {
 			return;
 		}
-		broadcastBindingsBySignal[message].add(new Integer(outPortNumber));
-		broadcastBindingsByPort[outPortNumber].add(new Integer(message));
+		broadcastBindingsByGroup[gruppo].add(new Integer(outPortNumber));
+		broadcastBindingsByPort[outPortNumber].add(new Integer(gruppo));
+		logger.info("Uscita "+outPortNumber+" associata al gruppo "+gruppo);
 	}
 	
 	/**
@@ -420,7 +428,7 @@ public abstract class BMC extends Device {
 	 * @return un'array di interi: le porte
 	 */
 	protected int[] getBoundOutputs(int message) {
-		Set ports = broadcastBindingsBySignal[message];
+		Set ports = broadcastBindingsByGroup[message];
 		int retval[] = new int[ports.size()];
 		Iterator it = ports.iterator();
 		int i = 0;
@@ -458,7 +466,7 @@ public abstract class BMC extends Device {
 	 * @return true se l'uscita risponde al comando.
 	 */
 	protected boolean outputIsBound(int outputPort, int message) {
-		Set ports = broadcastBindingsBySignal[message];
+		Set ports = broadcastBindingsByGroup[message];
 		return ports.contains(new Integer(outputPort));
 	}
 

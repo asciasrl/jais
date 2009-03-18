@@ -41,7 +41,7 @@ public abstract class PTPRequest extends PTPMessage {
 	 * Ritorna il numero massimo di tentativi di invio da effettuare.
 	 */
 	public int getMaxSendTries() {
-		return 8;
+		return 2;
 	}
 
 	

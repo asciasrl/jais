@@ -59,9 +59,8 @@ public class AUIStreamingServlet extends HttpServlet {
 						out.println("fireDevicePortChangeEvent("+obj.toJSONString()+");");
 					}
 				}
-			} catch (AISException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			} catch (AISException e) {
+				logger.warn("Errore durante streaming:",e);
 			}
 
 			
@@ -75,17 +74,18 @@ public class AUIStreamingServlet extends HttpServlet {
 					logger.trace(e);
 				}
 				if (evt != null) {
-					//logger.debug(evt.toString());
-					// TODO Trasformare in forma JSON
-					JSONObject obj=new JSONObject();
-					obj.put("fullAddress",evt.getFullAddress());
-					obj.put("newValue",evt.getNewValue());
-					obj.put("timeStamp",new Long(evt.getTimeStamp()));
-					//out.println("<script type=\"text/javascript\" language=\"JavaScript\">");
-					out.println("fireDevicePortChangeEvent("+obj.toJSONString()+");");
-					//out.println("</script>");
-					//out.println(obj.toJSONString());
 					logger.trace("Streaming "+evt.toString());
+					if (evt.getNewValue() == null) {
+						logger.debug("Non invio evento con valore null");
+					} else {
+						JSONObject obj=new JSONObject();
+						obj.put("fullAddress",evt.getFullAddress());
+						obj.put("newValue",evt.getNewValue());
+						obj.put("timeStamp",new Long(evt.getTimeStamp()));
+						String s = "fireDevicePortChangeEvent("+obj.toJSONString()+");";
+						out.println(s);
+						logger.debug(s);
+					}
 				} else {
 					//out.println("<!-- no events -->");
 				}
@@ -94,7 +94,7 @@ public class AUIStreamingServlet extends HttpServlet {
 			logger.debug("End streaming ...");
 		} catch (IOException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			logger.error(e);
+			logger.error("Errore interno durante streaming:",e);
 		}
 	}
 		

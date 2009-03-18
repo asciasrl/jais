@@ -256,7 +256,7 @@ public class Controller {
 			config = new XMLConfiguration(configurationFileName);
 			config.setReloadingStrategy(new FileChangedReloadingStrategy());
 		} catch (ConfigurationException e) {
-			logger.fatal(e);
+			logger.fatal("Errore nel file di configurazione "+configurationFileName,e);
 		}
 		Controller.setController(this);
 		logger.info("Inizializzato controller.");
@@ -272,7 +272,7 @@ public class Controller {
 		    try {
 				loadModule(name, className);
 			} catch (AISException e) {
-				logger.fatal(e);
+				logger.fatal("Errore caricamento modulo:",e);
 			}
 		}		
 	}

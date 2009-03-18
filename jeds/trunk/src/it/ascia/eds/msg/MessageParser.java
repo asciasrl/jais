@@ -143,6 +143,10 @@ public class MessageParser {
 			return new RispostaStatoDimmerMessage(message);
 		case EDSMessage.MSG_IMPOSTA_PARAMETRO: 
 			return new ImpostaParametroMessage(message);
+		case EDSMessage.MSG_RICHIESTA_PARAMETRO:
+			return new RichiestaParametroMessage(message);
+		case EDSMessage.MSG_RISPOSTA_PARAMETRO:
+			return new RispostaParametroMessage(message);			
 		case EDSMessage.MSG_RICHIESTA_STATO_TERMOSTATO:
 			return new RichiestaStatoTermostatoMessage(message);
 		case EDSMessage.MSG_RISPOSTA_STATO_TERMOSTATO: 
@@ -153,6 +157,8 @@ public class MessageParser {
 			return new RichiestaSetPointMessage(message);
 		case EDSMessage.MSG_LETTURA_SET_POINT: 
 			return new CronotermMessage(message);
+		case EDSMessage.MSG_RISPOSTA_SET_POINT: 
+			return new RispostaSetPointMessage(message);
 		default: 
 			return new UnknowMessage(message);
 		}

@@ -34,7 +34,7 @@ public class RichiestaAssociazioneUscitaMessage extends PTPRequest {
 		Destinatario = d & 0xFF;
 		Mittente = m & 0xFF;
 		TipoMessaggio = 15;
-		Byte1 = uscita & 7;
+		Byte1 = uscita & 15;
 		Byte2 = casella & 7;
 	}
 	

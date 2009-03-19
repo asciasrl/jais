@@ -22,6 +22,9 @@ public class DevicePort {
 
 	private String portName;
 	
+	/**
+	 * Tempo di ultimo aggiornamento del valore
+	 */
 	private long timeStamp;
 
 	private Logger logger;
@@ -29,11 +32,20 @@ public class DevicePort {
 	public static long DEFAULT_CACHE_RETENTION = 60000;
 
 	private long cacheRetention = DEFAULT_CACHE_RETENTION;
+
+	/**
+	 * Tempo fino a cui e' valido il valore in cache
+	 */
+	private long expiration;
 	
 	public long getCacheRetention() {
 		return cacheRetention;
 	}
 
+	/**
+	 * Imposta il valore di durata della cache
+	 * @param cacheRetention
+	 */
 	public void setCacheRetention(long cacheRetention) {
 		this.cacheRetention = cacheRetention;
 	}
@@ -57,6 +69,7 @@ public class DevicePort {
 			this.portName = portName;
 		}
 		timeStamp = 0;
+		expiration = 0;
 	}
 		
 	public String getStatus() throws AISException {
@@ -106,8 +119,9 @@ public class DevicePort {
 		boolean changed = false;
 		if (isDirty() || oldValue == null || ! oldValue.equals(newValue)) {
 			changed = true;
+			timeStamp = System.currentTimeMillis();
 		}
-		timeStamp = System.currentTimeMillis();
+		expiration = System.currentTimeMillis() + cacheRetention;
 		cachedValue = newValue;
 		dirty = false;
 		// sveglia getValue()
@@ -159,8 +173,8 @@ public class DevicePort {
 	}
 
 	public boolean isExpired() {
-		if ((System.currentTimeMillis() - timeStamp) > cacheRetention ) {
-			logger.trace("Expired "+getFullAddress()+" "+((1.0 + System.currentTimeMillis()-timeStamp)/1000.0));
+		if (System.currentTimeMillis() >= expiration ) {
+			logger.trace("Expired by "+getFullAddress()+" "+(1.0 + System.currentTimeMillis() - expiration)/1000.0+"s");
 			return true;
 		} else {
 			return false;
@@ -176,11 +190,11 @@ public class DevicePort {
 	}
 
 	/**
-	 * Imposta il timestamp in modo che scada dopo un tempo prefissato
+	 * Imposta il momento di scadenza in modo che scada dopo il tempo specificato
 	 * @param i
 	 */
-	public void expire(long i) {
-		timeStamp = System.currentTimeMillis() - cacheRetention + i;
+	public void setDuration(long i) {
+		expiration = System.currentTimeMillis() + i;
 	}
 
 	public long getTimeStamp() {

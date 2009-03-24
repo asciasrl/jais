@@ -1,8 +1,6 @@
 package it.ascia.ais;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
+import java.util.HashMap;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.log4j.Logger;
@@ -20,8 +18,6 @@ public abstract class ControllerModule {
     
     protected HierarchicalConfiguration config;
 
-	protected List myConnectors = new Vector();
-	
     /**
      * Riferimento al controller che ha instanziato il modulo
      */
@@ -31,27 +27,9 @@ public abstract class ControllerModule {
 		logger = Logger.getLogger(getClass());
 	}
 
-	/**
-	 * TODO aggiungere altri eventi tipo:
-	 * - nuovo device
-	 * - 
-	 */
-	
 	public abstract void start();
 	
-	/**
-	 * Chiude tutti i connettori
-	 */
-	public void stop() {	
-		for (Iterator c = myConnectors.iterator(); c.hasNext();)
-		{
-			Connector connector = (Connector) c.next(); 
-			logger.info("Chiusura connettore "+connector.getName());
-			connector.close();
-		}
-			
-	}
-
+	public abstract void stop();
 
 	public void setController(Controller controller) {
 		this.controller = controller;		

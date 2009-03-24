@@ -1,6 +1,5 @@
 package it.ascia.eds;
 
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -8,20 +7,15 @@ import java.util.List;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Connector;
-import it.ascia.ais.ControllerModule;
-import it.ascia.ais.Device;
+import it.ascia.ais.BUSControllerModule;
 import it.ascia.ais.SerialTransport;
 import it.ascia.ais.TCPSerialTransport;
 import it.ascia.ais.Transport;
 
-public class EDSControllerModule extends ControllerModule {
+public class EDSControllerModule extends BUSControllerModule {
 	
-	private AutoUpdater autoUpdater;
-	private boolean running = false;
-
 	public void start() {
-		List connectors = config.configurationsAt("EDS.connectors.connector");
+		List connectors = config.configurationsAt("connectors.connector");
 		for (Iterator c = connectors.iterator(); c.hasNext();)
 		{
 		    HierarchicalConfiguration sub = (HierarchicalConfiguration) c.next();
@@ -66,74 +60,12 @@ public class EDSControllerModule extends ControllerModule {
 		 		logger.fatal("Errore durante inizializzazione:",e);
 		 	}
 		}				
- 		int autoupdate = config.getInt("EDS.autoupdate",0);
+ 		int autoupdate = config.getInt("autoupdate",0);
  		autoUpdater = new AutoUpdater(autoupdate);
  		autoUpdater.setName(getClass().getSimpleName()+"-autoUpdater");
  		running = true;
  		autoUpdater.start();
  		logger.info("Completato start");
 	}
-	
-	public void stop()
-	{
-		running = false;
-		autoUpdater.interrupt();
-		super.stop();
-	}
-
-	public String doCommand(String command, HashMap params) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	protected class AutoUpdater extends Thread {
-		
-		int autoupdate = 0;
-
-		public AutoUpdater(int a) {
-			autoupdate = a;
-		}
-
-		/**
-		 * Aggiorna automaticamente i device connessi
-		 * @see Thread.run()
-		 */
-		public void run() {
-			if (autoupdate > 0) {
-				logger.info("Autoupdate ogni "+autoupdate+"mS");				
-				while (running) {
-					try {
-						synchronized (this) {
-							wait(autoupdate);							
-						}
-						//logger.trace("Autoupdate");
-						for (Iterator c = myConnectors.iterator(); c.hasNext();)
-						{
-							Connector connector = (Connector) c.next();
-							HashMap devices = connector.getDevices();
-							for (Iterator iterator = devices.values().iterator(); iterator
-									.hasNext();) {
-								Device device = (Device) iterator.next();
-								try {
-									device.getStatus();
-								} catch (AISException e) {
-									logger.warn("Errore durante getStatus:",e);
-								}
-							}
-						}
-					} catch (InterruptedException e) {
-						logger.debug("Interrotto.");
-					} catch (Exception e) {
-						logger.error("Eccezione:",e);
-					}
-				}
-				logger.debug("Stop.");
-			} else {
-				logger.info("Autoupdate non attivo");				
-			}
-		}
-		
-	}
-
 	
 }

@@ -59,7 +59,6 @@ public class TCPSerialTransport extends Transport {
 		public TCPSerialBusReader(Selector selector, TCPSerialTransport bus, 
 				SocketChannel sock) {
 			this.selector = selector;
-			//this.bus = bus; // FIXME serve ?  Cmq rinominare 
 			this.sock = sock;
 			logger = Logger.getLogger(getClass());
 		}

@@ -3,8 +3,7 @@
 import it.ascia.ais.AISException;
 import it.ascia.ais.Controller;
 import it.ascia.ais.Device;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import it.ascia.eds.device.BMCRegT22;
 
 /**
  * @author arrigo
@@ -22,12 +21,8 @@ public class BusTest {
 	 */
 	public static void main(String[] args) throws AISException {
 
-	    // Inizializzazione logger
-	    PropertyConfigurator.configure("conf/log4j.conf");
-	    Logger log = Logger.getLogger(BusTest.class);
-	    
 	    // Inizializzazione: tutto in base al file di configurazione
-		busController = new Controller();
+		busController = Controller.getController();
 		busController.configure();
 		busController.start();
 		
@@ -78,8 +73,19 @@ public class BusTest {
 				}
 			}
 		}
+
 		busController.stop();
-		log.info("Termine programma");
+		System.out.println("Termine programma");
 	}
-	
+
+	public void resetRegT22(String address) throws AISException {
+		Device reg = Controller.getController().getDevice(address);
+		for (int stagione = 0; stagione <= 1; stagione++) {
+			for (int giorno = 0; giorno <= 6; giorno++) {
+				for (int ora = 0; ora <= 23; ora++) {
+					reg.writePort(BMCRegT22.getSetPointPortId(stagione,giorno,ora), new Double(5.5*stagione+10+ora-giorno));					
+				}
+			}		
+		}
+	}
 }

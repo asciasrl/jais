@@ -4,7 +4,9 @@
 package it.ascia.eds.msg;
 
 /**
- * @author arrigo
+ * Messagio per il quale si aspetta come risposta un ACK (Acnowledge)
+ * 
+ * @author arrigo, sergio
  *
  */
 public abstract class PTPMessage extends EDSMessage {
@@ -27,6 +29,31 @@ public abstract class PTPMessage extends EDSMessage {
 	 * @return true se questo e' un PTPRequest.
 	 */
 	public boolean wantsReply() {
+		return true;
+	}
+	
+	/**
+	 * Verifica se un messaggio risponde a questo.
+	 * 
+	 * Il risultato viene deve essere ritornato e impostato nell'attributo
+	 * answered, che viene letto da wasAnswered().
+	 * 
+	 * Questo metodo riconosce risposte di tipo "Acknowledge". Se le sottoclassi
+	 * richiedono messaggi di risposta diversi, devono riscrivere questo metodo.
+	 * 
+	 * @return true se m e' la risposta a questo messaggio.
+	 */
+	public boolean isAnsweredBy(PTPMessage m) {
+		if (m.getMessageType() == EDSMessage.MSG_ACKNOWLEDGE) {
+			AcknowledgeMessage ack = (AcknowledgeMessage) m;
+			if ((getSender() == ack.getRecipient()) &&
+					(getRecipient() == ack.getSender()) &&
+					(ack.Byte1 == Byte1) && (ack.Byte2 == Byte2)) {
+				return true;
+			}
+		}
 		return false;
 	}
+
+	
 }

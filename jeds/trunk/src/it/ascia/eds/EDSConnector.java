@@ -27,12 +27,6 @@ public class EDSConnector extends Connector {
      */
     private PTPRequest messageToBeAnswered;
     
-	private LinkedBlockingQueue receiveQueue;
-	private LinkedBlockingQueue sendQueue;
-	private Thread sendingThread;
-	private Thread receivingThread;
-	private boolean running = false;
-
     /**
      * Indirizzo con cui il Connettore invia messaggi sul BUS
      */
@@ -90,24 +84,8 @@ public class EDSConnector extends Connector {
     	super(name,controller);
         //bmcComputer = null;
 		mp = new MessageParser();
-		running = true;
-		receiveQueue = new LinkedBlockingQueue();
-		receivingThread = new ReceivingThread();
-		receivingThread.setName(getClass().getSimpleName()+"-"+getName()+"-receiving");
-		receivingThread.start();
-		sendQueue = new LinkedBlockingQueue();
-		sendingThread = new SendingThread();
-		sendingThread.setName(getClass().getSimpleName()+"-"+getName()+"-sending");
-		sendingThread.start();
     }
 
-    public void close()
-    {
-		super.close();
-		running = false;
-    	receivingThread.interrupt();
-		sendingThread.interrupt();
-    }
     /**
      * Ritorna l'indirizzo del connettore.
      * 
@@ -122,7 +100,7 @@ public class EDSConnector extends Connector {
     /**
      * Gestisce ogni byte ricevuto finchè compone un messaggio e quindi ne effettua il dispacciamento
      */
-    public void received(byte b) {
+    public void received(int b) {
 		mp.push(b);
 		if (mp.isValid()) {
 			EDSMessage m = mp.getMessage();
@@ -131,6 +109,12 @@ public class EDSConnector extends Connector {
 			}
 		}    	
     }
+
+    protected void dispatchMessage(Message m) throws AISException {
+		if (EDSMessage.class.isInstance(m)) {
+			dispatchMessage((EDSMessage) m);
+		}
+	}
 
     /**
      * Invia un messaggio a tutti i BMC destinatari e al mittente.
@@ -146,7 +130,7 @@ public class EDSConnector extends Connector {
      * @param m il messaggio da inviare
      * @throws AISException 
      */
-    private void dispatchMessage(EDSMessage m) throws AISException {
+    protected void dispatchMessage(EDSMessage m) throws AISException {
     	int rcpt = m.getRecipient();
     	int sender = m.getSender();
     	if (messageToBeAnswered != null 
@@ -354,47 +338,6 @@ public class EDSConnector extends Connector {
     public void discoverBMC(int address) {
     	//sendPTPRequest(new RichiestaModelloMessage(address,getMyAddress()));
     	queueMessage(new RichiestaModelloMessage(address,getMyAddress()));
-    }
-
-    private class ReceivingThread extends Thread {
-    
-    	public void run() {
-    		while (running) {
-    			EDSMessage m;
-				try {
-					m = (EDSMessage) receiveQueue.take();
-			    	logger.debug("Dispatching (+"+receiveQueue.size()+"): " + m);
-					dispatchMessage(m);
-				} catch (InterruptedException e) {
-					logger.debug("Interrotto.");
-				} catch (AISException e) {
-					logger.error(e.getMessage(),e);
-				} catch (Exception e) {
-					logger.fatal(e.getMessage(),e);
-				}
-    		}
-			logger.debug("Stop.");
-    	}
-    }
-
-    private class SendingThread extends Thread {
-        
-    	public void run() {
-    		while (running) {
-    			EDSMessage m;
-				try {
-					//logger.debug("Messaggi in coda: "+sendQueue.size());
-					m = (EDSMessage) sendQueue.take();
-			    	logger.debug("Sending (+"+sendQueue.size()+"): " + m);
-					sendMessage(m);
-				} catch (InterruptedException e) {
-					logger.debug("Interrotto.");
-				} catch (Exception e) {
-					logger.fatal("Errore:",e);
-				}
-    		}
-			logger.debug("Stop.");
-    	}
     }
 
 }

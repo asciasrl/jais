@@ -4,6 +4,8 @@
 package it.ascia.ais;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 
 import org.apache.log4j.Logger;
@@ -19,9 +21,16 @@ import org.apache.log4j.Logger;
  * <p>A livello di protocollo, un connector e' identificato da un nome,
  * nella forma "tipo.numero".</p>
  * 
- * @author arrigo
+ * @author arrigo, sergio
+ * TODO Aggiungere gestione stato del trasport (connesso, disconnesso, passivo, ecc.) e riconnessione
  */
 public abstract class Connector {
+
+	protected LinkedBlockingQueue receiveQueue;
+	protected LinkedBlockingQueue sendQueue;
+	private Thread sendingThread;
+	private Thread receivingThread;
+	private boolean running = false;
 	
     /**
      * Il nostro nome secondo AUI.
@@ -48,7 +57,7 @@ public abstract class Connector {
 	/**
 	 * I dispositivi presenti nel sistema.
 	 */
-    private HashMap devices;
+    private LinkedHashMap devices;
 
     /**
      * 
@@ -58,9 +67,18 @@ public abstract class Connector {
     public Connector(String name, Controller controller) {
 		this.name = name;
 		this.controller = controller;
-        devices = new HashMap();
+        devices = new LinkedHashMap();
 		logger = Logger.getLogger(getClass());
 		transportSemaphore = new Semaphore(1,true);
+		running = true;
+		receiveQueue = new LinkedBlockingQueue();
+		receivingThread = new ReceivingThread();
+		receivingThread.setName(getClass().getSimpleName()+"-"+getName()+"-receiving");
+		receivingThread.start();
+		sendQueue = new LinkedBlockingQueue();
+		sendingThread = new SendingThread();
+		sendingThread.setName(getClass().getSimpleName()+"-"+getName()+"-sending");
+		sendingThread.start();
 	}
 
 	/**
@@ -108,7 +126,7 @@ public abstract class Connector {
     	return (Device) devices.get(address);
     }
 
-    public HashMap getDevices() {
+    public LinkedHashMap getDevices() {
 		return devices;
     }
         
@@ -148,11 +166,73 @@ public abstract class Connector {
 		return name;
 	}
 
-	public abstract void received(byte b);
+	/**
+	 * Questo metodo viene chiamato dal Transport per ogni byte che viene ricevuto 
+	 * @param b Dato ricevuto
+	 */
+	public abstract void received(int b);
 
+    /**
+     * Invia il messaggio alle istanze di dispositivo di questo connettore.
+     * Ogni sottoclasse implementa la logica con la quale decide a quali vada inviato.
+     * Il messaggio potrebbe essere gestito direttamente solo da questo metodo.
+     * 
+     * @param m il messaggio da gestire
+     * @throws AISException 
+     * @throws AISException 
+     */
+	protected abstract void dispatchMessage(Message m) throws AISException;
+    
+	/**
+	 * Chiude il Transport e le code di invio/ricezione 
+	 */
 	public void close() {
 		transport.close();
+		running = false;
+    	receivingThread.interrupt();
+		sendingThread.interrupt();
 	}
+	
+    private class ReceivingThread extends Thread {
         
+    	public void run() {
+    		while (running) {
+    			Message m;
+				try {
+					m = (Message) receiveQueue.take();
+			    	logger.debug("Dispatching (+"+receiveQueue.size()+"): " + m);
+					dispatchMessage(m);
+				} catch (InterruptedException e) {
+					logger.debug("Interrotto.");
+				} catch (AISException e) {
+					logger.error(e.getMessage(),e);
+				} catch (Exception e) {
+					logger.fatal(e.getMessage(),e);
+				}
+    		}
+			logger.debug("Stop.");
+    	}
+    }
+
+    private class SendingThread extends Thread {
+        
+    	public void run() {
+    		while (running) {
+    			Message m;
+				try {
+					//logger.debug("Messaggi in coda: "+sendQueue.size());
+					m = (Message) sendQueue.take();
+			    	logger.debug("Sending (+"+sendQueue.size()+"): " + m);
+					sendMessage(m);
+				} catch (InterruptedException e) {
+					logger.debug("Interrotto.");
+				} catch (Exception e) {
+					logger.fatal("Errore:",e);
+				}
+    		}
+			logger.debug("Stop.");
+    	}
+    }
+
 }
 

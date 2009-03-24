@@ -198,7 +198,11 @@ public abstract class Device {
 	public abstract boolean writePort(String portId, Object newValue) throws AISException ;
 	
 	/**
-     * Legge dal dispositivo fisisco lo stato della porta ed aggiorna il valore corrispondente (portValues)  
+     * Legge dal dispositivo fisisco lo stato della porta ed aggiorna il valore corrispondente (portValues)
+     * Se ritorna con tempo da attendere 0 (zero) vuol dire che il chiamante non deve aspettare, perche' l'aggiornamento:
+     * - e' stato immediato
+     * - e' stato gia' fatto
+     * - non puo' essere fatto
 	 * @param portId
 	 * @return Tempo massimo previsto per l'aggiornamento in millisecondi
 	 * @throws AISException

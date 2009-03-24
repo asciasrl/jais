@@ -93,17 +93,26 @@ public class DevicePort {
 	 */
 	public Object getValue() throws AISException {
 		if (isDirty() || isExpired()) {
+			long start = System.currentTimeMillis();
 			long timeout = device.updatePort(portId);
-			if (isDirty()) {
+			if (timeout == 0) {
+				logger.warn("timeout 0 da device.updatePort("+getFullAddress()+")");
+			} else {			
 				synchronized (this) {
-					try {
-						wait(timeout);
-					} catch (InterruptedException e) {
+					if (isDirty() || isExpired()) {
+						try {
+							wait(timeout);
+						} catch (InterruptedException e) {
+							logger.warn("Interrotto: ",e);
+						}
+					} else {
+						// il valore, nel frattempo, e' stato aggiornato
+						return cachedValue;
 					}
 				}
 			}	
 			if (isDirty() || isExpired()) {
-				logger.error("Non aggiornato valore porta "+getFullAddress());
+				logger.error("Non aggiornato valore porta "+getFullAddress()+" in "+(System.currentTimeMillis()-start)+"mS");
 			}
 		}
 		return cachedValue;
@@ -121,11 +130,11 @@ public class DevicePort {
 			changed = true;
 			timeStamp = System.currentTimeMillis();
 		}
-		expiration = System.currentTimeMillis() + cacheRetention;
-		cachedValue = newValue;
-		dirty = false;
-		// sveglia getValue()
 		synchronized (this) {
+			expiration = System.currentTimeMillis() + cacheRetention;
+			cachedValue = newValue;
+			dirty = false;
+			// sveglia getValue()
 			notify();								
 		}
 		if (changed) {
@@ -173,12 +182,7 @@ public class DevicePort {
 	}
 
 	public boolean isExpired() {
-		if (System.currentTimeMillis() >= expiration ) {
-			logger.trace("Expired by "+getFullAddress()+" "+(1.0 + System.currentTimeMillis() - expiration)/1000.0+"s");
-			return true;
-		} else {
-			return false;
-		}
+		return System.currentTimeMillis() >= expiration;
 	}
 
 	/**

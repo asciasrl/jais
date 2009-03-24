@@ -3,10 +3,7 @@
  */
 package it.ascia.eds.msg;
 
-
 import it.ascia.ais.Message;
-import java.io.IOException;
-import java.io.OutputStream;
 
 /**
  * Messaggio EDS generico.
@@ -231,15 +228,6 @@ public abstract class EDSMessage extends Message implements Comparable {
 	}
 
 	/**
-	 * Invia se stesso.
-	 * @param out OutputStream su cui inviarsi.
-	 * @deprecated
-	 */
-	public void write(OutputStream out) throws IOException {
-		out.write(getBytesMessage());
-	}
-
-	/**
 	 * Calcola il checksum.
 	 */
 	public int checkSum() {
@@ -282,6 +270,19 @@ public abstract class EDSMessage extends Message implements Comparable {
 	}
 
 	/**
+	 * Funzione di utilita': restituisce la rappresentazione binaria
+	 * di un byte.
+	 */
+	protected static String b2b(int i)
+	{
+		StringBuffer s = new StringBuffer();
+		for (int j = 0; j < 8; j++) {
+			s.append((i >> j) & 1);
+		}
+		return s.reverse().toString();
+	}
+
+	/**
 	 * Ritorna il nome descrittivo del messaggio.
 	 */
 	public abstract String getMessageDescription();
@@ -291,7 +292,7 @@ public abstract class EDSMessage extends Message implements Comparable {
 	 */
 	public String toString()
 	{
-		return Mittente + " -> " + Destinatario + " " + getMessageDescription()+" ("+TipoMessaggio+") ["+b2h(Byte1)+":"+b2h(Byte2)+" "+Byte1+":"+Byte2+"]";
+		return Mittente + " -> " + Destinatario + " " + getMessageDescription()+" ("+TipoMessaggio+") ["+b2b(Byte1)+":"+b2b(Byte2)+" "+Byte1+":"+Byte2+"]";
 	}
 
 	public EDSMessage() {  

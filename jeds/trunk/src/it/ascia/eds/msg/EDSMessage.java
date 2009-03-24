@@ -256,33 +256,6 @@ public abstract class EDSMessage extends Message implements Comparable {
 	}
 
 	/**
-	 * Funzione di utilita': restituisce la rappresentazione esadecimale
-	 * di un byte.
-	 */
-	protected static String b2h(int i)
-	{
-		String s = "0x";
-		if (i < 16) {
-			s += "0";
-		}
-		s += Integer.toHexString(i);
-		return s;
-	}
-
-	/**
-	 * Funzione di utilita': restituisce la rappresentazione binaria
-	 * di un byte.
-	 */
-	protected static String b2b(int i)
-	{
-		StringBuffer s = new StringBuffer();
-		for (int j = 0; j < 8; j++) {
-			s.append((i >> j) & 1);
-		}
-		return s.reverse().toString();
-	}
-
-	/**
 	 * Ritorna il nome descrittivo del messaggio.
 	 */
 	public abstract String getMessageDescription();

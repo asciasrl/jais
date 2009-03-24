@@ -57,7 +57,7 @@ public class DevicePort {
 	/**
 	 * @param device
 	 * @param portId
-	 * @param portName se null il default è <connector>.<address>:<portId>
+	 * @param portName se null il default è connector.address:portId
 	 */
 	public DevicePort(Device device, String portId, String portName) {
 		logger = Logger.getLogger(getClass());
@@ -95,9 +95,7 @@ public class DevicePort {
 		if (isDirty() || isExpired()) {
 			long start = System.currentTimeMillis();
 			long timeout = device.updatePort(portId);
-			if (timeout == 0) {
-				logger.warn("timeout 0 da device.updatePort("+getFullAddress()+")");
-			} else {			
+			if (timeout > 0) {
 				synchronized (this) {
 					if (isDirty() || isExpired()) {
 						try {

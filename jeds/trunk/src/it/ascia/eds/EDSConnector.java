@@ -150,9 +150,11 @@ public class EDSConnector extends Connector {
     	int rcpt = m.getRecipient();
     	int sender = m.getSender();
     	if (messageToBeAnswered != null 
-    			&& PTPResponse.class.isInstance(m) 
-    			&& messageToBeAnswered.isAnsweredBy((PTPResponse) m)) {
-    		((PTPResponse) m).setRequest(messageToBeAnswered);
+    			&& PTPMessage.class.isInstance(m) 
+    			&& messageToBeAnswered.isAnsweredBy((PTPMessage) m)) {
+    		if (PTPResponse.class.isInstance(m) && PTPRequest.class.isInstance(messageToBeAnswered)) {
+    			((PTPResponse) m).setRequest(messageToBeAnswered);
+    		}
 			// sveglia sendPTPRequest
 			synchronized (messageToBeAnswered) {
 	    		messageToBeAnswered.setAnswered(true);
@@ -173,9 +175,8 @@ public class EDSConnector extends Connector {
 			if (bmc == null) {
 				bmc = createBMC(risposta.getSource(), risposta.getModello());
 				if (bmc != null) {
-					logger.info("Creato BMC "+bmc);
-					bmc.discoverUscite();
-					bmc.discoverBroadcastBindings();
+					logger.info("Creato BMC "+bmc+" indirizzo:"+bmc.getFullAddress());
+					bmc.discover();
 				}
 			} else {
 				bmc.messageSent(m);

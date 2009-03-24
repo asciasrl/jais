@@ -233,6 +233,13 @@ public abstract class BMC extends Device {
 		return bmc;
 	}	
 
+	/**
+	 * Effettua il discover delle impostazioni del device
+	 */
+	public void discover() {
+		discoverUscite();
+		discoverBroadcastBindings();
+	}
     /**
      * Rileva le opzioni delle uscite.
      * 

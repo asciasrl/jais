@@ -35,6 +35,7 @@ public class AUIStreamingServlet extends HttpServlet {
 
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) {
+		String remote = request.getRemoteAddr()+":"+request.getRemotePort();
 		try {
 			PrintWriter out = response.getWriter();
 			response.setContentType("text/html");
@@ -42,6 +43,7 @@ public class AUIStreamingServlet extends HttpServlet {
 			LinkedBlockingQueue q = new LinkedBlockingQueue();
 			AUIControllerModule auiControllerModule = (AUIControllerModule) Controller.getController().getModule("AUI");
 			auiControllerModule.addStreamQueue(q);
+			logger.info("Inizio streaming verso "+remote);
 			
 			// per prima cosa aggiorna lo stato di tutte le porte
 			// TODO aggiornare solo lo stato delle porte richieste
@@ -60,13 +62,11 @@ public class AUIStreamingServlet extends HttpServlet {
 					}
 				}
 			} catch (AISException e) {
-				logger.warn("Errore durante streaming:",e);
+				logger.warn("Errore durante streaming con "+remote+":",e);
 			}
-
 			
-			//out.println("<!-- Streaming jais events -->");
 			while (! out.checkError()) {
-				logger.trace("Streaming ...");
+				logger.trace("Streaming "+remote);
 				DevicePortChangeEvent evt = null;
 				try {
 					evt = (DevicePortChangeEvent) q.poll(10,TimeUnit.SECONDS);
@@ -84,17 +84,17 @@ public class AUIStreamingServlet extends HttpServlet {
 						obj.put("timeStamp",new Long(evt.getTimeStamp()));
 						String s = "fireDevicePortChangeEvent("+obj.toJSONString()+");";
 						out.println(s);
-						logger.debug(s);
+						logger.debug(remote +" "+s);
 					}
 				} else {
 					//out.println("<!-- no events -->");
 				}
 			}
 			auiControllerModule.removeStreamQueue(q);
-			logger.debug("End streaming ...");
+			logger.debug("Fine streaming verso "+remote);
 		} catch (IOException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			logger.error("Errore interno durante streaming:",e);
+			logger.error("Errore interno durante streaming verso "+remote+" :",e);
 		}
 	}
 		

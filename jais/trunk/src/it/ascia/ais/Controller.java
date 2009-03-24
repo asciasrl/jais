@@ -7,6 +7,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,12 +31,12 @@ public class Controller {
 	 * 
 	 * <p>I Connector qui dentro sono accessibili dal loro nome (stringa).</p>
 	 */
-	private Map connectors = new HashMap();
+	private Map connectors = new LinkedHashMap();
 
 	/**
 	 * Moduli del controllore
 	 */
-	private Map modules = new HashMap();
+	private Map modules = new LinkedHashMap();
 	
 	private Logger logger;
 		

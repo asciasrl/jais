@@ -39,21 +39,6 @@ public abstract class Transport {
     	return name;
     }
 
-    /**
-     * Verifica se ci sono dati pronti da leggere.
-     * 
-     * @return true se ci sono dati leggibili da readByte()
-     */
-    // TODO public abstract boolean hasData();
-    
-    /**
-     * Ritorna il prossimo byte ricevuto.
-     * @throws IOException 
-     * 
-     * @return il dato ricevuto.
-     */
-    // TODO public abstract byte readByte() throws IOException;
-    
 	/**
      * Invia un messaggio sul transport.
      * 

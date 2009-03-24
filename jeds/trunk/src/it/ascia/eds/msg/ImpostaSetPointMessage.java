@@ -49,13 +49,13 @@ public class ImpostaSetPointMessage extends PTPRequest {
 	}
 
 	public ImpostaSetPointMessage(int d, int m,
-			Double temperatura, String sStagione, String sGiorno, int ora) {
+			double temperatura, String sStagione, String sGiorno, int ora) {
 		this(d,m,temperatura,stagione(sStagione),giorno(sGiorno),ora);
 	}
 
 	public ImpostaSetPointMessage(int d, int m, 
-			Double temperatura,	int stagione, int giorno, int ora) {
-		this(d,m,temperatura(temperatura.doubleValue()),decimale(temperatura.doubleValue()),stagione,giorno,ora);
+			double temperatura,	int stagione, int giorno, int ora) {
+		this(d,m,temperatura(temperatura),decimale(temperatura),stagione,giorno,ora);
 	}
 
 	public ImpostaSetPointMessage(int[] message) {

@@ -10,14 +10,37 @@ package it.ascia.eds.msg;
  */
 public class RichiestaSetPointMessage extends PTPRequest {
 
-	public RichiestaSetPointMessage(int d, int m) {
+	/**
+	 * Richiede set point attuale
+	 * @param d
+	 * @param m
+	 * @param attuale Da impostare a true per sonda termica, false per Cronotermostato Home Innovation
+	 */
+	public RichiestaSetPointMessage(int d, int m, boolean attuale) {		
+		this(d, m, 0, 0, attuale ? 31 : 0);
+	}
+	
+	/**
+	 * Richiede set point per stagione/giorno/ora
+	 * @param d Destinatario
+	 * @param m Mittente
+	 * @param giorno (0-6)
+	 * @param ora Fascia oraria (0-23)
+	 * @param stagione (0=estate,1=inverno)
+	 */
+	public RichiestaSetPointMessage(int d, int m, int stagione, int giorno, int ora) {
 		Destinatario = d & 0xFF;
 		Mittente = m & 0xFF;
 		TipoMessaggio = getMessageType();
-		Byte1 = 248; // TODO perche' ?  Lo invia cosi' edsconfig
-		Byte2 = 0;
+		Byte1 = (giorno & 0x07) + ((ora & 0x1F) << 3);
+		Byte2 = stagione & 0x01;
 	}
 	
+	public RichiestaSetPointMessage(int d, int m,
+			String sStagione, String sGiorno, int ora) {
+		this(d,m,ImpostaSetPointMessage.stagione(sStagione),ImpostaSetPointMessage.giorno(sGiorno),ora);
+	}
+		
 	public RichiestaSetPointMessage(int[] message) {
 		load(message);
 	}
@@ -37,16 +60,33 @@ public class RichiestaSetPointMessage extends PTPRequest {
 		return false;
 	}
 	
-	/**
-	 * Ritorna il numero massimo di tentativi di invio da effettuare.
-	 * 
-	 * <p>Per richiedere uno stato non bisogna insistere.</p>
-	 */
-	public int getMaxSendTries() {
-		return 3;
-	}
-
 	public int getMessageType() {
 		return MSG_RICHIESTA_SET_POINT;
 	}
+	
+	public int getOra() {
+		return (Byte1 & 0xF8) >> 3;
+	}
+	
+	public int getGiorno() {
+		return Byte1 & 0x07;
+	}
+
+	public int getStagione() {
+		return Byte2 & 0x01;
+	}
+	
+	public String toString()	{
+		StringBuffer s = new StringBuffer();
+		s.append(super.toString());
+		if (getOra() == 31) {
+			s.append(" Attuale");
+		} else {
+			s.append(" Stagione:"+(getStagione() == 1 ? "Estate":"Inverno"));
+			s.append(" Giorno:"+ImpostaSetPointMessage.giorno(getGiorno()));
+			s.append(" Orario:"+ImpostaSetPointMessage.fasciaOraria(getOra()));
+		}
+		return s.toString();
+	}
+
 }

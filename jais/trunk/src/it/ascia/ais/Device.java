@@ -16,7 +16,7 @@ public abstract class Device {
 	/**
 	 * L'indirizzo sul connector.
 	 */
-	private String address;
+	protected String address;
 
 	/**
 	 * Il bus a cui il dispositivo e' collegato.
@@ -31,12 +31,23 @@ public abstract class Device {
 	/**
 	 * le porte del dispositivo.
 	 */
-	private LinkedHashMap ports = new LinkedHashMap();
+	protected LinkedHashMap ports = new LinkedHashMap();
 
+	/**
+	 * Device con indirizzo vuoto
+	 * @param connector
+	 * @throws AISException
+	 */
 	public Device(Connector connector) throws AISException {
 		this(connector,"");
 	}
 
+	/**
+	 * Device con indirizzo specificato
+	 * @param connector
+	 * @param address
+	 * @throws AISException
+	 */
 	public Device(Connector connector, String address) throws AISException {
 		this.connector = connector;
 		this.address = address;

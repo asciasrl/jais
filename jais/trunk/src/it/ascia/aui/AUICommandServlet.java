@@ -57,6 +57,7 @@ public class AUICommandServlet extends HttpServlet {
 				command = uri;
 			}
 			logger.info("Comando '"+command+"':"+params.toString());
+			long start = System.currentTimeMillis();
 			String res;
 			try {
 				res = doCommand(command, params);
@@ -68,6 +69,7 @@ public class AUICommandServlet extends HttpServlet {
 				res = "ERROR: "+e.getMessage();
 			}
 			out.println(res);
+			logger.debug("Eseguito comando '"+command+"' in "+(System.currentTimeMillis()-start)/1000.0+"s");
 		} catch (IOException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			logger.fatal("Errore gestione richiesta:",e);

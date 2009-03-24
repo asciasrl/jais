@@ -21,15 +21,15 @@ public class HTTPServerControllerModule extends ControllerModule {
 	public void start() {
 		//logger = Logger.getLogger(getClass());
 		logger.info("Avvio server HTTP...");
-		int port = config.getInt("HTTPServer.port",80);
-		String root = config.getString("HTTPServer.root","../aui");
+		int port = config.getInt("port",80);
+		String root = config.getString("root","../aui");
 		logger.info("Porta="+port+" Root="+root);
 		// configurazione livelli di log di Jetty e Jasper
-		if (config.getBoolean("HTTPServer.debug", false)) {
+		if (config.getBoolean("debug", false)) {
 			logger.info("Jetty Debug");
 			System.setProperty("DEBUG","true");			
 		}
-		if (config.getBoolean("HTTPServer.verbose", false)) {
+		if (config.getBoolean("verbose", false)) {
 			logger.info("Jetty Verbose");
 			System.setProperty("VERBOSE","true");			
 		}
@@ -44,7 +44,7 @@ public class HTTPServerControllerModule extends ControllerModule {
 		rootContext.addServlet(jspHolder, "*.jsp");
 		
 		// configurazione delle servlet 
-		List servlets = config.configurationsAt("HTTPServer.servlet");
+		List servlets = config.configurationsAt("servlets.servlet");
 		for (Iterator si = servlets.iterator(); si.hasNext();)
 		{
 			try {

@@ -191,9 +191,14 @@ public class BMCStandardIO extends BMC {
 				RispostaAssociazioneUscitaMessage mrisp = (RispostaAssociazioneUscitaMessage) m;
 				int gruppo = mrisp.getComandoBroadcast();
 				if (gruppo > 0) {
+					int outPortNumber = mrisp.getUscita();
+					int casella = mrisp.getCasellaBMC();
+					// alcuni BMC hanno un Bug per cui non mettono nella risposta il numero di uscita/casella
 					RichiestaAssociazioneUscitaMessage mrich = (RichiestaAssociazioneUscitaMessage) mrisp.getRequest();
-					int outPortNumber = mrich.getUscita();
-					int casella = mrich.getCasella();
+					if (mrich != null) {
+						outPortNumber = mrich.getUscita();
+						casella = mrich.getCasella();
+					}
 					logger.info("Associazione uscita: "+getOutputPortId(outPortNumber)+" casella:"+casella+" al gruppo:"+gruppo);
 					bindOutput(gruppo, outPortNumber);
 				}

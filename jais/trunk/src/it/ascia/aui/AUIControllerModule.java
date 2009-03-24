@@ -81,14 +81,14 @@ public class AUIControllerModule extends ControllerModule implements PropertyCha
 	public String getControls() {
 		JSONObject j =new JSONObject();
 		HierarchicalConfiguration auiConfig = getConfig();
-		List maps = auiConfig.configurationsAt("map");
-		for (Iterator im = maps.iterator(); im.hasNext(); ) {
-			HierarchicalConfiguration mapConfig = (HierarchicalConfiguration) im.next();
-			String mapId = mapConfig.getString("id");
-			List controls = mapConfig.configurationsAt("control");
+		List pages = auiConfig.configurationsAt("pages.page");
+		for (Iterator iPages = pages.iterator(); iPages.hasNext(); ) {
+			HierarchicalConfiguration pageConfig = (HierarchicalConfiguration) iPages.next();
+			String pageId = pageConfig.getString("[@id]");
+			List controls = pageConfig.configurationsAt("control");
 			for (Iterator ic = controls.iterator(); ic.hasNext(); ) {
 				HierarchicalConfiguration controlConfig = (HierarchicalConfiguration) ic.next();
-				String id = "control-" + mapId + "-" + controlConfig.getString("id");
+				String id = "control-" + pageId + "-" + controlConfig.getString("[@id]");
 				String type = controlConfig.getString("type");
 				SubnodeConfiguration typeConfig = auiConfig.configurationAt("controls."+type);
 				HashMap controlMap = new HashMap();
@@ -113,14 +113,14 @@ public class AUIControllerModule extends ControllerModule implements PropertyCha
 	public String getAddresses() {
 		JSONObject j =new JSONObject();
 		HierarchicalConfiguration auiConfig = getConfig();
-		List maps = auiConfig.configurationsAt("map");
-		for (Iterator im = maps.iterator(); im.hasNext(); ) {
-			HierarchicalConfiguration mapConfig = (HierarchicalConfiguration) im.next();
-			String mapId = mapConfig.getString("id");
-			List controls = mapConfig.configurationsAt("control");
+		List pages = auiConfig.configurationsAt("pages.page");
+		for (Iterator iPages = pages.iterator(); iPages.hasNext(); ) {
+			HierarchicalConfiguration pageConfig = (HierarchicalConfiguration) iPages.next();
+			String pageId = pageConfig.getString("[@id]");
+			List controls = pageConfig.configurationsAt("control");
 			for (Iterator ic = controls.iterator(); ic.hasNext(); ) {
 				HierarchicalConfiguration controlConfig = (HierarchicalConfiguration) ic.next();
-				String id = "control-" + mapId + "-" + controlConfig.getString("id");
+				String id = "control-" + pageId + "-" + controlConfig.getString("[@id]");
 				String address = controlConfig.getString("address");
 				if (address != null) {
 					j.put(address, id);
@@ -215,11 +215,13 @@ public class AUIControllerModule extends ControllerModule implements PropertyCha
 	}
 
 	public void addStreamQueue(LinkedBlockingQueue q) {
-		streams.add(q);		
+		streams.add(q);	
+		logger.debug("Aggiunta coda di streaming: "+streams.size());
 	}
 
 	public void removeStreamQueue(LinkedBlockingQueue q) {
 		streams.remove(q);		
+		logger.debug("Rimossa coda di streaming: "+streams.size());
 	}
 
 

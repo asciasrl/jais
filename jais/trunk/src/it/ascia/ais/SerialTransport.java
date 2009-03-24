@@ -134,7 +134,7 @@ public class SerialTransport extends Transport {
 						if (i == -1) {
 							logger.error("Nessun dato ricevuto");					
 						} else {					
-							connector.received((byte)i);
+							connector.received(i);
 						}
 					}
 				} catch (IOException e) {

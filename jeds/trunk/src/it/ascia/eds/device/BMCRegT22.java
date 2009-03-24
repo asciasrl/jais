@@ -317,7 +317,7 @@ public class BMCRegT22 extends BMCStandardIO {
 			int ora = Integer.parseInt(temp[3]);
 			//logger.info("write:"+stagione+","+giorno+","+ora+"="+newValue);
 			res = getConnector().sendMessage(new ImpostaSetPointMessage(getIntAddress(), getBMCComputerAddress(),
-					(Double)newValue, stagione, giorno, ora));
+					Double.parseDouble((String) newValue), stagione, giorno, ora));
 		} else {
 			logger.fatal("Non so come scrivere sulla porta "+portId);
 		}

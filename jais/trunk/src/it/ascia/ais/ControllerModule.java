@@ -1,7 +1,5 @@
 package it.ascia.ais;
 
-import java.util.HashMap;
-
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.log4j.Logger;
 

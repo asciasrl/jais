@@ -14,7 +14,10 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.xml.DOMConfigurator;
 
 /**
  * Controllore del sistema di integrazione, esteso tramite moduli.
@@ -27,15 +30,15 @@ public class Controller {
 	 * 
 	 * <p>I Connector qui dentro sono accessibili dal loro nome (stringa).</p>
 	 */
-	private Map connectors;
-	
+	private Map connectors = new HashMap();
+
 	/**
 	 * Moduli del controllore
 	 */
-	private Map modules;
+	private Map modules = new HashMap();
 	
 	private Logger logger;
-	
+		
 	private XMLConfiguration config;
 
 	private static Controller controller;
@@ -45,15 +48,15 @@ public class Controller {
 	/**
 	 * Controller singleton
 	 * @return
+	 * @throws AISException 
 	 */
 	public static Controller getController() {
+		if (controller == null) {
+			controller = new Controller();
+		}
 		return controller;
 	}
 
-	private static void setController(Controller c) {
-		controller = c;
-	}
-	
 	public XMLConfiguration getConfig() {
 		return config;
 	}
@@ -113,7 +116,7 @@ public class Controller {
 			Class moduleClass = moduleLoader.loadClass(className);
 			module = (ControllerModule) moduleClass.newInstance();
 			module.setController(this);
-			module.setConfiguration(config);
+			module.setConfiguration(config.configurationAt(name));
 			modules.put(name,module);
 			logger.info("Caricato modulo '"+name+"'");
 		} catch (ClassNotFoundException e) {
@@ -234,35 +237,40 @@ public class Controller {
 		return retval;
 	}
 	
-	public Controller() throws AISException {
-		this("conf/jais.xml");
-	}
-	
 	/**
 	 * 
 	 * @param configurationFileName 
 	 * @throws AISException 
 	 * @throws ConfigurationException 
 	 */
-	public Controller(String configurationFileName) throws AISException {
-		if (Controller.getController() != null) {
-			throw(new AISException("Controller gia' inizializzato"));
-		}
-		connectors = new HashMap();
-		modules = new HashMap();
+	public Controller() {
+    	BasicConfigurator.configure();  // configurazione minimale di log4j
 		logger = Logger.getLogger(getClass());	
+	}
+	
+	public void configure() {
+		configure("conf/jais.xml");
+	}
+
+	public void configure(String configurationFileName) {
 		try {
 			XMLConfiguration.setDefaultListDelimiter(';');
 			config = new XMLConfiguration(configurationFileName);
-			config.setReloadingStrategy(new FileChangedReloadingStrategy());
 		} catch (ConfigurationException e) {
 			logger.fatal("Errore nel file di configurazione "+configurationFileName,e);
+			return;
 		}
-		Controller.setController(this);
-		logger.info("Inizializzato controller.");
-	}
+		config.setReloadingStrategy(new FileChangedReloadingStrategy());
+		// Inizializzazione logger
+	    String loggerConfigFileName = config.getString("file","conf/log4j.xml");
+	    String loggerConfiguratorName = config.getString("configurator","DOMConfigurator"); 
+	    if (loggerConfiguratorName.equals("DOMConfigurator")) {
+	    	DOMConfigurator.configure(loggerConfigFileName);  
+	    } else if (loggerConfiguratorName.equals("PropertyConfigurator")) {
+	    	PropertyConfigurator.configure(loggerConfigFileName);
+	    }
+		logger = Logger.getLogger(getClass());	
 
-	public void configure() {
 		List modules = config.configurationsAt("modules.module");
 		for(Iterator it = modules.iterator(); it.hasNext();)
 		{
@@ -275,6 +283,7 @@ public class Controller {
 				logger.fatal("Errore caricamento modulo:",e);
 			}
 		}		
+		logger.info("Configurato controller.");
 	}
 	
 	public void addPropertyChangeListener( PropertyChangeListener listener )
@@ -332,5 +341,6 @@ public class Controller {
 			return null;
 		}
 	}
+
 }
 

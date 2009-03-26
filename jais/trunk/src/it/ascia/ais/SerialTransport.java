@@ -92,7 +92,7 @@ public class SerialTransport extends Transport {
 		}
 		
 		try {
-			serialPort.addEventListener(new SerialListener());
+			serialPort.addEventListener(new SerialListener(portName));
 		} catch (TooManyListenersException e) {
 			throw new AISException("Troppi listeners sulla porta:" + e.getMessage());
 		}
@@ -125,8 +125,18 @@ public class SerialTransport extends Transport {
     }
 
 	private class SerialListener implements SerialPortEventListener {
+		
+		private String name = null;
+
+		public SerialListener(String portName) {
+			name = portName;
+		}
 
 		public void serialEvent(SerialPortEvent event) {
+			if (name != null) {
+				Thread.currentThread().setName("Listener-"+name);
+				name = null;
+			}
             if (event.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
             	try {
 					while (inputStream.available() > 0) {

@@ -304,11 +304,6 @@ public abstract class EDSMessage extends Message implements Comparable {
 	 */
 	public abstract boolean isBroadcast();
 	
-	/**
-	 * Ritorna il codice del tipo di messaggio.
-	 */
-	public abstract int getMessageType();
-	
 	public int compareTo(java.lang.Object arg0) {
 		if (arg0.getClass() == getClass()) {
 			EDSMessage m = (EDSMessage) arg0;

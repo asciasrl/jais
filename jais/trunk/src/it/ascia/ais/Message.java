@@ -20,6 +20,11 @@ public abstract class Message {
 	 * Ritorna il contenuto del messaggio sotto forma di array di byte.
 	 */
 	public abstract byte[] getBytesMessage();
+
+	/**
+	 * Ritorna il codice del tipo di messaggio.
+	 */
+	public abstract int getMessageType();
 	
 	public abstract String getSource();
 	

@@ -1,19 +1,11 @@
 package it.ascia.dxp.msg;
 
-import it.ascia.dxp.DXPMessage;
+import it.ascia.dxp.DXPResponseMessage;
 
-public class RispostaStatoIngressiMessage extends DXPMessage {
+public class RispostaStatoIngressiMessage extends DXPResponseMessage {
 
 	public RispostaStatoIngressiMessage(int[] message) {
 		load(message);
-	}
-
-	public String getDestination() {
-		return null;
-	}
-
-	public String getSource() {
-		return (new Integer(indirizzo)).toString();
 	}
 
 	public String toString() {

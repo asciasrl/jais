@@ -2,6 +2,7 @@ package it.ascia.dxp.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
+import it.ascia.ais.Message;
 import it.ascia.dxp.DominoDevice;
 
 public class DF4IV extends DominoDevice {
@@ -35,4 +36,13 @@ public class DF4IV extends DominoDevice {
 		return false;
 	}
 
+	public void messageReceived(Message m) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void messageSent(Message m) {
+		// TODO Auto-generated method stub
+		
+	}	
 }

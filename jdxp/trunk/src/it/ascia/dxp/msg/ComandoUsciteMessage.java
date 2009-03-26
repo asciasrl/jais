@@ -1,8 +1,10 @@
 package it.ascia.dxp.msg;
 
 import it.ascia.dxp.DXPMessage;
+import it.ascia.dxp.DXPRequestMessage;
+import it.ascia.dxp.DXPResponseMessage;
 
-public class ComandoUsciteMessage extends DXPMessage {
+public class ComandoUsciteMessage extends DXPRequestMessage {
 
 	public ComandoUsciteMessage(int[] message) {
 		load(message);
@@ -84,12 +86,14 @@ public class ComandoUsciteMessage extends DXPMessage {
 		dato0 = (valore & 0x00FF);		
 	}
 
-	public String getDestination() {
-		return (new Integer(indirizzo)).toString();
-	}
-
-	public String getSource() {
-		return null;
+	public boolean isAnsweredBy(DXPMessage m) {
+		if (DXPResponseMessage.class.isInstance(m)
+				&& m.getMessageType() == RISPOSTA_STATO_USCITE
+				&& m.getSource().equals(getDestination())) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }

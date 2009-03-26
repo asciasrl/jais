@@ -3,7 +3,6 @@
  */
 package it.ascia.ais;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
@@ -73,11 +72,11 @@ public abstract class Connector {
 		running = true;
 		receiveQueue = new LinkedBlockingQueue();
 		receivingThread = new ReceivingThread();
-		receivingThread.setName(getClass().getSimpleName()+"-"+getName()+"-receiving");
+		receivingThread.setName("Receiving-"+getClass().getSimpleName()+"-"+getName());
 		receivingThread.start();
 		sendQueue = new LinkedBlockingQueue();
 		sendingThread = new SendingThread();
-		sendingThread.setName(getClass().getSimpleName()+"-"+getName()+"-sending");
+		sendingThread.setName("Sending-"+getClass().getSimpleName()+"-"+getName());
 		sendingThread.start();
 	}
 
@@ -139,6 +138,14 @@ public abstract class Connector {
      * @throws AISException 
      */
     public abstract boolean sendMessage(Message m);
+    
+    /**
+     * Aggiunge un messaggio alla coda dei messaggi da inviare e ritorna immediatamente
+     * @param m
+     */
+	public void queueMessage(Message m) {
+		sendQueue.offer(m);
+	}
     
 	/**
 	 * Propaga l'evento al controller

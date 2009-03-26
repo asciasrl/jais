@@ -4,7 +4,6 @@
 package it.ascia.eds;
 
 import java.util.Iterator;
-import java.util.concurrent.LinkedBlockingQueue;
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.Controller;
@@ -233,11 +232,6 @@ public class EDSConnector extends Connector {
 			}
 		}
 		return retval;
-	}
-
-	public void queueMessage(EDSMessage m) {
-		sendQueue.offer(m);
-		//logger.debug("Messaggi in coda da inviare: "+sendQueue.size());
 	}
 
 	/**

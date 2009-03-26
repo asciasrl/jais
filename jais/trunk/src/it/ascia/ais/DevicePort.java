@@ -1,20 +1,23 @@
 package it.ascia.ais;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
 import org.apache.log4j.Logger;
 
 public class DevicePort {
 	
-	private String portId;
+	protected String portId;
 	
 	public String getPortId() {
 		return portId;
 	}
 
-	private Object cachedValue;
+	protected Object cachedValue;
 	
 	private boolean dirty = true;
 	
-	private Device device;
+	protected Device device;
 
 	public Device getDevice() {
 		return device;
@@ -27,7 +30,7 @@ public class DevicePort {
 	 */
 	private long timeStamp;
 
-	private Logger logger;
+	protected Logger logger;
 
 	public static long DEFAULT_CACHE_RETENTION = 60000;
 
@@ -37,7 +40,19 @@ public class DevicePort {
 	 * Tempo fino a cui e' valido il valore in cache
 	 */
 	private long expiration;
-	
+
+	protected final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+
+	public void addPropertyChangeListener( PropertyChangeListener listener )
+    {
+        this.pcs.addPropertyChangeListener( listener );
+    }
+
+    public void removePropertyChangeListener( PropertyChangeListener listener )
+    {
+        this.pcs.removePropertyChangeListener( listener );
+    }
+		
 	public long getCacheRetention() {
 		return cacheRetention;
 	}
@@ -144,14 +159,19 @@ public class DevicePort {
 			DevicePortChangeEvent evt;
 			if (oldValue != null && oldValue.equals(newValue)) {
 				evt = new DevicePortChangeEvent(this,oldValue,null);
-				device.fireDevicePortChangeEvent(evt);				
+				fireDevicePortChangeEvent(evt);				
 				evt = new DevicePortChangeEvent(this,null,newValue);
-				device.fireDevicePortChangeEvent(evt);				
+				fireDevicePortChangeEvent(evt);				
 			} else {
 				evt = new DevicePortChangeEvent(this,oldValue,newValue);
-				device.fireDevicePortChangeEvent(evt);
+				fireDevicePortChangeEvent(evt);
 			}
 		}
+	}
+	
+	public void fireDevicePortChangeEvent(DevicePortChangeEvent evt) {
+		this.pcs.firePropertyChange(evt);
+		device.fireDevicePortChangeEvent(evt);
 	}
 			
 	/**

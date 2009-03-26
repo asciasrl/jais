@@ -81,7 +81,7 @@ public class DXPMessageParser {
 		if (ibuff == 1) {
 			if (b != DXPMessage.Start) {
 				ibuff = 0;
-				logger.warn("Non Sart:" + b);
+				logger.warn("Non Start:" + b);
 			}
 		} else if (ibuff == 7) {
 			// verifica che il settimo byte sia checksum valido

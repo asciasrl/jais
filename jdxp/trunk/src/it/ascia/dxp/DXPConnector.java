@@ -12,6 +12,7 @@ public class DXPConnector extends Connector {
 	 * MessageParser per la lettura dei messaggi in ingresso.
 	 */
 	protected DXPMessageParser mp;
+	private DXPRequestMessage messageToBeAnswered;
 	
 	public DXPConnector(String name, Controller controller) {
 		super(name, controller);
@@ -29,12 +30,79 @@ public class DXPConnector extends Connector {
 	}
 
 	public boolean sendMessage(Message m) {
-		// TODO Auto-generated method stub
-		return false;
+		if (DXPRequestMessage.class.isInstance(m)) {
+			return sendRequestMessage((DXPRequestMessage)m);
+		} else {
+			try {
+				transportSemaphore.acquire();
+				transport.write(m.getBytesMessage());
+				transportSemaphore.release();
+				return true;
+			} catch (InterruptedException e) {
+				logger.error("Interrupted:",e);
+				return false;
+			}
+		}
+	}
+
+	public boolean sendRequestMessage(DXPRequestMessage m) {
+    	boolean received = false;
+		if (messageToBeAnswered != null) {
+			// FIXME
+		}
+		try {
+			transportSemaphore.acquire();
+			if (messageToBeAnswered != null) {
+				logger.error("messageToBeAnswered non nullo: "+messageToBeAnswered);
+				logger.error("Messaggio in attesa :"+m);
+				return false;
+			}
+        	messageToBeAnswered = m;
+	    	synchronized (messageToBeAnswered) {
+    			transport.write(m.getBytesMessage());
+    			// si mette in attesa, ma se nel frattempo arriva la risposta viene avvisato
+    	    	try {
+    	    		messageToBeAnswered.wait((long)(100 * (1 + 0.2 * Math.random())));
+    	    	} catch (InterruptedException e) {
+    				logger.trace("sendRequestMessage wait:2");
+    	    	}
+		    	received = m.isAnswered();
+		    	messageToBeAnswered = null;
+	    	}
+			transportSemaphore.release();
+		} catch (InterruptedException e) {
+			logger.error("Interrupted:",e);
+		}
+    	if (! received) {
+    		logger.error("Messaggio non risposto: "+m);
+    	}
+		return received;
 	}
 
 	protected void dispatchMessage(Message m) throws AISException {
-		// TODO Auto-generated method stub
+    	if (messageToBeAnswered != null 
+    			&& DXPResponseMessage.class.isInstance(m) 
+    			&& messageToBeAnswered.isAnsweredBy((DXPMessage) m)) {
+			// sveglia sendPTPRequest
+			synchronized (messageToBeAnswered) {
+	    		messageToBeAnswered.setAnswered(true);
+				messageToBeAnswered.notify(); 						
+			}
+    	}
+    	if (DXPResponseMessage.class.isInstance(m)) {
+			// Al mittente 
+			DominoDevice d = (DominoDevice)getDevice(((DXPResponseMessage)m).getSource());
+			if (d != null) {
+				d.messageSent(m);
+			}
+    	}
+    	if (DXPRequestMessage.class.isInstance(m)) {
+			// Al destinatario 
+    		DominoDevice d = (DominoDevice)getDevice(((DXPRequestMessage)m).getDestination());
+			if (d != null) {
+				d.messageReceived(m);
+			}
+    	}
 		
 	}
 

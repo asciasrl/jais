@@ -56,7 +56,7 @@ public class DXPControllerModule extends BUSControllerModule {
 		}				
  		int autoupdate = config.getInt("autoupdate",0);
  		autoUpdater = new AutoUpdater(autoupdate);
- 		autoUpdater.setName(getClass().getSimpleName()+"-autoUpdater");
+ 		autoUpdater.setName("AutoUpdater");
  		running = true;
  		autoUpdater.start();
  		logger.info("Completato start");

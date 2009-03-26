@@ -1,7 +1,9 @@
-package it.ascia.dxp;
+package it.ascia.dxp.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
+import it.ascia.ais.Message;
+import it.ascia.dxp.DominoDevice;
 
 public class DFCT extends DominoDevice {
 
@@ -24,6 +26,16 @@ public class DFCT extends DominoDevice {
 			throws AISException {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	public void messageReceived(Message m) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void messageSent(Message m) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

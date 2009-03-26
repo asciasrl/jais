@@ -29,7 +29,7 @@ public abstract class DXPMessage extends Message {
 	 * Rappresentazione 'raw' del messaggio.
 	 */
 	protected int[] rawmessage;
-	
+
 	/**
 	 * Carica i dati da un'array di interi.
 	 * 
@@ -72,7 +72,13 @@ public abstract class DXPMessage extends Message {
 
 	
 	public String toString() {
-		return indirizzo + " " + getMessageDescription()+" ("+b2h(funzione)+","+b2h(tipo)+") ["+b2b(dato1)+":"+b2b(dato0)+" "+dato1+":"+dato0+"]";
+		return indirizzo + " " + getMessageDescription()+" ("+b2h(funzione)+","+b2h(tipo)+") ["+b2b(dato1)+":"+b2b(dato0)+" "+b2h(dato1)+":"+b2h(dato0)+"]";
 	}
+	
+	public int getMessageType() {
+		return tipo;
+	}
+
+
 
 }

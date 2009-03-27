@@ -32,10 +32,10 @@ public class AUIStreamingServlet extends HttpServlet {
 	{
 		logger = Logger.getLogger(getClass());
 	}
-
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) {
 		String remote = request.getRemoteAddr()+":"+request.getRemotePort();
+		int counter = ((AUIControllerModule)Controller.getController().getModule("AUI")).getMaxEventsPerRequest();
 		try {
 			PrintWriter out = response.getWriter();
 			response.setContentType("text/html");
@@ -65,18 +65,19 @@ public class AUIStreamingServlet extends HttpServlet {
 				logger.warn("Errore durante streaming con "+remote+":",e);
 			}
 			
-			while (! out.checkError()) {
+			while (! out.checkError() && counter > 0) {
 				logger.trace("Streaming "+remote);
 				DevicePortChangeEvent evt = null;
 				try {
+					// uso poll in modo da inviare sempre qualcosa al client
 					evt = (DevicePortChangeEvent) q.poll(10,TimeUnit.SECONDS);
 				} catch (InterruptedException e) {
-					logger.trace(e);
+					logger.trace("Interrupted:",e);
 				}
 				if (evt != null) {
 					logger.trace("Streaming "+evt.toString());
 					if (evt.getNewValue() == null) {
-						logger.debug("Non invio evento con valore null");
+						logger.trace("Non invio evento con valore null");
 					} else {
 						JSONObject obj=new JSONObject();
 						obj.put("fullAddress",evt.getFullAddress());
@@ -85,18 +86,18 @@ public class AUIStreamingServlet extends HttpServlet {
 						String s = "fireDevicePortChangeEvent("+obj.toJSONString()+");";
 						out.println(s);
 						logger.debug(remote +" "+s);
+						counter--;
 					}
 				} else {
-					//out.println("<!-- no events -->");
+					out.println("void(0);");
 				}
 			}
 			auiControllerModule.removeStreamQueue(q);
-			logger.debug("Fine streaming verso "+remote);
+			logger.debug("Fine streaming verso "+remote+" eventi="+counter);
 		} catch (IOException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			logger.error("Errore interno durante streaming verso "+remote+" :",e);
 		}
 	}
-		
 	
 }

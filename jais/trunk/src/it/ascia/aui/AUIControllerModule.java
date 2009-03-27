@@ -36,6 +36,17 @@ public class AUIControllerModule extends ControllerModule implements PropertyCha
 	}
 	
 	/**
+	 * Lo stream viene chiuso dopo che sono stati trasmessi uno specifico numero di eventi.
+	 * Non vengono conteggiati gli eventi trasmessi all'avvio dello streaming.
+	 * usare maxEventsPerRequest come elemento nella configurazione del modulo AUI
+	 * Default: 100
+	 */
+	public int getMaxEventsPerRequest() {
+		return getConfiguration().getInt("maxRequestPerStream",100);
+	}
+		
+	
+	/**
 	 * 
 	 * @param mapId
 	 * @return

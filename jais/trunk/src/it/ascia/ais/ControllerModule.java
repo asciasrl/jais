@@ -12,9 +12,11 @@ import org.apache.log4j.Logger;
  */
 public abstract class ControllerModule {
 
+	private String name;
+	
     protected Logger logger;
     
-    protected HierarchicalConfiguration config;
+    private HierarchicalConfiguration configuration;
 
     /**
      * Riferimento al controller che ha instanziato il modulo
@@ -33,8 +35,26 @@ public abstract class ControllerModule {
 		this.controller = controller;		
 	}
 
+	public HierarchicalConfiguration getConfiguration() {
+		return configuration.configurationAt(name);
+	}
+
 	public void setConfiguration(HierarchicalConfiguration config) {
-		this.config = config;
+		this.configuration = config;
+	}
+
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
 	}
 		
 }

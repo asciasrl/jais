@@ -116,8 +116,9 @@ public class Controller {
 			logger.debug("Caricamento modulo '"+name+"' da '"+className+"'");
 			Class moduleClass = moduleLoader.loadClass(className);
 			module = (ControllerModule) moduleClass.newInstance();
+			module.setName(name);
 			module.setController(this);
-			module.setConfiguration(config.configurationAt(name));
+			module.setConfiguration(config);
 			modules.put(name,module);
 			logger.info("Caricato modulo '"+name+"'");
 		} catch (ClassNotFoundException e) {

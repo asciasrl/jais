@@ -1,5 +1,6 @@
 package it.ascia.ais;
 
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -76,6 +77,8 @@ public abstract class BUSControllerModule extends ControllerModule {
 						}
 					} catch (InterruptedException e) {
 						logger.debug("Interrotto.");
+					} catch (ConcurrentModificationException e) {
+						logger.debug("Modifica concorrente");
 					} catch (Exception e) {
 						logger.error("Eccezione:",e);
 					}

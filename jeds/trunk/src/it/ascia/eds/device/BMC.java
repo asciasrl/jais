@@ -65,12 +65,6 @@ public abstract class BMC extends Device {
 	protected Set broadcastBindingsByPort[];
 
 	/**
-	 * Tempo (in millisecondi) del timer della porta
-	 * Viene utilizzato per aggiornare con piu' frequenza le porte che hanno un timer associato  
-	 */
-	protected Long[] portTimer;
-
-	/**
 	 * Questo BMC e' fisicamente presente sul transport?
 	 * 
 	 * <p>
@@ -101,7 +95,6 @@ public abstract class BMC extends Device {
 		this.name = name;
 		broadcastBindingsByGroup = new Set[32];
 		broadcastBindingsByPort = new Set[getOutPortsNumber()];
-		portTimer = new Long[getOutPortsNumber()];
 		for (int i = 0; i < broadcastBindingsByGroup.length; i++) {
 			broadcastBindingsByGroup[i] = new HashSet();
 		}

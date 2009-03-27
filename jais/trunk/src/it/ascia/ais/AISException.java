@@ -9,7 +9,7 @@ package it.ascia.ais;
  * @author arrigo
  *
  */
-public class AISException extends Exception {
+public class AISException extends RuntimeException {
 	/**
 	 * Costruttore.
 	 * 

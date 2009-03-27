@@ -6,6 +6,8 @@ package it.ascia.eds.device;
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.DevicePort;
+import it.ascia.ais.DigitalInputPort;
+import it.ascia.ais.DigitalOutputPort;
 import it.ascia.eds.msg.AcknowledgeMessage;
 import it.ascia.eds.msg.ComandoBroadcastMessage;
 import it.ascia.eds.msg.ComandoUscitaMessage;
@@ -34,7 +36,6 @@ import it.ascia.eds.msg.VariazioneIngressoMessage;
  * 
  * @author arrigo
  * 
- * TODO gestire anche il caching (dirty) delle porte di ingresso
  */
 public class BMCStandardIO extends BMC {
 	
@@ -57,6 +58,16 @@ public class BMCStandardIO extends BMC {
 	public BMCStandardIO(Connector connector, String bmcAddress, int model, String name) throws AISException {
 		super(connector, bmcAddress, model, name);
 	}
+
+	/*
+	public void addPort(String portId, String portName) {
+		if (portId.startsWith("Inp")) {
+			ports.put(portId, new DigitalInputPort(this, portId, portName));
+		} else {
+			ports.put(portId, new DigitalOutputPort(this, portId, portName));		
+		}
+	}
+	*/
 
 	/**
 	 * @throws AISException 
@@ -204,14 +215,38 @@ public class BMCStandardIO extends BMC {
 				}
 				break;
 			case EDSMessage.MSG_RISPOSTA_USCITA:
-				// Stiamo facendo un discovery delle associazioni.
+				// Stiamo facendo un discovery delle configurazioni delle uscite.
 				RispostaUscitaMessage ru = (RispostaUscitaMessage) m;
 				long t = ru.getMillisecTimer();
 				if (t > 0) {
 					RichiestaUscitaMessage req = (RichiestaUscitaMessage) ru.getRequest();
-					int uscita = req.getUscita();
-					portTimer[uscita] = new Long(t);
-					logger.info("Uscita "+uscita+" timer di "+t+"mS");
+					if (req != null) {
+						int uscita = req.getUscita();
+						DevicePort p = getPort(getOutputPortId(uscita));
+						if (p.getCacheRetention() > t) {
+							p.setCacheRetention(t);
+						}
+						logger.info("Uscita "+uscita+" timer di "+t+"mS");
+					}
+				}
+				/**
+				 * Creazione uscite virtuali per gestione tapparelle
+				 */
+				if (ru.getTipoUscita() == 14) {
+					RichiestaUscitaMessage req = (RichiestaUscitaMessage) ru.getRequest();
+					if (req != null) {
+						int uscita = req.getUscita();
+						if ((uscita % 2) == 0) {
+							String blindPortId = "Blind"+(uscita / 2 + 1);
+							if (! havePort(blindPortId)) {
+								String openPortId = "Out" + (uscita + 1);
+								String closePortId = "Out" + (uscita + 2);
+								DeviceBlindPort blindPort = new DeviceBlindPort(this,blindPortId,closePortId,openPortId);
+								addPort(blindPort);							
+								logger.info("Aggiunta porta virtuale "+blindPortId+": open="+openPortId+" close="+closePortId);
+							}
+						}
+					}
 				}
 				break;
 			case EDSMessage.MSG_ACKNOWLEDGE:
@@ -336,8 +371,13 @@ public class BMCStandardIO extends BMC {
 		isReal = false;
 	}
 
-	public long updatePort(String portId) {
-		return updateStatus();
+	public long updatePort(String portId) throws AISException {
+		if (portId.startsWith("Blind")) {
+			getPortValue(portId);
+			return 0;
+		} else {
+			return updateStatus();
+		}
 	}
 
 	/**
@@ -381,7 +421,7 @@ public class BMCStandardIO extends BMC {
 			}
 			ComandoUscitaMessage m = new ComandoUscitaMessage(getIntAddress(), getBMCComputerAddress(), 0, portNumber, 0, intValue);
 			if (getConnector().sendMessage(m)) {
-				p.invalidate();
+				p.invalidate(); // FIXME non necessario, lo fa gia' DevicePort.writeValue()
 				return true;
 			}
 		} else {

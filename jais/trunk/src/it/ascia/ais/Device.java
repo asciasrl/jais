@@ -137,7 +137,7 @@ public abstract class Device {
 	}
 
 	/**
-	 * 
+	 * Aggiunge una porta al device
 	 * @param portId
 	 * @param portName
 	 */
@@ -146,10 +146,23 @@ public abstract class Device {
 	}
 
 	/**
+	 * Aggiunge una porta con nome null
 	 * @param portId
 	 */
 	public void addPort(String portId) {
 		addPort(portId, null);		
+	}
+	
+	/**
+	 * Aggiunge una porta al device
+	 * @param port
+	 */
+	public void addPort(DevicePort port) {
+		ports.put(port.getPortId(),port);
+	}
+
+	public boolean havePort(String portId) {
+		return ports.containsKey(portId);
 	}
 	
 	/**
@@ -201,13 +214,13 @@ public abstract class Device {
 	}
     
     /**
-     * Scrive un nuovo valore sulla porta del dispositivo fisico 
+     * Scrive un nuovo valore sulla porta del dispositivo fisico
      * @param portId
      * @param newValue
      * @return true se operazione andata a buon fine
      */
-	public abstract boolean writePort(String portId, Object newValue) throws AISException ;
-	
+	public abstract boolean writePort(String portId, Object newValue) throws AISException;
+
 	/**
      * Legge dal dispositivo fisisco lo stato della porta ed aggiorna il valore corrispondente (portValues)
      * Se ritorna con tempo da attendere 0 (zero) vuol dire che il chiamante non deve aspettare, perche' l'aggiornamento:
@@ -241,7 +254,7 @@ public abstract class Device {
 	 * @throws un'eccezione se qualcosa va male.
 	 */	
 	public Object getPortValue(String portId) throws AISException {
-		DevicePort p = (DevicePort) ports.get(portId);			
+		DevicePort p = getPort(portId);
 		return p.getValue();
 	}
 	

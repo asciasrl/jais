@@ -65,13 +65,9 @@ public class EDSConnector extends Connector {
 	public static final int BROADCAST_RESENDS = 7;
 	
 	/**
-	 * MessageParser per la lettura dei messaggi in ingresso.
+	 * EDSMessageParser per la lettura dei messaggi in ingresso.
 	 */
-	protected MessageParser mp;
-    /**
-     * Il BMC "finto" che corrisponde a questo.
-     */
-    //private BMCComputer bmcComputer;
+	protected EDSMessageParser mp;
     
     /**
      * Connettore per il BUS EDS.
@@ -81,8 +77,7 @@ public class EDSConnector extends Connector {
      */
     public EDSConnector(String name, Controller controller) {
     	super(name,controller);
-        //bmcComputer = null;
-		mp = new MessageParser();
+		mp = new EDSMessageParser();
     }
 
     /**
@@ -102,7 +97,7 @@ public class EDSConnector extends Connector {
     public void received(int b) {
 		mp.push(b);
 		if (mp.isValid()) {
-			EDSMessage m = mp.getMessage();
+			EDSMessage m = (EDSMessage) mp.getMessage();
 			if (m != null) {
 				receiveQueue.offer(m);
 			}
@@ -317,20 +312,13 @@ public class EDSConnector extends Connector {
 	/**
      * "Scopre" il BMC indicato inviandogli un messaggio di richiesta modello.
      * 
-     * <p>Se il BMC e' gia' in lista, non invia messaggi, ma ritorna le 
-     * informazioni gia' note.</p>
-     * 
      * <p>Se il BMC non era gia' in lista, allora verra' inserito dal metodo 
-     * messageReceived(). Questo metodo chiama anche 
-     * @link{#discoverBroadcastBindings} per scoprire le associazioni del
-     * BMC ai comandi broadcast.
+     * messageReceived().
      * 
      * @param address l'indirizzo del BMC da "scoprire".
      * 
-     * @return il BMC se trovato o registrato, oppure null.
      */
     public void discoverBMC(int address) {
-    	//sendPTPRequest(new RichiestaModelloMessage(address,getMyAddress()));
     	queueMessage(new RichiestaModelloMessage(address,getMyAddress()));
     }
 

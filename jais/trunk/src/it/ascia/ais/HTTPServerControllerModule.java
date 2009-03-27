@@ -21,6 +21,7 @@ public class HTTPServerControllerModule extends ControllerModule {
 	public void start() {
 		//logger = Logger.getLogger(getClass());
 		logger.info("Avvio server HTTP...");
+		HierarchicalConfiguration config = getConfiguration();
 		int port = config.getInt("port",80);
 		String root = config.getString("root","../aui");
 		logger.info("Porta="+port+" Root="+root);

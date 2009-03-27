@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
@@ -26,11 +27,6 @@ public class AUIControllerModule extends ControllerModule implements PropertyCha
 		streams = new ArrayList();
 	}
 
-	public HierarchicalConfiguration getConfig() {
-		HierarchicalConfiguration cfg = config.configurationAt("AUI");
-		return cfg;
-	}
-
 	public void start() {
 		controller.addPropertyChangeListener(this);
 	}
@@ -46,7 +42,7 @@ public class AUIControllerModule extends ControllerModule implements PropertyCha
 	 */
 	public String getMapControls(String mapId) {
 		JSONObject j =new JSONObject();
-		HierarchicalConfiguration auiConfig = getConfig();
+		HierarchicalConfiguration auiConfig = getConfiguration();
 		List maps = auiConfig.configurationsAt("map");
 		for (Iterator im = maps.iterator(); im.hasNext(); ) {
 			HierarchicalConfiguration mapConfig = (HierarchicalConfiguration) im.next();
@@ -80,7 +76,7 @@ public class AUIControllerModule extends ControllerModule implements PropertyCha
 	 */
 	public String getControls() {
 		JSONObject j =new JSONObject();
-		HierarchicalConfiguration auiConfig = getConfig();
+		HierarchicalConfiguration auiConfig = getConfiguration();
 		List pages = auiConfig.configurationsAt("pages.page");
 		for (Iterator iPages = pages.iterator(); iPages.hasNext(); ) {
 			HierarchicalConfiguration pageConfig = (HierarchicalConfiguration) iPages.next();
@@ -112,7 +108,7 @@ public class AUIControllerModule extends ControllerModule implements PropertyCha
 	 */
 	public String getAddresses() {
 		JSONObject j =new JSONObject();
-		HierarchicalConfiguration auiConfig = getConfig();
+		HierarchicalConfiguration auiConfig = getConfiguration();
 		List pages = auiConfig.configurationsAt("pages.page");
 		for (Iterator iPages = pages.iterator(); iPages.hasNext(); ) {
 			HierarchicalConfiguration pageConfig = (HierarchicalConfiguration) iPages.next();
@@ -174,11 +170,18 @@ public class AUIControllerModule extends ControllerModule implements PropertyCha
 			}
 		} else if (command.equals("set")) {
 			// Comando "set"
-			String fullAddress = (String) params.get("address");
+			if (params.size() == 0) {
+				throw(new AISException("mancano parametri"));
+			}
+			Iterator iterator = params.entrySet().iterator();
+			Entry entry = (Entry) iterator.next();
+			String fullAddress = (String) entry.getKey();
+			String value = (String) entry.getValue();				
+			//String fullAddress = (String) params.get("address");
 			if (fullAddress == null) {
 				throw(new AISException("Parametro 'address' richiesto"));
 			}
-			String value = (String) params.get("value");
+			//String value = (String) params.get("value");
 			if (value == null) {
 				throw(new AISException("Parametro 'value' richiesto"));
 			}
@@ -187,16 +190,17 @@ public class AUIControllerModule extends ControllerModule implements PropertyCha
 			String portId = controller.getPortFromAddress(fullAddress);
 			Device devices[] = controller.findDevices(deviceAddress);
 			if (devices.length == 1) {
-				if (devices[0].writePort(portId, value)) {
+				try {
+					devices[0].getPort(portId).writeValue(value);
 					retval = "OK";
-				} else {
-					retval = "ERROR";
+				} catch (IllegalArgumentException e) {
+					retval = "ERROR";					
 				}
 			} else {
-				throw(new AISException("ERROR: indirizzo ambiguo"));
-			}			
+				throw(new AISException("indirizzo ambiguo"));
+			}
 		} else {
-			throw(new AISException("ERROR: comando '"+command+"' non implementato.")); 
+			throw(new AISException("comando '"+command+"' non implementato.")); 
 		}
 		return retval; 		
 	}

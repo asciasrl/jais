@@ -59,7 +59,6 @@ public class BMCStandardIO extends BMC {
 		super(connector, bmcAddress, model, name);
 	}
 
-	/*
 	public void addPort(String portId, String portName) {
 		if (portId.startsWith("Inp")) {
 			ports.put(portId, new DigitalInputPort(this, portId, portName));
@@ -67,7 +66,6 @@ public class BMCStandardIO extends BMC {
 			ports.put(portId, new DigitalOutputPort(this, portId, portName));		
 		}
 	}
-	*/
 
 	/**
 	 * @throws AISException 
@@ -403,17 +401,8 @@ public class BMCStandardIO extends BMC {
 			int intValue = 0;
 			if (Boolean.class.isInstance(newValue)) {
 				intValue = ((Boolean)newValue).booleanValue() ? 1 : 0;
-			} else if (String.class.isInstance(newValue)) {
-				String s = (String) newValue;
-				if (s.equals("1") || s.toUpperCase().equals("ON")) {
-					intValue = 1;
-				} else if (s.equals("0") || s.toUpperCase().equals("OFF")) {
-					intValue = 0;
-				} else {
-					throw new AISException("Valore non valido: " + newValue);
-				}
 			} else {
-				throw new AISException("Valore non valido: " + newValue);
+				throw new AISException("Tipo valore non valido: " + newValue.getClass().getCanonicalName());
 			}
 			int portNumber = getOutputNumberFromPortId(portId);
 			if (portNumber == -1) {

@@ -108,29 +108,44 @@ public class DevicePort {
 	 */
 	public Object getValue() throws AISException {
 		if (isDirty() || isExpired()) {
-			long start = System.currentTimeMillis();
-			long timeout = device.updatePort(portId);
-			if (timeout > 0) {
-				synchronized (this) {
-					if (isDirty() || isExpired()) {
-						try {
-							wait(timeout);
-						} catch (InterruptedException e) {
-							logger.warn("Interrotto: ",e);
-						}
-					} else {
-						// il valore, nel frattempo, e' stato aggiornato
-						return cachedValue;
-					}
-				}
-			}	
-			if (isDirty() || isExpired()) {
-				logger.error("Non aggiornato valore porta "+getFullAddress()+" in "+(System.currentTimeMillis()-start)+"mS");
-			}
+			cachedValue = readValue();
 		}
 		return cachedValue;
 	}
 	
+	/**
+	 * Legge il valore della porta di un dispositivo fisico
+	 * Questa implementazione lavora in modo asincrono, in quanto richiede al device
+	 * di aggiornare la porta con il metodo updatePort(portId) ed attende un certo tempo 
+	 * affinche' la porta venga aggiornata.
+	 * Il valore della porta deve essere aggiornato con setValue(), che interrompe
+	 * subito l'attesa di readValue()
+	 * Se il valore non e' aggiornato, restituisce il valore in cache
+	 * @return
+	 */
+	protected Object readValue() {
+		long start = System.currentTimeMillis();
+		long timeout = device.updatePort(portId);
+		if (timeout > 0) {
+			synchronized (this) {
+				if (isDirty() || isExpired()) {
+					try {
+						wait(timeout);
+					} catch (InterruptedException e) {
+						logger.warn("Interrotto: ",e);
+					}
+				} else {
+					// il valore, nel frattempo, e' stato aggiornato
+					return cachedValue;
+				}
+			}
+		}	
+		if (isDirty() || isExpired()) {
+			logger.error("Non aggiornato valore porta "+getFullAddress()+" in "+(System.currentTimeMillis()-start)+"mS");
+		}
+		return cachedValue;
+	}
+
 	/**
 	 * Aggiorna la porta con il valore effettivo  
 	 * @param newValue
@@ -168,14 +183,39 @@ public class DevicePort {
 			}
 		}
 	}
+
+	/**
+	 * Scrive un nuovo valore sulla porta del device cui appartiene
+	 * Questa implementazione richiama Device.writePort()
+	 * Se la porta e' virtuale, la sottoclasse deve gestire la richiesta di scrittura in maniera specifica 
+	 * @param newValue
+	 * @return
+	 * @throws AISException 
+	 */
+	public boolean writeValue(Object newValue) {
+		// FIXME Aggiungere setValue(newValue); ?
+		invalidate();
+		return device.writePort(portId, newValue);
+	}
 	
+	/**
+	 * Imposta il valore della porta analizzando il testo fornito 
+	 */
+	public boolean writeValue(String newValue) {
+		return writeValue((Object) newValue);
+	}
+	
+	/**
+	 * Propaga l'evento di modifica a tutti i listener registrati ed al device cui appartiene
+	 * @param evt
+	 */
 	public void fireDevicePortChangeEvent(DevicePortChangeEvent evt) {
 		this.pcs.firePropertyChange(evt);
 		device.fireDevicePortChangeEvent(evt);
 	}
 			
 	/**
-	 * Indica che il valore contenuto nella cache non è valido
+	 * Indica che il valore contenuto nella cache non e' valido, cioe' potrebbe non essere aggiornato
 	 */
 	public void invalidate() {
 		if (!dirty) {
@@ -219,8 +259,26 @@ public class DevicePort {
 		expiration = System.currentTimeMillis() + i;
 	}
 
+	/**
+	 * Fornisce il momento in cui risulta l'ultima modifica del valore
+	 * @return
+	 */
 	public long getTimeStamp() {
 		return timeStamp;
+	}
+
+	/**
+	 * Ritorna la rappresentazione testuale del valore
+	 */
+	public String getAsText() {
+		return getValue().toString();
+	}
+
+	/**
+	 * Se il valore deve essere uno dei valori di un insieme, questo metodo ne fornisce l'elenco  
+	 */
+	public String[] getTags() {
+		return null;
 	}
 
 }

@@ -1,3 +1,7 @@
+/**
+ * (C) 2007,2009 Ascia S.r.l.
+ * 
+ */
 package it.ascia.eds;
 
 import it.ascia.eds.msg.AcknowledgeMessage;
@@ -34,7 +38,6 @@ import it.ascia.eds.msg.VariazioneIngressoMessage;
 /**
  * Decodifica i messaggi del protocollo EDS
  *  
- * (C) 2007,2009 Ascia S.r.l.
  * @author Sergio Strampelli, arrigo
  */
 public class EDSMessageParser extends it.ascia.ais.MessageParser {
@@ -70,11 +73,6 @@ public class EDSMessageParser extends it.ascia.ais.MessageParser {
 		return s.toString();
 	}
 
-	/**
-	 * Accoda i byte ricevuti dalla seriale fino ad ottenere una sequenza valida di 8 byte.
-	 * Questa implementazione e' semplificata 
-	 * @param b Byte letto dalla seriale
-	 */
 	public void push(int b) {
 		b = b & 0xFF;
 		if (ibuff >= 8) {

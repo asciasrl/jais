@@ -26,8 +26,4 @@ public abstract class BroadcastMessage extends EDSMessage
 		return 8;
 	}
 	
-	public final boolean isBroadcast() {
-		return true;
-	}
-	
 }

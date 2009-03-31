@@ -19,18 +19,6 @@ public abstract class PTPMessage extends EDSMessage {
 		return 2;
 	}
 	
-	public final boolean isBroadcast() {
-		return false;
-	}
-	
-	/**
-	 * Ritorna true se questo messaggio si aspetta una risposta.
-	 * 
-	 * @return true se questo e' un PTPRequest.
-	 */
-	public boolean wantsReply() {
-		return true;
-	}
 	
 	/**
 	 * Verifica se un messaggio risponde a questo.

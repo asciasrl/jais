@@ -47,3 +47,8 @@ div.control span {
 
 div.control-type-page {
 }
+
+#debug {
+	color: black;
+	background-color: white;
+}

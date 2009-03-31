@@ -10,13 +10,22 @@
 		</layout>
 	</appender>
 	<appender name="stdout" class="org.apache.log4j.ConsoleAppender">
-		<param name="Threshold" value="debug"/>		
+		<param name="Threshold" value="trace"/>		
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern"	value="%d %-5p [%t] %c - %m%n" />
 		</layout>
 	</appender>	
 	<appender name="roll" class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="logs/jais.log" />
+		<param name="MaxFileSize" value="10MB" />
+		<param name="MaxBackupIndex" value="10" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %-5p [%t] %c - %m%n" />
+		</layout>
+	</appender>
+	<appender name="rollerr" class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="logs/jais-error.log" />
+		<param name="Threshold" value="warn"/>		
 		<param name="MaxFileSize" value="1MB" />
 		<param name="MaxBackupIndex" value="10" />
 		<layout class="org.apache.log4j.PatternLayout">
@@ -30,5 +39,7 @@
 		<priority value="trace" />
 		<appender-ref ref="stdout" />
 		<appender-ref ref="stderr" />
+		<appender-ref ref="roll" />
+		<appender-ref ref="rollerr" />
 	</root>
 </log4j:configuration>

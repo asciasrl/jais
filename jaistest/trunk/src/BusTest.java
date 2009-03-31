@@ -29,7 +29,16 @@ public class BusTest {
 	 	// La palla all'utente
 		while (true) {
 			String dest = Stdio.inputString("Indirizzo dispositivo (invio per terminare programma):");
-			if (dest.equals("")) {
+			if (dest.equals("restart")) {
+				busController.stop();
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				busController.start();
+			} else if (dest.equals("")) {
 				break;
 			} else {				
 				Device[] devices = null;

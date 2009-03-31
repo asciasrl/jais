@@ -277,7 +277,7 @@ public class BMCDimmer extends BMC {
 	 * Imposta la porta di un dimmer.
 	 * 
 	 * @param port il nome compatto della porta.
-	 * @value un numero, un valore percentuale o "OFF"
+	 * @value un numero, un valore percentuale, "on","off",true,false,"toggle"
 	 */
 	public boolean writePort(String port, Object o) throws AISException {
 		String value = o.toString();

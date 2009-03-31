@@ -22,7 +22,7 @@ public class DXPConnector extends Connector {
 	public void received(int b) {
 		mp.push(b);
 		if (mp.isValid()) {
-			DXPMessage m = mp.getMessage();
+			DXPMessage m = (DXPMessage) mp.getMessage();
 			if (m != null) {
 				receiveQueue.offer(m);
 			}

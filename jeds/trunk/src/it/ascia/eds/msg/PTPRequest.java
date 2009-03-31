@@ -21,11 +21,6 @@ public abstract class PTPRequest extends PTPMessage {
 		return 2;
 	}
 
-	
-	public final boolean wantsReply() {
-		return true;
-	}
-
 	/**
 	 * @param isAnswered the isAnswered to set
 	 */

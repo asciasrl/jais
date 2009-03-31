@@ -296,13 +296,6 @@ public abstract class EDSMessage extends Message implements Comparable {
 		Byte1 = message[4];
 		Byte2 = message[5];
 	}
-
-	/**
-	 * Verifica se il messaggio e' di tipo broadcast.
-	 * 
-	 * @return true se il messaggio e' broadcast.
-	 */
-	public abstract boolean isBroadcast();
 	
 	public int compareTo(java.lang.Object arg0) {
 		if (arg0.getClass() == getClass()) {

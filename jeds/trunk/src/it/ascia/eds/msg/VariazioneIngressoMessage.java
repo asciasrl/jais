@@ -28,7 +28,7 @@ public class VariazioneIngressoMessage extends PTPRequest
 	 * massa).
 	 */
 	public VariazioneIngressoMessage(int d, int m, boolean Attivazione, 
-			int Uscita, int Variazione) {
+			int Uscita, boolean Variazione) {
 		Destinatario = d & 0xFF;
 		Mittente = m & 0xFF;
 		TipoMessaggio = getMessageType();
@@ -36,7 +36,9 @@ public class VariazioneIngressoMessage extends PTPRequest
 		if (!Attivazione) {
 			Byte1 |= 0x01 << 3;
 		}
-		Byte2 = Variazione & 0x01;
+		if (Variazione) {
+			Byte2 = 0x01;
+		}
 	}
 	
 	/**

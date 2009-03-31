@@ -281,7 +281,9 @@ public class BMCDimmer extends BMC {
 	 */
 	public boolean writePort(String port, Object o) throws AISException {
 		String value = o.toString();
-		int outPort, numericValue;
+		int outPort;
+		int numericValue = 0;
+		int messageType;
 		outPort = getOutputNumberFromPortId(port);
 		if (outPort == -1) {
 			throw new AISException("Porta non valida: " + port);
@@ -292,18 +294,42 @@ public class BMCDimmer extends BMC {
 		}
 		if (value.toUpperCase().equals("OFF")) {
 			numericValue = 0;
+			messageType = EDSMessage.MSG_COMANDO_USCITA;
 		} else if (value.toUpperCase().equals("ON")) {
 			numericValue = 100;
+			messageType = EDSMessage.MSG_COMANDO_USCITA;
+		} else if (value.toUpperCase().equals("TOGGLE")) {
+			messageType = EDSMessage.MSG_VARIAZIONE_INGRESSO;
 		} else {
 			try {
 				numericValue = Integer.parseInt(value);
 			} catch (NumberFormatException e) {
 				throw new AISException("Valore non valido: " + value);
 			}
+			messageType = EDSMessage.MSG_COMANDO_USCITA_DIMMER;
 		}
-		ComandoUscitaMessage m = new ComandoUscitaMessage(getIntAddress(), getBMCComputerAddress(), 0, outPort, numericValue, 
-				(numericValue > 0)? 1 : 0);
-		return getConnector().sendMessage(m);		
+		EDSMessage m = null;
+		switch (messageType) {
+			case EDSMessage.MSG_VARIAZIONE_INGRESSO:
+				m = new VariazioneIngressoMessage(getIntAddress(), getBMCComputerAddress(), true, outPort, true);
+				getConnector().sendMessage(m);
+				try {
+					Thread.sleep(100); // FIXME
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				m = new VariazioneIngressoMessage(getIntAddress(), getBMCComputerAddress(), true, outPort, false);
+				return getConnector().sendMessage(m);						
+			case EDSMessage.MSG_COMANDO_USCITA:
+				m = new ComandoUscitaMessage(getIntAddress(), getBMCComputerAddress(), 0, outPort, numericValue, 
+						(numericValue > 0)? 1 : 0);
+				return getConnector().sendMessage(m);		
+			case EDSMessage.MSG_COMANDO_USCITA_DIMMER:
+				m = new ComandoUscitaDimmerMessage(getIntAddress(), getBMCComputerAddress(), outPort, numericValue);
+				return getConnector().sendMessage(m);		
+		}
+		return false;
 	}
 
 	public int getInPortsNumber() {

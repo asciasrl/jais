@@ -167,8 +167,8 @@ public abstract class Device {
 	
 	/**
 	 * 
-	 * @param portId
-	 * @return 
+	 * @param portId Identificativo della porta
+	 * @return La instanza di DevicePort
 	 * @throws AISException Se la porta non esite
 	 */
 	public DevicePort getPort(String portId) throws AISException {
@@ -179,6 +179,10 @@ public abstract class Device {
 		}
 	}
 	
+	/**
+	 * 
+	 * @return Tutte le DevicePort del Device
+	 */
 	public DevicePort[] getPorts() {
 		return (DevicePort[]) ports.values().toArray(new DevicePort[ports.size()]);
 	}

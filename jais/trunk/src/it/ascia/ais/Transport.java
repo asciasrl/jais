@@ -44,12 +44,12 @@ public abstract class Transport {
      * 
      * <p>Eventuali errori di trasmissione vengono ignorati.</p>
      * 
-     * @param m the message to send
+     * @param b the message to send
      */
     public abstract void write(byte[] b);
     
     /**
-     * Chiude la connessione al transport.
+     * Chiude la connessione del transport.
      */
     public abstract void close();
 

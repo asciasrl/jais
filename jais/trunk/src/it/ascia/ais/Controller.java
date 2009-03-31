@@ -21,8 +21,15 @@ import org.apache.log4j.xml.DOMConfigurator;
 
 /**
  * Controllore del sistema di integrazione, esteso tramite moduli.
+ * Il Controllore, di cui esiste una sola instanza nel sistema, gestisce il 
+ * ciclo di vita delle istanze dei {@link ControllerModule}, che a loro volta gestiscono 
+ * i differenti aspetti della applicazione ed in particolare dei {@link Connector}.
+ * Gestisce il caricamento del file di configurazione di sistema e del sottosistema di logging.
+ * Fornisce alcuni metodi per l'accesso alle instanze ai connettori registrati da moduli.
+ * Riceve e distribuisce i {@link DevicePortChangeEvent} ai Listener che si registrano.     
  * 
  * @author arrigo
+ * @author sergio
  */
 public class Controller {
 	/**

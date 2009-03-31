@@ -204,14 +204,12 @@ public class EDSConnector extends Connector {
 	 */
 	public boolean sendMessage(EDSMessage m) {
 		boolean retval = false;
-		if (m.isBroadcast()) {
+		if (BroadcastMessage.class.isInstance(m)) {
 			sendBroadcastMessage((BroadcastMessage) m);
 			retval = true;
-		} else { 
-			// E' un PTPMessage
+		} else if (PTPMessage.class.isInstance(m)){ 
 			PTPMessage ptpm = (PTPMessage) m;
-			if (ptpm.wantsReply()) {
-				// E' un PTPRequest
+			if (PTPRequest.class.isInstance(ptpm)) {
 				retval = sendPTPRequest((PTPRequest) ptpm);
 			} else {
 				// Invio nudo e crudo
@@ -225,6 +223,9 @@ public class EDSConnector extends Connector {
 				// non c'e' modo di sapere se e' arrivato; siamo ottimisti.
 				retval = true;
 			}
+		} else {
+			logger.error("Messaggio di tipo sconosciuto:"+m.getClass().getName());
+			retval = false;
 		}
 		return retval;
 	}

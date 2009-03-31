@@ -137,13 +137,13 @@ public abstract class BMC extends Device {
 	
 	/**
 	 * Factory method for creating BMCs and adding them to the connector.
-	 * 
+	 *
+	 * @param connector Il connettore tramite il quale il BMC e' connesso
 	 * @param bmcAddress the address on the transport.
 	 * @param model the model number of the BMC.
 	 * @param name the BMC name from the configuration file. Set it to null if 
 	 * you want it to be auto-generated.
-	 * @param transport the transport the BMC is connected to.
-	 * @param isReal vero se questo BMC è fisicamente presente sul transport. Alcuni
+	 * @param isReal vero se questo BMC e' fisicamente presente sul bus. Alcuni
 	 * BMC possono essere simulati.
 	 * 
 	 * @return the newly created BMC or null if the model is unknown.

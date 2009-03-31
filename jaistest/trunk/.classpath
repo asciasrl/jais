@@ -12,9 +12,9 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="jais/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/jbis"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jeds"/>
 	<classpathentry kind="lib" path="/jais/lib/RXTXcomm.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jdxp"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

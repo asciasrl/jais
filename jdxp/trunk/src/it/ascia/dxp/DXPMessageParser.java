@@ -1,10 +1,10 @@
 package it.ascia.dxp;
 
+import it.ascia.ais.Message;
+import it.ascia.ais.MessageParser;
 import it.ascia.dxp.msg.*;
 
-import org.apache.log4j.Logger;
-
-public class DXPMessageParser {
+public class DXPMessageParser extends MessageParser {
 
 	private int[] buff;
 
@@ -14,13 +14,12 @@ public class DXPMessageParser {
 
 	private DXPMessage message;
 
-	/**
-	 * Il nostro logger.
-	 */
-	private Logger logger;
+	private long lastReceived;
 	
+	private static final long TIMEOUT = 1000;
+		
 	public DXPMessageParser() {
-		logger = Logger.getLogger(getClass());
+		super();
 		clear();
 	}
 
@@ -76,6 +75,11 @@ public class DXPMessageParser {
 		if (ibuff >= 7) {
 			clear();
 		}
+		if (ibuff > 0 && ! valid && (System.currentTimeMillis() - lastReceived) >= TIMEOUT ) {
+			logger.warn("Timeout in ricezione");
+			clear();
+		}
+		lastReceived = System.currentTimeMillis();		
 		buff[ibuff++] = b;
 		// verifica che il primo byte sia Start, altrimenti lo scarta
 		if (ibuff == 1) {
@@ -108,8 +112,12 @@ public class DXPMessageParser {
 		return valid;
 	}
 
-	public DXPMessage getMessage() {
+	public Message getMessage() {
 		return message;
+	}
+
+	public boolean isBusy() {
+		return  (ibuff > 0 && ! valid && (System.currentTimeMillis() - lastReceived) < TIMEOUT);
 	}
 
 

@@ -14,6 +14,7 @@ import it.ascia.ais.Transport;
 public class DXPControllerModule extends BUSControllerModule {
 	
 	public void start() {
+		HierarchicalConfiguration config = getConfiguration();
 		List connectors = config.configurationsAt("connectors.connector");
 		for (Iterator c = connectors.iterator(); c.hasNext();)
 		{

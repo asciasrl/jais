@@ -80,28 +80,66 @@
           <port>COM2</port>
         </transport>
 		    <computer>252</computer>
-		    <discover>2;3;4;5;6;7</discover> 
+		    <discover>2;3;4;5;6;7</discover>
       </connector>
     </connectors> 
   </EDS>
   <DXP>
-		<autoupdate>100</autoupdate>
+		<autoupdate>0</autoupdate>
 		<connectors> 
 			<connector>
 			  <name>dxp1</name>
-				<equ>081231_ValigiaDomino_a_Ang.equ</equ>
 			  <transport>
 			    <type>serial</type>
 			    <speed>19200</speed>
-			    <port>COM1</port>
+			    <port>COM2</port>
 			  </transport>
+				<equ>081231_ValigiaDomino_a_Ang.equ</equ>
+				<devices>
+					<device>
+						<model>DFGSM2</model>
+						<address>245</address>
+					</device>
+					<device>
+						<model>DF4IV</model>
+						<address>129</address>
+					</device>
+					<device>
+						<model>DFIR</model>
+						<address>13</address>
+					</device>
+					<device>
+						<model>DFTA</model>
+						<address>18</address>
+					</device>
+					<device>
+						<model>DFCT</model>
+						<address>100</address>
+					</device>
+					<device>
+						<model>DF8IL</model>
+						<address>9</address>
+					</device>
+					<device>
+						<model>DF4R</model>
+						<address>1</address>
+					</device>
+					<device>
+						<model>DF4R</model>
+						<address>2</address>
+					</device>
+					<device>
+						<model>DFTP</model>
+						<address>3</address>
+					</device>
+				</devices>				
 			</connector>
 		</connectors>
   </DXP>      
   <AUI>
     <startPage>Hbox</startPage>
     <title>ASCIA HomeInTheBox [AUI 0.1]</title>
-    <skin>skins/20090320/</skin>
+    <skin>skins/20090330/</skin>
     <!-- definizione di tutti i tipi di controlli -->
     <controls>
       <page>
@@ -118,9 +156,13 @@
         <off>images/light_off.png</off>
         <up>images/light_up.png</up>
         <down>images/light_down.png</down>  
+        <step>10</step>
+        <timer>300</timer>
+        <max>85</max>
+        <min>0</min>
       </dimmer>
       <blind>
-        <default>images/blind_stop.png</default>
+        <default>images/blind_stopped.png</default>
         <stopped>images/blind_stopped.png</stopped>
         <open>images/blind_open.png</open>
         <opening>images/blind_opening.png</opening>
@@ -288,8 +330,8 @@
 	 	      <title>Torna alla selezione dei piani</title>
 	        <type>page</type>
 	        <page>piani</page>
-	       	<left>0</left>
-	       	<top>0</top>
+	       	<left>500</left>
+	       	<top>100</top>
 	      </control>      
 				<control id="l1">
 				 	<title>Luce scale</title>
@@ -307,7 +349,7 @@
 				 	<left>495</left>
 				 	<address>2.5:Out1</address>
 				</control>
-				<control id="t1">
+				<control id="b1">
 				 	<title>Tapparella lunga</title>
 				 	<type>blind</type>
 				 	<layer>blinds</layer>
@@ -315,13 +357,37 @@
 				 	<left>15</left>
 				 	<address>2.3:Blind1</address>
 				</control>
-				<control id="t2">
+				<control id="b2">
 				 	<title>Tapparella corta</title>
 				 	<type>blind</type>
 				 	<layer>blinds</layer>
 				 	<top>20</top>
 				 	<left>95</left>
 				 	<address>2.3:Blind2</address>
+				</control>
+				<control id="c1">
+				 	<title>Cronotermostato HI</title>
+				 	<type>thermo</type>
+				 	<layer>thermo</layer>
+				 	<top>200</top>
+				 	<left>300</left>
+				 	<address>2.7:temp</address>
+				</control>
+				<control id="c2">
+				 	<title>Cronotermostato WDB</title>
+				 	<type>thermo</type>
+				 	<layer>thermo</layer>
+				 	<top>0</top>
+				 	<left>500</left>
+				 	<address>1.255:temp</address>
+				</control>
+				<control id="p1">
+				 	<title>Power</title>
+				 	<type>power</type>
+				 	<layer>power</layer>
+				 	<top>120</top>
+				 	<left>570</left>
+				 	<address>2.3:Out7</address>
 				</control>
       </page>
     </pages>

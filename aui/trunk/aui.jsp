@@ -79,7 +79,7 @@ for (Iterator it = pages.iterator(); it.hasNext();) {
 %> <%= eventType %>="<%= onEvent %>"<%
 		}
 %>>
-	<img id="<%= id %>-img" src="<%= skin + auiConfig.getString("controls."+type+".default") %>" title="<%= controlConfig.getString("title",type) %>" border="0" alt="<%= type %>"/>
+	<img id="<%= id %>-img" src="<%= skin + auiConfig.getString("controls."+type+".default") %>" title="<%= controlConfig.getString("title",controlConfig.getString("address")) %>" border="0" alt="<%= type %>"/>
 	<span id="<%= id %>-label" ></span>
 </div>
 <%				

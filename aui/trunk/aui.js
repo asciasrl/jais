@@ -135,10 +135,11 @@ function touchControl(event,id) {
 	case "power":
 		if (status == "on") {
 			newstatus = "off";
+			command = "false";
 		} else {
 			newstatus = "on";
+			command = "true";
 		}
-		command = newstatus;
 		break;
 	case "dimmer":
 		// regolazione fatta da move		
@@ -209,9 +210,9 @@ function fireDevicePortChangeEvent(evt) {
 			newstatus = "off";
 		}
 	} else if (control.type == "thermo") {
-		if (evt.fullAddress.split(":")[1] == "temp") { 
+		//if (evt.fullAddress.split(":")[1] == "temp") { 
 			document.getElementById(id+"-label").innerHTML = evt.newValue + "°C";
-		}
+		//}
 	} else if (control.type == "blind") {
 		newstatus = evt.newValue;
 	}

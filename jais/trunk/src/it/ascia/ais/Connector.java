@@ -57,6 +57,11 @@ public abstract class Connector {
 	 * I dispositivi presenti nel sistema.
 	 */
     private LinkedHashMap devices;
+    
+	/**
+	 * L'elenco degli indirizzi - primari o alias - dei dispositivi.
+	 */
+    private LinkedHashMap devicesAlias;
 
     /**
      * 
@@ -67,6 +72,7 @@ public abstract class Connector {
 		this.name = name;
 		this.controller = controller;
         devices = new LinkedHashMap();
+        devicesAlias = new LinkedHashMap();
 		logger = Logger.getLogger(getClass());
 		transportSemaphore = new Semaphore(1,true);
 		running = true;
@@ -105,6 +111,7 @@ public abstract class Connector {
     
     /**
      * Aggiunge un dispositivo all'elenco di quelli gestiti
+     * Non sono ammessi duplicati
      * @param device
      * @throws AISException
      */
@@ -114,15 +121,27 @@ public abstract class Connector {
     		throw(new AISException("Dispositivo duplicato con indirizzo "+address+" connettore "+getName()));
     	}
     	devices.put(address, device);
+    	addDeviceAlias(address, device);
     }
     
     /**
-     * Ottiene il device con il nome specificato, o null se non esiste 
-     * @param address
-     * @return
+     * Aggiunge un indirizzo "alias" che corrisponde allo stesso device fisico
+     * Se l'alias e' gia' presente viene semplicemente ridefinito
+     * @param address Indirizzo alias del dispositivo
+     * @param device Dispositivo effettivo
+     */
+    public void addDeviceAlias(String address, Device device) {
+    	devicesAlias.put(address, device);
+    }
+        
+    /**
+     * Ottiene il device con il nome specificato, o null se non esiste
+     * Usa l'elenco degli indirizzi alias 
+     * @param address Indirizzo o alias del device
+     * @return null se nessun device ha l'indirizzo
      */
     public Device getDevice(String address) {
-    	return (Device) devices.get(address);
+    	return (Device) devicesAlias.get(address);
     }
 
     public LinkedHashMap getDevices() {

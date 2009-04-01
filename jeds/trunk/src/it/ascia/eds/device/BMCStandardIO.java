@@ -5,6 +5,7 @@ package it.ascia.eds.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
+import it.ascia.ais.DeviceBlindPort;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.DigitalInputPort;
 import it.ascia.ais.DigitalOutputPort;

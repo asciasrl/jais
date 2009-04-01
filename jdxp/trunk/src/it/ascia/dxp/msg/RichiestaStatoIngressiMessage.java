@@ -7,7 +7,8 @@ import it.ascia.dxp.DXPResponseMessage;
 public class RichiestaStatoIngressiMessage extends DXPRequestMessage {
 
 	public RichiestaStatoIngressiMessage(int ind) {
-		indirizzo = ind & 0xFF;
+		funzione = 0x82;
+		indirizzo = ind & 0xFF;		
 		tipo = RICHIESTA_STATO_INGRESSO;
 		dato1 = 0x33;
 		dato0 = 0x33;			
@@ -15,6 +16,10 @@ public class RichiestaStatoIngressiMessage extends DXPRequestMessage {
 	
 	public RichiestaStatoIngressiMessage(int[] message) {
 		load(message);
+	}
+
+	public RichiestaStatoIngressiMessage(String address) {
+		this((new Integer(address)).intValue());
 	}
 
 	public boolean isAnsweredBy(DXPMessage m) {

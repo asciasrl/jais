@@ -24,6 +24,7 @@ public class DFGSM2 extends DominoDevice {
 
 	public long updatePort(String portId) throws AISException {
 		// TODO Auto-generated method stub
+		logger.trace("updatePort non implementato");
 		return 0;
 	}
 

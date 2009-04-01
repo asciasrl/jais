@@ -18,6 +18,10 @@ public class RichiestaStatoUsciteMessage extends DXPRequestMessage {
 		dato0 = 0x33;			
 	}
 
+	public RichiestaStatoUsciteMessage(String address) {
+		this((new Integer(address)).intValue());
+	}
+
 	public boolean isAnsweredBy(DXPMessage m) {
 		if (DXPResponseMessage.class.isInstance(m)
 				&& m.getMessageType() == RISPOSTA_STATO_USCITE

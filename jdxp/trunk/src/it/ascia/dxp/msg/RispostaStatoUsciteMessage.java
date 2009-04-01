@@ -16,5 +16,17 @@ public class RispostaStatoUsciteMessage extends DXPResponseMessage {
 		s.append(" Dimmer:" + dato0+"%");
 		return s.toString();
 	}
+	
+	public boolean getExitStatus(int i) {
+		if (i <1 || i > 8) {
+			throw(new IndexOutOfBoundsException("Porta di uscita deve essere fra 1 e 8"));
+		}
+		int mask = 0x01 << (i - 1);
+		return (dato0 & mask) > 0;
+	}
+
+	public int getExitValue() {
+		return dato0;
+	}
 
 }

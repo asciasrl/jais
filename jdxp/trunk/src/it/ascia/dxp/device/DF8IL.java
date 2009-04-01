@@ -2,34 +2,46 @@ package it.ascia.dxp.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
-import it.ascia.ais.Message;
-import it.ascia.dxp.DominoDevice;
 
-public class DF8IL extends DominoDevice {
+public class DF8IL extends DF4IV {
+
+	protected int getNumInputs() {
+		return 2;
+	}
+
+	protected int getNumVirtuals() {
+		return 2;
+	}
 
 	public DF8IL(Connector connector, String address) throws AISException {
 		super(connector, address);
-		int intAddress = new Integer(address).intValue();
-		for (int j = 0; j <= 1; j++) {
-			for (int i = 1; i <= 4; i++) {
-				addPort("i"+(intAddress+j)+"."+new Integer(i).toString());
-			}
-		}		
-		for (int j = 2; j <= 3; j++) {
-			for (int i = 1; i <= 4; i++) {
-				addPort("v"+(intAddress+j)+"."+new Integer(i).toString());
-			}
-		}		
 	}
 
+	/*
 	public String getInfo() {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	*/
 
+	/*
 	public long updatePort(String portId) throws AISException {
-		// TODO Auto-generated method stub
-		return 0;
+		int i = portId.indexOf(".");
+		if (i > 0) {
+			int d = (new Integer(portId.substring(1,i))).intValue();
+			char tipo = portId.substring(0,1).toCharArray()[0];
+			logger.trace("portId "+portId+" d="+d+" tipo="+tipo);
+			if (tipo == 'i') { 
+				RichiestaStatoIngressiMessage m = new RichiestaStatoIngressiMessage(d);
+				getConnector().queueMessage(m);
+			} else if (tipo == 'v') {
+				RichiestaStatoUsciteMessage m = new RichiestaStatoUsciteMessage(d);
+				getConnector().queueMessage(m);
+			} else {
+				throw(new AISException("Porta tipo "+tipo+" non valida"));				
+			}
+		}
+		return 100;
 	}
 
 	public boolean writePort(String portId, Object newValue)
@@ -47,5 +59,6 @@ public class DF8IL extends DominoDevice {
 		// TODO Auto-generated method stub
 		
 	}
+	*/
 
 }

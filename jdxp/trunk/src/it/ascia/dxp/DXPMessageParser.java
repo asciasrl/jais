@@ -93,6 +93,7 @@ public class DXPMessageParser extends MessageParser {
 			for (int i = 0; i < 6; i++) {
 				chk = (chk + buff[i] & 0xFF) & 0xFF;
 			}
+			chk = 0xff - chk;
 			if (chk != b) {
 				logger.warn("Errore checksum");
 				logger.debug(dumpBuffer());

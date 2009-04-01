@@ -1,11 +1,8 @@
-package it.ascia.eds.device;
+package it.ascia.ais;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import it.ascia.ais.AISException;
-import it.ascia.ais.Device;
-import it.ascia.ais.DevicePort;
 
 /**
  * TODO gestire comandi:

@@ -94,6 +94,8 @@ public class DXPConnector extends Connector {
 			DominoDevice d = (DominoDevice)getDevice(((DXPResponseMessage)m).getSource());
 			if (d != null) {
 				d.messageSent(m);
+			} else {
+				logger.warn("Non trovato device sender "+((DXPResponseMessage)m).getSource());
 			}
     	}
     	if (DXPRequestMessage.class.isInstance(m)) {
@@ -101,6 +103,8 @@ public class DXPConnector extends Connector {
     		DominoDevice d = (DominoDevice)getDevice(((DXPRequestMessage)m).getDestination());
 			if (d != null) {
 				d.messageReceived(m);
+			} else {
+				logger.warn("Non trovato device receiver "+((DXPRequestMessage)m).getDestination());
 			}
     	}
 		
@@ -126,6 +130,10 @@ public class DXPConnector extends Connector {
 			d = new DFCT(this, address);
 		} else if (model.equals("DFGSM2")) {
 			d = new DFGSM2(this, address);
+		} else if (model.equals("DFDM")) {
+			d = new DFDM(this, address);
+		} else if (model.equals("DFTA")) {
+			d = new DFTA(this, address);
 		} else {
 			logger.error("Modello sconosciuto: "+model);
 		}

@@ -85,14 +85,14 @@
     </connectors> 
   </EDS>
   <DXP>
-		<autoupdate>0</autoupdate>
+		<autoupdate>200</autoupdate>
 		<connectors> 
 			<connector>
 			  <name>dxp1</name>
 			  <transport>
 			    <type>serial</type>
 			    <speed>19200</speed>
-			    <port>COM2</port>
+			    <port>COM7</port>
 			  </transport>
 				<equ>081231_ValigiaDomino_a_Ang.equ</equ>
 				<devices>
@@ -132,12 +132,16 @@
 						<model>DFTP</model>
 						<address>3</address>
 					</device>
+					<device>
+						<model>DFDM</model>
+						<address>70</address>
+					</device>
 				</devices>				
 			</connector>
 		</connectors>
   </DXP>      
   <AUI>
-    <startPage>Hbox</startPage>
+    <startPage>2MG</startPage>
     <title>ASCIA HomeInTheBox [AUI 0.1]</title>
     <skin>skins/20090330/</skin>
     <!-- definizione di tutti i tipi di controlli -->
@@ -157,8 +161,8 @@
         <up>images/light_up.png</up>
         <down>images/light_down.png</down>  
         <step>10</step>
-        <timer>300</timer>
-        <max>85</max>
+        <timer>400</timer>
+        <max>100</max>
         <min>0</min>
       </dimmer>
       <blind>
@@ -322,6 +326,256 @@
         	<top>300</top>
 	        <address>2.5:Out0</address>
   	    </control>      
+      </page>
+      <page id="2MG">
+      	<title>Valigia 2MG</title>
+      	<src>images/valiga2mg.png</src>
+	    	<control id="back">
+	 	      <title>Torna alla selezione dei piani</title>
+	        <type>page</type>
+	        <page>piani</page>
+	       	<left>0</left>
+	       	<top>0</top>
+	      </control>
+	      <control id="l1.1">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>100</top>
+				 	<left>100</left>
+				 	<address>dxp1.1:o1.1</address>	        
+	      </control>      
+	      <control id="l1.2">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>100</top>
+				 	<left>200</left>
+				 	<address>dxp1.1:o1.2</address>	        
+	      </control>      
+	      <control id="l1.3">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>100</top>
+				 	<left>300</left>
+				 	<address>dxp1.1:o1.3</address>	        
+	      </control>      
+	      <control id="l1.4">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>100</top>
+				 	<left>400</left>
+				 	<address>dxp1.1:o1.4</address>	        
+	      </control>      
+
+	      <control id="l1.5">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>200</top>
+				 	<left>100</left>
+				 	<address>dxp1.2:o2.1</address>	        
+	      </control>      
+	      <control id="l1.6">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>200</top>
+				 	<left>200</left>
+				 	<address>dxp1.2:o2.2</address>	        
+	      </control>      
+	      <control id="l1.7">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>200</top>
+				 	<left>300</left>
+				 	<address>dxp1.2:o2.3</address>	        
+	      </control>      
+	      <control id="l1.8">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>200</top>
+				 	<left>400</left>
+				 	<address>dxp1.2:o2.4</address>	        
+	      </control>      
+	      <control id="v1.1">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>400</top>
+				 	<left>100</left>
+				 	<address>dxp1.129:v130.1</address>	        
+	      </control>      
+	      <control id="v1.2">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>400</top>
+				 	<left>200</left>
+				 	<address>dxp1.129:v130.2</address>	        
+	      </control>      
+	      <control id="v1.3">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>400</top>
+				 	<left>300</left>
+				 	<address>dxp1.129:v130.3</address>	        
+	      </control>      
+	      <control id="v1.4">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>400</top>
+				 	<left>400</left>
+				 	<address>dxp1.129:v130.4</address>	        
+	      </control>      
+	      <control id="v1.5">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>400</top>
+				 	<left>500</left>
+				 	<address>dxp1.129:v131.1</address>	        
+	      </control>      
+	      <control id="v1.6">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>400</top>
+				 	<left>600</left>
+				 	<address>dxp1.129:v131.2</address>	        
+	      </control>      
+	      <control id="v1.7">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>400</top>
+				 	<left>700</left>
+				 	<address>dxp1.129:v131.3</address>	        
+	      </control>      
+	      <control id="v1.8">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>400</top>
+				 	<left>800</left>
+				 	<address>dxp1.129:v131.4</address>	        
+	      </control>      
+	      <control id="v1.9">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>400</top>
+				 	<left>900</left>
+				 	<address>dxp1.129:v132.1</address>	        
+	      </control>      
+	      <control id="v1.10">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>400</top>
+				 	<left>1000</left>
+				 	<address>dxp1.129:v132.2</address>	        
+	      </control>      
+	      <control id="v1.11">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>400</top>
+				 	<left>1100</left>
+				 	<address>dxp1.129:v132.3</address>	        
+	      </control>      
+	      <control id="v1.12">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>400</top>
+				 	<left>1200</left>
+				 	<address>dxp1.129:v132.4</address>	        
+	      </control>      
+
+	      <control id="v2.1">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>600</top>
+				 	<left>100</left>
+				 	<address>dxp1.9:v11.1</address>	        
+	      </control>      
+	      <control id="v2.2">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>600</top>
+				 	<left>200</left>
+				 	<address>dxp1.9:v11.2</address>	        
+	      </control>      
+	      <control id="v2.3">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>600</top>
+				 	<left>300</left>
+				 	<address>dxp1.9:v11.3</address>	        
+	      </control>      
+	      <control id="v2.4">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>600</top>
+				 	<left>400</left>
+				 	<address>dxp1.9:v11.4</address>	        
+	      </control>      
+	      <control id="v2.5">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>500</top>
+				 	<left>400</left>
+				 	<address>dxp1.9:v12.1</address>	        
+	      </control>      
+	      <control id="v2.6">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>500</top>
+				 	<left>300</left>
+				 	<address>dxp1.9:v12.2</address>	        
+	      </control>      
+	      <control id="v2.7">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>500</top>
+				 	<left>200</left>
+				 	<address>dxp1.9:v12.3</address>	        
+	      </control>      
+	      <control id="v2.8">
+				 	<type>light</type>
+				 	<layer>illuminazione</layer>
+				 	<top>500</top>
+				 	<left>100</left>
+				 	<address>dxp1.9:v12.4</address>	        
+	      </control>      
+	      
+	      
+	      <control id="b1">
+				 	<type>blind</type>
+				 	<layer>blinds</layer>
+				 	<top>300</top>
+				 	<left>100</left>
+				 	<address>dxp1.3:blind1</address>	        
+	      </control>      
+	      <control id="b2">
+				 	<type>blind</type>
+				 	<layer>blinds</layer>
+				 	<top>300</top>
+				 	<left>200</left>
+				 	<address>dxp1.3:blind2</address>	        
+	      </control>      
+
+	      <control id="d1">
+				 	<type>dimmer</type>
+				 	<layer>illuminazione</layer>
+				 	<top>300</top>
+				 	<left>300</left>
+				 	<address>dxp1.70:o70.1</address>	        
+	      </control>      
+
+			<control id="c1">
+			 	<type>thermo</type>
+			 	<layer>thermo</layer>
+			 	<top>0</top>
+			 	<left>200</left>
+			 	<address>dxp1.18:temp</address>
+			</control>
+			<control id="c2">
+			 	<type>thermo</type>
+			 	<layer>thermo</layer>
+			 	<top>0</top>
+			 	<left>400</left>
+			 	<address>dxp1.100:temp</address>
+			</control>
+			
+	      
       </page>
       <page id="Hbox">
 				<title>Home in The Box</title>

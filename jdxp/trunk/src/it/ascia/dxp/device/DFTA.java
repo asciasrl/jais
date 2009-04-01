@@ -2,14 +2,20 @@ package it.ascia.dxp.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
+import it.ascia.ais.DevicePort;
 import it.ascia.ais.Message;
+import it.ascia.dxp.DXPMessage;
 import it.ascia.dxp.DominoDevice;
+import it.ascia.dxp.msg.RichiestaStatoIngressiMessage;
+import it.ascia.dxp.msg.RichiestaStatoUsciteMessage;
+import it.ascia.dxp.msg.RispostaStatoIngressiMessage;
+import it.ascia.dxp.msg.RispostaStatoUsciteMessage;
 
 public class DFTA extends DominoDevice {
 
 	public DFTA(Connector connector, String address) throws AISException {
 		super(connector, address);
-		// TODO Auto-generated constructor stub
+		addPort("temp");
 	}
 
 	public String getInfo() {
@@ -18,8 +24,9 @@ public class DFTA extends DominoDevice {
 	}
 
 	public long updatePort(String portId) throws AISException {
-		// TODO Auto-generated method stub
-		return 0;
+		RichiestaStatoIngressiMessage m = new RichiestaStatoIngressiMessage(getAddress());
+		getConnector().queueMessage(m);
+		return 100;
 	}
 
 	public boolean writePort(String portId, Object newValue)
@@ -34,8 +41,17 @@ public class DFTA extends DominoDevice {
 	}
 
 	public void messageSent(Message m) {
-		// TODO Auto-generated method stub
-		
+		switch (m.getMessageType()) {
+			case DXPMessage.RISPOSTA_STATO_INGRESSO:
+				RispostaStatoIngressiMessage r = (RispostaStatoIngressiMessage) m;
+				DevicePort p = getPort("temp");
+				p.setCacheRetention(1000);
+				Double t = new Double((1.0*r.getShort() - 2730.0)/ 10.0);
+				p.setValue(t);
+				break;
+			default:		
+				logger.warn("Messaggio da gestire:"+m.toString());
+		}		
 	}
 
 }

@@ -21,11 +21,10 @@ public class ComandoUsciteMessage extends DXPRequestMessage {
 		tipo = COMANDO_USCITE;
 		indirizzo = d;
 		if ((uscita >= 1) && (uscita <= 4)) {
-			dato1 = 0x01 << (uscita - 1);
-			dato0 = (attiva ? 1 : 0 ) << (uscita - 1);
+			dato1 = 0x00; 
+			dato0 = (0x01 << (uscita - 1 + 4)) + ((attiva ? 1 : 0 ) << (uscita - 1));
 		} else {
-			dato1 = 0;
-			dato0 = 0;
+			throw(new IndexOutOfBoundsException("Uscita deve essere nell'intervallo 1-4"));
 		}
 	}
 
@@ -48,8 +47,7 @@ public class ComandoUsciteMessage extends DXPRequestMessage {
 		for (int uscita = 0; (uscita <4) && (uscita < stati.length); uscita++) {
 			Boolean attiva = stati[uscita];
 			if (attiva != null) {
-				dato1 += 0x01 << (uscita - 1);
-				dato0 += (attiva.booleanValue() ? 1 : 0 ) << (uscita - 1);
+				dato0 += (0x01 << (uscita - 1 + 4)) + ((attiva.booleanValue() ? 1 : 0 ) << (uscita - 1));
 			}
 		}
 	}
@@ -64,13 +62,7 @@ public class ComandoUsciteMessage extends DXPRequestMessage {
 		tipo = COMANDO_USCITE;
 		indirizzo = d;
 		dato1 = 0;
-		if (percentuale < 0) {
-			percentuale = 0;
-		}
-		if (percentuale > 85) {
-			percentuale = 85;
-		}
-		dato0 = percentuale;
+		dato0 = percentuale & 0xff;
 	}
 	
 	/**
@@ -84,6 +76,10 @@ public class ComandoUsciteMessage extends DXPRequestMessage {
 		indirizzo = d;
 		dato1 = (valore & 0xFF00) >> 8;
 		dato0 = (valore & 0x00FF);		
+	}
+
+	public ComandoUsciteMessage(String address, int percentuale) {
+		this((new Integer(address)).intValue(),percentuale);
 	}
 
 	public boolean isAnsweredBy(DXPMessage m) {

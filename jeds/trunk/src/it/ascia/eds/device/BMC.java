@@ -162,7 +162,7 @@ public abstract class BMC extends Device {
 		case 60:
 		case 44:
 			if (name == null) {
-				name = "IO-" +model+ bmcAddress;
+				name = "IO-" +model+ "-" + bmcAddress;
 			}
 			bmc = new BMCStandardIO(connector, bmcAddress, model, name);
 			break;
@@ -202,7 +202,7 @@ public abstract class BMC extends Device {
 			break;
 		case 121:
 			if (name == null) {
-				name = "TemperatureSensor" + bmcAddress; 
+				name = "TemperatureSensor-" + bmcAddress; 
 			}
 			bmc = new BMCTemperatureSensor(connector, bmcAddress, model, name);
 			break;
@@ -214,7 +214,7 @@ public abstract class BMC extends Device {
 			break;
 		case 127:
 			if (name == null) {
-				name = "ChronoTerm" + bmcAddress;
+				name = "ChronoTerm-" + bmcAddress;
 			}
 			bmc = new BMCChronoTerm(connector, bmcAddress, model, name);
 			break;

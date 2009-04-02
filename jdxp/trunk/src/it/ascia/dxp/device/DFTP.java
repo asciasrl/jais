@@ -3,8 +3,6 @@ package it.ascia.dxp.device;
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.DeviceBlindPort;
-import it.ascia.ais.Message;
-import it.ascia.dxp.DominoDevice;
 
 public class DFTP extends DF4R {
 

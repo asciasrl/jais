@@ -7,9 +7,7 @@ import it.ascia.ais.Message;
 import it.ascia.dxp.DXPMessage;
 import it.ascia.dxp.DominoDevice;
 import it.ascia.dxp.msg.RichiestaStatoIngressiMessage;
-import it.ascia.dxp.msg.RichiestaStatoUsciteMessage;
 import it.ascia.dxp.msg.RispostaStatoIngressiMessage;
-import it.ascia.dxp.msg.RispostaStatoUsciteMessage;
 
 public class DFCT extends DominoDevice {
 

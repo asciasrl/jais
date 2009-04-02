@@ -188,16 +188,16 @@ public class BMCRegT22 extends BMCStandardIO {
 		case EDSMessage.MSG_RISPOSTA_SET_POINT:
 			RispostaSetPointMessage risp = (RispostaSetPointMessage) m;
 			RichiestaSetPointMessage rich = (RichiestaSetPointMessage) risp.getRequest();
-			int stagione = risp.getStagione();
-			if (rich.getStagione() != stagione) {
+			int stagione = risp.getStagione();			
+			if (rich != null && rich.getStagione() != stagione) {
 				logger.error("Risposta 'stagione' non coerente. "+rich+" "+risp);
 			}
 			int giorno = risp.getGiorno();
-			if (rich.getGiorno() != giorno) {
+			if (rich != null && rich.getGiorno() != giorno) {
 				logger.error("Risposta 'giorno' non coerente");
 			}
 			int ora = risp.getOra();
-			if (rich.getOra() != ora) {
+			if (rich != null && rich.getOra() != ora) {
 				logger.error("Risposta 'ora' non coerente");
 			}
 			DevicePort p = getPort(getSetPointPortId(stagione,giorno,ora));

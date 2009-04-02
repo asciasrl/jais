@@ -1,7 +1,5 @@
 package it.ascia.dxp.device;
 
-import javax.sound.sampled.BooleanControl;
-
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.DevicePort;

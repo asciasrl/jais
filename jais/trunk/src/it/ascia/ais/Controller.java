@@ -270,12 +270,14 @@ public class Controller {
 		}
 		config.setReloadingStrategy(new FileChangedReloadingStrategy());
 		// Inizializzazione logger
-	    String loggerConfigFileName = config.getString("file","conf/log4j.xml");
-	    String loggerConfiguratorName = config.getString("configurator","DOMConfigurator"); 
+	    String loggerConfigFileName = config.getString("logger[@file]","conf/log4j.xml");
+	    String loggerConfiguratorName = config.getString("logger[@configurator]","DOMConfigurator"); 
 	    if (loggerConfiguratorName.equals("DOMConfigurator")) {
 	    	DOMConfigurator.configure(loggerConfigFileName);  
 	    } else if (loggerConfiguratorName.equals("PropertyConfigurator")) {
 	    	PropertyConfigurator.configure(loggerConfigFileName);
+	    } else {
+	    	logger.fatal("Configuratore file di log sconosciuto:"+loggerConfiguratorName);
 	    }
 		logger = Logger.getLogger(getClass());	
 

@@ -55,10 +55,9 @@ public class AUIStreamingServlet extends HttpServlet {
 					for (int j = 0; j < devicePorts.length; j++) {
 						DevicePort devicePort = devicePorts[j];
 						JSONObject obj=new JSONObject();
-						obj.put("fullAddress",devicePort.getFullAddress());
-						obj.put("newValue",devicePort.getValue());
-						obj.put("timeStamp",new Long(devicePort.getTimeStamp()));
-						out.println("fireDevicePortChangeEvent("+obj.toJSONString()+");");
+						obj.put("A",devicePort.getFullAddress());
+						obj.put("V",devicePort.getValue());
+						out.println(obj.toJSONString());
 					}
 				}
 			} catch (AISException e) {
@@ -80,12 +79,9 @@ public class AUIStreamingServlet extends HttpServlet {
 						logger.trace("Non invio evento con valore null");
 					} else {
 						JSONObject obj=new JSONObject();
-						obj.put("fullAddress",evt.getFullAddress());
-						obj.put("newValue",evt.getNewValue());
-						obj.put("timeStamp",new Long(evt.getTimeStamp()));
-						String s = "fireDevicePortChangeEvent("+obj.toJSONString()+");";
-						out.println(s);
-						logger.debug(remote +" "+s);
+						obj.put("A",evt.getFullAddress());
+						obj.put("V",evt.getNewValue());
+						out.println(obj.toJSONString());
 						counter--;
 					}
 				} else {

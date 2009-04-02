@@ -94,8 +94,7 @@ function dimmerCycle() {
 		return;
 	}
 	if (control.type == "dimmer") {
-		var value = control.value;
-		var step = control.step;
+		value = control.value;
 		if (value == null) {
 			value = 0;
 		}
@@ -186,39 +185,51 @@ function touchControl(event,id) {
 }
 
 function fireDevicePortChangeEvent(evt) {
-	id = addresses[evt.fullAddress];
+	var address = evt.A; 
+	var id = addresses[address];
 	if (id == null) {
 		return;
 	}
-	control = controls[id];
+	var control = controls[id];
 	if (control == null) {
 		return;
 	}
-	controls[id].value=evt.newValue;
-	newstatus = null;
+	var newValue = evt.V;
+	controls[id].value=newValue;
+	var label = control.label;
+	if (label == null) {
+		label = document.getElementById(id+"-label");
+		controls[id].label = label;
+	}
+	var img = control.img;
+	if (img == null) {
+		img = document.getElementById(id+"-img");
+		controls[id].img = img;
+	}
+	var newstatus = null;
 	if (control.type == "dimmer") {
-		if (evt.newValue > 0) {
+		if (newValue > 0) {
 			newstatus = "on";
 		} else {
 			newstatus = "off";
-		}		
-		document.getElementById(id+"-label").innerHTML = evt.newValue + "%";
+		}
+		label.innerHTML = newValue + "%";
 	} else if (control.type == "light" || control.type == "power") {
-		if (evt.newValue == true) {
+		if (newValue == true) {
 			newstatus = "on";
-		} else if (evt.newValue == false) {
+		} else if (newValue == false) {
 			newstatus = "off";
 		}
 	} else if (control.type == "thermo") {
-		//if (evt.fullAddress.split(":")[1] == "temp") { 
-			document.getElementById(id+"-label").innerHTML = evt.newValue + "°C";
-		//}
+		if (address.split(":")[1] == "temp") { 
+			label.innerHTML = newValue + "°C";
+		}
 	} else if (control.type == "blind") {
-		newstatus = evt.newValue;
+		newstatus = newValue;
 	}
 	if (newstatus != null && newstatus != status) {
 		controls[id].status = newstatus;
-		document.getElementById(id+"-img").src = skin + control[newstatus];
+		img.src = skin + control[newstatus];
 	}
 }
 
@@ -246,18 +257,16 @@ function processStreamChange() {
 	if ((streamReq.readyState == 3 || streamReq.readyState == 4) && streamReq.status == 200) {
 		var res = streamReq.responseText.substring(streamStart);
 		var i = 0;
-		while ((i = res.indexOf(");")) > 0) {
-			j = res.indexOf("(");
-			var res1 = res.substring(j+1, i);
-			res = res.substring(i+3);
-			streamStart += i+3;
+		while ((i = res.indexOf("\n")) > 0) {
+			var res1 = res.substring(0, i);
+			res = res.substring(i+1);
+			streamStart += i+1;
 			eventCounter++;
 			try {
 				debug(eventCounter+"/"+errorCounter+":"+res1);
 				var evt;
 				eval("evt="+res1+";");
 				fireDevicePortChangeEvent(evt);
-				//eval(res1);
 			} catch (e) {
 				errorCounter++;
 				// TODO: handle exception

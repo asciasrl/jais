@@ -31,6 +31,11 @@ public class DeviceBlindPort extends DevicePort implements PropertyChangeListene
 		return getValue(false);
 	}
 	
+	/**
+	 * 
+	 * @param useCache Se true usa i valori cache delle porte fisiche per calcolare il suo stato
+	 * @return
+	 */
 	public Object getValue(boolean useCache) {
 		try {
 			boolean opening;
@@ -44,7 +49,9 @@ public class DeviceBlindPort extends DevicePort implements PropertyChangeListene
 					closing = ((Boolean) closePort.getValue()).booleanValue();
 				}
 			} catch (NullPointerException e) {
-				logger.warn("getValue("+portId+"): stato porte open e/o close non determinato");
+				if (!useCache) {
+					logger.warn("getValue("+portId+"): stato porte open e/o close non determinato");
+				}
 				return null; 
 			}
 			logger.debug(portId+" cachedValue="+cachedValue+" opening("+openPort.getPortId()+")="+opening+" closing("+closePort.getPortId()+")="+closing);

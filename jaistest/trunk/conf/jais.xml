@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE jais:configuration SYSTEM "jais.dtd">
 <!-- commento -->
-<jais>
+<jais:configuration>
+	<logger file="conf/log4j.xml" configurator="DOMConfigurator" />
   <modules>
     <module>
       <name>HTTPServer</name>
@@ -94,6 +96,8 @@
 			    <speed>19200</speed>
 			    <port>COM7</port>
 			  </transport>
+			  <computer />
+			  <discover />
 				<equ>081231_ValigiaDomino_a_Ang.equ</equ>
 				<devices>
 					<device>
@@ -139,9 +143,10 @@
 				</devices>				
 			</connector>
 		</connectors>
-  </DXP>      
+  </DXP>  
+  <include>aui.xml</include>    
   <AUI>
-    <startPage>2MG</startPage>
+    <startPage>Hbox</startPage>
     <title>ASCIA HomeInTheBox [AUI 0.1]</title>
     <skin>skins/20090330/</skin>
     <!-- definizione di tutti i tipi di controlli -->
@@ -646,4 +651,4 @@
       </page>
     </pages>
   </AUI>
-</jais>
+</jais:configuration>

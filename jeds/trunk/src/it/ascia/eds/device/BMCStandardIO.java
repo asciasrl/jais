@@ -63,8 +63,10 @@ public class BMCStandardIO extends BMC {
 	public void addPort(String portId, String portName) {
 		if (portId.startsWith("Inp")) {
 			ports.put(portId, new DigitalInputPort(this, portId, portName));
-		} else {
+		} else if (portId.startsWith("Out")) {
 			ports.put(portId, new DigitalOutputPort(this, portId, portName));		
+		} else {
+			super.addPort(portId, portName);
 		}
 	}
 
@@ -380,21 +382,8 @@ public class BMCStandardIO extends BMC {
 	}
 
 	/**
-	 * Manda un messaggio per impostare direttamente il valore di un'uscita.
-	 * 
-	 * <p>
-	 * Se questo oggetto corrisponde a un BMC "vero", allora manda un messaggio
-	 * con mittente il BMCComputer. Altrimenti, l'uscita viene impostata
-	 * direttamente.
-	 * </p>
-	 * 
-	 * @param port
-	 *            numero della porta
-	 * @param value
-	 *            valore (true/1/on: acceso, false/0/off: spento)
-	 * @throws AISException 
-	 * 
-	 * @see #setOutputVariation
+	 * @see BMC.writePort
+	 * @param newValue Boolean
 	 */
 	public boolean writePort(String portId, Object newValue) throws AISException {
 		DevicePort p = getPort(portId);

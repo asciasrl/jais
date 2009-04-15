@@ -45,7 +45,7 @@ public abstract class MessageParser {
 
 	/**
 	 * Restituisce la instanza di messaggio risultato del parsing
-	 * @return
+	 * @return Instanza di Message
 	 */
 	public Message getMessage()
 	{

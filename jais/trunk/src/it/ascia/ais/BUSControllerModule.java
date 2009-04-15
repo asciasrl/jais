@@ -27,6 +27,7 @@ public abstract class BUSControllerModule extends ControllerModule {
 			Connector connector = (Connector) c.next(); 
 			logger.info("Chiusura connettore "+connector.getName());
 			connector.close();
+			logger.trace("Chiuso connettore "+connector.getName());
 		}
 	}
 
@@ -34,14 +35,14 @@ public abstract class BUSControllerModule extends ControllerModule {
 		
 		long autoupdate = 0;
 
+		/**
+		 * Aggiorna automaticamente i device connessi
+		 * @param a Tempo di attesa in mS fra una richiesta di aggiornamento e la successiva
+		 */
 		public AutoUpdater(long a) {
 			autoupdate = a;
 		}
 
-		/**
-		 * Aggiorna automaticamente i device connessi
-		 * @see Thread.run()
-		 */
 		public void run() {
 			if (autoupdate > 0) {
 				logger.info("Autoupdate ogni "+autoupdate+"mS");				

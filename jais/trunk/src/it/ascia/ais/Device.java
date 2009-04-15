@@ -115,7 +115,7 @@ public abstract class Device {
 	/**
 	 * Restituisce lo stato di tutte le porte del Device che sono state aggiornate dopo il timestamp
 	 * @param timestamp
-	 * @return
+	 * @return Righe di testo nel formato: porta=valore
 	 * @throws AISException
 	 */
 	public String getStatus(long timestamp) throws AISException {
@@ -129,7 +129,7 @@ public abstract class Device {
 
 	/**
 	 * Restituisce lo stato di tutte le porte del Device
-	 * @return
+	 * @return Righe di testo nel formato: porta=valore
 	 * @throws AISException
 	 */
 	public String getStatus() throws AISException {
@@ -218,7 +218,8 @@ public abstract class Device {
 	}
     
     /**
-     * Scrive un nuovo valore sulla porta del dispositivo fisico
+     * Scrive un nuovo valore sulla porta del dispositivo fisico.
+     * @see DevicePort.writeValue
      * @param portId
      * @param newValue
      * @return true se operazione andata a buon fine
@@ -227,10 +228,13 @@ public abstract class Device {
 
 	/**
      * Legge dal dispositivo fisisco lo stato della porta ed aggiorna il valore corrispondente (portValues)
-     * Se ritorna con tempo da attendere 0 (zero) vuol dire che il chiamante non deve aspettare, perche' l'aggiornamento:
-     * - e' stato immediato
-     * - e' stato gia' fatto
-     * - non puo' essere fatto
+     * <p>Se ritorna con tempo da attendere 0 (zero) vuol dire che il chiamante non deve aspettare, perche' l'aggiornamento:
+     * <ul>
+     * <li>e' stato immediato</li>
+     * <li>e' stato gia' fatto</li>
+     * <li>non puo' essere fatto</li>
+     * </ul>
+     * </p>
 	 * @param portId
 	 * @return Tempo massimo previsto per l'aggiornamento in millisecondi
 	 * @throws AISException
@@ -261,17 +265,33 @@ public abstract class Device {
 		DevicePort p = getPort(portId);
 		return p.getValue();
 	}
-	
+
+	/**
+	 * Legge il valore in cache di una porta di un dispositivo reale
+	 * 
+	 * @param portId il nome della porta
+	 * 
+	 * @throws un'eccezione se qualcosa va male.
+	 */	
+	public Object getPortCachedValue(String portId) throws AISException {
+		DevicePort p = getPort(portId);
+		return p.getCachedValue();
+	}
+
 	/**
 	 * Fornisce il timestamp corrispondente all'ultimo aggiornamento del valore della porta
 	 * @param portId
-	 * @return
+	 * @return TimeStamp in mS
 	 */
 	public long getPortTimestamp(String portId) {
 		DevicePort p = (DevicePort) ports.get(portId);			
 		return p.getTimeStamp();
 	}
 
+	/**
+	 * Trasmette l'evento al Connector del Device
+	 * @param evt Evento da gestire
+	 */
 	public void fireDevicePortChangeEvent(DevicePortChangeEvent evt) {
 		connector.fireDevicePortChangeEvent( evt );
 	}

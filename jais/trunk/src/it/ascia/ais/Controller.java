@@ -8,6 +8,7 @@ import java.beans.PropertyChangeSupport;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -54,7 +55,7 @@ public class Controller {
 
 	/**
 	 * Controller singleton
-	 * @return
+	 * @return Il Controller del sistema
 	 * @throws AISException 
 	 */
 	public static Controller getController() {
@@ -107,7 +108,7 @@ public class Controller {
 	
 	
 	/**
-	 * Carica il modulo, lo instanzia, ne effettua la configurazione e quindi lo avvia. 
+	 * Carica il modulo, lo instanzia, ne imposta la configurazione. 
 	 * @param name Nome (unico) del modulo
 	 * @param className Classe che implementa il modulo
 	 * @throws AISException 
@@ -246,20 +247,33 @@ public class Controller {
 	}
 	
 	/**
-	 * 
-	 * @param configurationFileName 
-	 * @throws AISException 
-	 * @throws ConfigurationException 
+	 * Inizializza il logger con {@link BasicConfigurator}
 	 */
-	public Controller() {
+	protected Controller() {
     	BasicConfigurator.configure();  // configurazione minimale di log4j
 		logger = Logger.getLogger(getClass());	
 	}
 	
+	/**
+	 * Configura il Controller usando il file di configurazione di default: conf/jais.xml 
+	 */
 	public void configure() {
 		configure("conf/jais.xml");
 	}
 
+	/**
+	 * Configura il controller in base a quanto specificato nel file di configurazione.
+	 * In particolare:
+	 * <ol>
+	 * <li>Inizializza il Logger</li>
+	 * <li>Imposta la lingua Locale</li>
+	 * <li>Carica i moduli</li>
+	 * </ol>
+	 * 
+	 * @see LoadModule
+	 * 
+	 * @param configurationFileName
+	 */
 	public void configure(String configurationFileName) {
 		try {
 			XMLConfiguration.setDefaultListDelimiter(';');
@@ -281,11 +295,16 @@ public class Controller {
 	    }
 		logger = Logger.getLogger(getClass());	
 
+		// Impostazione locale
+		Locale.setDefault(new Locale(config.getString("locale[@language]","it"),config.getString("locale[@country]","IT")));
+		logger.info("Default locale: " + Locale.getDefault());
+		
+		// caricamento moduli
 		List modules = config.configurationsAt("modules.module");
 		for(Iterator it = modules.iterator(); it.hasNext();)
 		{
 		    HierarchicalConfiguration sub = (HierarchicalConfiguration) it.next();
-		    String name = sub.getString("name");
+		    String name = (String) sub.getProperty("[@name]");
 		    String className = sub.getString("class");
 		    try {
 				loadModule(name, className);
@@ -316,6 +335,8 @@ public class Controller {
 
 	/**
 	 * Avvia tutti i moduli
+	 * 
+	 * @see ControllerModule.start
 	 */
 	public void start() {
 		Iterator i = modules.keySet().iterator();
@@ -338,11 +359,21 @@ public class Controller {
 	public void stop() {
 		Iterator i = modules.keySet().iterator();
 		while (i.hasNext()) {
-			ControllerModule module = getModule((String) i.next());
+			String moduleName = (String) i.next();
+			ControllerModule module = getModule(moduleName);
+			logger.trace("Doing "+moduleName+".stop()");
 			module.stop();			
+			logger.trace("Done "+moduleName+".stop()");
 		}		
 	}
 
+	/**
+	 * Cerca esattamente un device
+	 * @see findDevices
+	 * @param fullAddress Indirizzo completo del device
+	 * @return il Device trovato o null
+	 * @throws AISException
+	 */
 	public Device getDevice(String fullAddress) throws AISException {
 		Device[] devices = findDevices(fullAddress);
 		if (devices.length == 1) {

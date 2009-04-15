@@ -12,12 +12,14 @@ import it.ascia.eds.msg.ComandoUscitaMessage;
 import it.ascia.eds.msg.CronotermMessage;
 import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.ImpostaParametroMessage;
+import it.ascia.eds.msg.ImpostaRTCCMessage;
 import it.ascia.eds.msg.ImpostaSetPointMessage;
 import it.ascia.eds.msg.ProgrammazioneMessage;
 import it.ascia.eds.msg.RichiestaAssociazioneUscitaMessage;
 import it.ascia.eds.msg.RichiestaIngressoIRMessage;
 import it.ascia.eds.msg.RichiestaModelloMessage;
 import it.ascia.eds.msg.RichiestaParametroMessage;
+import it.ascia.eds.msg.RichiestaRTCCMessage;
 import it.ascia.eds.msg.RichiestaSetPointMessage;
 import it.ascia.eds.msg.RichiestaStatoMessage;
 import it.ascia.eds.msg.RichiestaStatoTermostatoMessage;
@@ -27,6 +29,7 @@ import it.ascia.eds.msg.RispostaIngressoIRMessage;
 import it.ascia.eds.msg.RispostaModelloMessage;
 import it.ascia.eds.msg.RispostaOpzioniIngressoMessage;
 import it.ascia.eds.msg.RispostaParametroMessage;
+import it.ascia.eds.msg.RispostaRTCCMessage;
 import it.ascia.eds.msg.RispostaSetPointMessage;
 import it.ascia.eds.msg.RispostaStatoDimmerMessage;
 import it.ascia.eds.msg.RispostaStatoMessage;
@@ -52,7 +55,7 @@ public class EDSMessageParser extends it.ascia.ais.MessageParser {
 
 	protected long lastReceived;
 	
-	public static long TIMEOUT = 1000;
+	public static long TIMEOUT = 100;
 	
 	public EDSMessageParser() {
 		super();
@@ -185,6 +188,12 @@ public class EDSMessageParser extends it.ascia.ais.MessageParser {
 			return new CronotermMessage(message);
 		case EDSMessage.MSG_RISPOSTA_SET_POINT: 
 			return new RispostaSetPointMessage(message);
+		case EDSMessage.MSG_RICHIESTA_RTCC: 
+			return new RichiestaRTCCMessage(message);
+		case EDSMessage.MSG_RISPOSTA_RTCC: 
+			return new RispostaRTCCMessage(message);
+		case EDSMessage.MSG_IMPOSTA_RTCC:
+			return new ImpostaRTCCMessage(message);
 		default: 
 			return new UnknowMessage(message);
 		}

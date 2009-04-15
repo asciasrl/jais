@@ -120,6 +120,16 @@ public class SerialTransport extends Transport {
      * Chiude la porta seriale.
      */
     public void close() {
+    	try {
+			inputStream.close();
+	    	inputStream = null;
+			outputStream.close();
+			outputStream = null;
+		} catch (IOException e) {
+			logger.error("Exception in close():",e);
+		}
+    	serialPort.removeEventListener();
+    	logger.trace("About to close()");
     	serialPort.close();
     	logger.debug("Chiuso.");
     }

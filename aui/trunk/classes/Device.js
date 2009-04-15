@@ -1,0 +1,73 @@
+if (!AUI.Device) {
+		
+	AUI.Device = function() {
+		this.id = null;
+		this.status = null;
+	};
+	
+	AUI.Device.prototype.getControl = function() {
+		return AUI.Controls.getControl(this.id);
+	}
+	
+	AUI.Device.prototype.getElement = function() {
+		return document.getElementById(this.id);
+	}
+	
+	AUI.Device.prototype.getLabel = function() {
+		var label = this.label;
+		if (label == null) {
+			label = document.getElementById(this.id+"-label");
+			if (label == null) {
+				AUI.Logger.error("Elemento label non trovato per "+this.id);
+			} else {
+				this.label = label;
+			}
+		}
+		return label;
+	}
+
+	AUI.Device.prototype.getImg = function() {
+		var img = this.img;
+		if (img == null) {
+			img = document.getElementById(this.id+"-img");
+			if (img == null) {
+				AUI.Logger.error("Elemento label non trovato per "+this.id);
+			} else {
+				this.img = img;
+			}
+		}
+		return img;
+	}
+	
+	AUI.Device.prototype.setStatus = function(newStatus) {
+		if (newStatus != null && (this.status == null || newStatus != this.status)) {
+			this.status = newStatus;
+			var control = this.getControl();
+			var newImg = control[newStatus];
+			if (newImg) {
+				(this.getImg()).src = skin + newImg;
+			} else {
+				AUI.Logger.error("Stato non valido per "+this.id+" :"+newStatus);
+			}
+		}
+	}
+	
+	AUI.Device.prototype.setPortValue = function(port,newValue) {
+		this.value = newValue;
+		this.setStatus(newValue);
+	}
+	
+	AUI.Device.prototype.setLabelValue = function(text) {
+		var label = this.getLabel();
+	}
+	
+	AUI.Device.prototype.onTouchStart = function(event) {
+		return;
+	}
+
+	AUI.Device.prototype.onMouseDown = function(event) {
+		this.onTouchStart(event);
+	}
+	
+	
+}

@@ -85,6 +85,7 @@ public class HTTPServerControllerModule extends ControllerModule {
 		logger.info("Arresto server HTTP ...");
 		try {
 			server.stop();
+			logger.debug("Arrestato server HTTP.");
 		} catch (Exception e) {
 			logger.error("Errore durante l'arresto del server: " +
 					e.getMessage());

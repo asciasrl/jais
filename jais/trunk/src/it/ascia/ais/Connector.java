@@ -168,7 +168,6 @@ public abstract class Connector {
     
 	/**
 	 * Propaga l'evento al controller
-	 * @param event
 	 */
 	public void fireDevicePortChangeEvent(DevicePortChangeEvent evt) {
 		controller.fireDevicePortChangeEvent( evt );
@@ -186,7 +185,7 @@ public abstract class Connector {
 
     /**
      * Resituisce il nome del controllore, come specificato alla creazione
-     * @return
+     * @return Nome
      */
 	public String getName() {
 		return name;
@@ -213,7 +212,9 @@ public abstract class Connector {
 	 * Chiude il Transport e le code di invio/ricezione 
 	 */
 	public void close() {
-		transport.close();
+		if (transport != null) {
+			transport.close();
+		}
 		running = false;
     	receivingThread.interrupt();
 		sendingThread.interrupt();

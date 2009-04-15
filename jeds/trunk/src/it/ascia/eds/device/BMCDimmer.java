@@ -296,7 +296,7 @@ public class BMCDimmer extends BMC {
 			numericValue = 0;
 			messageType = EDSMessage.MSG_COMANDO_USCITA;
 		} else if (value.toUpperCase().equals("ON")) {
-			numericValue = 100;
+			numericValue = 101; // Accende al valore assunto precedentemente
 			messageType = EDSMessage.MSG_COMANDO_USCITA;
 		} else if (value.toUpperCase().equals("TOGGLE")) {
 			messageType = EDSMessage.MSG_VARIAZIONE_INGRESSO;

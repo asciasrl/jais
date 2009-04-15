@@ -379,7 +379,6 @@ public abstract class BMC extends Device {
 	 * 
 	 * @param number the port number.
 	 * @param name the name to assign.
-	 * @return 
 	 * @throws AISException
 	 */
 	public void setOutputName(int number, String portName) throws AISException {

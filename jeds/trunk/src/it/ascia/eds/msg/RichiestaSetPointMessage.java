@@ -6,20 +6,22 @@ package it.ascia.eds.msg;
 /**
  * Messaggio di richiesta set point del cronotermostato.
  * 
+ * Lo stesso codice di messaggio viene utilizzato sia dal cronotermostato Home Innovation che da quello di World Data Bus, ma con un formato diverso
+ * 
  * <p>Codice EDS: 204.</p>
  */
 public class RichiestaSetPointMessage extends PTPRequest {
 
 	/**
-	 * Richiede set point attuale
-	 * @param d
-	 * @param m
-	 * @param attuale Da impostare a true per sonda termica, false per Cronotermostato Home Innovation
+	 * Richiede set point attuale del cronotermostato
+	 * @param d Destinatario
+	 * @param m Mittente
+	 * @param attuale Da impostare a true per sonda termica / cronotermostato WDB, false per Cronotermostato Home Innovation
 	 */
 	public RichiestaSetPointMessage(int d, int m, boolean attuale) {		
 		this(d, m, 0, 0, attuale ? 31 : 0);
 	}
-	
+
 	/**
 	 * Richiede set point per stagione/giorno/ora
 	 * @param d Destinatario

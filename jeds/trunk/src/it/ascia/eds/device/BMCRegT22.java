@@ -3,6 +3,11 @@
  */
 package it.ascia.eds.device;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import it.ascia.ais.AISException;
@@ -11,16 +16,21 @@ import it.ascia.ais.DevicePort;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.msg.ImpostaParametroMessage;
 import it.ascia.eds.msg.EDSMessage;
+import it.ascia.eds.msg.ImpostaRTCCMessage;
 import it.ascia.eds.msg.ImpostaSetPointMessage;
 import it.ascia.eds.msg.RichiestaAssociazioneUscitaMessage;
 import it.ascia.eds.msg.RichiestaParametroMessage;
+import it.ascia.eds.msg.RichiestaRTCCMessage;
 import it.ascia.eds.msg.RichiestaSetPointMessage;
 import it.ascia.eds.msg.RichiestaStatoTermostatoMessage;
 import it.ascia.eds.msg.RispostaParametroMessage;
+import it.ascia.eds.msg.RispostaRTCCMessage;
 import it.ascia.eds.msg.RispostaSetPointMessage;
 import it.ascia.eds.msg.RispostaStatoTermostatoMessage;
 
 /**
+ * 
+ * Per forzare l'aggiornamento della porta RTCC basta impostarla al valore null
  * @author sergio
  *
  */
@@ -53,6 +63,12 @@ public class BMCRegT22 extends BMCStandardIO {
 	 * Nome della porta della temperatura impostata.
 	 */
 	private static final String port_setPoint = "setPoint";
+
+	/**
+	 * Nome della porta della data/ora
+	 */
+	private static final String port_RTCC = "RTCC";
+	
 	/**
 	 * Costruttore.
 	 * @param connector 
@@ -69,6 +85,7 @@ public class BMCRegT22 extends BMCStandardIO {
 		addPort(port_alarmTemp);
 		addPort(port_autoSendTime);
 		addPort(port_setPoint);
+		addPort(port_RTCC);
 		for (int stagione = 0; stagione <= 1; stagione++) {
 			for (int giorno = 0; giorno <= 6; giorno++) {
 				for (int ora = 0; ora <= 23; ora++) {
@@ -209,9 +226,35 @@ public class BMCRegT22 extends BMCStandardIO {
 			setPortValue(port_temperature,new Double(rsttm.getSensorTemperature()));
 			setPortValue(port_mode,getModeAsString(rsttm.getMode()));
 			break;
+		case EDSMessage.MSG_RISPOSTA_RTCC:
+			RispostaRTCCMessage rrtcc = (RispostaRTCCMessage) m;
+			Date d = (Date) getPortCachedValue(port_RTCC);
+			Calendar c = new GregorianCalendar();
+			if (d == null) {
+				c.setTimeInMillis(0);
+			} else {
+				c.setTime(d);
+			}
+			// TODO: verificare che siano arrivati tutti e 3 in ordine 
+			switch (rrtcc.getIndex()) {
+			case 0:
+				c.set(Calendar.HOUR_OF_DAY,rrtcc.getOre());
+				c.set(Calendar.MINUTE,rrtcc.getMinuti());
+				break;
+			case 1:
+				c.set(Calendar.MONTH,rrtcc.getMese()-1);
+				c.set(Calendar.YEAR,rrtcc.getAnno()+2000);
+				break;
+			case 2:
+				c.set(Calendar.DAY_OF_MONTH,rrtcc.getGiorno());
+				c.set(Calendar.SECOND,rrtcc.getSecondi());
+				break;
+			}
+			setPortValue(port_RTCC,c.getTime());
+			break;
 		default:
 			super.messageSent(m);
-		} // switch tipo di messaggio
+		}
 	}
 	
 	/**
@@ -273,6 +316,9 @@ public class BMCRegT22 extends BMCStandardIO {
 			return super.updateStatus();
 		} else if (portId.startsWith("Out")) {
 			return super.updateStatus();
+		} else if (portId.equals(port_RTCC)) {
+			readRTCC();
+			return 300;
 		} else if (portId.startsWith("setPoint-")) {
 			readSetPoint(portId);
 			return 300;
@@ -281,6 +327,15 @@ public class BMCRegT22 extends BMCStandardIO {
 		}
 	}
 	
+	private void readRTCC() {
+		EDSConnector conn = (EDSConnector) getConnector();
+		int m = conn.getMyAddress();
+		int d = getIntAddress();
+		conn.queueMessage(new RichiestaRTCCMessage(d,m,0));
+		conn.queueMessage(new RichiestaRTCCMessage(d,m,1));
+		conn.queueMessage(new RichiestaRTCCMessage(d,m,2));
+	}
+
 	/**
 	 * Ritorna lo stato della sonda sotto forma di stringa.
 	 */
@@ -310,6 +365,30 @@ public class BMCRegT22 extends BMCStandardIO {
 		if (portId.equals(port_autoSendTime)) {
 			res = getConnector().sendMessage(new ImpostaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
 				ImpostaParametroMessage.PARM_TIME, ((Integer) newValue).intValue()));
+		} else if (portId.equals(port_RTCC)) {
+			try {
+				GregorianCalendar cal = new GregorianCalendar();
+				Date date;
+				DateFormat df = DateFormat.getDateTimeInstance();				
+				if (!((String)newValue).toLowerCase().equals("now")) {
+					date = df.parse((String) newValue);
+					cal.setTime(date);
+					logger.debug("Parsed data: "+newValue+" -> "+cal.getTime().toString());
+				} else {
+					date = new Date();
+					logger.debug("Set to now: "+date);
+				}
+				EDSConnector conn = (EDSConnector) getConnector();
+				int m = conn.getMyAddress();
+				int d = getIntAddress();
+				conn.queueMessage(new ImpostaRTCCMessage(d,m,0, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE)));
+				conn.queueMessage(new ImpostaRTCCMessage(d,m,1, cal.get(Calendar.MONTH)+1, cal.get(Calendar.YEAR)-2000));
+				conn.queueMessage(new ImpostaRTCCMessage(d,m,2, cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.SECOND)));
+				res = true;
+				newValue = date;
+			} catch (ParseException e) {
+				logger.error("Data non valida: "+e);
+			}
 		} else if (portId.startsWith("setPoint-")) {
 			String[] temp = portId.split("-");
 			String stagione = temp[1];
@@ -320,9 +399,6 @@ public class BMCRegT22 extends BMCStandardIO {
 					Double.parseDouble((String) newValue), stagione, giorno, ora));
 		} else {
 			logger.fatal("Non so come scrivere sulla porta "+portId);
-		}
-		if (res) {
-			setPortValue(portId, newValue);
 		}
 		return res;
 	}

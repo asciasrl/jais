@@ -144,6 +144,21 @@ public abstract class EDSMessage extends Message implements Comparable {
 	public static final int MSG_RISPOSTA_SET_POINT = 206;
 	
 	/**
+	 * messaggio di lettura dati real time clock and calendar
+	 */
+	public static final int MSG_RICHIESTA_RTCC = 250;
+	
+	/**
+	 * messaggio di risposta alla lettura dati real time clock and calendar
+	 */
+	public static final int MSG_RISPOSTA_RTCC = 251;
+	
+	/**
+	 * messaggio di impostazione dati real time clock and calendar
+	 */
+	public static final int MSG_IMPOSTA_RTCC = 252;
+	
+	/**
 	 * Rappresentazione 'raw' del messaggio.
 	 */
 	protected int[] rawmessage;

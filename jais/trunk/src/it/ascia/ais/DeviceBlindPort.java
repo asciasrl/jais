@@ -3,7 +3,6 @@ package it.ascia.ais;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-
 /**
  * TODO gestire comandi:
  * - doCommand deve chiamare writePort di Device o di DevicePort ?  
@@ -38,6 +37,7 @@ public class DeviceBlindPort extends DevicePort implements PropertyChangeListene
 	 */
 	public Object getValue(boolean useCache) {
 		try {
+			Object cachedValue = getCachedValue();
 			boolean opening;
 			boolean closing;
 			try {
@@ -79,17 +79,17 @@ public class DeviceBlindPort extends DevicePort implements PropertyChangeListene
 		} catch (AISException e) {
 			logger.error("getValue("+portId+"):",e);
 		}
-		return cachedValue;
+		return getCachedValue();
 	}
 	
 	public boolean isDirty()
 	{
-		return cachedValue == null;
+		return openPort.isDirty() || closePort.isDirty();
 	}
 
 	public boolean isExpired()
 	{
-		return false;
+		return openPort.isExpired() || closePort.isExpired();
 	}
 
 	public void propertyChange(PropertyChangeEvent evt) {

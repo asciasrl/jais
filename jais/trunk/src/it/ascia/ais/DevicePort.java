@@ -13,7 +13,7 @@ public class DevicePort {
 		return portId;
 	}
 
-	protected Object cachedValue;
+	private Object cachedValue;
 	
 	private boolean dirty = true;
 	
@@ -101,16 +101,16 @@ public class DevicePort {
 
 	/**
 	 * Ritorna il valore della porta.  Se il valore non risulta aggiornato, invoca Device.updatePort() per richiederne l'aggiornamento.
-	 * Questo metodo e' sincronizzato che setValue, che aggiorna il valore della porta
+	 * Questo metodo e' sincronizzato con setValue, che aggiorna il valore della porta.
 	 * 
-	 * @return
+	 * @return Oggetto memorizzato in cache o null
 	 * @throws AISException 
 	 */
 	public Object getValue() throws AISException {
 		if (isDirty() || isExpired()) {
-			cachedValue = readValue();
+			setCachedValue(readValue());
 		}
-		return cachedValue;
+		return getCachedValue();
 	}
 	
 	/**
@@ -153,9 +153,9 @@ public class DevicePort {
 	public void setValue(Object newValue) {
 		Object oldValue = getCachedValue();
 		//logger.trace("setValue "+getFullAddress()+"="+oldValue+" -> "+newValue);
-		boolean changed = false;
+//		boolean changed = false;
 		if (isDirty() || oldValue == null || ! oldValue.equals(newValue)) {
-			changed = true;
+//			changed = true;
 			timeStamp = System.currentTimeMillis();
 		}
 		synchronized (this) {
@@ -165,31 +165,36 @@ public class DevicePort {
 			// sveglia getValue()
 			notify();								
 		}
-		if (changed) {
+//		if (changed) {
 			/**
 			 * Se i due valori sono uguali vuol dire che e' avvenuto un cambiamento che non abbiamo potuto verificare.
 			 * Vengono inviati due eventi:  valore -> null e null -> valore
 			 * Senza questo artificio non verrebbe notificato nessun evento ai listener. 
 			 */
+/*
 			DevicePortChangeEvent evt;
 			if (oldValue != null && oldValue.equals(newValue)) {
 				evt = new DevicePortChangeEvent(this,oldValue,null);
 				fireDevicePortChangeEvent(evt);				
 				evt = new DevicePortChangeEvent(this,null,newValue);
-				fireDevicePortChangeEvent(evt);				
+				fireDevicePortChangeEvent(evt);
+				*/				
+/*		
 			} else {
 				evt = new DevicePortChangeEvent(this,oldValue,newValue);
 				fireDevicePortChangeEvent(evt);
 			}
 		}
+*/
+		fireDevicePortChangeEvent(new DevicePortChangeEvent(this,oldValue,newValue));
 	}
 
 	/**
 	 * Scrive un nuovo valore sulla porta del device cui appartiene
-	 * Questa implementazione richiama Device.writePort()
+	 * Questa implementazione richiama {@link #Device.writePort()} dopo aver invalidato il valore in cache
 	 * Se la porta e' virtuale, la sottoclasse deve gestire la richiesta di scrittura in maniera specifica 
 	 * @param newValue
-	 * @return
+	 * @return true se scrittura effettuata correttamente
 	 * @throws AISException 
 	 */
 	public boolean writeValue(Object newValue) {
@@ -224,6 +229,10 @@ public class DevicePort {
 		dirty = true;
 	}
 
+	public void setCachedValue(Object newValue) {
+		cachedValue = newValue;		
+	}
+
 	public Object getCachedValue() {
 		return cachedValue;
 	}
@@ -239,13 +248,16 @@ public class DevicePort {
 		return dirty;
 	}
 
+	/**
+	 * 
+	 * @return true se il valore in cache e' scaduto
+	 */
 	public boolean isExpired() {
 		return System.currentTimeMillis() >= expiration;
 	}
 
 	/**
-	 * Restituisce l'indirizzo completo della porta
-	 * @return
+	 * @return indirizzo completo della porta
 	 */
 	public String getFullAddress() {
 		return device.getFullAddress()+":"+portId;
@@ -253,7 +265,7 @@ public class DevicePort {
 
 	/**
 	 * Imposta il momento di scadenza in modo che scada dopo il tempo specificato
-	 * @param i
+	 * @param i Tempo di durata in mS del valore in cache
 	 */
 	public void setDuration(long i) {
 		expiration = System.currentTimeMillis() + i;

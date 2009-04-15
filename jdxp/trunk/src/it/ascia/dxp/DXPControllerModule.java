@@ -50,9 +50,9 @@ public class DXPControllerModule extends BUSControllerModule {
 					HierarchicalConfiguration dev = (HierarchicalConfiguration) d.next();
 					conn.addModule(dev.getString("model"),dev.getString("address"));
 				}
-
 		 	} catch (Exception e) {
 		 		logger.fatal("Errore durante inizializzazione:",e);
+		 		conn.close();
 		 	}
 		}				
  		int autoupdate = config.getInt("autoupdate",0);

@@ -9,18 +9,26 @@ package it.ascia.eds.msg;
  * Questo messaggio puo' essere inviato a un crono-termostato per cambiarne il
  * set point.
  * 
+ * Lo stesso codice di messaggio viene utilizzato sia dal cronotermostato Home Innovation che da quello di World Data Bus, ma con un formato diverso
+ * 
  * Codice EDS 202.
  */
 public class ImpostaSetPointMessage extends PTPRequest {
 
-	private static String[] giorni = new String[] {"Dom","Lun","Mar","Mer","Gio","Ven","Sab"};
-
-	private static String[] stagioni = new String[] {"Inverno","Estate"};
+	/**
+	 * Elenco giorni della settimana 
+	 */
+	public static final String[] giorni = new String[] {"Dom","Lun","Mar","Mer","Gio","Ven","Sab"};
 
 	/**
-	 * 
-	 * @param d
-	 * @param m
+	 * Elenco stagioni 
+	 */
+	public static final String[] stagioni = new String[] {"Inverno","Estate"};
+
+	/**
+	 * Imposta la temperatura del Cronotermostato WDB
+	 * @param d Destinatario
+	 * @param m Mittente
 	 * @param temperatura 5-60 gradi centigradi
 	 * @param decimale 0=temperatura,0  1=temperatura,5 
 	 * @param stagione
@@ -34,14 +42,29 @@ public class ImpostaSetPointMessage extends PTPRequest {
 		Byte1 = (temperatura & 0x3F) + ((stagione & 0x01) << 6) + ((decimale & 0x01) << 7);
 		Byte2 = (giorno & 0x07) + ((ora & 0x1F) << 3);
 	}
+	
+	/**
+	 * Imposta la temperatura del Cronotermostato Home Innovation
+	 * @param d Destinatario
+	 * @param m Mittente
+	 * @param t Temperatura con 1 decimale
+	 */
+	public ImpostaSetPointMessage(int d, int m, double t) {
+		Destinatario = d & 0xFF;
+		Mittente = m & 0xFF;
+		TipoMessaggio = MSG_IMPOSTA_SET_POINT;
+		int decimali = (new Double(t*10)).intValue() - (new Double(t)).intValue() * 10; 
+		Byte1 = (new Double(t*10)).intValue() & 0xFF;
+		Byte2 = decimali & 0x0F; 
+	}
 
 
 	/**
 	 * Imposta il setPoint manuale per uno specifico tempo
-	 * @param d
-	 * @param m
-	 * @param temperatura
-	 * @param decimale
+	 * @param d Destinatario
+	 * @param m Mittente
+	 * @param temperatura 5-60 gradi centigradi
+	 * @param decimale 0=temperatura,0  1=temperatura,5 
 	 * @param durata Ore
 	 */
 	public ImpostaSetPointMessage(int d, int m, int temperatura, int decimale, int durata) {
@@ -123,11 +146,7 @@ public class ImpostaSetPointMessage extends PTPRequest {
 	}
 
 	public static String giorno(int giorno) {
-		try {
-			return giorni[giorno];
-		} catch(IndexOutOfBoundsException e) {
-			return null;
-		}
+		return giorni[giorno];
 	}
 	
 	public int getStagione() {

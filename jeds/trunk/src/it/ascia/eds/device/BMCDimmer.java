@@ -279,7 +279,7 @@ public class BMCDimmer extends BMC {
 	 * @param port il nome compatto della porta.
 	 * @value un numero, un valore percentuale, "on","off",true,false,"toggle"
 	 */
-	public boolean writePort(String port, Object o) throws AISException {
+	public boolean sendPortValue(String port, Object o) throws AISException {
 		String value = o.toString();
 		int outPort;
 		int numericValue = 0;

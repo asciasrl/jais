@@ -7,6 +7,8 @@ package it.ascia.eds.device;
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.DevicePort;
+import it.ascia.ais.SlaveStatePort;
+import it.ascia.ais.TriggerPort;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.msg.CronotermMessage;
 import it.ascia.eds.msg.ImpostaSetPointMessage;
@@ -24,6 +26,17 @@ import it.ascia.eds.msg.VariazioneIngressoMessage;
  * @author arrigo
  */
 public class BMCChronoTerm extends BMC {
+
+	/**
+	 * Estate
+	 */
+	//public static final String SEASON_SUMMER = "summer";
+	
+	/**
+	 * Estate
+	 */
+	//public static final String SEASON_WINTER = "winter";
+
 	/**
 	 * Temperatura antigelo.
 	 */
@@ -71,24 +84,24 @@ public class BMCChronoTerm extends BMC {
 	/**
 	 * Array per ottenere una rappresentazione testuale dello stato.
 	 */
-	private static final String stateStrings[] = {
-		"antifreeze", // 0
+	public static final String stateStrings[] = {
+		"temp_t0", // 0
 		"temp_t1", // 1
 		"temp_t2", // 2
 		"temp_t3", // 3
-		"setpoint_plus_half", // 4
-		"setpoint_minus_half", // 5
-		"unknown", // 6
-		"unknown", // 7
+		"stp_up", // 4
+		"stp_dn", // 5
+		null, // 6
+		null, // 7
 		"summer", // 8
 		"winter", // 9
-		"unknown", // 10
-		"unknown", // 11
+		null, // 10
+		null, // 11
 		"chrono", // 12
 		"manual", // 13
-		"unknown", // 14
-		"off"}; // 15 
-	
+		null, // 14
+		"off"}; // 15
+		
 	/**
 	 * Nome compatto della porta "temperatura"
 	 */
@@ -112,33 +125,47 @@ public class BMCChronoTerm extends BMC {
 	 */
 	public BMCChronoTerm(Connector connector, String address, int model, String name) throws AISException {
 		super(connector, address, model, name);
-		switch(model) {
-		case 127:
-			break;
-		default: // This should not happen(TM)
-			logger.error("Errore: modello di BMCChronoTerm sconosciuto:" +
-					model);
-		}
-		addPort(port_setpoint);
 		addPort(port_state);
 		addPort(port_temperature);
+		addPort(port_setpoint);
 		addPort(port_season);
+
+		addPort(new SlaveStatePort(this,stateStrings[STATE_CHRONO],port_state));
+		addPort(new SlaveStatePort(this,stateStrings[STATE_MANUAL],port_state));
+		addPort(new SlaveStatePort(this,stateStrings[STATE_OFF],port_state));
+		addPort(new SlaveStatePort(this,stateStrings[STATE_SUMMER_MODE],port_season));
+
+		addPort(new TriggerPort(this,stateStrings[STATE_TEMP_ANTIFREEZE]));
+		addPort(new TriggerPort(this,stateStrings[STATE_TEMP_SETPOINT_MINUS]));
+		addPort(new TriggerPort(this,stateStrings[STATE_TEMP_SETPOINT_PLUS]));
+		addPort(new TriggerPort(this,stateStrings[STATE_TEMP_T1]));
+		addPort(new TriggerPort(this,stateStrings[STATE_TEMP_T2]));
+		addPort(new TriggerPort(this,stateStrings[STATE_TEMP_T3]));
+		
+		addPort(new SlaveStatePort(this,stateStrings[STATE_WINTER_MODE],port_season));
+		
 	}
 	
 	/* (non-Javadoc)
 	 * @see it.ascia.eds.device.BMC#receiveMessage(it.ascia.eds.msg.Message)
 	 */
-	// TODO: reagire a messaggi broadcast
 	public void messageReceived(EDSMessage m) throws AISException {
 		switch (m.getMessageType()) {
-		case EDSMessage.MSG_VARIAZIONE_INGRESSO: {
+		case EDSMessage.MSG_COMANDO_BROADCAST:
+			getPort(port_state).invalidate();
+			getPort(port_setpoint).invalidate();			
+			getPort(port_season).invalidate();			
+			break;
+		case EDSMessage.MSG_VARIAZIONE_INGRESSO:
 			// Qualcuno ha premuto un interruttore. Siamo dirty, finche' non
 			// vedremo un acknowledge.
 			VariazioneIngressoMessage var = 
 				(VariazioneIngressoMessage) m;
-			setPortValue(port_state,new Integer(var.getChronoTermState()));
-		}
-		break;
+			//setPortValue(port_state,new Integer(var.getChronoTermState()));
+			getPort(port_state).invalidate();
+			getPort(port_setpoint).invalidate();			
+			getPort(port_season).invalidate();			
+			break;
 		case EDSMessage.MSG_IMPOSTA_SET_POINT: {
 			// Si vuole cambiare il set point
 			ImpostaSetPointMessage set = (ImpostaSetPointMessage) m;
@@ -149,10 +176,8 @@ public class BMCChronoTerm extends BMC {
 	}
 	
 	public void messageSent(EDSMessage m) throws AISException {
-		// TODO logger.trace("messageSent:0");
 		switch (m.getMessageType()) {
 		case EDSMessage.MSG_RISPOSTA_STATO_TERMOSTATO:
-			// TODO logger.trace("messageSent:1.1");
 			updating = true;
 			// Questo messaggio contiene il nostro stato
 			RispostaStatoTermostatoMessage tm = (RispostaStatoTermostatoMessage) m;
@@ -169,24 +194,23 @@ public class BMCChronoTerm extends BMC {
 				state = STATE_MANUAL;
 				break;
 			case RispostaStatoTermostatoMessage.MODE_TIME:
-				state = STATE_CHRONO;
+				// FIXME Il modo temporizzato e' proprio "OFF" ?
+				state = STATE_OFF;
 				break;
 			}
 			setPortValue(port_state,getStateAsString(state));
 			setPortValue(port_temperature,new Double(temperature));
 			updating = false;
-			// TODO logger.trace("messageSent:1.4");
 			break;
 		case EDSMessage.MSG_LETTURA_SET_POINT:
 			updating = true;
 			CronotermMessage ctm = (CronotermMessage) m;
 			double setPoint = ctm.getSetPoint();
 			setPortValue(port_setpoint,new Double(setPoint));
-			setPortValue(port_season,ctm.isWinter() ? "inverno" : "estate");
+			setPortValue(port_season,ctm.isWinter() ? getStateAsString(STATE_WINTER_MODE) : getStateAsString(STATE_SUMMER_MODE));
 			updating = false;
 		break;
 		}
-		// TODO logger.trace("messageSent:3");	
 	}
 	
 	public String getInfo() {
@@ -204,21 +228,72 @@ public class BMCChronoTerm extends BMC {
 	 * Aggiorna il set point corrente.
 	 */
 	public void updateSetPoint() {
-		getConnector().sendMessage(new RichiestaSetPointMessage(getIntAddress(), getBMCComputerAddress()));
+		getConnector().sendMessage(new RichiestaSetPointMessage(getIntAddress(), getBMCComputerAddress(), false));
 	}
 	
 	public long updateStatus() {
 		// FIXME calcolare il timeout oggettivamente
 		long timeout = 2 * 2 * ((EDSConnector)getConnector()).getRetryTimeout();		
 		if (updating) {
-			logger.trace("update in corso, richiesta omessa");
+			logger.warn("update in corso, richiesta omessa");
 			return timeout;
 		}		
 		updateTermStatus();
 		updateSetPoint();
 		return timeout;
 	}
-	
+
+	/*
+	public long updatePort(String portId) {
+		if (portId.equals(stateStrings[STATE_TEMP_SETPOINT_MINUS])) {
+			setPortValue(portId,new Boolean(false));
+			return 0;
+		}
+		if (portId.equals(stateStrings[STATE_TEMP_SETPOINT_PLUS])) {
+			setPortValue(portId,new Boolean(false));
+			return 0;
+		}
+		// TODO Gli stati T1,T2,T3 sarebbe bello poterli memorizzare, invece di gestirli solo come porte di comando
+		if (portId.equals(stateStrings[STATE_TEMP_ANTIFREEZE])) {
+			setPortValue(portId,new Boolean(false));
+			return 0;
+		}
+		if (portId.equals(stateStrings[STATE_TEMP_T1])) {
+			setPortValue(portId,new Boolean(false));
+			return 0;
+		}
+		if (portId.equals(stateStrings[STATE_TEMP_T2])) {
+			setPortValue(portId,new Boolean(false));
+			return 0;
+		}
+		if (portId.equals(stateStrings[STATE_TEMP_T3])) {
+			setPortValue(portId,new Boolean(false));
+			return 0;
+		}
+		if (portId.equals(stateStrings[STATE_SUMMER_MODE])) {
+			setDependentPort(portId,port_season,SEASON_SUMMER);
+			return 0;
+		}
+		if (portId.equals(stateStrings[STATE_WINTER_MODE])) {
+			setDependentPort(portId,port_season,SEASON_WINTER);
+			return 0;
+		}
+		if (portId.equals(stateStrings[STATE_CHRONO])) {
+			setDependentPort(portId,port_state,portId);
+			return 0;
+		}
+		if (portId.equals(stateStrings[STATE_MANUAL])) {
+			setDependentPort(portId,port_state,portId);
+			return 0;
+		}
+		if (portId.equals(stateStrings[STATE_OFF])) {
+			setDependentPort(portId,port_state,portId);
+			return 0;
+		}
+		return updateStatus();
+	}
+	*/
+		
 	/**
 	 * Imposta il set-point.
 	 * 
@@ -226,11 +301,13 @@ public class BMCChronoTerm extends BMC {
 	 * 
 	 * @return true se il BMC ha risposto (ACK)
 	 */
+	/*
 	public boolean setSetPoint(double temperature) {
 		ImpostaSetPointMessage m;
 		m = new ImpostaSetPointMessage(getIntAddress(), getBMCComputerAddress(), temperature);
 		return getConnector().sendMessage(m);
 	}
+	*/
 	
 	/**
 	 * Imposta lo stato del cronotermostato.
@@ -267,68 +344,21 @@ public class BMCChronoTerm extends BMC {
 		}
 	}
 
-	// TODO Eliminare getFirstInputPortNumber()
-	public int getFirstInputPortNumber() {
-		return 1;
-	}
-
-	// TODO Eliminare getOutPortsNumber()
 	public int getOutPortsNumber() {
 		return 0;
 	}
 	
-	/**
-	 * Permette l'impostazione di temperatura o stato.
-	 * 
-	 * <p>Il valore di temperatura non viene verificato.</p>
-	 * 
-	 * <p>Lo stato puo' essere indicato come valore testuale o numerico.</p>
-	 * 
-	 * @param port nome della porta.
-	 * @param value valore da impostare.
-	 */
-	public void setPort(String port, String value) throws AISException {
-		boolean success = false;
-		if (port.equals(port_setpoint)) {
-			// Impostiamo il setpoint
-			double setPoint;
-			try {
-				setPoint = Double.parseDouble(value);
-			} catch (NumberFormatException e) {
-				throw new AISException("Invalid temperature: " + value);
-			}
-			success = setSetPoint(setPoint);
-		} else if (port.equals(port_state)) {
-			// Impostiamo lo stato
-			int requiredState = -1;
-			try {
-				requiredState = Integer.parseInt(value);
-			} catch (NumberFormatException e) {
-				// Non e' un intero, proviamo la stringa.
-				for (int i = 0; 
-					(i < stateStrings.length) && (requiredState == -1); 
-					i++) {
-					if (stateStrings[i].equals(value)) {
-						requiredState = i;
-					}
-				}
-			} // catch
-			if (requiredState != -1) {
-				success = setState(requiredState);
-			} else {
-				throw new AISException("Invalid state: " + value);
-			}
-		} else {
-			// Non impostiamo niente: la richiesta e' errata.
-			throw new AISException("Invalid port: " + port);
-		}
-		if (!success) {
-			throw new AISException("Il device non risponde");
-		}
-	}
-
 	public int getInPortsNumber() {
 		return 0;
+	}
+	
+	public boolean sendPortValue(String portId, Object newValue) {
+		for (int i = 0; i < stateStrings.length; i++) {
+			if (portId.equals(stateStrings[i])) {
+				return getConnector().sendMessage(new VariazioneIngressoMessage(getIntAddress(),getBMCComputerAddress(),i));
+			}			
+		}
+		return false;
 	}
 
 }

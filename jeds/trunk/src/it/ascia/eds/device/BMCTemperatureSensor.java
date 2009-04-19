@@ -192,7 +192,7 @@ public class BMCTemperatureSensor extends BMC {
 		return 0;
 	}
 
-	public boolean writePort(String portId, Object newValue) throws AISException {
+	public boolean sendPortValue(String portId, Object newValue) throws AISException {
 		if (portId.equals(port_autoSendTime)) {
 			return getConnector().sendMessage(new ImpostaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
 					((Integer) newValue).intValue(),

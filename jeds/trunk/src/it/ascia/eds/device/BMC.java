@@ -524,9 +524,4 @@ public abstract class BMC extends Device {
 		return updateStatus();
 	}
 
-	public boolean writePort(String portId, Object newValue) throws AISException {
-		throw(new AISException("writePort() non implementata da "+getClass()));
-	}
-
-
 }

@@ -12,8 +12,6 @@ public abstract class BUSControllerModule extends ControllerModule {
 	
 	protected AutoUpdater autoUpdater = null;
 
-	protected boolean running;
-
 	/**
 	 * Chiude tutti i connettori
 	 */

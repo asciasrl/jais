@@ -111,9 +111,10 @@ public class Controller {
 	 * Carica il modulo, lo instanzia, ne imposta la configurazione. 
 	 * @param name Nome (unico) del modulo
 	 * @param className Classe che implementa il modulo
+	 * @param configName 
 	 * @throws AISException 
 	 */
-	private void loadModule(String name, String className) throws AISException {
+	private void loadModule(String name, String className, String configName) throws AISException {
 		if (modules.containsKey(name)) {
 			throw(new AISException("Nome modulo duplicato: '"+name+"'"));
 		}
@@ -125,7 +126,14 @@ public class Controller {
 			module = (ControllerModule) moduleClass.newInstance();
 			module.setName(name);
 			module.setController(this);
-			module.setConfiguration(config);
+		    if (configName == null) {		    	
+				module.setConfiguration(config);
+		    } else {
+				XMLConfiguration moduleConfig = new XMLConfiguration(configName);
+				moduleConfig.setReloadingStrategy(new FileChangedReloadingStrategy());
+				module.setConfiguration(moduleConfig);
+				logger.info("Caricata configurazione modulo '"+name+"' da "+configName);		
+		    }
 			modules.put(name,module);
 			logger.info("Caricato modulo '"+name+"'");
 		} catch (ClassNotFoundException e) {
@@ -134,6 +142,8 @@ public class Controller {
 			logger.error("Fallito caricamento modulo '"+name+"': errore instanzazione classe '"+className+"'");
 		} catch (IllegalAccessException e) {
 			logger.error("Fallito caricamento modulo '"+name+"': accesso negato alla classe '"+className+"'");
+		} catch (ConfigurationException e) {
+			logger.fatal("Fallito caricamento modulo '"+name+"': Errore nel file di configurazione:",e);
 		}
 	}
 	
@@ -283,6 +293,8 @@ public class Controller {
 			return;
 		}
 		config.setReloadingStrategy(new FileChangedReloadingStrategy());
+		String configurationVersion = config.getString("[@version]");
+		logger.info("Caricata configurazione versione "+configurationVersion+" da "+configurationFileName);		
 		// Inizializzazione logger
 	    String loggerConfigFileName = config.getString("logger[@file]","conf/log4j.xml");
 	    String loggerConfiguratorName = config.getString("logger[@configurator]","DOMConfigurator"); 
@@ -306,8 +318,9 @@ public class Controller {
 		    HierarchicalConfiguration sub = (HierarchicalConfiguration) it.next();
 		    String name = (String) sub.getProperty("[@name]");
 		    String className = sub.getString("class");
+		    String configName = sub.getString("config",null);
 		    try {
-				loadModule(name, className);
+				loadModule(name, className, configName);
 			} catch (AISException e) {
 				logger.fatal("Errore caricamento modulo:",e);
 			}
@@ -331,6 +344,21 @@ public class Controller {
 	 */
 	public void fireDevicePortChangeEvent(DevicePortChangeEvent evt) {
 		this.pcs.firePropertyChange(evt);
+	}
+
+	/**
+	 * Avvia il controller
+	 * @param args Come unico parametro accetta il nome del file di configurazione 
+	 * @throws AISException 
+	 */
+	public static void main(String[] args) throws AISException {		
+		Controller c = Controller.getController();
+		if (args.length > 0) {
+			c.configure(args[0]);			
+		} else {
+			c.configure();
+		}
+		c.start();
 	}
 
 	/**
@@ -365,6 +393,17 @@ public class Controller {
 			module.stop();			
 			logger.trace("Done "+moduleName+".stop()");
 		}		
+	}
+	
+	public void restart() {
+		stop();
+		try {
+			logger.info("Waiting to restart");
+			Thread.sleep(3000); // FIXME viene interrotto subito
+		} catch (InterruptedException e) {
+			logger.error("Controller:",e);
+		}
+		start();
 	}
 
 	/**

@@ -37,7 +37,7 @@ if (!AUI.SetRequest) {
 			} else if (request.status == 400) {
 				AUI.Header.show("Errore di comunicazione.");
 			} else {
-				AUI.Header.show("Errore di collegamento ("+this.request.status+")");
+				AUI.Header.show("Errore di collegamento ("+request.status+")");
 			}
 			AUI.SetRequest.sending = false;
 		}		

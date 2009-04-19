@@ -21,24 +21,36 @@ if (!AUI.Logger) {
 		}
 	}
 	
-	AUI.Logger.log = function(e) {
-		if (console && this.level <= 0) {
-			console.log(e);
+	AUI.Logger.debug = function(e) {
+		if (this.level <= 0) {
+			try {
+				console.log(this.getTS() + e);
+			} catch(e) {}
 		}
 	}
 	
-	AUI.Logger.debug = AUI.Logger.log;  
+	AUI.Logger.log = AUI.Logger.debug;
 
 	AUI.Logger.info = function(e) {
-		if (console  && this.level <= 1) {
-			console.info(e);
+		if (this.level <= 1) {
+			try {
+				console.info(this.getTS() + e);
+			} catch(e) {}
 		}
 	}
 
 	AUI.Logger.error = function(e) {
-		if (console  && this.level <= 2) {
-			console.error(e);
+		if (this.level <= 2) {
+			try {
+				console.error(this.getTS() + e);
+			} catch(e) {}
 		}
 	}
+	
+	AUI.Logger.getTS = function() {
+		var d = new Date();
+		return d.valueOf() / 1000.0 + " ";
 
+	}
+	
 }

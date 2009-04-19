@@ -12,12 +12,19 @@ if (!AUI.Webcam) {
 		var status = this.status;
 		var newstatus = status;		
 		if (status == "play") {
-			newstatus = "pause";
-			(this.getImg()).src = skin + (this.getControl()).pause;
+			this.setStatus("pause");
 		} else {
-			newstatus = "play";
-			(this.getImg()).src = (this.getControl()).video;
+			this.setStatus("play");
+			var self = this;
+			this.showVideoFunction = function() { return self.showVideo() };
+			setTimeout(self.showVideoFunction,1000);
+			
 		}		
 	}
+	
+	AUI.Webcam.prototype.showVideo = function() {
+		(this.getImg()).src = (this.getControl()).video;		
+	}
+	
 	
 }

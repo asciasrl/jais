@@ -1,13 +1,13 @@
 if (!AUI.SetRequest) {
 
 	AUI.SetRequest = {
-			request: new XMLHttpRequest(),
+			request: AUI.Http.getRequest(),
 			sending: false
 	};
 	
 	AUI.SetRequest.send = function(address, value) {
 		if (this.sending) {
-			statusMessage("Richiesta in corso.");
+			AUI.Header.show("Richiesta in corso.");
 			return false;
 		}
 		try {
@@ -31,13 +31,13 @@ if (!AUI.SetRequest) {
 			AUI.Logger.debug("status="+request.status);
 			clearInterval(AUI.SetRequest.timeout);
 			if (request.status == 200) {
-				statusMessage(request.responseText);
+				AUI.Header.show(request.responseText);
 			} else if (request.status == 500) {
-				statusMessage("Errore del server.");
+				AUI.Header.show("Errore del server.");
 			} else if (request.status == 400) {
-				statusMessage("Errore di comunicazione.");
+				AUI.Header.show("Errore di comunicazione.");
 			} else {
-				statusMessage("Errore di collegamento ("+this.request.status+")");
+				AUI.Header.show("Errore di collegamento ("+this.request.status+")");
 			}
 			AUI.SetRequest.sending = false;
 		}		
@@ -50,7 +50,7 @@ if (!AUI.SetRequest) {
 	
 	AUI.SetRequest.timeoutExpired = function() {
 		//alert(this);
-		statusMessage("Timeout del collegamento.");
+		AUI.Header.show("Timeout del collegamento.");
 		AUI.SetRequest.abort();
 	};
 }

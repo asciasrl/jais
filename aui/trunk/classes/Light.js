@@ -8,9 +8,9 @@ if (!AUI.Light) {
 	
 	AUI.Light.prototype.setPortValue = function(port,newValue) {
 		this.value = newValue;
-		if (newValue == true || newValue == "on") {
+		if (newValue == true || newValue == "true" || newValue == "on") {
 			this.setStatus("on");
-		} else if (newValue == false || newValue == "off") {
+		} else if (newValue == false || newValue == "false" ||newValue == "off") {
 			this.setStatus("off");
 		}		
 	}

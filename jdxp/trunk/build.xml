@@ -5,7 +5,7 @@
 	</target>
 
 	<target name="jar">
-		<delete file="jeds.jar"/>
+		<delete file="jdxp.jar"/>
 		<property name="version.num" value="1.00"/>
 		<buildnumber file="build.num"/>
 		<tstamp>
@@ -20,17 +20,17 @@
 			<attribute name="Built-Date" value="${TODAY}"/>                 
 		</manifest>
 		
-		<jar destfile="jeds.jar"
+		<jar destfile="jdxp.jar"
 		   basedir="bin"
 		   includes="**/*.class"
 		   manifest="MANIFEST.MF"
 		   />
 		<delete verbose="true">
 			<fileset dir="../installer/lib">
-			  <include name="jeds*.jar"/>
+			  <include name="jdxp*.jar"/>
 			</fileset>
 		</delete>
-		<copy verbose="true" file="jeds.jar" tofile="../installer/lib/jeds-${v}.jar" />
+		<copy verbose="true" file="jdxp.jar" tofile="../installer/lib/jdxp-${v}.jar" />
 	</target>
 	
 	<target name="cleanup">

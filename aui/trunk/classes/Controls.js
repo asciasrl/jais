@@ -8,6 +8,8 @@ if (!AUI.Controls) {
 	};
 
 	AUI.Controls.onTouchStart = function(id,event) {
+		event.preventDefault();
+		event.stopPropagation();
 		this.lastEvent = event;
 		var device = this.getDevice(id);
 		if (device) {
@@ -18,6 +20,8 @@ if (!AUI.Controls) {
 	}
 
 	AUI.Controls.onMouseDown = function(id,event) {
+		event.preventDefault();
+		event.stopPropagation();
 		this.lastEvent = event;		
 		var device = this.getDevice(id);
 		if (device) {
@@ -34,7 +38,6 @@ if (!AUI.Controls) {
 	AUI.Controls.getDevice = function(id) {
 		var control = this.getControl(id);
 		if (control == null) {
-			//alert("5 id:"+id);
 			return null;
 		}
 		var device = control.device;
@@ -64,22 +67,25 @@ if (!AUI.Controls) {
 	
 	AUI.Controls.fireDevicePortChangeEvent = function(devicePortChangeEvent) {
 		var address = devicePortChangeEvent.A; 
-		var id = this.addresses[address];
-		if (id == null) {
+		var ids = this.addresses[address];
+		if (ids == null) {
 			return;
 		}
-		var device = this.getDevice(id);
-		if (device == null) {
-			AUI.Logger.error("Device non disponibile per "+id);
-			return;
-		}
-		var newValue = devicePortChangeEvent.V;
-		var port = address.split(":")[1];
-		try {
-			device.setPortValue(port,newValue);
-		} catch(e) {
-			AUI.Logger.error("address:"+address);
-			AUI.Logger.error(e);
+		for (var i=0; i < ids.length; i++) {
+			var id = ids[i];
+			var device = this.getDevice(id);
+			if (device == null) {
+				AUI.Logger.error("Device non disponibile per "+id);
+				return;
+			}
+			var newValue = devicePortChangeEvent.V;
+			var port = address.split(":")[1];
+			try {
+				device.setPortValue(port,newValue);
+			} catch(e) {
+				AUI.Logger.error("address:"+address);
+				AUI.Logger.error(e);
+			}
 		}
 	}
 

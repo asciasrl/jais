@@ -10,8 +10,8 @@ if (!AUI.Blind) {
 		event.preventDefault();
 		event.stopPropagation();
 		var status = this.status;
-		var newValue = status;
 		var command = null;
+		var newstatus = status;
 		switch (status) {
 		case "stopped":
 			command = "open";
@@ -34,8 +34,8 @@ if (!AUI.Blind) {
 			newstatus = "closed";
 			break;
 		default:
-			newstatus = "stop";
-			command = "stop"
+			command = "stop";
+			newstatus = "stopped";
 		}
 		if (newstatus != status) {
 			this.setStatus(newstatus);

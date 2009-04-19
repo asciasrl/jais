@@ -1,5 +1,17 @@
 if (!AUI.Dimmer) {
 	
+	/**
+	 * Funzionamento:
+	 * Mouse:
+	 * 1 - mouseDown sul controllo
+	 * 2 - onTimer: attivazione slider e mask
+	 * 2.1 - mouseDown sul cursore
+	 * 2.2 - mouseMove sposta il cursore
+	 * 2.3 - mouseUp trasmette dato
+	 * 2.4 - mouseDown su mask: chiude slider
+	 * 3 - mouseUp prima di onTimer: switch della luce 
+	 */
+	
 	AUI.Dimmer = function(id) {
 		this.id = id;
 		this.element = this.getElement();
@@ -26,71 +38,65 @@ if (!AUI.Dimmer) {
 
 			// calcola la posizione del cursore
 			this.slider = document.getElementById('slider');
-			this.slider.style.left = (this.startX - 20 - 60) + "px";
-			this.slider.style.top = (this.startY - 11 - 15 - (100 - this.value)) + "px";
+			this.cursor = document.getElementById('slider-cursor');
+			var control = this.getControl();
+			this.slider.style.left = (control.left - 40)+ "px";
+			this.slider.style.top = (control.top - 50)+ "px";
 			this.cursor = document.getElementById("slider-cursor");
 			this.cursor.style.bottom = Number(this.value) + "px";
 			this.mask = document.getElementById("mask");			
+			var self = this;
 			if (this.eventType == "mouse") {
-				//this.element.removeEventListener('mousemove', this.mouseMove, false);
 			    this.element.removeEventListener('mouseup', this.mouseUp, false);
-			    //this.element.removeEventListener('mouseout', this.mouseOut, false);
 				this.mask.style.display = 'block';
 				this.mask.style.width = window.innerWidth + "px";
 				this.mask.style.height = window.innerHeight + "px";
 				this.mask.style.left = window.scrollX + "px";
 				this.mask.style.top = window.scrollY + "px";
-				this.slider.style.display = 'block';		
-				this.slider.addEventListener('mousemove', this.mouseMove , false);
-				//this.slider.addEventListener('mouseup', this.mouseUp, false);
-				this.mask.addEventListener('mousedown', this.mouseUp, false);
+				this.slider.style.display = 'block';
+				this.sliderMouseDown = function(e) { return self.onSliderMouseDown(e) };
+				this.slider.addEventListener('mousedown', this.sliderMouseDown , false);
+				this.maskMouseDown = function(e) { return self.onMaskMouseDown(e) };
+				this.mask.addEventListener('mousedown', this.maskMouseDown, false);
 			} else {
 			    this.element.removeEventListener('touchend', this.touchEnd, false);
 				this.mask.style.display = 'block';
 				this.slider.style.display = 'block';		
-				this.slider.addEventListener('touchmove', this.touchMove , false);
-				this.mask.addEventListener('touchstart', this.touchEnd, false);
+				this.sliderTouchStart = function(e) { return self.onSliderTouchStart(e) };
+				this.slider.addEventListener('touchstart', this.sliderTouchStart , false);
+				this.maskTouchStart = function(e) { return self.onMaskTouchStart(e) };
+				this.mask.addEventListener('touchstart', this.maskTouchStart, false);
 			}
-			//this.onMove(0,0);
 			return;
 		}
-		var control = this.getControl();
-		var value = this.value;
-		if (value == null) {
-			value = 0;
-		}
-		var step = this.step; 
-		if (step == null) {
-			step = control.step;
-			if (step == null) {
-				step = 10;
-			}
-		}
-		value = 1.0*step + 1.0*value;
-		if (value == "NaN") {
-			AUI.Logger.error(this.id + " value="+value+" step="+step);
-		}
-		if (value > control.max) {
-			value = control.max;
-			this.step = -1.0*step;
-		}
-		if (value < control.min) {
-			value = 0;
-			this.step = -1.0*step;
-		}
-		AUI.SetRequest.send(control.address,value);
-		var self = this;
-		this.timeout = setTimeout(function() { return self.onTimer() },control.timer);		
 	}
 
+	/**
+	 * Gestione del primo tocco o click sul controllo
+	 */
+	AUI.Dimmer.prototype.onStart = function() {
+		AUI.Logger.log("start "+this.id);	
+		var self = this;
+		var control = AUI.Controls.getControl(this.id);
+		this.mode = "switching";
+		this.timeout = setTimeout(function() { return self.onTimer() },control.timer);		
+	}
+	
+
+	/**
+	 * Fine del click/touch sul controllo
+	 */
 	AUI.Dimmer.prototype.onStop = function() {
 		clearInterval(this.timeout);
-		var slider = document.getElementById('slider');
-		slider.style.display = 'none';
 		AUI.Logger.log("stop "+this.id);	
 		var self = this;
+		if (this.slider) {
+			this.slider.style.display = 'none'; 
+		}
+		if (this.mask) {
+			this.mask.style.display = 'none'; 
+		}
 		if (this.mode == "switching") {
-			this.switching = null;
 			var status = this.status;			
 			var newstatus = status;
 			if (status == "on") {
@@ -102,103 +108,38 @@ if (!AUI.Dimmer) {
 				this.setStatus(newstatus);
 			}			
 			AUI.SetRequest.send((this.getControl()).address,this.status);
-		} else if (this.mode == "cycling") {
-			this.step = -1.0*this.step;
-			this.cycling = false;
+		} else if (this.mode == "sliding") {
+			this.onSliderStop();
 		}
 	}
-	
-	AUI.Dimmer.prototype.onMove = function(x,y) {
-		this.mode = "sliding";
-		var newValue = Math.min(100,Math.max(0,this.initialValue - y));		
-		if (Math.abs(newValue - this.value) > 1) {
-			if (!AUI.SetRequest.sending && AUI.SetRequest.send((this.getControl()).address,newValue)) {
-				this.cursor.style.bottom = newValue + 'px';
-				this.value = newValue;				
-			} else {
-				var self = this;
-				if (this.retryTimer) {
-					clearTimeout(this.retryTimer);
-				}
-				this.retryTimer = setTimeout(function() { return self.onMove(x,y) },50);
-			}
-		}
-	}
-
-	AUI.Dimmer.prototype.onStart = function() {
-		AUI.Logger.log("start "+this.id);	
-		this.initialValue = this.value;
-		var self = this;
-		this.mode = "switching";
-		this.timeout = setTimeout(function() { return self.onTimer() },1000);		
-	}
-	
-	AUI.Dimmer.prototype.onTouchStart = function(event) {
-		event.preventDefault();
-		event.stopPropagation();
-		this.eventType = "touch";
-		this.startX = event.targetTouches[0].clientX;
-		this.startY = event.targetTouches[0].clientY;
-		var self = this;
-		this.touchMove = function(e) { return self.onTouchMove(e) };
-		//this.element.addEventListener('touchmove', this.touchMove, false);
-		this.touchEnd = function(e) { return self.onTouchEnd(e) };
-		this.element.addEventListener('touchend', this.touchEnd, false);
-		this.onStart();
-		return false;
-	}
-
+		
 	AUI.Dimmer.prototype.onMouseDown = function(event) {
 		event.preventDefault();
 		event.stopPropagation();
 		this.eventType = "mouse";
-		this.startX = event.clientX;
-		this.startY = event.clientY;
 		var self = this;
-		this.mouseMove = function(e) { return self.onMouseMove(e) };
-		//this.element.addEventListener('mousemove', this.mouseMove , false);
 		this.mouseUp = function(e) { return self.onMouseUp(e) }
 		this.element.addEventListener('mouseup', this.mouseUp, false);					
-		//this.mouseOut = function(e) { return self.onMouseUp(e) }
-		//this.element.addEventListener('mouseout', this.mouseOut, false);					
 		this.onStart();
 		return false;
 	}
 
-	AUI.Dimmer.prototype.onTouchMove = function(event) {
+	AUI.Dimmer.prototype.onMouseUp = function(event) {
 		event.preventDefault();
 		event.stopPropagation();
-		if (event.targetTouches.length > 1) return;
-		var x = event.targetTouches[0].clientX - this.startX;
-		var y = event.targetTouches[0].clientY - this.startY;
-		//if (this.mode != "sliding") {
-			//this.mode = "sliding";
-		    //this.element.removeEventListener('touchmove', this.touchMove , false);
-		    //this.element.removeEventListener('touchend', this.touchEnd, false);
-			//this.slider.style.display = 'block';		
-			//this.slider.addEventListener('touchmove', this.touchMove, false);
-			//this.slider.addEventListener('touchend', this.touchEnd, false);
-		//}		
-		this.onMove(x,y);
+		this.element.removeEventListener('mouseup', this.mouseUp, false);
+		this.onStop();
 		return false;
 	}
-	
-	AUI.Dimmer.prototype.onMouseMove = function(event) {
+
+	AUI.Dimmer.prototype.onTouchStart = function(event) {
 		event.preventDefault();
 		event.stopPropagation();
-		var x = event.clientX - this.startX;
-		var y = event.clientY - this.startY;
-	    
-		//this.element.removeEventListener('mousemove', this.mouseMove, false);
-	    //this.element.removeEventListener('mouseup', this.mouseUp, false);
-	    //this.element.removeEventListener('mouseout', this.mouseOut, false);
-		//this.slider.style.display = 'block';		
-		//this.slider.addEventListener('mousemove', this.mouseMove , false);
-		//this.slider.addEventListener('mouseup', this.mouseUp, false);					
-		//this.slider.addEventListener('mouseout', this.mouseOut, false);					
-
-	    this.onMove(x,y);
-	    // TODO
+		this.eventType = "touch";
+		var self = this;
+		this.touchEnd = function(e) { return self.onTouchEnd(e) };
+		this.element.addEventListener('touchend', this.touchEnd, false);
+		this.onStart();
 		return false;
 	}
 
@@ -219,25 +160,135 @@ if (!AUI.Dimmer) {
 		return false;
 	}
 
-	AUI.Dimmer.prototype.onMouseUp = function(event) {
+	AUI.Dimmer.prototype.getSliderValue = function(y) {
+		// 11 e 15 dipendono dalle immagini
+		AUI.Logger.log("scrollY="+window.scrollY);
+		if (this.eventType == "mouse") {
+			var y1 = 100 - (y + window.scrollY - this.slider.offsetTop - 11 - 15);
+		} else {
+			var y1 = 100 - (y + window.scrollY - this.slider.offsetTop - 11 - 15);
+		}
+		var newValue = Math.min(100,Math.max(0,y1));
+		return newValue;				
+	}
+	
+	/**
+	 * Gestione movimento del mouse o del tocco sul cursore
+	 */
+	AUI.Dimmer.prototype.onSliderStart = function(x,y) {
+		var newValue = this.getSliderValue(y);
+		this.cursor.style.bottom = newValue + 'px';
+		this.initialSliderValue = this.value;
+		this.sliderValue = newValue;
+		AUI.Logger.log("slider start: y="+y+" value="+this.sliderValue);
+	}
+	
+	AUI.Dimmer.prototype.onSliderMove = function(x,y) {
+		var newValue = this.getSliderValue(y);
+		this.cursor.style.bottom = newValue + 'px';
+		this.sliderValue = newValue;
+		AUI.Logger.log("slider move: y="+y+" value="+newValue);
+	}
+
+	AUI.Dimmer.prototype.onSliderStop = function() {
+		AUI.Logger.log("slider stop: value="+this.sliderValue);
+		if (this.sliderValue != null) {
+			if (!AUI.SetRequest.sending && AUI.SetRequest.send((this.getControl()).address,this.sliderValue)) {
+				this.value = this.sliderValue; 
+				this.sliderValue = null;	
+			} else {
+				var self = this;
+				if (this.retryTimer) {
+					clearTimeout(this.retryTimer);
+				}
+				this.retryTimer = setTimeout(function() { return self.onSliderStop() },50);				
+			}
+		}
+	}
+
+
+	AUI.Dimmer.prototype.onSliderMouseDown = function(event) {
 		event.preventDefault();
 		event.stopPropagation();
-		if (this.mode == "sliding") {
-		    //this.slider.removeEventListener('mousemove', this.mouseMove, false);
-		    this.mask.removeEventListener('mousedown', this.mouseUp, false);
-			this.mask.style.display = 'none';
-		    //this.slider.removeEventListener('mouseout', this.mouseOut, false);
-		} else {
-		    //this.element.removeEventListener('mousemove', this.mouseMove, false);
-		    this.element.removeEventListener('mouseup', this.mouseUp, false);
-		    //this.element.removeEventListener('mouseout', this.mouseOut, false);
-		}
-		if (this.mask) {
-		    //this.mask.removeEventListener('mouseup', this.maskEvent, false);
-		}
-		this.onStop();
+		var self = this;
+		this.sliderMouseMove = function(e) { return self.onSliderMouseMove(e) };
+		this.slider.addEventListener('mousemove', this.sliderMouseMove, false);
+		this.sliderMouseUp = function(e) { return self.onSliderMouseUp(e) };
+		this.slider.addEventListener('mouseup', this.sliderMouseUp, false);
+		this.sliderMouseOut = function(e) { return self.onSliderMouseUp(e) };
+		this.slider.addEventListener('mouseout', this.sliderMouseOut, false);
+		this.onSliderStart(event.clientX, event.clientY);
 		return false;
 	}
 
+	AUI.Dimmer.prototype.onSliderMouseMove = function(event) {
+		event.preventDefault();
+		event.stopPropagation();
+		var x = event.clientX;
+		var y = event.clientY;
+	    this.onSliderMove(x,y);
+		return false;
+	}
+
+	AUI.Dimmer.prototype.onSliderMouseUp = function(event) {
+		event.preventDefault();
+		event.stopPropagation();
+		//this.mask.removeEventListener('mousemove', this.sliderMouseMove, false);
+		this.slider.removeEventListener('mousemove', this.sliderMouseMove, false);
+		this.slider.removeEventListener('mouseup', this.sliderMouseUp, false);
+		this.slider.removeEventListener('mouseout', this.sliderMouseOut, false);
+		this.onSliderStop();
+	}
+
+	AUI.Dimmer.prototype.onMaskMouseDown = function(event) {
+		event.preventDefault();
+		event.stopPropagation();
+		this.mask.removeEventListener('mousedown', this.maskMouseDown, false);
+		this.slider.removeEventListener('mousedown', this.sliderMouseDown, false);
+		this.slider.removeEventListener('mousemove', this.sliderMouseMove, false);
+		this.slider.removeEventListener('mouseup', this.sliderMouseUp, false);
+		this.slider.removeEventListener('mouseout', this.sliderMouseOut, false);
+		this.onStop();
+	}
+
+
+	AUI.Dimmer.prototype.onSliderTouchStart = function(event) {
+		event.preventDefault();
+		event.stopPropagation();
+		if (event.targetTouches.length > 1) return;
+		var self = this;
+		this.sliderTouchMove = function(e) { return self.onSliderTouchMove(e) };
+		this.slider.addEventListener('touchmove', this.sliderTouchMove, false);
+		this.sliderTouchEnd = function(e) { return self.onSliderTouchEnd(e) };
+		this.slider.addEventListener('touchend', this.sliderTouchEnd, false);
+		this.onSliderStart(event.targetTouches[0].clientX, event.targetTouches[0].clientY);
+		return false;
+	}
+
+	AUI.Dimmer.prototype.onSliderTouchMove = function(event) {
+		event.preventDefault();
+		event.stopPropagation();
+		if (event.targetTouches.length > 1) return;
+		var x = event.targetTouches[0].clientX;
+		var y = event.targetTouches[0].clientY;
+		this.onSliderMove(x,y);
+		return false;
+	}
+
+	AUI.Dimmer.prototype.onSliderTouchEnd = function(event) {
+		event.preventDefault();
+		event.stopPropagation();
+		// TODO
+		this.onSliderStop();
+	}
+
+	AUI.Dimmer.prototype.onMaskTouchStart = function(event) {
+		event.preventDefault();
+		event.stopPropagation();
+		this.slider.removeEventListener('touchstart', this.sliderTouchStart, false);
+		this.slider.removeEventListener('touchmove', this.sliderTouchMove, false);
+		this.slider.removeEventListener('touchend', this.sliderTouchEnd, false);
+		this.onStop();
+	}
 
 }

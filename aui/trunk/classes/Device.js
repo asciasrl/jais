@@ -3,6 +3,7 @@ if (!AUI.Device) {
 	AUI.Device = function() {
 		this.id = null;
 		this.status = null;
+		this.element = null;
 	};
 	
 	AUI.Device.prototype.getControl = function() {
@@ -10,7 +11,10 @@ if (!AUI.Device) {
 	}
 	
 	AUI.Device.prototype.getElement = function() {
-		return document.getElementById(this.id);
+		if (this.element == null) {
+			this.element = document.getElementById(this.id); 
+		}
+		return this.element;
 	}
 	
 	AUI.Device.prototype.getLabel = function() {
@@ -45,6 +49,7 @@ if (!AUI.Device) {
 			var control = this.getControl();
 			var newImg = control[newStatus];
 			if (newImg) {
+				AUI.Logger.info("Stato "+this.id+" :"+newStatus);
 				(this.getImg()).src = skin + newImg;
 			} else {
 				AUI.Logger.error("Stato non valido per "+this.id+" :"+newStatus);

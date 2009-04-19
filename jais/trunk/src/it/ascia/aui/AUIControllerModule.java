@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import it.ascia.ais.AISException;
 import it.ascia.ais.ControllerModule;
@@ -113,6 +114,33 @@ public class AUIControllerModule extends ControllerModule implements PropertyCha
 		return j.toJSONString();
 	}
 	
+	public String getPageLayerControls() {
+		JSONObject j =new JSONObject();
+		HierarchicalConfiguration auiConfig = getConfiguration();
+		List pages = auiConfig.configurationsAt("pages.page");
+		for (Iterator iPages = pages.iterator(); iPages.hasNext(); ) {
+			HierarchicalConfiguration pageConfig = (HierarchicalConfiguration) iPages.next();
+			String pageId = pageConfig.getString("[@id]");
+			JSONObject jp = new JSONObject();
+			j.put("page-" + pageId, jp);
+			List controls = pageConfig.configurationsAt("control");
+			for (Iterator ic = controls.iterator(); ic.hasNext(); ) {
+				HierarchicalConfiguration controlConfig = (HierarchicalConfiguration) ic.next();
+				String id = pageId + "-" + controlConfig.getString("[@id]");
+				String layer = controlConfig.getString("layer");
+				if (jp.containsKey(layer)) {
+					((JSONArray) jp.get(layer)).add("control-" + id);
+				} else {
+					JSONArray jl = new JSONArray();
+					jl.add("control-" + id);
+					jp.put(layer, jl);
+				}
+			}
+		}
+		logger.trace("getPageLayerControls");
+		return j.toJSONString();		
+	}
+	
 	/**
 	 * Controlli corrispondenti agli indirizzi 
 	 * @return JSONString
@@ -130,7 +158,13 @@ public class AUIControllerModule extends ControllerModule implements PropertyCha
 				String id = "control-" + pageId + "-" + controlConfig.getString("[@id]");
 				String address = controlConfig.getString("address");
 				if (address != null) {
-					j.put(address, id);
+					if (j.containsKey(address)) {
+						((JSONArray) j.get(address)).add(id);
+					} else {
+						JSONArray ja = new JSONArray();
+						ja.add(id);
+						j.put(address, ja);
+					}
 				}
 			}
 		}
@@ -202,9 +236,13 @@ public class AUIControllerModule extends ControllerModule implements PropertyCha
 			Device devices[] = controller.findDevices(deviceAddress);
 			if (devices.length == 1) {
 				try {
-					devices[0].getPort(portId).writeValue(value);
-					retval = "OK";
+					if (devices[0].writePortValue(portId,value)) {
+						retval = "OK";
+					} else {
+						retval = "ERROR";
+					}
 				} catch (IllegalArgumentException e) {
+					logger.error("Errore durante writeValue: ",e);
 					retval = "ERROR";					
 				}
 			} else {

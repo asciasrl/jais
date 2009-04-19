@@ -5,7 +5,7 @@ body {
 	-webkit-tap-highlight-color:rgba(1,1,1,0.5);	
 }
 
-#main {
+#pages {
 	width: 651px;
 	position: absolute; 
 }
@@ -179,8 +179,7 @@ div.webcam {
 	height: 80px; 
 	overflow: hidden; 
 	position: absolute;
-	top: 500px;
-	border: 1px solid blue;
+	bottom: 0px;
 }
 
 div.layer {

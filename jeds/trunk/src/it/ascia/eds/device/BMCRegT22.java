@@ -350,7 +350,7 @@ public class BMCRegT22 extends BMCStandardIO {
 	}
 	 
 	
-	public boolean writePort(String portId, Object newValue) throws AISException {
+	public boolean sendPortValue(String portId, Object newValue) throws AISException {
 		boolean res = false;
 		if (portId.equals(port_autoSendTime)) {
 			res = getConnector().sendMessage(new ImpostaParametroMessage(getIntAddress(), getBMCComputerAddress(), 

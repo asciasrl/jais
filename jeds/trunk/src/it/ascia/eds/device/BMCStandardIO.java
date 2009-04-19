@@ -382,17 +382,17 @@ public class BMCStandardIO extends BMC {
 	}
 
 	/**
-	 * @see BMC.writePort
+	 * @see BMC.sendPortValue
 	 * @param newValue Boolean
 	 */
-	public boolean writePort(String portId, Object newValue) throws AISException {
+	public boolean sendPortValue(String portId, Object newValue) throws AISException {
 		DevicePort p = getPort(portId);
 		if (isReal) {
 			int intValue = 0;
 			if (Boolean.class.isInstance(newValue)) {
 				intValue = ((Boolean)newValue).booleanValue() ? 1 : 0;
 			} else {
-				throw new AISException("Tipo valore non valido: " + newValue.getClass().getCanonicalName());
+				throw new AISException(getFullAddress() + " tipo valore non valido: " + newValue.getClass().getCanonicalName());
 			}
 			int portNumber = getOutputNumberFromPortId(portId);
 			if (portNumber == -1) {

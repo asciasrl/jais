@@ -89,4 +89,12 @@ public class BMCIR extends BMC {
 	public int getInPortsNumber() {
 		return inPortsNum;
 	}
+	
+	public boolean sendPortValue(String portId, Object newValue)
+		throws AISException {
+		// TODO Non implementato
+		logger.error("sendPortValue non implementato");
+		return false;
+	}
+
 }

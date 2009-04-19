@@ -218,22 +218,39 @@ public abstract class Device {
 	}
     
     /**
+     * Invia il nuovo valore sulla porta del dispositivo fisico.
+     * Il valore memorizzato localmente viene aggiornato tramite una richiesta updatePort e conseguente setPortValue 
+     * @see DevicePort.writeValue
+     * @see updatePortValue
+     * @see setPortValue
+     * @param portId
+     * @param newValue
+     * @return true se operazione andata a buon fine
+     */
+	public abstract boolean sendPortValue(String portId, Object newValue) throws AISException;
+
+    /**
      * Scrive un nuovo valore sulla porta del dispositivo fisico.
+     * Richiama DevicePort.writeValue che in seguito chiama Device.sendPortValue
      * @see DevicePort.writeValue
      * @param portId
      * @param newValue
      * @return true se operazione andata a buon fine
      */
-	public abstract boolean writePort(String portId, Object newValue) throws AISException;
+	public boolean writePortValue(String portId, Object newValue) {
+		DevicePort p = (DevicePort) ports.get(portId); 
+		return p.writeValue(newValue);
+	}
 
 	/**
-     * Legge dal dispositivo fisisco lo stato della porta ed aggiorna il valore corrispondente (portValues)
-     * <p>Se ritorna con tempo da attendere 0 (zero) vuol dire che il chiamante non deve aspettare, perche' l'aggiornamento:
+     * Richiede l'aggiornamento del valore di una porta 
+     * <p>Se ritorna con tempo da attesa = 0 (zero) vuol dire che il chiamante non deve aspettare, perche' l'aggiornamento:
      * <ul>
      * <li>e' stato immediato</li>
      * <li>e' stato gia' fatto</li>
      * <li>non puo' essere fatto</li>
      * </ul>
+     * altrimenti il chiamante deve attendere il tempo previsto prima di leggere il valore.
      * </p>
 	 * @param portId
 	 * @return Tempo massimo previsto per l'aggiornamento in millisecondi
@@ -242,7 +259,8 @@ public abstract class Device {
 	public abstract long updatePort(String portId) throws AISException;
 	
 	/**
-	 * Aggiorna il valore della porta
+	 * Aggiorna il valore della porta memorizzato localmente.
+	 * Per scrivere un nuovo valore sulla porta del dispositivo fisico, usare {@see #writePortValue}
 	 * Se il valore della porta è modificato genera un DevicePortChangeEvent
 	 * @param portId
 	 * @param newValue

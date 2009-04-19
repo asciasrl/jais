@@ -100,6 +100,13 @@ public class DeviceBlindPort extends DevicePort implements PropertyChangeListene
 		return new String[] {"open","close","stop"};
 	}
 
+	public boolean writeValue(Object newValue) throws IllegalArgumentException {
+		if (String.class.isInstance(newValue)) {
+			return writeValue((String) newValue);
+		}
+		throw new IllegalArgumentException(getFullAddress() + " Tipo di valore non valido: "+newValue.getClass().getName());
+	}
+
 	public boolean writeValue(String text) throws IllegalArgumentException {
 		if (text.toLowerCase().equals("open")) {
 			if (((Boolean)closePort.getCachedValue()).booleanValue()) {
@@ -122,7 +129,7 @@ public class DeviceBlindPort extends DevicePort implements PropertyChangeListene
 				return true;
 			}
 		} else {
-			throw new IllegalArgumentException("Valore non valido: " + text);
+			throw new IllegalArgumentException(getFullAddress()+ " valore non valido: " + text);
 		}
 	}
 

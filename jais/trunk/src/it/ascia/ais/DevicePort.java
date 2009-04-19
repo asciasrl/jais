@@ -200,7 +200,7 @@ public class DevicePort {
 	public boolean writeValue(Object newValue) {
 		// FIXME Aggiungere setValue(newValue); ?
 		invalidate();
-		return device.writePort(portId, newValue);
+		return device.sendPortValue(portId, newValue);
 	}
 	
 	/**

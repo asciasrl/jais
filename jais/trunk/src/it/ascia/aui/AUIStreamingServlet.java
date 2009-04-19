@@ -35,7 +35,14 @@ public class AUIStreamingServlet extends HttpServlet {
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) {
 		String remote = request.getRemoteAddr()+":"+request.getRemotePort();
-		int counter = ((AUIControllerModule)Controller.getController().getModule("AUI")).getMaxEventsPerRequest();
+		String uri = request.getRequestURI();
+		int index = uri.lastIndexOf("page-");
+		String page = "";
+		if (index > 0) {
+			page = uri.substring(index + 5);
+		}		
+		int maxEvents = ((AUIControllerModule)Controller.getController().getModule("AUI")).getMaxEventsPerRequest();
+		int counter = 0;
 		try {
 			PrintWriter out = response.getWriter();
 			response.setContentType("text/html");
@@ -43,7 +50,7 @@ public class AUIStreamingServlet extends HttpServlet {
 			LinkedBlockingQueue q = new LinkedBlockingQueue();
 			AUIControllerModule auiControllerModule = (AUIControllerModule) Controller.getController().getModule("AUI");
 			auiControllerModule.addStreamQueue(q);
-			logger.info("Inizio streaming verso "+remote);
+			logger.info("Inizio streaming verso "+remote+" page="+page);
 			
 			// per prima cosa aggiorna lo stato di tutte le porte
 			// TODO aggiornare solo lo stato delle porte richieste
@@ -55,8 +62,12 @@ public class AUIStreamingServlet extends HttpServlet {
 					for (int j = 0; j < devicePorts.length; j++) {
 						DevicePort devicePort = devicePorts[j];
 						JSONObject obj=new JSONObject();
-						obj.put("A",devicePort.getFullAddress());
-						obj.put("V",devicePort.getValue());
+						if (devicePort.getValue() == null) {
+							logger.trace("Non invio valore null");
+						} else {
+							obj.put("A",devicePort.getFullAddress());
+							obj.put("V",devicePort.getValue().toString());
+						}
 						out.println(obj.toJSONString());
 					}
 				}
@@ -64,7 +75,7 @@ public class AUIStreamingServlet extends HttpServlet {
 				logger.warn("Errore durante streaming con "+remote+":",e);
 			}
 			
-			while (! out.checkError() && counter > 0) {
+			while (! out.checkError() && counter < maxEvents) {
 				logger.trace("Streaming "+remote);
 				DevicePortChangeEvent evt = null;
 				try {
@@ -73,20 +84,18 @@ public class AUIStreamingServlet extends HttpServlet {
 				} catch (InterruptedException e) {
 					logger.trace("Interrupted:",e);
 				}
+				JSONObject obj=new JSONObject();
 				if (evt != null) {
 					logger.trace("Streaming "+evt.toString());
 					if (evt.getNewValue() == null) {
 						logger.trace("Non invio evento con valore null");
 					} else {
-						JSONObject obj=new JSONObject();
 						obj.put("A",evt.getFullAddress());
-						obj.put("V",evt.getNewValue());
-						out.println(obj.toJSONString());
-						counter--;
+						obj.put("V",evt.getNewValue().toString());
 					}
-				} else {
-					out.println("void(0);");
 				}
+				counter++;
+				out.println(obj.toJSONString());
 			}
 			auiControllerModule.removeStreamQueue(q);
 			logger.debug("Fine streaming verso "+remote+" eventi="+counter);

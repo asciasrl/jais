@@ -40,7 +40,7 @@ public class DF4I extends DominoDevice {
 		return 100; // TODO calcolare
 	}
 
-	public boolean writePort(String portId, Object newValue)
+	public boolean sendPortValue(String portId, Object newValue)
 			throws AISException {
 		throw(new AISException("Gli ingressi non possono essere variati"));
 	}

@@ -33,7 +33,7 @@ public class DF4R extends DominoDevice {
 		return 100;   // TODO calcolare
 	}
 
-	public boolean writePort(String portId, Object newValue)
+	public boolean sendPortValue(String portId, Object newValue)
 			throws AISException {
 		int i = portId.indexOf(".");
 		if (i > 0) {

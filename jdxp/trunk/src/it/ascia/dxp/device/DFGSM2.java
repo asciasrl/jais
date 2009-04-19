@@ -28,7 +28,7 @@ public class DFGSM2 extends DominoDevice {
 		return 0;
 	}
 
-	public boolean writePort(String portId, Object newValue)
+	public boolean sendPortValue(String portId, Object newValue)
 			throws AISException {
 		// TODO Auto-generated method stub
 		return false;

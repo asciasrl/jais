@@ -18,6 +18,8 @@ public abstract class ControllerModule {
     
     private HierarchicalConfiguration configuration;
 
+	protected boolean running;
+
     /**
      * Riferimento al controller che ha instanziato il modulo
      */

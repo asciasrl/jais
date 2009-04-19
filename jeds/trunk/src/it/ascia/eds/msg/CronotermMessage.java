@@ -6,7 +6,7 @@ package it.ascia.eds.msg;
 /**
  * Lettura del set point del cronotermostato.
  * 
- * Questo messaggio viene inviato dal cronotermostato quando il set point viene
+ * Questo messaggio viene inviato dal cronotermostato Home Innovation quando il set point viene
  * cambiato (dall'utente o automaticamente), o come risposta a un
  * RichiestaSetPointMessage.
  * 
@@ -17,17 +17,6 @@ package it.ascia.eds.msg;
  * @see RichiestaSetPointMessage
  */
 public class CronotermMessage extends PTPResponse {
-
-	/*
-	public CronotermMessage(int d, int m, int Attivazione, int Uscita, int Variazione)
-	  throws Exception {
-		Destinatario = d & 0xFF;
-		Mittente = m & 0xFF;
-		TipoMessaggio = 205;
-		Byte1 = Uscita & 0x07 + ((Attivazione & 0x01) << 3);
-		Byte2 = Variazione & 0x01;
-	}
-	 */
 	
 	public CronotermMessage(int[] message) {
 		load(message);

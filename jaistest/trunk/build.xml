@@ -10,7 +10,9 @@
 		<buildnumber file="build.num"/>
 		<tstamp>
 			<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
+			<format property="YMDHMS" pattern="yyyyMMddHHmmSS" />
 		</tstamp>
+		<property name="v" value="${version.num}.v${YMDHMS}-b${build.number}"/>
 		
 		<manifest file="MANIFEST.MF">
 			<attribute name="Built-By" value="${user.name}"/>
@@ -24,6 +26,17 @@
 		   includes="**/*.class"
 		   manifest="MANIFEST.MF"
 		   />
+		<delete verbose="true">
+			<fileset dir="../installer/lib">
+			  <include name="JaisTest*.jar"/>
+			</fileset>
+		</delete>
+		<copy verbose="true" file="JaisTest.jar" tofile="../installer/lib/JaisTest-${v}.jar" />
+		<copy verbose="true" todir="../installer/conf" >
+			<fileset dir="conf">
+			  <include name="*.xml"/>
+			</fileset>
+		</copy>
 	</target>
 	
 	<target name="cleanup">

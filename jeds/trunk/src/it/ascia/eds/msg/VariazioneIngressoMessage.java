@@ -3,6 +3,8 @@
  */
 package it.ascia.eds.msg;
 
+import it.ascia.eds.device.BMCChronoTerm;
+
 /**
  * Un ingresso e' cambiato, deve cambiare un'uscita.
  * 
@@ -103,7 +105,7 @@ public class VariazioneIngressoMessage extends PTPRequest
 	public int getChronoTermState() {
 		return Byte1 & 0x0f;
 	}
-		
+	
 	public String toString()	{
 		StringBuffer s = new StringBuffer();
 		s.append(super.toString());
@@ -118,7 +120,7 @@ public class VariazioneIngressoMessage extends PTPRequest
 		} else {
 			s.append(" Aperto");
 		}
-		//s.append(" CT: " + getChronoTermState());
+		s.append(" CT: " + BMCChronoTerm.getStateAsString(getChronoTermState()));
 		return s.toString();
 	}
 

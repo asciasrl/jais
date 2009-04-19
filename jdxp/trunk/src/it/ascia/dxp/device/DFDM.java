@@ -56,7 +56,7 @@ public class DFDM extends DominoDevice {
 		return 100;
 	}
 
-	public boolean writePort(String portId, Object newValue)
+	public boolean sendPortValue(String portId, Object newValue)
 			throws AISException {
 		int valore=0;
 		if (String.class.isInstance(newValue)) {

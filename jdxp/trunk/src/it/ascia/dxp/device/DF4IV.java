@@ -48,7 +48,7 @@ public class DF4IV extends DF4I {
 		return 100;
 	}
 	
-	public boolean writePort(String portId, Object newValue)
+	public boolean sendPortValue(String portId, Object newValue)
 			throws AISException {
 		int i = portId.indexOf(".");
 		if (i > 0) {
@@ -65,8 +65,6 @@ public class DF4IV extends DF4I {
 				ComandoUsciteMessage m = new ComandoUsciteMessage(d,uscita,attiva);
 				// TODO logger.trace("Writeport "+portId+" "+m.toString());
 				return getConnector().sendMessage(m);
-			} else if (tipo == 'i') {
-				return super.writePort(portId, newValue);
 			} else {
 				throw(new AISException("Porta tipo "+tipo+" non valida"));
 			}

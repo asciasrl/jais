@@ -39,11 +39,11 @@ String skin = auiConfig.getString("skin","");
 <body>
 
 <!-- Barra visualizzazione stato -->
-
-<div id="main">
 <div id="header-out">
 	<div id="header"><b>barra di stato</b></div>
 </div>
+
+<div id="pages">
 
 <!-- Pagine -->
 
@@ -162,7 +162,7 @@ for (int iLayer = 0;  iLayer < (5 + nLayers); iLayer++) {
 	
 %>
   <div id="layer-<%= iLayer %>" class="layer" <%= eventType %>="<%= eventHandler %>">
-      <img id="layer-<%= iLayer %>-img" title="<%= layerConfig.getString("title") %>" alt="<%= layerId %>"	width="80" height="80" border="0" src="<%= layerConfig.getString("icon") %>" />
+      <img id="layer-<%= iLayer %>-img" title="<%= layerConfig.getString("title") %>" alt="<%= layerId %>"	width="80" height="80" border="0" src="<%= skin %><%= layerConfig.getString("icon") %>" />
   </div>
 <%
 }

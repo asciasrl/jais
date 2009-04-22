@@ -37,9 +37,9 @@ public class HTTPServerControllerModule extends ControllerModule {
 		server = new Server(port);
 		ContextHandlerCollection contexts = new ContextHandlerCollection();
 		server.setHandler(contexts);
-		// contesto servito da jspservlet
 		Context rootContext = new Context(contexts, "/", Context.SESSIONS);
 		rootContext.setResourceBase(root);
+		// contesto servito da jspservlet
 		JspServlet jspServlet = new JspServlet();
 		ServletHolder jspHolder = new ServletHolder(jspServlet);
 		rootContext.addServlet(jspHolder, "*.jsp");

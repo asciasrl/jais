@@ -3,6 +3,10 @@
  * @author Sergio Strampelli 
  */
 
+if(!window.XMLHttpRequest) {
+	alert("Utilizzare un browser piu' recente!")
+}
+
 function debug(s) {
 	var el = document.getElementById("debug");
 	if (el) {
@@ -10,26 +14,13 @@ function debug(s) {
 	}
 }
 
-function changePage(da,a) {
-	da_el = document.getElementById(da);
-	a_el = document.getElementById(a);
-	da_el.style.display='none';
-	a_el.style.display='';
-	debug("Change page "+da+" -> "+a);
-	if (streamReq != null) {
-		streamReq.abort();
-	}
-}
 
-var targetControlId = null; 
+var layerId = null;
 
-var moveEvent = null;
-
-/*
-function moveControl(event,id) {
-	if (targetControlId) {
-		var control = controls[targetControlId];
-		if (control == null) {
+function layerMove(event,id) {
+	if (layerId) {
+		var layer = layers[layerId];
+		if (layer == null) {
 			return;
 		}
 		var x = null;
@@ -44,13 +35,14 @@ function moveControl(event,id) {
 		dx = x - control.left;
 		dy = y - control.top;
 		//document.getElementById("debug").innerHTML = "dx="+dx+" dy="+dy; 
-		//console.log("dx="+dx+" dy="+dy);
+		console.log("dx="+dx+" dy="+dy);
 	}
 }
-*/
+
+var targetControlId = null; 
 
 function endControl(event,id) {
-	control = controls[targetControlId];
+	var control = controls[targetControlId];
 	if (control == null) {
 		return;
 	}
@@ -58,6 +50,7 @@ function endControl(event,id) {
 		var cycling = control.cycling;
 		if (cycling == null || cycling == false) {
 			var status = control.status;
+			var newstatus = null;
 			if (status == "on") {
 				newstatus = "off";
 			} else {
@@ -65,7 +58,7 @@ function endControl(event,id) {
 			}
 			controls[targetControlId].status = newstatus;
 			document.getElementById(targetControlId+"-img").src = skin + control[newstatus];
-			setPortValue(control.address,"toggle");
+			AUI.SetRequest.send(control.address,"toggle");
 		} else {
 			controls[id].step = -(control.step);
 			controls[targetControlId].cycling = false;
@@ -75,7 +68,7 @@ function endControl(event,id) {
 }
 
 function dimmerCycleStart() {
-	control = controls[targetControlId];
+	var control = controls[targetControlId];
 	if (control == null) {
 		return;
 	}
@@ -89,12 +82,12 @@ function dimmerCycleStart() {
 }
 
 function dimmerCycle() {
-	control = controls[targetControlId];
+	var control = controls[targetControlId];
 	if (control == null) {
 		return;
 	}
 	if (control.type == "dimmer") {
-		value = control.value;
+		var value = control.value;
 		if (value == null) {
 			value = 0;
 		}
@@ -112,7 +105,7 @@ function dimmerCycle() {
 			step = -1.0*step;
 		}
 		controls[targetControlId].step = step;
-		setPortValue(control.address,value);
+		AUI.SetRequest.send(control.address,value);
 		setTimeout("dimmerCycle()",control.timer);
 	}
 }
@@ -129,6 +122,7 @@ function touchControl(event,id) {
 	var status = control.status;
 	var newstatus = status;
 	var command = null;
+	var src = null;
 	switch (type) {
 	case "light":
 	case "power":
@@ -141,8 +135,6 @@ function touchControl(event,id) {
 		}
 		break;
 	case "dimmer":
-		// regolazione fatta da move		
-		//controls[id].position = getPosition(document.getElementById(id));
 		setTimeout("dimmerCycleStart()",control.timer);
 		break;
 	case "blind":
@@ -172,16 +164,37 @@ function touchControl(event,id) {
 			command = "stop"
 		}
 		break;
+	case "webcam":
+		if (status == "play") {
+			newstatus = "pause";
+			src = skin + control.pause;
+		} else {
+			newstatus = "play";
+			src = control.video;
+		}		
+		break;
 	default:
 		break;
 	}
 	if (newstatus != status) {
 		controls[id].status = newstatus;
-		document.getElementById(id+"-img").src = skin + control[newstatus];
+		if (src == null) {
+			document.getElementById(id+"-img").src = skin + control[newstatus];
+		} else {
+			document.getElementById(id+"-img").src = src;
+		}
 	}
 	if (command) {
-		setPortValue(control.address,command);
+		//sendSetRequest(control.address,command);
+		AUI.SetRequest.send(control.address,command);
 	}
+}
+
+var activeService = ""; // TODO 
+
+function touchLayer(event,id) {
+	event.preventDefault();
+	event.stopPropagation();
 }
 
 function fireDevicePortChangeEvent(evt) {
@@ -234,64 +247,6 @@ function fireDevicePortChangeEvent(evt) {
 }
 
 
-var streamReq = null;
-var streamStart = 0;
-var eventCounter = 0;
-var errorCounter = 0;
-
-function sendStreamRequest() {
-	if (streamReq != null) {
-		debug("Chiudo stream, state="+streamReq.readyState);
-		streamReq.abort();
-	}
-	streamReq = new XMLHttpRequest();
-	streamReq.open('GET', 'stream/', true);
-	streamReq.send(null);
-	streamReq.onreadystatechange = processStreamChange;
-	streamStart = 0;
-	debug("Aperto stream");
-}
-
-function processStreamChange() {
-	debug("readyState:"+streamReq.readyState);
-	if ((streamReq.readyState == 3 || streamReq.readyState == 4) && streamReq.status == 200) {
-		var res = streamReq.responseText.substring(streamStart);
-		var i = 0;
-		while ((i = res.indexOf("\n")) > 0) {
-			var res1 = res.substring(0, i);
-			res = res.substring(i+1);
-			streamStart += i+1;
-			eventCounter++;
-			try {
-				debug(eventCounter+"/"+errorCounter+":"+res1);
-				var evt;
-				eval("evt="+res1+";");
-				fireDevicePortChangeEvent(evt);
-			} catch (e) {
-				errorCounter++;
-				// TODO: handle exception
-				debug(e);
-			}			
-		}
-	}
-	if (streamReq.readyState == 4) {
-		debug("in processStreamChange eseguo sendStreamRequest()");
-		sendStreamRequest();		
-	}
-}
-
-function setPortValue(address,value) {
-	var setReq = new XMLHttpRequest();
-	//setReq.open('GET', 'jais/set?address='+address+'&value='+value, true);
-	setReq.open('GET', 'jais/set?'+address+'='+value, true);
-	setReq.send(null);
-	// TODO esattamente in quali casi rifare la richiesta ? 
-	if (streamReq == null || streamReq.readyState == 0 || streamReq.readyState == 4) {
-		debug("in setPortValue eseguo sendStreamRequest()");
-		sendStreamRequest();
-	}
-}
-
 /**
  * Ritorna la posizione di un elemento relativa al documento (?).
  *
@@ -335,5 +290,36 @@ function mouseCoords(ev, objectPosition){
 	};
 }
 
-setTimeout('sendStreamRequest();', 1000);
+ /**
+  * 
+  * @return Oggetto XMLHttpRequest 
+  */
+ function getXMLHttpRequest() {   
+    var req = false;
+    try {
+        req = new XMLHttpRequest();
+    } catch (e0) {
+        try {   
+            req=new ActiveXObject("Msxml2.XMLHTTP");   
+            alert("2");
+        } catch (e1) {   
+            try {   
+                req=new ActiveXObject("Microsoft.XMLHTTP");   
+                alert("1");
+            } catch (e2) {   
+                try {   
+                    req=new ActiveXObject("Msxml2.XMLHTTP.4.0");   
+                    alert("4");
+                } catch (e3) {   
+                    req=null;   
+                }   
+            }   
+        }   
+    }   
+  
+    if (!req) alert("Browser non compatibile");   
+  
+    return req;   
+}   
+
 

@@ -3,13 +3,19 @@
  */
 
 /**
+ * Opacita' di default della status bar [0 .. 1].
+ */
+const STATUS_BAR_OPACITY =  0.80;
+
+/**
  * Per quanto tempo la barra di stato viene visualizzata. [msec]
  */
-const STATUS_BAR_TIMEOUT = 3000;
+const STATUS_BAR_TIMEOUT = 2000;
+
 /**
- * Velocita' di sparizione della status bar. [percentuale di opacita'/sec]
+ * Ogni quanto viene aggiornata
  */
-const STATUS_BAR_DISAPPEARING_SPEED = 30;
+const STATUS_BAR_TIMER = 40;
 
 /**
  * Div che contiene la barra di stato, lo sfondo ecc.
@@ -28,6 +34,10 @@ var statusObject = document.getElementById("header");
  */
 var statusBarDisappearTimestamp = 0;
 
+/**
+ * Riferimento al timeout per chiudere la barra di stato
+ */
+var closeStatusBarTimeout;
 /**
  * True se la statusbar deve essere bloccata.
  *
@@ -51,21 +61,31 @@ function statusMessage(message) {
 	statusObject.innerHTML = message;
 	statusBarLocked = false;
 	statusBarDisappearTimestamp = new Date().getTime() + STATUS_BAR_TIMEOUT;
-	if (statusBarIsShown) { // Magari sta sparendo, quindi la reimpostiamo
-		statusBarContainer.style.opacity = STATUS_BAR_OPACITY;
-	} else {
-		statusBarContainer.style.display = "";
-		statusBarIsShown = true;
-	}
+	//statusBarContainer.style["-webkit-transition-duration"] = "0s";
+	statusBarContainer.style.opacity = STATUS_BAR_OPACITY;
+	statusBarContainer.style.display = "block";
+	statusBarContainer.style.left = window.scrollX + "px";
+	statusBarContainer.style.top = window.scrollY + "px";
+	statusBarContainer.style.width = window.innerWidth + "px";
+	statusBarIsShown = true;
 	currentStatusBarStatus = STATUS_BAR_OPACITY;
+	if (closeStatusBarTimeout != null) {
+		clearInterval(closeStatusBarTimeout);
+	}
+	closeStatusBarTimeout = setTimeout("closeStatusBar()",STATUS_BAR_TIMER);
 }
 
 /**
  * Fa sparire lentamente la barra di stato.
  */
 function closeStatusBar() {
-	currentStatusBarStatus -= STATUS_BAR_DISAPPEARING_SPEED * 
-		MASTER_TIMER_PERIOD / 100000;
+	if (!statusBarIsShown) {
+		return;
+	}
+	var x = (new Date().getTime() - statusBarDisappearTimestamp) / STATUS_BAR_TIMEOUT;
+	if (x > 0) {
+		currentStatusBarStatus = STATUS_BAR_OPACITY * (1 -x);
+	}
 	if (currentStatusBarStatus <= 0) {
 		// Siamo arrivati in fondo.
 		statusBarContainer.style.display = "none";
@@ -74,5 +94,8 @@ function closeStatusBar() {
 		statusBarIsShown = false;
 	} else {
 		statusBarContainer.style.opacity = currentStatusBarStatus;
+		statusBarContainer.style.left = window.scrollX + "px";
+		statusBarContainer.style.top = window.scrollY + "px";
+		setTimeout("closeStatusBar()",STATUS_BAR_TIMER);
 	}
 }

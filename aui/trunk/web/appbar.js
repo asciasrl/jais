@@ -41,6 +41,8 @@ const REFRESH_PERIOD = 50;
  * Massima velocita' [pixel / sec].
  */
 const MAX_ICON_SPEED = 240;
+
+const APPBAR_START_POSITION = 40;
 /**
  * A che pixel si trovava l'appbar all'ultima selezione.
  */

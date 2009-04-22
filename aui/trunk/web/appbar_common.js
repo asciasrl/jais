@@ -14,7 +14,12 @@
  * @return il &lt;div&gt; che contiene l'icona.
  */
 function appbar_icoset(name,size,opacity) {
+	debug("appbar_icoset("+name+")");
 	div_obj = document.getElementById(name);
+	if (div_obj == null) {
+		alert("Non trovato elemento:"+name);
+		return;
+	}
 	img_obj = document.getElementById(name+'-img');	
 	if (size == 0) {
 		div_obj.style.display='none';

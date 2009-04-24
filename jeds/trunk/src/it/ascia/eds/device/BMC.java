@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.Device;
+import it.ascia.ais.DevicePort;
 import it.ascia.eds.*;
 import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.PTPRequest;
@@ -200,6 +201,16 @@ public abstract class BMC extends Device {
 			}
 			bmc = new BMCScenarioManager(connector, bmcAddress, model, name);
 			break;
+		case 161:
+		case 162:
+		case 163:
+		case 164:
+		case 165:
+			if (name == null) {
+				name = "SC2-" + bmcAddress;
+			}
+			bmc = new BMCScenarioManager(connector, bmcAddress, model, name);
+			break;
 		case 121:
 			if (name == null) {
 				name = "TemperatureSensor-" + bmcAddress; 
@@ -378,17 +389,36 @@ public abstract class BMC extends Device {
 	 * Sets the name of an output port.
 	 * 
 	 * @param number the port number.
-	 * @param name the name to assign.
+	 * @param portName the name to assign.
 	 * @throws AISException
 	 */
 	public void setOutputName(int number, String portName) throws AISException {
 		setPortName(getOutputPortId(number), portName);
 	}
+
+	/**
+	 * Sets the duration of cached value according to timer duration
+	 * 
+	 * @param outPortNumber the port number (starting from 0)
+	 * @param t Time in milliseconds
+	 */
+	public void setOutputTimer(int outPortNumber, long t) {
+		DevicePort p = getPort(getOutputPortId(outPortNumber));
+		if (t > 0) {
+			if (p.getCacheRetention() > t) {
+				p.setCacheRetention(t);
+			}
+			logger.info("Uscita "+outPortNumber+" timer di "+t+"mS");
+		} else {
+			p.resetCacheRetention();
+		}
+	}
+
 			
 	/**
 	 * Genera un nome compatto per una porta di ingresso.
 	 */
-	protected static String getInputPortId(int number) {
+	static String getInputPortId(int number) {
 		return "Inp" + (number+1);
 	}
 
@@ -455,18 +485,22 @@ public abstract class BMC extends Device {
 	/**
 	 * Registra il binding tra uscita e messaggio broadcast.
 	 *
-	 * @param gruppo numero del messaggio broadcast (1-31).
+	 * @param groupAddress numero del messaggio broadcast (1-31).
 	 * @param outPortNumber numero della porta che risponde al messaggio.
 	 */
-	protected void bindOutput(int gruppo, int outPortNumber) {
-		if (gruppo == 0) {
+	public void bindOutput(int groupAddress, int outPortNumber) {
+		if (groupAddress == 0) {
 			return;
 		}
-		broadcastBindingsByGroup[gruppo].add(new Integer(outPortNumber));
-		broadcastBindingsByPort[outPortNumber].add(new Integer(gruppo));
-		logger.info(getFullAddress() + ":"+getOutputPortId(outPortNumber)+" associata al gruppo "+gruppo);
+		if (outputIsBound(outPortNumber, groupAddress)) {
+			logger.warn("Output port "+getFullAddress() + ":"+getOutputPortId(outPortNumber)+" already bound to group "+groupAddress);
+			return;
+		}
+		broadcastBindingsByGroup[groupAddress].add(new Integer(outPortNumber));
+		broadcastBindingsByPort[outPortNumber].add(new Integer(groupAddress));
+		logger.debug("Output port "+getFullAddress() + ":"+getOutputPortId(outPortNumber)+" bounded to group "+groupAddress);
 	}
-	
+		
 	/**
 	 * Ritorna le porte di uscita che sono collegate a un messaggio broadcast.
 	 * 

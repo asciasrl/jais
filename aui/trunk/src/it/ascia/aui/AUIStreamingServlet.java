@@ -62,11 +62,12 @@ public class AUIStreamingServlet extends HttpServlet {
 					for (int j = 0; j < devicePorts.length; j++) {
 						DevicePort devicePort = devicePorts[j];
 						JSONObject obj=new JSONObject();
-						if (devicePort.getValue() == null) {
+						Object value = devicePort.getCachedValue();  
+						if (value == null) {
 							logger.trace("Non invio valore null");
 						} else {
 							obj.put("A",devicePort.getFullAddress());
-							obj.put("V",devicePort.getValue().toString());
+							obj.put("V",value.toString());
 						}
 						out.println(obj.toJSONString());
 					}

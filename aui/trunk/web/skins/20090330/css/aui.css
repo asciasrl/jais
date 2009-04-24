@@ -30,6 +30,8 @@ body {
 }
 
 div.page {
+	position: absolute;
+	display: none;
 }
 
 div.control {
@@ -174,6 +176,7 @@ div.webcam {
 
 
 #layers {
+	display: none;	
 	margin: 0px auto; 
 	width: 320px; 
 	height: 80px; 

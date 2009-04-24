@@ -88,7 +88,7 @@ public class DevicePort {
 	}
 		
 	public String getStatus() throws AISException {
-		return getFullAddress() + "=" + getValue();
+		return getFullAddress() + "=" + getCachedValue();
 	}
 
 	public String getName() {
@@ -233,6 +233,9 @@ public class DevicePort {
 		cachedValue = newValue;		
 	}
 
+	/**
+	 * @return Valore in cache della porta
+	 */
 	public Object getCachedValue() {
 		return cachedValue;
 	}
@@ -291,6 +294,10 @@ public class DevicePort {
 	 */
 	public String[] getTags() {
 		return null;
+	}
+
+	public void resetCacheRetention() {
+		setCacheRetention(DEFAULT_CACHE_RETENTION);		
 	}
 
 }

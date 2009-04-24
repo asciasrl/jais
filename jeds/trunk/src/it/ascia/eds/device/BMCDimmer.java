@@ -30,10 +30,7 @@ import it.ascia.eds.msg.VariazioneIngressoMessage;
  * @author arrigo
  */
 public class BMCDimmer extends BMC {
-	/**
-	 * Numero di uscite digitali.
-	 */
-	protected int outPortsNum;
+
 	/**
 	 * Potenza in uscita [Watt] o -1 se l'uscita è 0-10 V
 	 */
@@ -53,43 +50,34 @@ public class BMCDimmer extends BMC {
 		super(connector, address, model, name);
 		switch(model) {
 		case 101:
-			outPortsNum = 2;
 			power = 800;
 			modelName = "Base low power";
 			break;
 		case 102:
-			outPortsNum = 2;
 			power = 800;
 			modelName = "Evolution low power";
 			break;
 		case 103:
-			outPortsNum = 2;
 			power = 2000;
 			modelName = "Base high power";
 			break;
 		case 104:
-			outPortsNum = 2;
 			power = 2000;
 			modelName = "Evolution high power";
 			break;
 		case 106:
-			outPortsNum = 1;
 			power = -1;
 			modelName = "sperimentale 0-10 V";
 			break;
 		case 111:
-			outPortsNum = 1;
 			power = -1;
 			modelName = "0-10 V";
 		break;
 		default: // This should not happen(TM)
 			logger.error("Errore: modello di BMCDimmer sconosciuto:" +
 					model);
-			power = outPortsNum = 0;
+			power = 0;
 			modelName = "Dimmer sconosciuto";
-		}
-		for (int i = 0; i < outPortsNum; i++) {
-			addPort(getOutputPortId(i));
 		}
 	}
 	
@@ -148,7 +136,7 @@ public class BMCDimmer extends BMC {
 			int temp[];
 			int i;
 			temp = r.getOutputs();
-			for (i = 0; i < outPortsNum; i++) {
+			for (i = 0; i < getOutPortsNumber(); i++) {
 				String portId = getOutputPortId(i);
 				DevicePort p = getPort(portId);
 				Integer newValue = new Integer(temp[i]);
@@ -179,7 +167,7 @@ public class BMCDimmer extends BMC {
 	public String getInfo() {
 		String retval;
 		retval = getName() + ": Dimmer (modello " + model + ", \"" + modelName +
-			"\") con " + outPortsNum + " uscite"; 
+			"\") con " + getOutPortsNumber() + " uscite"; 
 		if (power >= 0) retval += " a " + power + " Watt";
 		return retval;
 	}
@@ -187,7 +175,7 @@ public class BMCDimmer extends BMC {
 	public void printStatus() throws AISException {
 		int i;
 		System.out.print("Uscite:");
-		for (i = 0; i < outPortsNum; i++) {
+		for (i = 0; i < getOutPortsNumber(); i++) {
 			System.out.print(" " + getPortValue(getOutputPortId(i)));
 		}
 		System.out.println();
@@ -219,7 +207,7 @@ public class BMCDimmer extends BMC {
 		int i;
 		String retval = "";
 		String fullAddress = getFullAddress();
-		for (i = 0; i < outPortsNum; i++) {
+		for (i = 0; i < getOutPortsNumber(); i++) {
 			String portId = getOutputPortId(i);
 			if ((timestamp <= getPortTimestamp(portId)) &&
 					(port.equals("*") || port.equals(portId))){
@@ -240,7 +228,7 @@ public class BMCDimmer extends BMC {
 	 * @param value il valore da impostare (da 0 a 100, dove 0 e' OFF)
 	 */
 	public void setOutputRealTime(int output, int value) {
-		if ((output >= 0) && (output <= outPortsNum)) {
+		if ((output >= 0) && (output <= getOutPortsNumber())) {
 			if ((value >= 0) && (value <= 100)) {
 				ComandoUscitaDimmerMessage m;
 				m = new ComandoUscitaDimmerMessage(getIntAddress(), 
@@ -270,7 +258,18 @@ public class BMCDimmer extends BMC {
 	}
 
 	public int getOutPortsNumber() {
-		return outPortsNum;
+		switch(model) {
+		case 101:
+		case 102:
+		case 103:
+		case 104:
+			return 2;
+		case 106:
+		case 111:
+			return 1;
+		default:
+			return 0;
+		}
 	}
 	
 	/**

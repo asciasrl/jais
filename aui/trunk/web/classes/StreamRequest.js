@@ -51,7 +51,15 @@ if (!AUI.StreamRequest) {
 			self.start();
 		}
 	}
-	
+
+	AUI.StreamRequest.stop = function() {
+		var self = AUI.StreamRequest;
+		AUI.Logger.info("Stop StreamRequest, readyState="+self.streamReq.readyState);
+		if (self.streamReq >= 1) {
+			self.streamReq.abort();
+		}		
+	}
+
 	AUI.StreamRequest.onReadyStateChange = function() {
 		var self = AUI.StreamRequest;
 		var streamReq = self.streamReq;

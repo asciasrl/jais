@@ -95,10 +95,10 @@ public abstract class Device {
 	 * @return lo stato del device che e' cambiato al timestamp specificato, 
 	 * oppure piu' tardi.
 	 * 
-	 * @param port il nome della porta da restituire, o "*" per indicarle
+	 * @param portId il nome della porta da restituire, o "*" per indicarle
 	 * tutte.
 	 * 
-	 * @param timeStamp il timestamp che "screma" i cambiamenti dello stato
+	 * @param timestamp il timestamp che "screma" i cambiamenti dello stato
 	 * che ci interessano, nella forma ritornata da System.currentTimeMillis().
 	 * Se posto a 0, richiede l'intero stato del sistema.
 	 * @throws AISException 
@@ -204,8 +204,7 @@ public abstract class Device {
 	 * 
 	 * @param portId identificatore univoco della porta del device
 	 * @param portName Nuovo nome per la porra
-	 * @return false Se la porta non esiste
-	 * @throws AISException 
+	 * @throws AISException Se la porta non esiste 
 	 */
 	public void setPortName(String portId, String portName) throws AISException {
 		DevicePort p = getPort(portId);
@@ -213,7 +212,7 @@ public abstract class Device {
 	}
 	
 	public void invalidate(String portId) throws AISException {
-		DevicePort p = (DevicePort) ports.get(portId); 
+		DevicePort p = getPort(portId);
 		p.invalidate();
 	}
     
@@ -238,7 +237,7 @@ public abstract class Device {
      * @return true se operazione andata a buon fine
      */
 	public boolean writePortValue(String portId, Object newValue) {
-		DevicePort p = (DevicePort) ports.get(portId); 
+		DevicePort p = getPort(portId);
 		return p.writeValue(newValue);
 	}
 

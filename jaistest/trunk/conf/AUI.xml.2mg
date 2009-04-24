@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <jais:configuration version="1.3">
   <AUI>
-    <startPage>wdb</startPage>
+    <startPage>Hbox</startPage>
     <title>ASCIA HomeInTheBox [AUI 0.1]</title>
     <skin>skins/20090330/</skin>
     <!-- definizione di tutti i tipi di controlli -->
@@ -37,11 +37,6 @@
         <on>images/power_on.png</on>
         <off>images/power_off.png</off>
       </power>
-      <scene>
-        <default>images/scene_off.png</default>
-        <off>images/scene_off.png</off>
-        <on>images/scene_on.png</on>
-      </scene>
       <thermo>
         <default>images/thermo_display.png</default>
         <crono>images/thermo_crono.png</crono>
@@ -116,7 +111,7 @@
       </page>      
       <page id="piani">    
         <title>Piani</title>
-        <src>images/assonometria320x370.png</src>
+        <src>custom/images/assonometria320x370.png</src>
         <control id="back">
           <title>Screensaver</title>
           <type>page</type>
@@ -135,9 +130,9 @@
           <page>Hbox</page>
         </area>
         <area>
-          <title>World Data Bus</title>
+          <title>Seminterrato</title>
           <coords>0,241,320,370</coords>
-          <page>wdb</page>
+          <page>test</page>
         </area>
       </page>
       <page id="test">
@@ -152,7 +147,7 @@
       </page>      
       <page id="pianoT">    
         <title>Mappa piano terra</title>
-        <src>images/planimetria-big.png</src>
+        <src>custom/images/planimetria-big.png</src>
         <control id="back">
           <title>Torna alla selezione dei piani</title>
           <type>page</type>
@@ -200,6 +195,256 @@
           <top>300</top>
           <address>2.5:Out1</address>
         </control>      
+      </page>
+      <page id="2MG">
+        <title>Valigia 2MG</title>
+        <src>images/valigia2mg.png</src>
+        <control id="back">
+           <title>Torna alla selezione dei piani</title>
+          <type>page</type>
+          <page>piani</page>
+           <left>0</left>
+           <top>0</top>
+        </control>
+        <control id="l1.1">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>100</top>
+           <left>100</left>
+           <address>dxp1.1:o1.1</address>          
+        </control>      
+        <control id="l1.2">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>100</top>
+           <left>200</left>
+           <address>dxp1.1:o1.2</address>          
+        </control>      
+        <control id="l1.3">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>100</top>
+           <left>300</left>
+           <address>dxp1.1:o1.3</address>          
+        </control>      
+        <control id="l1.4">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>100</top>
+           <left>400</left>
+           <address>dxp1.1:o1.4</address>          
+        </control>      
+
+        <control id="l1.5">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>200</top>
+           <left>100</left>
+           <address>dxp1.2:o2.1</address>          
+        </control>      
+        <control id="l1.6">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>200</top>
+           <left>200</left>
+           <address>dxp1.2:o2.2</address>          
+        </control>      
+        <control id="l1.7">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>200</top>
+           <left>300</left>
+           <address>dxp1.2:o2.3</address>          
+        </control>      
+        <control id="l1.8">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>200</top>
+           <left>400</left>
+           <address>dxp1.2:o2.4</address>          
+        </control>      
+        <control id="v1.1">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>400</top>
+           <left>100</left>
+           <address>dxp1.129:v130.1</address>          
+        </control>      
+        <control id="v1.2">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>400</top>
+           <left>200</left>
+           <address>dxp1.129:v130.2</address>          
+        </control>      
+        <control id="v1.3">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>400</top>
+           <left>300</left>
+           <address>dxp1.129:v130.3</address>          
+        </control>      
+        <control id="v1.4">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>400</top>
+           <left>400</left>
+           <address>dxp1.129:v130.4</address>          
+        </control>      
+        <control id="v1.5">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>400</top>
+           <left>500</left>
+           <address>dxp1.129:v131.1</address>          
+        </control>      
+        <control id="v1.6">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>400</top>
+           <left>600</left>
+           <address>dxp1.129:v131.2</address>          
+        </control>      
+        <control id="v1.7">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>400</top>
+           <left>700</left>
+           <address>dxp1.129:v131.3</address>          
+        </control>      
+        <control id="v1.8">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>400</top>
+           <left>800</left>
+           <address>dxp1.129:v131.4</address>          
+        </control>      
+        <control id="v1.9">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>400</top>
+           <left>900</left>
+           <address>dxp1.129:v132.1</address>          
+        </control>      
+        <control id="v1.10">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>400</top>
+           <left>1000</left>
+           <address>dxp1.129:v132.2</address>          
+        </control>      
+        <control id="v1.11">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>400</top>
+           <left>1100</left>
+           <address>dxp1.129:v132.3</address>          
+        </control>      
+        <control id="v1.12">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>400</top>
+           <left>1200</left>
+           <address>dxp1.129:v132.4</address>          
+        </control>      
+
+        <control id="v2.1">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>600</top>
+           <left>100</left>
+           <address>dxp1.9:v11.1</address>          
+        </control>      
+        <control id="v2.2">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>600</top>
+           <left>200</left>
+           <address>dxp1.9:v11.2</address>          
+        </control>      
+        <control id="v2.3">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>600</top>
+           <left>300</left>
+           <address>dxp1.9:v11.3</address>          
+        </control>      
+        <control id="v2.4">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>600</top>
+           <left>400</left>
+           <address>dxp1.9:v11.4</address>          
+        </control>      
+        <control id="v2.5">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>500</top>
+           <left>400</left>
+           <address>dxp1.9:v12.1</address>          
+        </control>      
+        <control id="v2.6">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>500</top>
+           <left>300</left>
+           <address>dxp1.9:v12.2</address>          
+        </control>      
+        <control id="v2.7">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>500</top>
+           <left>200</left>
+           <address>dxp1.9:v12.3</address>          
+        </control>      
+        <control id="v2.8">
+           <type>light</type>
+           <layer>illuminazione</layer>
+           <top>500</top>
+           <left>100</left>
+           <address>dxp1.9:v12.4</address>          
+        </control>      
+        
+        
+        <control id="b1">
+           <type>blind</type>
+           <layer>blinds</layer>
+           <top>300</top>
+           <left>100</left>
+           <address>dxp1.3:blind1</address>          
+        </control>      
+        <control id="b2">
+           <type>blind</type>
+           <layer>blinds</layer>
+           <top>300</top>
+           <left>200</left>
+           <address>dxp1.3:blind2</address>          
+        </control>      
+
+        <control id="d1">
+           <type>dimmer</type>
+           <layer>illuminazione</layer>
+           <top>300</top>
+           <left>300</left>
+           <address>dxp1.70:o70.1</address>          
+        </control>      
+
+      <control id="c1">
+         <type>thermo</type>
+         <layer>thermo</layer>
+         <top>0</top>
+         <left>200</left>
+         <address>dxp1.18:temp</address>
+      </control>
+      <control id="c2">
+         <type>thermo</type>
+         <layer>thermo</layer>
+         <top>0</top>
+         <left>400</left>
+         <address>dxp1.100:temp</address>
+      </control>
+      
+        
       </page>
       <page id="Hbox">
         <title>Home in The Box</title>
@@ -277,117 +522,6 @@
           <layer>security</layer>
           <video>http://video.ascia.it/axis-cgi/mjpg/video.cgi?resolution=320x240&amp;fps=1</video>
         </control>      
-      </page>
-      <page id="wdb">
-      	<src>images/wdb.png</src>
-      	<title>Ufficio World Data Bus Milano</title>
-        <control id="back">
-          <title>Screensaver</title>
-          <type>page</type>
-          <page>piani</page>
-          <left>70</left>
-          <top>230</top>
-        </control>      
-      	<control id="NeonIngresso">
-           <title>Neon ingresso</title>
-           <type>light</type>
-           <layer>light</layer>
-           <top>280</top>
-           <left>200</left>
-           <address>wdb.1:Out2</address>
-      	</control>
-      	<control id="CorsiSX">
-           <title>Tapparella Corsi SX</title>
-           <type>blind</type>
-           <layer>blind</layer>
-           <top>50</top>
-           <left>250</left>
-           <address>wdb.2:Blind1</address>
-      	</control>
-      	<control id="CorsiDX">
-           <title>Tapparella Corsi DX</title>
-           <type>blind</type>
-           <layer>blind</layer>
-           <top>50</top>
-           <left>330</left>
-           <address>wdb.2:Blind2</address>
-      	</control>
-      	<control id="CorsiDimmer">
-           <title>Dimmer aula corsi</title>
-           <type>dimmer</type>
-           <layer>light</layer>
-           <top>150</top>
-           <left>300</left>
-           <address>wdb.22:Out1</address>
-      	</control>
-      	<control id="NeonLabCentro">
-           <title>Neon Laboratorio Centro</title>
-           <type>light</type>
-           <layer>light</layer>
-           <top>150</top>
-           <left>470</left>
-           <address>wdb.3:Out1</address>
-      	</control>
-      	<control id="NeonLabLato">
-           <title>Neon Laboratorio Lato</title>
-           <type>light</type>
-           <layer>light</layer>
-           <top>150</top>
-           <left>550</left>
-           <address>wdb.3:Out2</address>
-      	</control>      	      	
-      	<control id="UffSX">
-           <title>Tapparella Ufficio SX</title>
-           <type>blind</type>
-           <layer>blind</layer>
-           <top>450</top>
-           <left>500</left>
-           <address>wdb.6:Blind1</address>
-      	</control>
-      	<control id="UffDX">
-           <title>Tapparella Ufficio DX</title>
-           <type>blind</type>
-           <layer>blind</layer>
-           <top>450</top>
-           <left>400</left>
-           <address>wdb.6:Blind2</address>
-      	</control>
-      	<control id="SceneEntrata">
-           <title>Entrata</title>
-           <type>scene</type>
-           <layer>scene</layer>
-           <top>280</top>
-           <left>200</left>
-           <address>wdb.41:Scene1</address>
-	        <default>images/scene-enter.png</default>
-      	</control>
-      	<control id="SceneUscita">
-           <title>Uscita</title>
-           <type>scene</type>
-           <layer>scene</layer>
-           <top>280</top>
-           <left>130</left>
-           <address>wdb.41:Scene2</address>
-	        <default>images/scene-exit.png</default>
-      	</control>
-      	<control id="SceneUfficioLuceLow">
-           <title>Luci basse ufficio</title>
-           <type>scene</type>
-           <layer>scene</layer>
-           <top>400</top>
-           <left>450</left>
-           <address>wdb.41:Scene9</address>
-	        <default>images/scene-night.png</default>
-      	</control>
-      	<control id="ProiezioneON">
-           <title>Proiezione</title>
-           <type>scene</type>
-           <layer>video</layer>
-           <top>150</top>
-           <left>300</left>
-           <address>wdb.41:Scene3</address>
-	        <default>images/scene-relax.png</default>
-      	</control>
       </page>
     </pages>
   </AUI>

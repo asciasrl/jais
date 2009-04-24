@@ -47,6 +47,18 @@
 		    <computer>252</computer>
 		    <discover>2;3;4;5;6;7</discover>
       </connector>
+      <!-- 
+      <connector>
+        <name>wdb</name>
+		    <computer>253</computer>
+		    <config>conf/NuovoImpiantoUfficio.xml</config>
+        <transport>
+          <type>tcp</type>
+          <host>192.168.52.34</host>
+          <port>2001</port>
+        </transport>
+      </connector>
+        -->
     </connectors> 
   </EDS>
 </jais:configuration>

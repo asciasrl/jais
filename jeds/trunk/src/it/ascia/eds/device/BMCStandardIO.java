@@ -211,7 +211,6 @@ public class BMCStandardIO extends BMC {
 						outPortNumber = mrich.getUscita();
 						casella = mrich.getCasella();
 					}
-					logger.info("Associazione uscita: "+getOutputPortId(outPortNumber)+" casella:"+casella+" al gruppo:"+gruppo);
 					bindOutput(gruppo, outPortNumber);
 				}
 				break;
@@ -223,11 +222,7 @@ public class BMCStandardIO extends BMC {
 					RichiestaUscitaMessage req = (RichiestaUscitaMessage) ru.getRequest();
 					if (req != null) {
 						int uscita = req.getUscita();
-						DevicePort p = getPort(getOutputPortId(uscita));
-						if (p.getCacheRetention() > t) {
-							p.setCacheRetention(t);
-						}
-						logger.info("Uscita "+uscita+" timer di "+t+"mS");
+						setOutputTimer(uscita,t);
 					}
 				}
 				/**
@@ -238,14 +233,7 @@ public class BMCStandardIO extends BMC {
 					if (req != null) {
 						int uscita = req.getUscita();
 						if ((uscita % 2) == 0) {
-							String blindPortId = "Blind"+(uscita / 2 + 1);
-							if (! havePort(blindPortId)) {
-								String openPortId = "Out" + (uscita + 1);
-								String closePortId = "Out" + (uscita + 2);
-								DeviceBlindPort blindPort = new DeviceBlindPort(this,blindPortId,closePortId,openPortId);
-								addPort(blindPort);							
-								logger.info("Aggiunta porta virtuale "+blindPortId+": open="+openPortId+" close="+closePortId);
-							}
+							addBlindPort(uscita);
 						}
 					}
 				}
@@ -260,6 +248,39 @@ public class BMCStandardIO extends BMC {
 	}
 
 	
+	/**
+	 * Aggiunge al Device una porta di tipo Blind<br/>
+	 * Normalmente la prima uscita della coppia è quella che comanda l'apertura.
+	 * 
+	 * <p>Esempio 1:</p>
+	 * <ul>
+	 * <li>uscita = 4 (la quinta del dispositivo, terza coppia)</li>
+	 * <li>identificatore nuova porta: Blind3</li>  
+	 * <li>porta di apertura: Out5</li>
+	 * <li>porta di chiusura: Out6</li>
+	 * </ul>
+	 * 
+	 * <p>Esempio 2:</p>
+	 * <ul>
+	 * <li>uscita = 5 (la sesta del dispositivo, terza coppia)</li>
+	 * <li>identificatore nuova porta: Blind3</li>  
+	 * <li>porta di apertura: Out6</li>
+	 * <li>porta di chiusura: Out5</li>
+	 * </ul>
+	 * @param uscita Numero della uscita che effettua la apertura 
+	 */
+	public void addBlindPort(int uscita) {
+		int shift = (uscita % 2);
+		String blindPortId = "Blind"+((uscita - shift) / 2 + 1);
+		if (! havePort(blindPortId)) {
+			String openPortId = "Out" + (uscita + 1);
+			String closePortId = "Out" + (uscita - 2 * shift + 2);
+			DeviceBlindPort blindPort = new DeviceBlindPort(this,blindPortId,closePortId,openPortId);
+			addPort(blindPort);							
+			logger.info("Aggiunta porta virtuale "+blindPortId+": open="+openPortId+" close="+closePortId);
+		}
+	}
+
 	public String getInfo() {
 		return getName() + ": BMC Standard I/O (modello " + model + ") con "
 				+ getInPortsNumber() + " ingressi e " + getOutPortsNumber()
@@ -365,8 +386,6 @@ public class BMCStandardIO extends BMC {
 	 * riceve.
 	 * </p>
 	 * 
-	 * @param listener
-	 *            il DeviceListener a cui si comunicheranno
 	 */
 	public void makeSimulated() {
 		isReal = false;

@@ -32,7 +32,8 @@ boolean iPhone = ( ua != null && ua.indexOf( "iPhone" ) != -1 );
 		<iframe width="320" 
 			height="460" 
 			style="position: absolute; top: 20px;" frameborder="0" 
-			marginwidth="0" marginheight="0" 
+			marginwidth="0" marginheight="0"
+			scrolling="no" 
 			style="position:absolute; background-color: black;" src='aui.jsp?nomobile=1'>
 		</iframe>
 	</div>

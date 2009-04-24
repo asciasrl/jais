@@ -36,7 +36,7 @@ String skin = auiConfig.getString("skin","");
 <meta name="format-detection" content="telephone=no" />
 <link rel="apple-touch-icon" href="<%= skin %>images/apple-touch-icon.png" />
 </head>
-<body>
+<body onload="AUI.init();">
 
 <!-- Barra visualizzazione stato -->
 <div id="header-out">
@@ -56,9 +56,8 @@ for (Iterator it = pages.iterator(); it.hasNext();) {
 	if (startPage == null) {
 		startPage = pageId;
 	}
-	String pageDisplay = startPage.equals(pageId) ? "block" : "none"; 	
 %>
-<div id="page-<%= pageId %>" class="page" style="display: <%= pageDisplay %>">
+<div id="page-<%= pageId %>" class="page" onmousedown="AUI.Pages.onMouseDown('<%= pageId %>',event);">
 <img usemap="#imgmap-<%= pageId %>" title="<%= pageConfig.getString("title") %>" src="<%= pageConfig.getString("src") %>" border="0" />
 <map name="imgmap-<%= pageId %>">
 <%
@@ -94,7 +93,7 @@ for (Iterator it = pages.iterator(); it.hasNext();) {
 		
 %>
 <div id="<%= id %>" class="control control-<%= type %>" style="left: <%= controlConfig.getString("left") %>px; top: <%= controlConfig.getString("top") %>px;" <%= eventType %>="<%= eventHandler %>">
-	<img id="<%= id %>-img" src="<%= skin + auiConfig.getString("controls."+type+".default") %>" title="<%= controlConfig.getString("title",controlConfig.getString("address")) %>" border="0" alt="<%= type %>"/>
+	<img id="<%= id %>-img" src="<%= skin + controlConfig.getString("default",auiConfig.getString("controls."+type+".default")) %>" title="<%= controlConfig.getString("title",controlConfig.getString("address")) %>" border="0" alt="<%= type %>"/>
 <%
 		if (type.equals("dimmer")) {
 %>	
@@ -126,12 +125,6 @@ for (Iterator it = pages.iterator(); it.hasNext();) {
 %>
 </div>
 
-
-<!-- Maschera e cursore del dimmer  -->
-<div id="mask"></div>
-<div id="slider">
-	<img id="slider-cursor" src="<%= skin %>/images/slider-cursor.png" width="128" height="130" />
-</div>
 
 <!-- Barra selezione layer -->
 <div id="layers">
@@ -170,6 +163,13 @@ for (int iLayer = 0;  iLayer < (5 + nLayers); iLayer++) {
 </div>
 </div>
 
+<!-- Maschera e cursore del dimmer  -->
+<div id="mask"></div>
+<div id="slider">
+	<img id="slider-cursor" src="<%= skin %>/images/slider-cursor.png" width="128" height="130" />
+</div>
+
+
 <%!
 /**
  * Include uno script cambiandogli il nome, in modo da evitare il caching da
@@ -197,6 +197,7 @@ String includeScript(String scriptName) {
 <%= includeScript("classes/Blind.js") %>
 <%= includeScript("classes/Dimmer.js") %>
 <%= includeScript("classes/Power.js") %>
+<%= includeScript("classes/Scene.js") %>
 <%= includeScript("classes/Thermo.js") %>
 <%= includeScript("classes/Webcam.js") %>
 
@@ -217,8 +218,6 @@ var debug = true;
 
 <script language="javascript">
 AUI.Pages.setCurrentPageId("page-<%= startPage %>");
-setTimeout('AUI.StreamRequest.start();', 1000);
-setTimeout('AUI.Layers.init();', 1000);
 </script>
 
 </body>

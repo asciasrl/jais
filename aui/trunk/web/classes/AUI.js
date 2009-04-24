@@ -4,5 +4,11 @@ if (!AUI) {
      * @class AUI
      * @static
      */
-    var AUI = {};
+     var AUI = {
+    	init : function(page) {
+    	 	AUI.Logger.info("init AUI");
+    	 	AUI.Layers.init();
+    	 	window.setTimeout(function() { AUI.Pages.init() }, 1000);
+     	}
+     };
 }

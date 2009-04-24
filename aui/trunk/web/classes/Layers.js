@@ -2,14 +2,18 @@ if (!AUI.Layers) {
 	
 	AUI.Layers = {		
 		layers: null,
+		element: null,
+		layer: null,
 		minSpeed: 80,
 		maxSpeed: 320,
 		position: 0,
 		speed: 0, // pixels / secondo
 		updateInterval: 40, // intervallo di aggiornamento, mS
 		target: null, // icona verso la quale si sta muovendo
+		repositionInterval: 1000,
 		
 		init : function() {
+			this.element = document.getElementById('layers');
 			var i = 0;
 			do {
 				var el = document.getElementById('layer-'+i);
@@ -23,8 +27,47 @@ if (!AUI.Layers) {
 			} while (true);
 			this.scroller = document.getElementById('scroller'); 
 			this.update();
-			 
+			
+			// FIXME su iPod non funziona se usato come webapp dalla home
+			var self = this;
+			this.scrollFunction = function(e) { return self.onScroll(e) };
+			window.addEventListener('scroll', this.scrollFunction, false);
+			this.resizeFunction = function(e) { return self.onScroll(e) };
+			window.addEventListener('resize', this.resizeFunction, false);
+
+			//AUI.Pages.showLayer(this.layers[Math.round(this.position)].layer);				
+			//this.show();
 			//this.onTimer();
+			this.scrollTimer();
+		},
+		
+		scrollTimer : function() {
+			var self = this;
+			self.reposition();
+			setTimeout(function() { self.scrollTimer(); },this.repositionInterval);
+		},
+		
+		hide : function() {
+			this.element.style.display = 'none';
+		},
+		
+		show : function() {
+			this.element.style.display = 'block';
+			AUI.Pages.showLayer(this.layers[Math.round(this.position)].layer);
+			this.reposition();
+		},
+		
+		
+		onScroll : function(event) {
+			AUI.Logger.info("Layers.onScroll");
+			this.reposition();
+			return false;
+		},
+		
+		reposition : function() {
+			this.element.style.left = (window.scrollX + (window.innerWidth - 320) / 2) + "px";
+			//this.element.style.left = window.scrollX + "px";
+			this.element.style.top = (window.innerHeight - this.element.scrollHeight + window.scrollY) + "px";
 		},
 		
 		onMouseDown : function(layer,event) {
@@ -151,7 +194,8 @@ if (!AUI.Layers) {
 				this.timer = setTimeout(function() { return self.onTimer() },this.updateInterval);
 				//AUI.Logger.debug("elapsed="+((new Date().getTime()) - t));
 			} else {
-				AUI.Pages.showLayer(this.layers[Math.round(this.position)].layer);				
+				this.layer = this.layers[Math.round(this.position)].layer;
+				AUI.Pages.showLayer(this.layer);				
 			}
 			return false;
 		},

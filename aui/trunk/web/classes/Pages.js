@@ -12,6 +12,16 @@ if (!AUI.Pages) {
 		currentPageId: null
 	};
 
+	AUI.Pages.init = function() {
+		if (this.currentPageId != null) {
+			this.changeTo(this.currentPageId);
+		}
+		var self = this;
+		this.pageMouseMove = function(e) { return self.onPageMouseMove(e); };
+		this.pageMouseUp = function(e) { return self.onPageMouseUp(e); };
+		this.pageMouseOut = function(e) { return self.onPageMouseUp(e); };
+	};
+	
 	AUI.Pages.changeTo = function(toPageId) {
 		var newPage = document.getElementById(toPageId);
 		if (newPage == null) {			
@@ -20,13 +30,89 @@ if (!AUI.Pages) {
 		if (this.currentPage != null) {
 			this.currentPage.style.display = 'none'
 		}
-		newPage.style.display = '';
+		newPage.style.display = 'block';
 		window.scroll(0,0);
 		this.currentPage = newPage;
 		AUI.Logger.info("Cambiata pagina:"+toPageId);
 		if (AUI.StreamRequest) {
 			AUI.StreamRequest.start();
+		}		
+		if (AUI.Pages.pageHaveLayers(toPageId)) {
+			if (AUI.StreamRequest) {
+				AUI.StreamRequest.start();
+			}
+			AUI.Layers.show();
+		} else {
+			if (AUI.StreamRequest) {
+				AUI.StreamRequest.stop();
+			}
+			AUI.Layers.hide();
 		}
+	};
+	
+	AUI.Pages.onMouseDown = function(pageId, event) {
+		event.preventDefault();
+		event.stopPropagation();
+		AUI.Layers.hide();
+		this.currentPage.addEventListener('mousemove', this.pageMouseMove, false);
+		this.currentPage.addEventListener('mouseup', this.pageMouseUp, false);
+		this.currentPage.addEventListener('mouseout', this.pageMouseOut, false);
+		this.scrollStartX = event.clientX + window.scrollX;
+		this.scrollStartY = event.clientY + window.scrollY;
+		this.scrollMaxX = this.currentPage.scrollWidth - window.innerWidth; 
+		this.scrollMaxY = this.currentPage.scrollHeight - window.innerHeight;
+		return false;
+	};
+	
+	AUI.Pages.onPageMouseUp = function(event) {
+		event.preventDefault();
+		event.stopPropagation();
+		if (this.pageHaveLayers(this.currentPageId)) {
+			AUI.Layers.show();
+		}
+		this.currentPage.removeEventListener('mousemove', this.pageMouseMove, false);
+		this.currentPage.removeEventListener('mouseup', this.pageMouseUp, false);
+		this.currentPage.removeEventListener('mouseout', this.pageMouseOut, false);
+		return false;
+	};
+
+	AUI.Pages.onPageMouseMove = function(event) {
+		event.preventDefault();
+		event.stopPropagation();
+
+		var dx = event.clientX - this.scrollStartX;
+		var dy = event.clientY - this.scrollStartY;
+		var x = -dx;
+		var y = -dy;
+		
+		if (x < 0) {
+			x = 0;
+		} else if (x > this.scrollMaxX) {
+			x = this.scrollMaxX;
+		}
+		if (y < 0) {
+			y = 0;
+		} else if (y > this.scrollMaxY) {
+			y = this.scrollMaxY;
+		}
+		
+		window.scroll(x,y);
+		AUI.Logger.info("dx="+dx+" dy="+dy+" x="+x+" y="+y);
+		
+		// TODO
+		return false;
+	};
+	
+	AUI.Pages.pageHaveLayers = function(pageId) {
+		var o = AUI.Pages.pageLayers[pageId];
+		if (typeof(o) == 'object') {
+			for (i in o) {
+				if (i != 'null') {
+					return true;
+				}
+			}
+		}
+		return false;
 	};
 
 	AUI.Pages.change = function(fromPageId,toPageId) {
@@ -53,12 +139,18 @@ if (!AUI.Pages) {
 	}
 	
 	AUI.Pages.showLayer = function(layer) {
-		if (this.currentLayer != null) {
-			if (this.currentLayer != layer) {
-				this.hideLayer(this.currentLayer);
-			} 
+		var pageId = this.getCurrentPageId();
+		var layers = this.pageLayers[pageId];
+		for (i in layers) {
+			if (i == 'null') {
+				continue;
+			}
+			if (i == layer) {
+				this.setLayerVisibility(i,true);
+			} else {
+				this.setLayerVisibility(i,false);
+			}
 		}
-		this.setLayerVisibility(layer,true);
 		this.currentLayer = layer;
 	}
 

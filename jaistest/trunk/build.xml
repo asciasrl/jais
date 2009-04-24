@@ -1,12 +1,15 @@
-<project default="jar">
-	<target name="compile">
-		<javac srcdir="src" />
-		<javac dstdir="bin" />
+<project name="AUI Installer" default="installer">
+	
+	<target name="installer" depends="jais,jeds,jbis,jaui,aui,conf">
 	</target>
-
-	<target name="jar">
-		<delete file="JaisTest.jar"/>
+	
+	<target name="jais">
 		<property name="version.num" value="1.00"/>
+		<property name="dst" value="../installer/"/>
+		<property name="lib" value="${dst}lib/"/>
+		<property name="web" value="${dst}web/"/>
+		<property name="conf" value="${dst}conf/"/>
+		
 		<buildnumber file="build.num"/>
 		<tstamp>
 			<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
@@ -19,33 +22,92 @@
 			<attribute name="Main-Class" value="BusTest"/>
 			<attribute name="Implementation-Version" value="${version.num}-b${build.number}"/>   
 			<attribute name="Built-Date" value="${TODAY}"/>                 
-		</manifest>
-		
-		<jar destfile="JaisTest.jar"
-		   basedir="bin"
+		</manifest>	
+
+		<jar destfile="jais.jar"
+		   basedir="../jais/bin"
 		   includes="**/*.class"
 		   manifest="MANIFEST.MF"
 		   />
 		<delete verbose="true">
-			<fileset dir="../installer/lib">
-			  <include name="JaisTest*.jar"/>
+			<fileset dir="${lib}">
+			  <include name="jais*.jar"/>
 			</fileset>
 		</delete>
-		<copy verbose="true" file="JaisTest.jar" tofile="../installer/lib/JaisTest-${v}.jar" />
-		<copy verbose="true" todir="../installer/conf" >
+		<move verbose="true" file="jais.jar" tofile="${lib}jais-${v}.jar" />
+	</target>
+	
+	<target name="jeds" depends="jais">
+		<jar destfile="jeds.jar"
+		   basedir="../jais/bin"
+		   includes="**/*.class"
+		   manifest="MANIFEST.MF"
+		   />
+		<delete verbose="true">
+			<fileset dir="${lib}">
+			  <include name="jeds*.jar"/>
+			</fileset>
+		</delete>
+		<move verbose="true" file="jeds.jar" tofile="${lib}jeds-${v}.jar" />
+	</target>	
+
+	<target name="jaui" depends="jais">
+		<jar destfile="jaui.jar"
+		   basedir="../aui/bin"
+		   includes="**/*.class"
+		   manifest="MANIFEST.MF"
+		   />
+		<delete verbose="true">
+			<fileset dir="${lib}">
+			  <include name="jaui*.jar"/>
+			</fileset>
+		</delete>
+		<move verbose="true" file="jaui.jar" tofile="${lib}jaui-${v}.jar" />
+	</target>	
+
+	<target name="jbis" depends="jais">
+		<jar destfile="jbis.jar"
+		   basedir="../jbis/bin"
+		   includes="**/*.class"
+		   manifest="MANIFEST.MF"
+		   />
+		<delete verbose="true">
+			<fileset dir="${lib}">
+			  <include name="jbis*.jar"/>
+			</fileset>
+		</delete>
+		<move verbose="true" file="jbis.jar" tofile="${lib}jbis-${v}.jar" />
+	</target>	
+
+	<target name="jdxp" depends="jais">
+		<jar destfile="jdxp.jar"
+		   basedir="../jdxp/bin"
+		   includes="**/*.class"
+		   manifest="MANIFEST.MF"
+		   />
+		<delete verbose="true">
+			<fileset dir="${lib}">
+			  <include name="jdxp*.jar"/>
+			</fileset>
+		</delete>
+		<move verbose="true" file="jdxp.jar" tofile="${lib}jdxp-${v}.jar" />
+	</target>	
+
+	<target name="aui">
+		<copy verbose="true" todir="${web}" >
+			<fileset dir="../aui/web">
+			  <include name="**/*"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="conf">
+		<copy verbose="true" todir="${conf}" >
 			<fileset dir="conf">
 			  <include name="*.xml"/>
 			</fileset>
 		</copy>
 	</target>
 	
-	<target name="cleanup">
-	 <delete>
-		 <fileset dir="." includes="**/*.class"/>
-		 <fileset file="MANIFEST.MF"/>
-	 </delete>  
-	</target>
-	
-	<target name="build" depends="compile,jar,cleanup" />
 </project>
   

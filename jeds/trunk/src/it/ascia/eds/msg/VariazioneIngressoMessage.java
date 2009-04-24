@@ -44,11 +44,11 @@ public class VariazioneIngressoMessage extends PTPRequest
 	}
 	
 	/**
-	 * Costruttore per messaggio diretto a cronotermostato.
+	 * Costruttore per messaggio diretto a cronotermostato o centralina scenari
 	 * 
 	 * @param d destinatario.
 	 * @param m mittente.
-	 * @param stato stato da impostare.
+	 * @param stato stato da impostare o scenario da attivare
 	 * 
 	 * @see BMCChronoTerm
 	 */
@@ -97,6 +97,16 @@ public class VariazioneIngressoMessage extends PTPRequest
 	}
 	
 	/**
+	 * Ritorna il numero di scena attivata dal comando.
+	 * 
+	 * <p>Questo metodo ha senso solo  se questo messaggio e' diretto a una 
+	 * centralina scenari.</p>
+	 */
+	public int getScenePortNumber() {
+		return (Byte1 & 0x0F);
+	}
+	
+	/**
 	 * Ritorna il numero dello stato indicato per il cronotermostato.
 	 * 
 	 * <p>Questo metodo ha senso solo  se questo messaggio e' diretto a un 
@@ -110,6 +120,7 @@ public class VariazioneIngressoMessage extends PTPRequest
 		StringBuffer s = new StringBuffer();
 		s.append(super.toString());
 		s.append(" Out"+ (getOutputNumber()+1));
+		s.append(" Scene" + (getScenePortNumber()+1));
 		if (isActivation()) {
 			s.append(" Attiva");
 		} else {

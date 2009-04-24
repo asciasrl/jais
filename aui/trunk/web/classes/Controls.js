@@ -29,11 +29,11 @@ if (!AUI.Controls) {
 		} else {
 			AUI.Logger.error("Non trovato device: "+id);
 		}
-	}
+	};
 	
 	AUI.Controls.getControl = function(id) {
 		return AUI.Controls.controls[id];		
-	}
+	};
 	
 	AUI.Controls.getDevice = function(id) {
 		var control = this.getControl(id);
@@ -50,6 +50,8 @@ if (!AUI.Controls) {
 				device = new AUI.Power(id);
 			} else if (control.type == "blind") {
 				device = new AUI.Blind(id);
+			} else if (control.type == "scene") {
+				device = new AUI.Scene(id);
 			} else if (control.type == "thermo") {
 				device = new AUI.Thermo(id);
 			} else if (control.type == "webcam") {
@@ -63,7 +65,34 @@ if (!AUI.Controls) {
 			}
 		}
 		return device;
-	}
+	};
+	
+	AUI.Controls.revertStatus = function(address) {
+		AUI.Logger.info("revertStatus:"+address);
+		var ids = this.addresses[address];
+		if (ids == null) {
+			return;
+		}
+		for (var i=0; i < ids.length; i++) {
+			var id = ids[i];
+			var device = this.getDevice(id);
+			if (device == null) {
+				AUI.Logger.error("Device non disponibile per "+id);
+				return;
+			}
+			var newStatus = device.oldStatus;
+			if (newStatus == null) {
+				newStatus = "default";
+			}
+			var port = address.split(":")[1];
+			try {
+				device.setStatus(newStatus);
+			} catch(e) {
+				AUI.Logger.error("address:"+address);
+				AUI.Logger.error(e);
+			}
+		}
+	};
 	
 	AUI.Controls.fireDevicePortChangeEvent = function(devicePortChangeEvent) {
 		var address = devicePortChangeEvent.A; 
@@ -87,6 +116,6 @@ if (!AUI.Controls) {
 				AUI.Logger.error(e);
 			}
 		}
-	}
+	};
 
 }

@@ -2,6 +2,7 @@ if (!AUI.Device) {
 		
 	AUI.Device = function() {
 		this.id = null;
+		this.oldStatus = null;
 		this.status = null;
 		this.element = null;
 	};
@@ -45,6 +46,7 @@ if (!AUI.Device) {
 	
 	AUI.Device.prototype.setStatus = function(newStatus) {
 		if (newStatus != null && (this.status == null || newStatus != this.status)) {
+			this.oldStatus = this.status;
 			this.status = newStatus;
 			var control = this.getControl();
 			var newImg = control[newStatus];

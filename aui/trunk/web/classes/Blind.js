@@ -34,8 +34,8 @@ if (!AUI.Blind) {
 			newstatus = "closed";
 			break;
 		default:
-			command = "stop";
-			newstatus = "stopped";
+			command = "open";
+			newstatus = "opening";
 		}
 		if (newstatus != status) {
 			this.setStatus(newstatus);

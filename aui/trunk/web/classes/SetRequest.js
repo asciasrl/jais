@@ -12,6 +12,7 @@ if (!AUI.SetRequest) {
 		}
 		try {
 			this.sending = true;
+			this.address = address;
 			this.request.open('GET', 'jais/set?'+address+'='+value, true);
 			this.request.send(null);
 			var self = this;
@@ -32,12 +33,18 @@ if (!AUI.SetRequest) {
 			clearInterval(AUI.SetRequest.timeout);
 			if (request.status == 200) {
 				AUI.Header.show(request.responseText);
-			} else if (request.status == 500) {
-				AUI.Header.show("Errore del server.");
-			} else if (request.status == 400) {
-				AUI.Header.show("Errore di comunicazione.");
+				if (request.responseText.indexOf("ERROR") == 0) {
+					AUI.Controls.revertStatus(AUI.SetRequest.address);					
+				}
 			} else {
-				AUI.Header.show("Errore di collegamento ("+request.status+")");
+				AUI.Controls.revertStatus(AUI.SetRequest.address);
+				if (request.status == 500) {
+					AUI.Header.show("Errore del server.");
+				} else if (request.status == 400) {
+					AUI.Header.show("Errore di comunicazione.");
+				} else {
+					AUI.Header.show("Errore di collegamento ("+request.status+")");
+				}
 			}
 			AUI.SetRequest.sending = false;
 		}		
@@ -49,8 +56,6 @@ if (!AUI.SetRequest) {
 	};
 	
 	AUI.SetRequest.timeoutExpired = function() {
-		//alert(this);
-		AUI.Header.show("Timeout del collegamento.");
 		AUI.SetRequest.abort();
 	};
 }

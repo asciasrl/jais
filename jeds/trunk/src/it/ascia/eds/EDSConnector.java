@@ -4,6 +4,15 @@
 package it.ascia.eds;
 
 import java.util.Iterator;
+import java.util.List;
+
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.apache.commons.configuration.SubnodeConfiguration;
+import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
+import org.apache.commons.configuration.tree.ConfigurationNode;
+
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.Controller;
@@ -68,7 +77,7 @@ public class EDSConnector extends Connector {
 	 * EDSMessageParser per la lettura dei messaggi in ingresso.
 	 */
 	protected EDSMessageParser mp;
-    
+
     /**
      * Connettore per il BUS EDS.
      * 
@@ -203,6 +212,10 @@ public class EDSConnector extends Connector {
 	 * ritorna true se e' arrivata una risposta.
 	 */
 	public boolean sendMessage(EDSMessage m) {
+		if (transport == null) {
+			logger.error("Transport not available for connector "+getName()+", cannot send message.");
+			return false;
+		}
 		boolean retval = false;
 		if (BroadcastMessage.class.isInstance(m)) {
 			sendBroadcastMessage((BroadcastMessage) m);
@@ -322,5 +335,77 @@ public class EDSConnector extends Connector {
     public void discoverBMC(int address) {
     	queueMessage(new RichiestaModelloMessage(address,getMyAddress()));
     }
+
+	public boolean loadConfig(String EDSConfigFileName) {
+		XMLConfiguration EDSConfig;
+		try {
+			EDSConfig = new XMLConfiguration(EDSConfigFileName);
+		} catch (ConfigurationException e) {
+			logger.error("Error reading configuration file:",e);
+			return false;
+		}
+		List dispositivi = EDSConfig.configurationsAt("dispositivo");
+		for(Iterator id = dispositivi.iterator(); id.hasNext();)
+		{
+		    HierarchicalConfiguration dispositivo = (HierarchicalConfiguration) id.next();
+		    String name = (String) dispositivo.getProperty("[@name]");
+		    String address = (String) dispositivo.getString("indirizzo");
+		    int model = dispositivo.getInt("modello");
+		    String revision = (String) dispositivo.getString("revisione");
+		    BMC bmc = BMC.createBMC(this, address, model, name, true);
+		    if (bmc != null) {
+		    	logger.debug(bmc.getClass().getSimpleName()+" address="+address+" model="+model+" revision="+revision);		    	
+				List inputs = dispositivo.configurationsAt("ingresso");
+				int iInput = 0;
+				for(Iterator ii = inputs.iterator(); ii.hasNext();)
+				{
+				    HierarchicalConfiguration input = (HierarchicalConfiguration) ii.next();
+				    String inputName = input.getString("[@name]",null);
+				    if (inputName != null) {
+				    	bmc.setInputName(iInput, inputName);
+				    	logger.debug("BMC "+address+" input:"+iInput+" name:"+inputName);
+				    }
+				    iInput++;
+				}
+				List outputs = dispositivo.configurationsAt("uscita");
+				int iOutput = 0;
+				for(Iterator io = outputs.iterator(); io.hasNext();)
+				{
+				    HierarchicalConfiguration output = (HierarchicalConfiguration) io.next();
+				    String outputName = output.getString("[@name]",null);
+				    if (outputName != null) {			    
+				    	bmc.setOutputName(iOutput, outputName);
+				    	logger.debug("BMC "+address+" output:"+iOutput+" name:"+outputName);
+				    }
+				    if (BMCStandardIO.class.isInstance(bmc)) {
+				    	int tipo = output.getInt("tipo");
+				    	if (tipo == 14) {
+				    		((BMCStandardIO) bmc).addBlindPort(iOutput);
+				    	}
+				    }
+				    
+				    bmc.setOutputTimer(iOutput, 1000 * output.getInt("timer",0));
+				    List groups = output.configurationAt("gruppiAppartenenza").getRootNode().getChildren();
+				    for(Iterator ig = groups.iterator(); ig.hasNext();)
+				    {
+				    	SubnodeConfiguration group = output.configurationAt("gruppiAppartenenza." + ((ConfigurationNode) ig.next()).getName());
+				    	int groupNumber = 0;
+				    	if (model == 102) {
+				    		groupNumber = group.getInt("Numero");
+				    	} else {
+				    		groupNumber = group.getInt("numero");
+				    	}
+				    	if (groupNumber > 0) {
+				    		bmc.bindOutput(groupNumber, iOutput);
+				    	}
+				    }
+				    iOutput++;
+				}
+				// TODO verificare che non si abbiano duplicazioni sulle associazioni uscite
+				bmc.discover();
+		    }
+		}    		
+		return true;
+	}
 
 }

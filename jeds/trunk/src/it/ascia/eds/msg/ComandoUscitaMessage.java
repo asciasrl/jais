@@ -1,14 +1,18 @@
-package it.ascia.eds.msg;	
+package it.ascia.eds.msg;
 
 /**
  * Imposta l'uscita di un BMC Standard I/O oppure dimmer.
  * 
- * <p>Questo messaggio agisce "a basso livello", ignorando timer o
- * programmazioni particolari del BMC: imposta l'uscita e basta. Se si vuole
- * che il BMC tenga conto di timer & co, allora bisogna inviare un messaggio di
- * tipo "variazione ingresso" anziché questo.</p>
+ * <p>
+ * Questo messaggio agisce "a basso livello", ignorando timer o programmazioni
+ * particolari del BMC: imposta l'uscita e basta. Se si vuole che il BMC tenga
+ * conto di timer & co, allora bisogna inviare un messaggio di tipo
+ * "variazione ingresso" anziché questo.
+ * </p>
  * 
- * <p>Questo messaggio puo' essere inviato anche dal cronotermostato.</p>
+ * <p>
+ * Questo messaggio puo' essere inviato anche dal cronotermostato.
+ * </p>
  * 
  * Codice EDS: 21.
  * 
@@ -19,14 +23,20 @@ public class ComandoUscitaMessage extends PTPRequest {
 	/**
 	 * Costruttore per messaggio per dimmer.
 	 * 
-	 * @param d indirizzo destinatario.
-	 * @param m indirizzo mittente.
-	 * @param Tempo tempo di accensione (vedi protocollo).
-	 * @param Uscita numero dell'uscita da attivare.
-	 * @param Percentuale percentuale di luminosità richiesta.
-	 * @param Attivazione 1 per accendere, 0 per spegnere.
+	 * @param d
+	 *            indirizzo destinatario.
+	 * @param m
+	 *            indirizzo mittente.
+	 * @param Tempo
+	 *            tempo di accensione (vedi protocollo).
+	 * @param Uscita
+	 *            numero dell'uscita da attivare.
+	 * @param Percentuale
+	 *            percentuale di luminosità richiesta.
+	 * @param Attivazione
+	 *            1 per accendere, 0 per spegnere.
 	 */
-	public ComandoUscitaMessage(int d, int m, int Tempo, int Uscita, 
+	public ComandoUscitaMessage(int d, int m, int Tempo, int Uscita,
 			int Percentuale, int Attivazione) {
 		Destinatario = d & 0xFF;
 		Mittente = m & 0xFF;
@@ -54,7 +64,25 @@ public class ComandoUscitaMessage extends PTPRequest {
 			Byte2 = 0;
 		}
 	}
-	
+
+	/**
+	 * Costruttore per messaggio per BMCScene.
+	 * 
+	 * @param d
+	 *            indirizzo destinatario.
+	 * @param m
+	 *            indirizzo mittente.
+	 * @param Uscita
+	 *            numero dello scenario da attivare (da 0 a 15)
+	 */
+	public ComandoUscitaMessage(int d, int m, int Scenario) {
+		Destinatario = d & 0xFF;
+		Mittente = m & 0xFF;
+		TipoMessaggio = EDSMessage.MSG_COMANDO_USCITA; // 21;
+		Byte1 = (Scenario & 0x0F);
+		Byte2 = 0;
+	}
+
 	public ComandoUscitaMessage(int[] message) {
 		load(message);
 	}
@@ -62,23 +90,30 @@ public class ComandoUscitaMessage extends PTPRequest {
 	public String getMessageDescription() {
 		return "Comando uscita";
 	}
-	
+
 	/**
 	 * Ritorna il numero dell'uscita interessata dal comando.
 	 */
 	public int getOutputPortNumber() {
 		return (Byte1 & 0x07);
 	}
-	
+
+	/**
+	 * Ritorna il numero di scena attivata dal comando.
+	 */
+	public int getScenePortNumber() {
+		return (Byte1 & 0x0F);
+	}
+
 	/**
 	 * Ritorna la percentuale di luce richiesta, se il comando e' per un dimmer.
 	 */
 	public int getPercentage() {
 		return ((Byte2 >> 1) & 0x7F);
 	}
-	
+
 	/**
-	 * Verifica se il comando e' di attivazione/incremento o 
+	 * Verifica se il comando e' di attivazione/incremento o
 	 * disattivazione/decremento.
 	 * 
 	 * @return true se e' un'attivazione/incremento.
@@ -87,10 +122,11 @@ public class ComandoUscitaMessage extends PTPRequest {
 		return ((Byte2 & 0x01) == 1);
 	}
 
-	public String toString()	{
+	public String toString() {
 		StringBuffer s = new StringBuffer();
 		s.append(super.toString());
-		s.append(" Uscita: "+ getOutputPortNumber());
+		s.append(" Uscita: " + getOutputPortNumber());
+		s.append(" Scena: " + getScenePortNumber());
 		if (isActivation()) {
 			s.append(" Attivazione/Incremento");
 		} else {
@@ -105,7 +141,7 @@ public class ComandoUscitaMessage extends PTPRequest {
 			s.append(" Istantaneo");
 			break;
 		default:
-			s.append(" Variazione 0-100% in "+(tempo/10)+"s");
+			s.append(" Variazione 0-100% in " + (tempo / 10) + "s");
 			break;
 		}
 
@@ -115,7 +151,7 @@ public class ComandoUscitaMessage extends PTPRequest {
 		} else if (percentuale > 100) {
 			s.append(" Valore precedente");
 		} else {
-			s.append(" Accende al "+percentuale+"%");
+			s.append(" Accende al " + percentuale + "%");
 		}
 		return s.toString();
 	}

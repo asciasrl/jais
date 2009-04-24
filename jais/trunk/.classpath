@@ -2,30 +2,30 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
-	<classpathentry kind="lib" path="lib/RXTXcomm.jar"/>
-	<classpathentry kind="lib" path="lib/commons-configuration-1.6.jar">
+	<classpathentry exported="true" kind="lib" path="lib/log4j-1.2.15.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/RXTXcomm.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-configuration-1.6.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="http://commons.apache.org/configuration/apidocs/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/commons-lang-2.4.jar"/>
-	<classpathentry kind="lib" path="lib/commons-collections-3.2.1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-logging-1.1.1.jar">
+	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-collections-3.2.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-logging-1.1.1.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="http://commons.apache.org/logging/apidocs/index.html"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/json_simple-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/slf4j-api-1.5.6.jar"/>
-	<classpathentry kind="lib" path="lib/slf4j-log4j12-1.5.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/json_simple-1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/slf4j-api-1.5.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/slf4j-log4j12-1.5.6.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="lib" path="lib/ant-1.6.5.jar"/>
-	<classpathentry kind="lib" path="lib/core-3.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/jetty-6.1.7.jar"/>
-	<classpathentry kind="lib" path="lib/jetty-util-6.1.7.jar"/>
-	<classpathentry kind="lib" path="lib/jsp-2.1.jar"/>
-	<classpathentry kind="lib" path="lib/jsp-api-2.1.jar"/>
-	<classpathentry kind="lib" path="lib/servlet-api-2.5-6.1.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ant-1.6.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/core-3.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jetty-6.1.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jetty-util-6.1.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jsp-2.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jsp-api-2.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/servlet-api-2.5-6.1.7.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

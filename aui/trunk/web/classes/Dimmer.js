@@ -166,7 +166,7 @@ if (!AUI.Dimmer) {
 		if (this.eventType == "mouse") {
 			var y1 = 100 - (y + window.scrollY - this.slider.offsetTop - 11 - 15);
 		} else {
-			var y1 = 100 - (y + window.scrollY - this.slider.offsetTop - 11 - 15);
+			var y1 = 100 - (y - this.slider.offsetTop - 11 - 15);
 		}
 		var newValue = Math.min(100,Math.max(0,y1));
 		return newValue;				
@@ -261,7 +261,9 @@ if (!AUI.Dimmer) {
 		this.slider.addEventListener('touchmove', this.sliderTouchMove, false);
 		this.sliderTouchEnd = function(e) { return self.onSliderTouchEnd(e) };
 		this.slider.addEventListener('touchend', this.sliderTouchEnd, false);
-		this.onSliderStart(event.targetTouches[0].clientX, event.targetTouches[0].clientY);
+		var x = event.targetTouches[0].clientX;
+		var y = event.targetTouches[0].clientY;
+		this.onSliderStart(x,y);
 		return false;
 	}
 

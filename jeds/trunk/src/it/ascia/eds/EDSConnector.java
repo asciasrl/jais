@@ -162,7 +162,7 @@ public class EDSConnector extends Connector {
 			if (bmc == null) {
 				bmc = createBMC(risposta.getSource(), risposta.getModello());
 				if (bmc != null) {
-					logger.info("Creato BMC "+bmc+" indirizzo:"+bmc.getFullAddress());
+					logger.info("Creato BMC "+bmc+" Indirizzo:"+bmc.getFullAddress());
 					bmc.discover();
 				}
 			} else {

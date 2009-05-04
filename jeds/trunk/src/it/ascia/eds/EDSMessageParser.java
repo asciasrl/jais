@@ -4,6 +4,7 @@
  */
 package it.ascia.eds;
 
+import it.ascia.ais.Message;
 import it.ascia.eds.msg.AcknowledgeMessage;
 import it.ascia.eds.msg.CambioVelocitaMessage;
 import it.ascia.eds.msg.ComandoBroadcastMessage;
@@ -51,24 +52,29 @@ public class EDSMessageParser extends it.ascia.ais.MessageParser {
 
 	private int[] buff = new int[8];
 
-	private int ibuff = 0;
-
 	protected long lastReceived;
 	
-	public static long TIMEOUT = 100;
+	public long TIMEOUT = 100;
 	
 	public EDSMessageParser() {
 		super();
-		clear();
+		buff = new int[8];
+		for (int i=0; i < 8; i++) {
+			buff[i] = -1;
+		}
+		lastReceived = 0;
+	}
+
+	public boolean isBusy() {
+		return (!valid) && ((System.currentTimeMillis() - lastReceived) < TIMEOUT);
 	}
 
 	public String dumpBuffer() {
 		StringBuffer s = new StringBuffer();
-		s.append("i="+ibuff+" ");
 		s.append("STX:0x"+Integer.toHexString(buff[0])+" ");
 		s.append("DST:0x"+Integer.toHexString(buff[1])+" ");
 		s.append("MIT:0x"+Integer.toHexString(buff[2])+" ");
-		s.append("TIP:0x"+Integer.toHexString(buff[3])+" ");
+		s.append("TYP:0x"+Integer.toHexString(buff[3])+" ");
 		s.append("BY1:0x"+Integer.toHexString(buff[4])+" ");
 		s.append("BY2:0x"+Integer.toHexString(buff[5])+" ");
 		s.append("CHK:0x"+Integer.toHexString(buff[6])+" ");
@@ -76,138 +82,117 @@ public class EDSMessageParser extends it.ascia.ais.MessageParser {
 		return s.toString();
 	}
 
+	/**
+	 * Calcola il checksum del buffer
+	 * @return checksum
+	 */
+	private int checksum() {
+		int chk = 0;
+		for (int i = 0; i < 6; i++) {
+			chk = (chk + buff[i] & 0xFF) & 0xFF;
+		}
+		return chk;
+	}
+	
 	public void push(int b) {
 		b = b & 0xFF;
-		if (ibuff >= 8) {
-			clear();
+		for (int i = 1; i < 8; i++) {
+			buff[i-1] = buff[i];
 		}
-		if (ibuff > 0 && ! valid && (System.currentTimeMillis() - lastReceived) >= TIMEOUT ) {
-			logger.warn("Timeout in ricezione");
-			clear();
+		buff[7] = b;
+		if (!valid && (lastReceived > 0) && (System.currentTimeMillis() - lastReceived) >= TIMEOUT ) {
+			logger.error("Timeout in ricezione "+(System.currentTimeMillis() - lastReceived));
 		}
 		lastReceived = System.currentTimeMillis();
-		//logger.warn("ibuff="+ibuff+ " b = "+b);
-		buff[ibuff++] = b;
-		// verifica che il primo byte sia Stx, altrimenti lo scarta
-		if (ibuff == 1) {
-			if (b != Stx) {
-				ibuff = 0;
-				logger.warn("Non Stx:" + b);
+		if ((buff[0] == Stx) && (buff[7] == Etx)) {
+			if (buff[6] == checksum()) {
+				valid = true;
+				message = createMessage();
+			} else {
+				logger.warn("Checksum error");
+				valid = false;
 			}
-			return;		 
-		}
-		// verifica che il settimo byte sia checksum valido
-		if (ibuff == 7) {
-			int chk = 0;
-			for (int i = 0; i < 6; i++) {
-				chk = (chk + buff[i] & 0xFF) & 0xFF;
-			}
-			if (chk != b) {
-				logger.warn("Errore checksum");
-				logger.debug(dumpBuffer());
-				clear();
-				return;
-			}
-		}
-		// verifica che l'ottavo byte sia Etx
-		if (ibuff == 8) {
-			if (b != Etx) {
-				clear();
-				return;
-			}
-			message = createMessage(buff);
-			valid = true;
-			return;
+		} else {
+			valid = false;
 		}
 	}
 
 	/**
-	 * Metodo factory per creare messaggi.
+	 * Metodo factory per creare messaggi in base al contenuto del buffer
 	 * 
-	 * @param message sequenza di byte che compone il messaggio
+	 * TODO Realizzare una Factory dinamica
 	 * @return messaggio decodificato
 	 */
-	private EDSMessage createMessage(int[] message) {
-		switch (message[3]) {
+	private EDSMessage createMessage() {
+		switch (buff[3]) {
 		case EDSMessage.MSG_RICHIESTA_MODELLO : 
-			return new RichiestaModelloMessage(message);
+			return new RichiestaModelloMessage(buff);
 		case EDSMessage.MSG_RISPOSTA_MODELLO: 
-			return new RispostaModelloMessage(message);
+			return new RispostaModelloMessage(buff);
 		case EDSMessage.MSG_VARIAZIONE_INGRESSO:
 			// Non consideriamo MSG_IMPOSTAZIONE_STATO_TERMOSTATO, che ha lo
 			// stesso valore, perche' non riceveremo mai messaggi di quel tipo,
 			// ma li genereremo soltanto.
-			return new VariazioneIngressoMessage(message);
+			return new VariazioneIngressoMessage(buff);
 		case EDSMessage.MSG_ACKNOWLEDGE: 
-			return new AcknowledgeMessage(message);
+			return new AcknowledgeMessage(buff);
 		case EDSMessage.MSG_RICHIESTA_USCITA:
-			return new RichiestaUscitaMessage(message);
+			return new RichiestaUscitaMessage(buff);
 		case EDSMessage.MSG_RISPOSTA_USCITA:
-			return new RispostaUscitaMessage(message);
+			return new RispostaUscitaMessage(buff);
 		case EDSMessage.MSG_RICHIESTA_ASSOCIAZIONE_BROADCAST: 
-			return new RichiestaAssociazioneUscitaMessage(message);
+			return new RichiestaAssociazioneUscitaMessage(buff);
 		case EDSMessage.MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST: 
-			return new RispostaAssociazioneUscitaMessage(message);
+			return new RispostaAssociazioneUscitaMessage(buff);
 		case EDSMessage.MSG_COMANDO_BROADCAST: 
-			return new ComandoBroadcastMessage(message);
+			return new ComandoBroadcastMessage(buff);
 		case EDSMessage.MSG_COMANDO_USCITA: 
-			return new ComandoUscitaMessage(message);
+			return new ComandoUscitaMessage(buff);
 		case EDSMessage.MSG_RISPOSTA_OPZIONI_INGRESSO: 
-			return new RispostaOpzioniIngressoMessage(message);			
+			return new RispostaOpzioniIngressoMessage(buff);			
 		case EDSMessage.MSG_RICHIESTA_STATO: 
-			return new RichiestaStatoMessage(message);
+			return new RichiestaStatoMessage(buff);
 		case EDSMessage.MSG_RISPOSTA_STATO: 
-			return new RispostaStatoMessage(message);
+			return new RispostaStatoMessage(buff);
 		case EDSMessage.MSG_CAMBIO_VELOCITA: 
-			return new CambioVelocitaMessage(message);
+			return new CambioVelocitaMessage(buff);
 		case EDSMessage.MSG_PROGRAMMAZIONE:
-			return new ProgrammazioneMessage(message);
+			return new ProgrammazioneMessage(buff);
 		case EDSMessage.MSG_RICHIESTA_INGRESSO_IR: 
-			return new RichiestaIngressoIRMessage(message);
+			return new RichiestaIngressoIRMessage(buff);
 		case EDSMessage.MSG_RISPOSTA_INGRESSO_IR: 
-			return new RispostaIngressoIRMessage(message);
+			return new RispostaIngressoIRMessage(buff);
 		case EDSMessage.MSG_COMANDO_USCITA_DIMMER: 
-			return new ComandoUscitaDimmerMessage(message);
+			return new ComandoUscitaDimmerMessage(buff);
 		case EDSMessage.MSG_RISPOSTA_STATO_DIMMER: 
-			return new RispostaStatoDimmerMessage(message);
+			return new RispostaStatoDimmerMessage(buff);
 		case EDSMessage.MSG_IMPOSTA_PARAMETRO: 
-			return new ImpostaParametroMessage(message);
+			return new ImpostaParametroMessage(buff);
 		case EDSMessage.MSG_RICHIESTA_PARAMETRO:
-			return new RichiestaParametroMessage(message);
+			return new RichiestaParametroMessage(buff);
 		case EDSMessage.MSG_RISPOSTA_PARAMETRO:
-			return new RispostaParametroMessage(message);			
+			return new RispostaParametroMessage(buff);			
 		case EDSMessage.MSG_RICHIESTA_STATO_TERMOSTATO:
-			return new RichiestaStatoTermostatoMessage(message);
+			return new RichiestaStatoTermostatoMessage(buff);
 		case EDSMessage.MSG_RISPOSTA_STATO_TERMOSTATO: 
-			return new RispostaStatoTermostatoMessage(message);
+			return new RispostaStatoTermostatoMessage(buff);
 		case EDSMessage.MSG_IMPOSTA_SET_POINT:
-			return new ImpostaSetPointMessage(message);
+			return new ImpostaSetPointMessage(buff);
 		case EDSMessage.MSG_RICHIESTA_SET_POINT:
-			return new RichiestaSetPointMessage(message);
+			return new RichiestaSetPointMessage(buff);
 		case EDSMessage.MSG_LETTURA_SET_POINT: 
-			return new CronotermMessage(message);
+			return new CronotermMessage(buff);
 		case EDSMessage.MSG_RISPOSTA_SET_POINT: 
-			return new RispostaSetPointMessage(message);
+			return new RispostaSetPointMessage(buff);
 		case EDSMessage.MSG_RICHIESTA_RTCC: 
-			return new RichiestaRTCCMessage(message);
+			return new RichiestaRTCCMessage(buff);
 		case EDSMessage.MSG_RISPOSTA_RTCC: 
-			return new RispostaRTCCMessage(message);
+			return new RispostaRTCCMessage(buff);
 		case EDSMessage.MSG_IMPOSTA_RTCC:
-			return new ImpostaRTCCMessage(message);
+			return new ImpostaRTCCMessage(buff);
 		default: 
-			return new UnknowMessage(message);
+			return new UnknowMessage(buff);
 		}
-	}
-
-	public void clear() {
-		ibuff = 0;
-		buff = new int[8];
-		valid = false;
-		message = null;
-	}
-	
-	public boolean isBusy() {
-		return  (ibuff > 0 && ! valid && (System.currentTimeMillis() - lastReceived) < TIMEOUT);
 	}
 
 }

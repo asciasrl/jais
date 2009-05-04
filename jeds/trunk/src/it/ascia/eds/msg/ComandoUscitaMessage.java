@@ -79,8 +79,8 @@ public class ComandoUscitaMessage extends PTPRequest {
 		Destinatario = d & 0xFF;
 		Mittente = m & 0xFF;
 		TipoMessaggio = EDSMessage.MSG_COMANDO_USCITA; // 21;
-		Byte1 = (Scenario & 0x0F);
-		Byte2 = 0;
+		Byte1 = (Scenario & 0x07);
+		Byte2 =  1 - ((Scenario & 0x08) >> 3);
 	}
 
 	public ComandoUscitaMessage(int[] message) {
@@ -99,10 +99,10 @@ public class ComandoUscitaMessage extends PTPRequest {
 	}
 
 	/**
-	 * Ritorna il numero di scena attivata dal comando.
+	 * Ritorna il numero di scena attivata dal comando (0-15)
 	 */
 	public int getScenePortNumber() {
-		return (Byte1 & 0x0F);
+		return ((1 - (Byte2 & 0x01)) << 3) + (Byte1 & 0x07);
 	}
 
 	/**
@@ -125,8 +125,8 @@ public class ComandoUscitaMessage extends PTPRequest {
 	public String toString() {
 		StringBuffer s = new StringBuffer();
 		s.append(super.toString());
-		s.append(" Uscita: " + getOutputPortNumber());
 		s.append(" Scena: " + getScenePortNumber());
+		s.append(" Uscita: " + getOutputPortNumber());
 		if (isActivation()) {
 			s.append(" Attivazione/Incremento");
 		} else {

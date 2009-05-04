@@ -88,7 +88,7 @@ public class BMCStandardIO extends BMC {
 			} else {
 				// Siamo noi che decidiamo: avvisiamo il listener e mandiamo
 				// l'ack
-				logger.debug("Impostata la porta " + portId + " a " + newValue);
+				setPortValue(portId, newValue);
 				getConnector().sendMessage(new AcknowledgeMessage(cmd));
 			}
 			break;

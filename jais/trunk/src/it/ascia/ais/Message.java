@@ -1,6 +1,8 @@
 package it.ascia.ais;
 
-public abstract class Message {
+public abstract class Message implements Comparable {
+	
+	protected int priority = 0;
 
 	public String getMessageDescription() {
 		return getClass().getSimpleName();
@@ -55,6 +57,19 @@ public abstract class Message {
 			s.append((i >> j) & 1);
 		}
 		return s.reverse().toString();
+	}
+	
+	public int getPriority() {
+		return priority;
+	}
+
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
+
+	public int compareTo(Object o) {
+		Message m = (Message) o;
+		return this.priority - m.priority;
 	}
 
 

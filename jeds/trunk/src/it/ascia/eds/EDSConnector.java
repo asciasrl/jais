@@ -10,7 +10,6 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
 import org.apache.commons.configuration.tree.ConfigurationNode;
 
 import it.ascia.ais.AISException;
@@ -217,28 +216,32 @@ public class EDSConnector extends Connector {
 			return false;
 		}
 		boolean retval = false;
-		if (BroadcastMessage.class.isInstance(m)) {
-			sendBroadcastMessage((BroadcastMessage) m);
-			retval = true;
-		} else if (PTPMessage.class.isInstance(m)){ 
-			PTPMessage ptpm = (PTPMessage) m;
-			if (PTPRequest.class.isInstance(ptpm)) {
-				retval = sendPTPRequest((PTPRequest) ptpm);
-			} else {
-				// Invio nudo e crudo
-				try {
-					transportSemaphore.acquire();
-					transport.write(m.getBytesMessage());
-					transportSemaphore.release();
-				} catch (InterruptedException e) {
-					logger.error("Interrupted:",e);
-				}
-				// non c'e' modo di sapere se e' arrivato; siamo ottimisti.
-				retval = true;
+		try {
+			if (!transportSemaphore.tryAcquire()) {
+				logger.trace("Start waiting for transport semaphore ...");
+				transportSemaphore.acquire();
+				logger.debug("Done waiting for transport semaphore.");
 			}
-		} else {
-			logger.error("Messaggio di tipo sconosciuto:"+m.getClass().getName());
-			retval = false;
+			if (BroadcastMessage.class.isInstance(m)) {
+				sendBroadcastMessage((BroadcastMessage) m);
+				retval = true;
+			} else if (PTPMessage.class.isInstance(m)){ 
+				PTPMessage ptpm = (PTPMessage) m;
+				if (PTPRequest.class.isInstance(ptpm)) {
+					retval = sendPTPRequest((PTPRequest) ptpm);
+				} else {
+					// Invio nudo e crudo
+					transport.write(m.getBytesMessage());
+					// non c'e' modo di sapere se e' arrivato; siamo ottimisti.
+					retval = true;
+				}
+			} else {
+				logger.error("Messaggio di tipo sconosciuto:"+m.getClass().getName());
+				retval = false;
+			}
+			transportSemaphore.release();
+		} catch (InterruptedException e) {
+			logger.error("Interrupted:",e);
 		}
 		return retval;
 	}
@@ -251,18 +254,12 @@ public class EDSConnector extends Connector {
 	 */
 	private void sendBroadcastMessage(BroadcastMessage m) {
 		int tries = m.getSendTries();
-		try {
-			transportSemaphore.acquire();
-			for (int i = 0; i < tries; i++) {
-				try {
-					Thread.sleep(getRetryTimeout());
-				} catch (InterruptedException e) {
-				}
-				transport.write(m.getBytesMessage());
+		for (int i = 0; i < tries; i++) {
+			try {
+				Thread.sleep(getRetryTimeout());
+			} catch (InterruptedException e) {
 			}
-			transportSemaphore.release();
-		} catch (InterruptedException e) {
-			logger.error("Interrupted:",e);
+			transport.write(m.getBytesMessage());
 		}
 	}
 	
@@ -284,7 +281,6 @@ public class EDSConnector extends Connector {
 			}
 		}
 		try {
-			transportSemaphore.acquire();
 			if (messageToBeAnswered != null) {
 				logger.error("messageToBeAnswered non nullo: "+messageToBeAnswered);
 				logger.error("Messaggio in attesa :"+m);
@@ -303,9 +299,7 @@ public class EDSConnector extends Connector {
 	    			transport.write(m.getBytesMessage());
 	    			// si mette in attesa, ma se nel frattempo arriva la risposta viene avvisato
 	    	    	try {
-	    				//transportSemaphore.release();
 	    	    		messageToBeAnswered.wait((long)(getRetryTimeout() * (1 + 0.2 * Math.random())));
-	    				//transportSemaphore.acquire();
 	    	    	} catch (InterruptedException e) {
 	    				logger.trace("sendPTPRequest wait:2");
 	    	    	}
@@ -313,7 +307,6 @@ public class EDSConnector extends Connector {
 		    	received = m.isAnswered();
 		    	messageToBeAnswered = null;
 	    	}
-			transportSemaphore.release();
 		} catch (InterruptedException e) {
 			logger.error("Interrupted:",e);
 		}

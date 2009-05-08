@@ -58,13 +58,17 @@ public class EDSMessageParser extends it.ascia.ais.MessageParser {
 	
 	public EDSMessageParser() {
 		super();
+		clear();
+	}
+
+	private void clear() {
 		buff = new int[8];
 		for (int i=0; i < 8; i++) {
 			buff[i] = -1;
 		}
 		lastReceived = 0;
 	}
-
+	
 	public boolean isBusy() {
 		return (!valid) && ((System.currentTimeMillis() - lastReceived) < TIMEOUT);
 	}
@@ -96,6 +100,7 @@ public class EDSMessageParser extends it.ascia.ais.MessageParser {
 	
 	public void push(int b) {
 		b = b & 0xFF;
+		// TODO Implementazione inefficiente di buffer circolare: vale la pena ottimizzarlo ?
 		for (int i = 1; i < 8; i++) {
 			buff[i-1] = buff[i];
 		}
@@ -108,6 +113,7 @@ public class EDSMessageParser extends it.ascia.ais.MessageParser {
 			if (buff[6] == checksum()) {
 				valid = true;
 				message = createMessage();
+				clear();
 			} else {
 				logger.warn("Checksum error");
 				valid = false;

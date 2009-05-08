@@ -5,6 +5,7 @@ package it.ascia.ais;
 
 import java.util.LinkedHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.Semaphore;
 
 import org.apache.log4j.Logger;
@@ -26,7 +27,7 @@ import org.apache.log4j.Logger;
 public abstract class Connector {
 
 	protected LinkedBlockingQueue receiveQueue;
-	protected LinkedBlockingQueue sendQueue;
+	protected PriorityBlockingQueue sendQueue;
 	private Thread sendingThread;
 	private Thread receivingThread;
 	private boolean running = false;
@@ -80,7 +81,7 @@ public abstract class Connector {
 		receivingThread = new ReceivingThread();
 		receivingThread.setName("Receiving-"+getClass().getSimpleName()+"-"+getName());
 		receivingThread.start();
-		sendQueue = new LinkedBlockingQueue();
+		sendQueue = new PriorityBlockingQueue();
 		sendingThread = new SendingThread();
 		sendingThread.setName("Sending-"+getClass().getSimpleName()+"-"+getName());
 		sendingThread.start();

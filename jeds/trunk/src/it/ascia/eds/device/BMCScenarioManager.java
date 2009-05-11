@@ -37,7 +37,13 @@ public class BMCScenarioManager extends BMCStandardIO {
 			addPort(new TriggerPort(this,"Scene"+i));
 		}
 	}
-	
+
+	/**
+	 * Nessun discover da effettuare, le uscite non sono programmabili
+	 */
+	public void discover() {
+	}
+
 	public String getInfo() {
 		return getName() + ": "+getSceneNumber()+" scenari " +
 			", " + getInPortsNumber() + " ingressi e " + getOutPortsNumber() + " uscite.";

@@ -220,7 +220,7 @@ public class EDSConnector extends Connector {
 			if (!transportSemaphore.tryAcquire()) {
 				logger.trace("Start waiting for transport semaphore ...");
 				transportSemaphore.acquire();
-				logger.debug("Done waiting for transport semaphore.");
+				logger.trace("Done waiting for transport semaphore.");
 			}
 			if (BroadcastMessage.class.isInstance(m)) {
 				sendBroadcastMessage((BroadcastMessage) m);

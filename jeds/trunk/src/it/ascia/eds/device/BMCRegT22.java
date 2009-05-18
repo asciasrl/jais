@@ -68,7 +68,17 @@ public class BMCRegT22 extends BMCStandardIO {
 	 * Nome della porta della data/ora
 	 */
 	private static final String port_RTCC = "RTCC";
-	
+
+	/**
+	 * Tempo di auto-invio della temperatura, per una sonda termica.
+	 */
+	public static final int PARAM_TERM_AUTO_SEND_TIME = 1;
+
+	/**
+	 * Temperatura di allarme, per una sonda termica.
+	 */
+	public static final int PARAM_TERM_ALARM_TEMPERATURE = 3;
+		
 	/**
 	 * Costruttore.
 	 * @param connector 
@@ -152,6 +162,33 @@ public class BMCRegT22 extends BMCStandardIO {
     		}
     	}
     }
+
+    /**
+	 * Ritorna il valore del campo "tempo di auto invio" [sec].
+	 * 
+	 * @return il valore in secondi del parametro.
+	 */    
+    static Integer autoSendTime(int value) { 
+	    if ((value & 0x80) == 0) { // Minuti
+			return new Integer(value * 60);
+		} else { // Secondi
+			return new Integer(value);
+		}
+    }
+
+	/**
+	 * Ritorna la temperatura di allarme [gradi C].
+	 * 
+	 * @return la temperatura di allarme.
+	 */
+	static Integer alarmTemperature(int value) {
+		int temp = (value & 0x7f);
+		if ((value & 0x80) == 0) {
+			return new Integer(temp);
+		} else {
+			return new Integer(-temp);
+		}
+	}
 	
 	/* (non-Javadoc)
 	 * @see it.ascia.eds.device.BMC#messageReceived(it.ascia.eds.msg.Message)
@@ -161,13 +198,15 @@ public class BMCRegT22 extends BMCStandardIO {
 		case EDSMessage.MSG_IMPOSTA_PARAMETRO:
 			// Aggiorniamo i parametri interni e li contrassegnamo "dirty"
 			ImpostaParametroMessage mesg = (ImpostaParametroMessage) m;
-			if (mesg.hasAutoSendTime()) {
-				setPortValue(port_autoSendTime,new Integer(mesg.getAutoSendTime()));
-			} else if (mesg.hasAlarmTemperature()) {
-				setPortValue(port_alarmTemp,new Integer(mesg.getAlarmTemperature()));
-			} else {
-				logger.warn("Ricevuto messaggio di impostazione per un " +
-						"parametro sconosciuto: " + mesg.toString());
+			switch (mesg.getParameter()) {
+				case PARAM_TERM_AUTO_SEND_TIME: 
+					setPortValue(port_autoSendTime,autoSendTime(mesg.getValue()));
+					break;
+				case PARAM_TERM_ALARM_TEMPERATURE:
+					setPortValue(port_alarmTemp,alarmTemperature(mesg.getValue()));
+					break;
+				default:
+					logger.warn("Parametro non gestito: " + mesg.getParameter()+" Value:"+mesg.getValue());
 			}
 			break;
 		case EDSMessage.MSG_RICHIESTA_MODELLO:
@@ -193,13 +232,15 @@ public class BMCRegT22 extends BMCStandardIO {
 		switch(m.getMessageType()) {
 		case EDSMessage.MSG_RISPOSTA_PARAMETRO:
 			RispostaParametroMessage rpm = (RispostaParametroMessage) m;
-			if (rpm.hasAlarmTemperature()) {
-				setPortValue(port_alarmTemp,new Integer(rpm.getAlarmTemperature()));
-			} else if (rpm.hasAutoSendTime()) {
-				setPortValue(port_autoSendTime,new Integer(rpm.getAutoSendTime()));
-			} else {
-				logger.warn("Ricevuto messaggio di lettura parametro " +
-						"sconosciuto: " + m.toString());
+			switch (rpm.getParameter()) {
+				case PARAM_TERM_ALARM_TEMPERATURE:
+					setPortValue(port_alarmTemp,new Integer(rpm.getValue()));
+					break;
+				case PARAM_TERM_AUTO_SEND_TIME:
+					setPortValue(port_autoSendTime,new Integer(rpm.getValue()));
+					break;
+				default:
+					logger.warn("Parametro sconosciuto: " + rpm.getParameter()+" Value:"+rpm.getValue());					
 			}
 			break;
 		case EDSMessage.MSG_RISPOSTA_SET_POINT:
@@ -273,7 +314,7 @@ public class BMCRegT22 extends BMCStandardIO {
 	 */
 	public long updateAlarmTemperature() {
 		RichiestaParametroMessage m = new RichiestaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
-				ImpostaParametroMessage.PARAM_TERM_ALARM_TEMPERATURE);
+				PARAM_TERM_ALARM_TEMPERATURE);
 		getConnector().sendMessage(m);
 		// FIXME calcolare il timeout
 		return 300;
@@ -286,7 +327,7 @@ public class BMCRegT22 extends BMCStandardIO {
 	 */
 	public long updateAutoSendTime() {
 		getConnector().sendMessage(new RichiestaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
-				ImpostaParametroMessage.PARAM_TERM_AUTO_SEND_TIME));
+				PARAM_TERM_AUTO_SEND_TIME));
 		// FIXME calcolare il timeout
 		return 300;
 	}
@@ -355,16 +396,11 @@ public class BMCRegT22 extends BMCStandardIO {
 		if (portId.equals(port_autoSendTime)) {
 			res = getConnector().sendMessage(new ImpostaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
 					((Integer) newValue).intValue(),
-					ImpostaParametroMessage.PARM_TEMPERATURE)); 
-		} else
-		if (portId.equals(port_alarmTemp)) {
+					PARAM_TERM_AUTO_SEND_TIME)); 
+		} else if (portId.equals(port_alarmTemp)) {
 			res = getConnector().sendMessage(new ImpostaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
 					((Integer) newValue).intValue(),					
-					ImpostaParametroMessage.PARAM_TERM_ALARM_TEMPERATURE));
-		} else 
-		if (portId.equals(port_autoSendTime)) {
-			res = getConnector().sendMessage(new ImpostaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
-				ImpostaParametroMessage.PARM_TIME, ((Integer) newValue).intValue()));
+					PARAM_TERM_ALARM_TEMPERATURE));
 		} else if (portId.equals(port_RTCC)) {
 			try {
 				GregorianCalendar cal = new GregorianCalendar();

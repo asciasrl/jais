@@ -18,12 +18,7 @@ import it.ascia.eds.msg.RispostaStatoMessage;
  * 
  * @author arrigo
  */
-public class BMCIR extends BMC {
-
-	/**
-	 * Numero di porte in ingresso
-	 */
-	private final int inPortsNum = 8;
+public class BMCIR extends BMCStandardIO {
 
 	/**
 	 * Costruttore
@@ -33,68 +28,54 @@ public class BMCIR extends BMC {
 	 */
 	public BMCIR(Connector connector, String address, int model, String name) throws AISException {
 		super(connector, address, model, name);
-		switch(model) {
-		case 41:
-		case 61:
-		case 81:
-			break;
-		default: // This should not happen(TM)
-			logger.error("Errore: modello di BMCIR sconosciuto:" + model);
-		}
-	}
-	
-	/* (non-Javadoc)
-	 * @see it.ascia.eds.device.BMC#receiveMessage(it.ascia.eds.msg.Message)
-	 */
-	public void messageReceived(EDSMessage m) {
-		// TODO
-	}
-	
-	public void messageSent(EDSMessage m) throws AISException {
-		switch (m.getMessageType()) {
-		case EDSMessage.MSG_RISPOSTA_STATO:
-			RispostaStatoMessage r;
-			r = (RispostaStatoMessage)m;
-			// Di questo messaggio ci interessano solo gli ingressi.
-			boolean temp[];
-			temp = r.getInputs();
-			for (int i = 0; i < inPortsNum; i++) {
-				setPortValue(getInputPortId(i),new Boolean(temp[i]));
-			}
-		break;
-		}
 	}
 	
 	public String getInfo() {
-		return getName() + ": BMC IR (modello " + model + ") con " + 
-			inPortsNum + " porte di input";
+		return getName() + ": BMC IR (modello " + model + ") con " 
+			+ getInPortsNumber() + " ingressi digitali, " 
+			+ getOutPortsNumber() + " uscite digitali e "
+			+ getIrPortsNumber() + " ingressi infrarossi";
 	}
 	
 	/**
-	 * Questo e' uno dei pochi BMC con gli ingressi che possono avere
-	 * indirizzo 0.
+	 * @return Numero di ingressi IR
 	 */
-	public int getFirstInputPortNumber() {
-		return 0;
-	}
-
-	public int getOutPortsNumber() {
-		return 0;
-	}
-
-	public void setPort(String port, String value) throws AISException {
-		throw new AISException("Not implemented.");
+	public int getIrPortsNumber() {
+		return 8;
 	}
 	
 	public int getInPortsNumber() {
-		return inPortsNum;
+		switch (model) {
+		case 21:
+			return 2;
+		case 41:
+			return 4;
+		case 61:
+			return 6;
+		case 81:
+		case 89:
+			return 8;
+		default: // This should not happen(TM)
+			logger.error("Errore: modello di BMCIR sconosciuto:"
+					+ model);
+			return 0;
+		}
 	}
 	
-	public boolean sendPortValue(String portId, Object newValue)
-		throws AISException {
-		// TODO Non implementato
-		logger.error("sendPortValue non implementato");
-		return false;
+	public int getOutPortsNumber() {
+		switch (model) {
+		case 21:
+		case 41:
+		case 61:
+		case 81:
+			return 0;
+		case 89:
+			return 8;
+		default: // This should not happen(TM)
+			logger.error("Errore: modello di BMCIR sconosciuto:"
+					+ model);
+			return 0;
+		}
 	}
-
+	
 }

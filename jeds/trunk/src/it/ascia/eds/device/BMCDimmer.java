@@ -3,6 +3,8 @@
  */
 package it.ascia.eds.device;
 
+import java.util.HashMap;
+
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.DevicePort;
@@ -12,8 +14,10 @@ import it.ascia.eds.msg.ComandoUscitaDimmerMessage;
 import it.ascia.eds.msg.ComandoUscitaMessage;
 import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.PTPRequest;
+import it.ascia.eds.msg.RichiestaParametroMessage;
 import it.ascia.eds.msg.RichiestaStatoMessage;
 import it.ascia.eds.msg.RispostaAssociazioneUscitaMessage;
+import it.ascia.eds.msg.RispostaParametroMessage;
 import it.ascia.eds.msg.RispostaStatoDimmerMessage;
 import it.ascia.eds.msg.VariazioneIngressoMessage;
 
@@ -71,7 +75,7 @@ public class BMCDimmer extends BMC {
 			break;
 		case 111:
 			power = -1;
-			modelName = "0-10 V";
+			modelName = "Evolution 0-10 V";
 		break;
 		default: // This should not happen(TM)
 			logger.error("Errore: modello di BMCDimmer sconosciuto:" +
@@ -80,6 +84,18 @@ public class BMCDimmer extends BMC {
 			modelName = "Dimmer sconosciuto";
 		}
 	}
+	
+	public void discover() {
+		super.discover();
+		EDSConnector connector = (EDSConnector) getConnector();
+		int m = connector.getMyAddress();
+		int d = getIntAddress();
+		for (int i = 0; i < getOutPortsNumber(); i++) {
+			// richiede il parametro soft time
+			connector.queueMessage(new RichiestaParametroMessage(d,m,i+1));
+		}
+	}
+
 	
 	/* (non-Javadoc)
 	 * @see it.ascia.eds.device.BMC#receiveMessage(it.ascia.eds.msg.Message)
@@ -141,14 +157,12 @@ public class BMCDimmer extends BMC {
 				DevicePort p = getPort(portId);
 				Integer newValue = new Integer(temp[i]);
 				Integer oldValue = (Integer) p.getCachedValue();
-				// TODO gestire meglio lo stato "in variazione" del dimmer
+				// aggiorna di nuovo quando finisce il soft time
 				if (p.getCachedValue() != null && (p.isDirty() || ! newValue.equals(oldValue))) {
-					p.setCacheRetention(100);
+					p.setValue(newValue,outTimers[i]);
 				} else {
-					long ret = p.getCacheRetention() * 3;
-					p.setCacheRetention(Math.min(ret,DevicePort.DEFAULT_CACHE_RETENTION));
+					p.setValue(newValue);
 				}
-				p.setValue(newValue);
 			}
 			break;
 		case EDSMessage.MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST: 
@@ -161,6 +175,22 @@ public class BMCDimmer extends BMC {
 				bindOutput(ra.getComandoBroadcast(), ra.getUscita());					
 			}
 			break;
+		case EDSMessage.MSG_RISPOSTA_PARAMETRO:
+			RispostaParametroMessage rp = (RispostaParametroMessage) m;
+			switch (rp.getParameter()) {
+				case 1: 
+					outTimers[0] = rp.getValue() * 100;
+					break;
+				case 2: 
+					outTimers[1] = rp.getValue() * 100;
+					break;		
+			}
+			break;
+		case EDSMessage.MSG_ACKNOWLEDGE:
+			// messaggi ignorati
+			break;
+		default:
+			logger.error("Messaggio non gestito: "+m.toString());
 		} // switch(tipo del messaggio)
 	}
 	
@@ -193,10 +223,10 @@ public class BMCDimmer extends BMC {
 	 	}
 	}
 		
-	public long updateStatus() {
+	public long updatePort(String portId) throws AISException {
 		PTPRequest m;
 		EDSConnector connector = (EDSConnector) getConnector();
-		// Il protocollo permette di scegliere più uscite. Qui chiediamo solo le
+		// Il protocollo permette di scegliere piu' uscite. Qui chiediamo solo le
 		// prime due.
 		m = new RichiestaStatoMessage(getIntAddress(),getBMCComputerAddress(), 3);
 		connector.sendMessage(m);

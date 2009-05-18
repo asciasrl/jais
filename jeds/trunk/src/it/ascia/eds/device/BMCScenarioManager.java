@@ -49,10 +49,6 @@ public class BMCScenarioManager extends BMCStandardIO {
 			", " + getInPortsNumber() + " ingressi e " + getOutPortsNumber() + " uscite.";
 	}
 	
-	public int getFirstInputPortNumber() {
-		return 1;
-	}
-
 	public int getOutPortsNumber() {
 		switch(model) {
 		case 152:

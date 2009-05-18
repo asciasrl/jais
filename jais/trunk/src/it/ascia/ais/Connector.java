@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 public abstract class Connector {
 
 	protected LinkedBlockingQueue receiveQueue;
-	protected PriorityBlockingQueue sendQueue;
+	protected LinkedBlockingQueue sendQueue;
 	private Thread sendingThread;
 	private Thread receivingThread;
 	private boolean running = false;
@@ -47,7 +47,7 @@ public abstract class Connector {
 	/**
 	 * Controller che ha instanziato il Connector
 	 */
-	public Controller controller;
+	private Controller controller;
 
 	/**
      * Il nostro logger.
@@ -71,7 +71,7 @@ public abstract class Connector {
      */
     public Connector(String name, Controller controller) {
 		this.name = name;
-		this.controller = controller;
+		this.setController(controller);
         devices = new LinkedHashMap();
         devicesAlias = new LinkedHashMap();
 		logger = Logger.getLogger(getClass());
@@ -81,7 +81,7 @@ public abstract class Connector {
 		receivingThread = new ReceivingThread();
 		receivingThread.setName("Receiving-"+getClass().getSimpleName()+"-"+getName());
 		receivingThread.start();
-		sendQueue = new PriorityBlockingQueue();
+		sendQueue = new LinkedBlockingQueue();
 		sendingThread = new SendingThread();
 		sendingThread.setName("Sending-"+getClass().getSimpleName()+"-"+getName());
 		sendingThread.start();
@@ -171,7 +171,7 @@ public abstract class Connector {
 	 * Propaga l'evento al controller
 	 */
 	public void fireDevicePortChangeEvent(DevicePortChangeEvent evt) {
-		controller.fireDevicePortChangeEvent( evt );
+		getController().fireDevicePortChangeEvent( evt );
 	}
 
 	/**
@@ -221,7 +221,21 @@ public abstract class Connector {
 		sendingThread.interrupt();
 	}
 	
-    private class ReceivingThread extends Thread {
+    /**
+	 * @param controller the controller to set
+	 */
+	public void setController(Controller controller) {
+		this.controller = controller;
+	}
+
+	/**
+	 * @return the controller
+	 */
+	public Controller getController() {
+		return controller;
+	}
+
+	private class ReceivingThread extends Thread {
         
     	public void run() {
     		while (running) {

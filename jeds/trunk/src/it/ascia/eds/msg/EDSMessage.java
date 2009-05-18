@@ -262,7 +262,7 @@ public abstract class EDSMessage extends Message implements Comparable {
 		s.append("STX:"+b2h(rawmessage[0])+" ");
 		s.append("DST:"+b2h(rawmessage[1])+" ");
 		s.append("MIT:"+b2h(rawmessage[2])+" ");
-		s.append("TIP:"+b2h(rawmessage[3])+" ");
+		s.append("TYP:"+b2h(rawmessage[3])+" ");
 		s.append("BY1:"+b2h(rawmessage[4])+" ");
 		s.append("BY2:"+b2h(rawmessage[5])+" ");
 		s.append("CHK:"+b2h(rawmessage[6])+" ");

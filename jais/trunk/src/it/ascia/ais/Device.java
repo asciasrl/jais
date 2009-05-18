@@ -44,8 +44,9 @@ public abstract class Device {
 
 	/**
 	 * Device con indirizzo specificato
-	 * @param connector
-	 * @param address
+	 * Il device si aggiunge al connettore con il metodo {@link Connector.addDevice(Device)}
+	 * @param connector Connettore al quale il device si deve aggiungere
+	 * @param address Indirizzo del Device
 	 * @throws AISException
 	 */
 	public Device(Connector connector, String address) throws AISException {

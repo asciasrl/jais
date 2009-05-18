@@ -194,7 +194,14 @@ public class BMCStandardIO extends BMC {
 				temp = r.getOutputs();
 				for (i = 0; i < getOutPortsNumber(); i++) {
 					portId = getOutputPortId(i); 
-					setPortValue(portId, new Boolean(temp[i]));
+					DevicePort p = getPort(portId);
+					Boolean newValue = new Boolean(temp[i]);
+					Boolean oldValue = (Boolean) p.getCachedValue();
+					if (p.getCachedValue() != null && (p.isDirty() || ! newValue.equals(oldValue))) {
+						p.setValue(newValue,outTimers[i]);						
+					} else {
+						p.setValue(newValue);
+					}
 				}
 				updating = false;
 				break;
@@ -222,7 +229,7 @@ public class BMCStandardIO extends BMC {
 					RichiestaUscitaMessage req = (RichiestaUscitaMessage) ru.getRequest();
 					if (req != null) {
 						int uscita = req.getUscita();
-						setOutputTimer(uscita,t);
+						outTimers[uscita] = t;
 					}
 				}
 				/**
@@ -239,7 +246,7 @@ public class BMCStandardIO extends BMC {
 				}
 				break;
 			case EDSMessage.MSG_ACKNOWLEDGE:
-				// TODO da gestire ?
+				// messaggi ignorati silentemente
 				break;
 			default:
 				logger.warn("Messaggio non gestito: "+m);
@@ -337,16 +344,25 @@ public class BMCStandardIO extends BMC {
 	 */
 	public int getInPortsNumber() {
 		switch (model) {
-		case 88:
-			return 8;
+		case 2:
+		case 4:
+		case 6:
 		case 8:
 			return 0;
+		case 20:
+		case 22:
+			return 2;
 		case 40:
 			return 4;
 		case 60:
 			return 6;
+		case 80:
+			return 8;
 		case 44:
 			return 4;
+		case 88:
+		case 98:
+			return 8;
 		default: // This should not happen(TM)
 			logger.error("Errore: modello di BMCStandardIO sconosciuto:"
 					+ model);
@@ -359,16 +375,25 @@ public class BMCStandardIO extends BMC {
 	 */
 	public int getOutPortsNumber() {
 		switch (model) {
-		case 88:
-			return 8;
+		case 2:
+		case 22:
+			return 2;
+		case 4:
+			return 4;
+		case 6:
+			return 6;
 		case 8:
 			return 8;
+		case 20:
+		case 21:
 		case 40:
-			return 0;
 		case 60:
 			return 0;
 		case 44:
 			return 4;
+		case 88:
+		case 98:
+			return 8;
 		default: // This should not happen(TM)
 			logger.error("Errore: modello di BMCStandardIO sconosciuto:"
 					+ model);

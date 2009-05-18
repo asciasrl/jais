@@ -2,6 +2,7 @@ package it.ascia.ais;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.security.InvalidParameterException;
 
 import org.apache.log4j.Logger;
 
@@ -53,17 +54,29 @@ public class DevicePort {
         this.pcs.removePropertyChangeListener( listener );
     }
 		
+    /**
+	 * Legge il valore di durata della cache
+     * @return tempo is mS
+     */
 	public long getCacheRetention() {
 		return cacheRetention;
 	}
 
 	/**
 	 * Imposta il valore di durata della cache
-	 * @param cacheRetention
+	 * @param cacheRetention tempo in mS
 	 */
 	public void setCacheRetention(long cacheRetention) {
 		this.cacheRetention = cacheRetention;
 	}
+	
+	/**
+	 * Imposta la durata della cache al valore di default 
+	 */
+	public void resetCacheRetention() {
+		setCacheRetention(DEFAULT_CACHE_RETENTION);		
+	}
+
 
 	public DevicePort(Device device, String portId) {
 		this(device, portId, null);	
@@ -152,10 +165,7 @@ public class DevicePort {
 	 */
 	public void setValue(Object newValue) {
 		Object oldValue = getCachedValue();
-		//logger.trace("setValue "+getFullAddress()+"="+oldValue+" -> "+newValue);
-//		boolean changed = false;
 		if (isDirty() || oldValue == null || ! oldValue.equals(newValue)) {
-//			changed = true;
 			timeStamp = System.currentTimeMillis();
 		}
 		synchronized (this) {
@@ -165,30 +175,19 @@ public class DevicePort {
 			// sveglia getValue()
 			notify();								
 		}
-//		if (changed) {
-			/**
-			 * Se i due valori sono uguali vuol dire che e' avvenuto un cambiamento che non abbiamo potuto verificare.
-			 * Vengono inviati due eventi:  valore -> null e null -> valore
-			 * Senza questo artificio non verrebbe notificato nessun evento ai listener. 
-			 */
-/*
-			DevicePortChangeEvent evt;
-			if (oldValue != null && oldValue.equals(newValue)) {
-				evt = new DevicePortChangeEvent(this,oldValue,null);
-				fireDevicePortChangeEvent(evt);				
-				evt = new DevicePortChangeEvent(this,null,newValue);
-				fireDevicePortChangeEvent(evt);
-				*/				
-/*		
-			} else {
-				evt = new DevicePortChangeEvent(this,oldValue,newValue);
-				fireDevicePortChangeEvent(evt);
-			}
-		}
-*/
 		fireDevicePortChangeEvent(new DevicePortChangeEvent(this,oldValue,newValue));
 	}
 
+	/**
+	 * Aggiorna la porta con il valore effettivo e dichiara fino a quanto tempo il dato puo' essere ritenuto valido
+	 * @param newValue 
+	 * @param duration durata della cache in mS
+	 */
+	public void setValue(Object newValue, long duration) {
+		setValue(newValue);
+		setDuration(duration);
+	}
+	
 	/**
 	 * Scrive un nuovo valore sulla porta del device cui appartiene
 	 * Questa implementazione richiama {@link #Device.writePort()} dopo aver invalidato il valore in cache
@@ -267,11 +266,16 @@ public class DevicePort {
 	}
 
 	/**
-	 * Imposta il momento di scadenza in modo che scada dopo il tempo specificato
+	 * Imposta il momento di scadenza in modo che scada entro il tempo specificato
+	 * Se il valore ha una durata residua minore di quella specificata, non viene modificata
 	 * @param i Tempo di durata in mS del valore in cache
 	 */
 	public void setDuration(long i) {
-		expiration = System.currentTimeMillis() + i;
+		if (i < 0) {
+			throw(new InvalidParameterException());
+		}
+		expiration = Math.min(expiration,System.currentTimeMillis() + i);
+		logger.trace(getFullAddress()+" expire in "+i+"mS");
 	}
 
 	/**
@@ -294,10 +298,6 @@ public class DevicePort {
 	 */
 	public String[] getTags() {
 		return null;
-	}
-
-	public void resetCacheRetention() {
-		setCacheRetention(DEFAULT_CACHE_RETENTION);		
 	}
 
 }

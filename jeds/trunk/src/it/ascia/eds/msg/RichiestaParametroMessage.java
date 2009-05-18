@@ -40,24 +40,13 @@ public class RichiestaParametroMessage extends PTPRequest {
 	}
 
 	public String getMessageDescription() {
-		return "Richiesta lettura parametro (dimmer o sonda termica)";
+		return "Richiesta lettura parametro";
 	}
 	
 	public String toString()	{
 		StringBuffer s = new StringBuffer();
 		s.append(super.toString());
-		s.append("Parametro richiesto: ");
-		switch (getParameter()) {
-			case ImpostaParametroMessage.PARM_TIME:
-				s.append("tempo di auto-invio (sonda termica)");		
-				break;
-			case ImpostaParametroMessage.PARAM_TERM_ALARM_TEMPERATURE:
-				s.append("temperatura di allarme (sonda termica) ");
-				break;
-			default:
-				s.append("sconosciuto (" + getParameter() + ")");
-				break;
-		}
+		s.append(" Parametro richiesto: "+ getParameter());
 		return s.toString();
 	}
 

@@ -255,12 +255,6 @@ public abstract class BMC extends Device {
 			}
 			bmc = new BMCScenarioManager(connector, bmcAddress, model, name);
 			break;
-		case 121:
-			if (name == null) {
-				name = "TemperatureSensor-" + bmcAddress; 
-			}
-			bmc = new BMCTemperatureSensor(connector, bmcAddress, model, name);
-			break;
 		case 122:
 			if (name == null) {
 				name = "REG-T-22-" + bmcAddress; 

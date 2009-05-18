@@ -81,6 +81,11 @@ public abstract class BMC extends Device {
 	protected Logger logger;
 
 	protected boolean updating = false;
+
+	/**
+	 * Tempo del timer associato ad una uscita
+	 */
+	protected long[] outTimers;
 	
 	/**
 	 * Costruttore.
@@ -96,6 +101,7 @@ public abstract class BMC extends Device {
 		this.name = name;
 		broadcastBindingsByGroup = new Set[32];
 		broadcastBindingsByPort = new Set[getOutPortsNumber()];
+		outTimers = new long[getOutPortsNumber()];
 		for (int i = 0; i < broadcastBindingsByGroup.length; i++) {
 			broadcastBindingsByGroup[i] = new HashSet();
 		}
@@ -157,19 +163,41 @@ public abstract class BMC extends Device {
 		Logger logger = Logger.getLogger("BMC.createBMC");
 		BMC bmc;
 		switch(model) {
-		case 88:
+		case 2:
+		case 4:
+		case 6:
 		case 8:
+		case 20:
+		case 22:
 		case 40:
-		case 60:
 		case 44:
+		case 60:
+		case 80:
+		case 88:
+		case 98:
 			if (name == null) {
 				name = "IO-" +model+ "-" + bmcAddress;
 			}
 			bmc = new BMCStandardIO(connector, bmcAddress, model, name);
 			break;
+		case 91:
+		case 92:
+		case 93:
+		case 94:
+		case 95:
+		case 96:
+		case 97:
+		case 99:
+			if (name == null) {
+				name = "IO-R-" +model+ "-" + bmcAddress;
+			}
+			bmc = new BMCRelaysIO(connector, bmcAddress, model, name);
+			break;
+		case 21:
 		case 41:
 		case 61:
 		case 81:
+		case 89:
 			if (name == null) {
 				name = "IR-" + bmcAddress;
 			}
@@ -191,6 +219,22 @@ public abstract class BMC extends Device {
 				name = "INT-IR-" + bmcAddress;
 			}
 			bmc = new BMCIntIR(connector, bmcAddress, model, name);
+			break;
+		case 141:
+		case 142:
+		case 143:
+		case 144:
+		case 145:
+		case 146:
+		case 147:
+		case 148:
+		case 149:
+		case 150:
+		case 151:
+			if (name == null) {
+				name = "IO-L-" +model+ "-" + bmcAddress;
+			}
+			bmc = new BMCLogicaIO(connector, bmcAddress, model, name);
 			break;
 		case 152:
 		case 154:
@@ -326,7 +370,7 @@ public abstract class BMC extends Device {
 	 * @return Tempo previsto per l'aggiornamento
 	 * @throws AISException 
 	 */
-	public long updateStatus() {
+	protected long updateStatus() {
 		EDSConnector connector = (EDSConnector) getConnector();
 		PTPRequest m = new RichiestaStatoMessage(getIntAddress(), 
 				((EDSConnector)getConnector()).getMyAddress(), 0);
@@ -403,15 +447,8 @@ public abstract class BMC extends Device {
 	 * @param t Time in milliseconds
 	 */
 	public void setOutputTimer(int outPortNumber, long t) {
-		DevicePort p = getPort(getOutputPortId(outPortNumber));
-		if (t > 0) {
-			if (p.getCacheRetention() > t) {
-				p.setCacheRetention(t);
-			}
-			logger.info("Uscita "+outPortNumber+" timer di "+t+"mS");
-		} else {
-			p.resetCacheRetention();
-		}
+		outTimers[outPortNumber] = t;
+		logger.info("Uscita "+outPortNumber+" timer di "+t+"mS");
 	}
 
 			

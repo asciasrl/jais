@@ -77,7 +77,7 @@ public abstract class BUSControllerModule extends ControllerModule {
 					} catch (InterruptedException e) {
 						logger.debug("Interrotto.");
 					} catch (ConcurrentModificationException e) {
-						logger.debug("Modifica concorrente");
+						logger.debug("Modifica concorrente, riavvio scansione dispositivi.");
 					} catch (Exception e) {
 						logger.error("Eccezione:",e);
 					}

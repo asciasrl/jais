@@ -46,11 +46,13 @@ public class DevicePort {
 
 	public void addPropertyChangeListener( PropertyChangeListener listener )
     {
+		logger.trace(pcs.getPropertyChangeListeners().length + "+1 PropertyChangeListener for "+getFullAddress());
         this.pcs.addPropertyChangeListener( listener );
     }
 
     public void removePropertyChangeListener( PropertyChangeListener listener )
     {
+		logger.trace(pcs.getPropertyChangeListeners().length + "-1 PropertyChangeListener for "+getFullAddress());
         this.pcs.removePropertyChangeListener( listener );
     }
 		

@@ -1,41 +1,27 @@
 package it.ascia.aui;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
+import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import it.ascia.ais.AISException;
+import it.ascia.ais.Controller;
 import it.ascia.ais.ControllerModule;
 import it.ascia.ais.Device;
+import it.ascia.ais.DevicePort;
 
-public class AUIControllerModule extends ControllerModule implements PropertyChangeListener {
-	
-	/**
-	 * Code di streaming attive
-	 */
-	private ArrayList streams;
-	
+public class AUIControllerModule extends ControllerModule {
+		
 	public AUIControllerModule() {
 		super();
-		streams = new ArrayList();
 	}
 
-	public void start() {
-		controller.addPropertyChangeListener(this);
-	}
-
-	public void stop() {
-		controller.removePropertyChangeListener(this);
-	}
-	
 	/**
 	 * Lo stream viene chiuso dopo che sono stati trasmessi uno specifico numero di eventi.
 	 * Non vengono conteggiati gli eventi trasmessi all'avvio dello streaming.
@@ -45,7 +31,6 @@ public class AUIControllerModule extends ControllerModule implements PropertyCha
 	public int getMaxEventsPerRequest() {
 		return getConfiguration().getInt("maxRequestPerStream",100);
 	}
-		
 	
 	/**
 	 * 
@@ -180,6 +165,21 @@ public class AUIControllerModule extends ControllerModule implements PropertyCha
 			} else {
 				retval = getControls();
 			}
+		/*
+		} else if (command.equals("group")) {
+			if (params.size() == 0) {
+				throw(new AISException("mancano parametri"));
+			}
+			Iterator iterator = params.entrySet().iterator();
+			Entry entry = (Entry) iterator.next();
+			String message = (String) entry.getKey();
+			String value = (String) entry.getValue();
+			if (Controller.getController().sendGroupMessage(message,value)) {
+				retval = "OK";
+			} else {
+				retval = "ERROR";
+			}
+		*/
 		} else if (command.equals("get")) {
 			// Comando "get"
 			String fullAddress = (String) params.get("address");
@@ -257,6 +257,7 @@ public class AUIControllerModule extends ControllerModule implements PropertyCha
 	/**
 	 * Riceve un evento e lo inoltra alle code degli stream aperti
 	 */
+	/*
 	public void propertyChange(PropertyChangeEvent evt) {
 		logger.info(evt.getPropertyName()+"="+evt.getOldValue()+" -> "+ evt.getNewValue());
 		logger.debug("Stream aperti: "+streams.size());
@@ -266,7 +267,9 @@ public class AUIControllerModule extends ControllerModule implements PropertyCha
 			logger.trace("Coda "+i+", offerto evento "+evt.toString());
 		}
 	}
+	*/
 
+	/*
 	public void addStreamQueue(LinkedBlockingQueue q) {
 		streams.add(q);	
 		logger.debug("Aggiunta coda di streaming: "+streams.size());
@@ -275,6 +278,27 @@ public class AUIControllerModule extends ControllerModule implements PropertyCha
 	public void removeStreamQueue(LinkedBlockingQueue q) {
 		streams.remove(q);		
 		logger.debug("Rimossa coda di streaming: "+streams.size());
+	}
+	*/
+
+	public List getPagePorts(String page) {
+		List ports = new ArrayList();
+		Controller controller = Controller.getController();
+		HierarchicalConfiguration auiConfig = getConfiguration();
+		auiConfig.setExpressionEngine(new XPathExpressionEngine());
+		HierarchicalConfiguration pageConfig = auiConfig.configurationAt("pages/page[@id='"+page+"']");
+		List controls = pageConfig.configurationsAt("control");
+		for (Iterator ic = controls.iterator(); ic.hasNext(); ) {
+			HierarchicalConfiguration controlConfig = (HierarchicalConfiguration) ic.next();
+			String address = controlConfig.getString("address");
+			if (address != null) {
+				DevicePort p = controller.getDevicePort(address);
+				if (p != null) {
+					ports.add(p);
+				}
+			}
+		}
+		return ports;
 	}
 
 

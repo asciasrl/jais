@@ -46,14 +46,22 @@ public class DevicePort {
 
 	public void addPropertyChangeListener( PropertyChangeListener listener )
     {
-		logger.trace(pcs.getPropertyChangeListeners().length + "+1 PropertyChangeListener for "+getFullAddress());
         this.pcs.addPropertyChangeListener( listener );
+		logger.trace(pcs.getPropertyChangeListeners().length + " (+) PCL's for "+getFullAddress());
     }
 
     public void removePropertyChangeListener( PropertyChangeListener listener )
     {
-		logger.trace(pcs.getPropertyChangeListeners().length + "-1 PropertyChangeListener for "+getFullAddress());
         this.pcs.removePropertyChangeListener( listener );
+		logger.trace(pcs.getPropertyChangeListeners().length + " (-) PCL's for "+getFullAddress());
+    }
+
+	/**
+	 * Check if there are any listeners registered on this port.
+	 * @return true if there are one or more listeners for this port
+	 */
+    public boolean hasListeners() {
+    	return this.pcs.hasListeners(null);
     }
 		
     /**
@@ -277,7 +285,7 @@ public class DevicePort {
 			throw(new InvalidParameterException());
 		}
 		expiration = Math.min(expiration,System.currentTimeMillis() + i);
-		logger.trace(getFullAddress()+" expire in "+i+"mS");
+		logger.trace(getFullAddress()+" set duration "+i+"mS");
 	}
 
 	/**

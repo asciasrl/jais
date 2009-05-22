@@ -1,10 +1,19 @@
 <project name="AUI Installer" default="installer">
 	
-	<target name="installer" depends="jais,jeds,jbis,jaui,aui,conf">
+	<target name="installer" depends="jais,jeds,jbis,jdxp,jaui,aui,conf">
+		<zip file="${dst}aui-${v}.zip" duplicate="fail" >
+			<fileset dir="${dst}">
+				<include name="lib/**" />
+				<include name="web/**" />
+				<include name="conf/**" />
+				<include name="logs/" />
+				<include name="run.bat" />
+			</fileset>
+		</zip>
 	</target>
 	
 	<target name="jais">
-		<property name="version.num" value="1.00"/>
+		<property name="version.num" value="1.01"/>
 		<property name="dst" value="../installer/"/>
 		<property name="lib" value="${dst}lib/"/>
 		<property name="web" value="${dst}web/"/>
@@ -39,7 +48,7 @@
 	
 	<target name="jeds" depends="jais">
 		<jar destfile="jeds.jar"
-		   basedir="../jais/bin"
+		   basedir="../jeds/bin"
 		   includes="**/*.class"
 		   manifest="MANIFEST.MF"
 		   />
@@ -94,6 +103,11 @@
 	</target>	
 
 	<target name="aui">
+		<delete verbose="true" includeemptydirs="true" >
+			<fileset dir="${web}">
+			  <include name="**"/>
+			</fileset>
+		</delete>
 		<copy verbose="true" todir="${web}" >
 			<fileset dir="../aui/web">
 			  <include name="**/*"/>
@@ -102,11 +116,17 @@
 	</target>
 
 	<target name="conf">
+		<zip destfile="${conf}sample.zip"
+		   basedir="conf"
+		   includes="*.xml"
+		/>
+<!--
 		<copy verbose="true" todir="${conf}" >
 			<fileset dir="conf">
 			  <include name="*.xml"/>
 			</fileset>
 		</copy>
+-->		
 	</target>
 	
 </project>

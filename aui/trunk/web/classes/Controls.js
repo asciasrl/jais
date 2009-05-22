@@ -50,6 +50,8 @@ if (!AUI.Controls) {
 				device = new AUI.Power(id);
 			} else if (control.type == "blind") {
 				device = new AUI.Blind(id);
+			} else if (control.type == "digitalinput") {
+				device = new AUI.Digitalinput(id);
 			} else if (control.type == "scene") {
 				device = new AUI.Scene(id);
 			} else if (control.type == "thermo") {

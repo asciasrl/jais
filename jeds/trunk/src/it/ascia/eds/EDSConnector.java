@@ -77,6 +77,8 @@ public class EDSConnector extends Connector {
 	 */
 	protected EDSMessageParser mp;
 
+	private int lastBroadcast = -1;
+
     /**
      * Connettore per il BUS EDS.
      * 
@@ -147,13 +149,19 @@ public class EDSConnector extends Connector {
 				messageToBeAnswered.notify(); 						
 			}
     	}
-    	if (BroadcastMessage.class.isInstance(m)) { 
-    		// Mandiamo il messaggio a tutti
-    		Iterator it = getDevices().values().iterator();
-    		while (it.hasNext()) {
-    			BMC bmc = (BMC)it.next();
-    			bmc.messageReceived(m);
-    		}
+    	if (BroadcastMessage.class.isInstance(m)) {
+			ComandoBroadcastMessage bmsg = (ComandoBroadcastMessage) m;
+			if (lastBroadcast == bmsg.getRandom()) {
+				logger.debug("Messaggio ripetuto: "+m);
+			} else {
+				lastBroadcast = bmsg.getRandom();
+	    		// Mandiamo il messaggio a tutti
+	    		Iterator it = getDevices().values().iterator();
+	    		while (it.hasNext()) {
+	    			BMC bmc = (BMC)it.next();
+	    			bmc.messageReceived(m);
+	    		}
+			}
     	} else if (RispostaModelloMessage.class.isInstance(m)) {
 			// Aggiungiamo i BMC che si presentano
 			RispostaModelloMessage risposta = (RispostaModelloMessage) m;

@@ -4,7 +4,6 @@
  */
 package it.ascia.eds;
 
-import it.ascia.ais.Message;
 import it.ascia.eds.msg.AcknowledgeMessage;
 import it.ascia.eds.msg.CambioVelocitaMessage;
 import it.ascia.eds.msg.ComandoBroadcastMessage;

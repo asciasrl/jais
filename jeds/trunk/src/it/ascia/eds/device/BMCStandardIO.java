@@ -245,6 +245,11 @@ public class BMCStandardIO extends BMC {
 					}
 				}
 				break;
+			case EDSMessage.MSG_VARIAZIONE_INGRESSO:
+				for (i = 0; i < getInPortsNumber(); i++) {
+					getPort(getInputPortId(i)).invalidate();
+				}
+				break;
 			case EDSMessage.MSG_ACKNOWLEDGE:
 				// messaggi ignorati silentemente
 				break;

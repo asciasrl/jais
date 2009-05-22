@@ -29,9 +29,13 @@ public abstract class ControllerModule {
 		logger = Logger.getLogger(getClass());
 	}
 
-	public abstract void start();
+	public void start() {
+		running = true;
+	};
 	
-	public abstract void stop();
+	public void stop() {
+		running = false;		
+	};
 
 	public void setController(Controller controller) {
 		this.controller = controller;		

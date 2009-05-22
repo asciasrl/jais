@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<jais:configuration version="1.3">
+<jais:configuration version="1.3.1">
   <AUI>
-    <startPage>wdb</startPage>
+    <startPage>Hbox</startPage>
     <title>ASCIA HomeInTheBox [AUI 0.1]</title>
     <skin>skins/20090330/</skin>
     <!-- definizione di tutti i tipi di controlli -->
@@ -32,6 +32,11 @@
         <closing>images/blind_closing.png</closing>
         <closed>images/blind_closed.png</closed>
       </blind>
+      <digitalinput>
+        <default>images/light_off.png</default>
+        <true>images/light_on.png</true>
+        <false>images/light_off.png</false>
+      </digitalinput>
       <power>
         <default>images/power_off.png</default>
         <on>images/power_on.png</on>
@@ -275,8 +280,17 @@
           <width>320</width>
           <height>240</height>
           <layer>security</layer>
-          <video>http://video.ascia.it/axis-cgi/mjpg/video.cgi?resolution=320x240&amp;fps=1</video>
+          <video1>http://video.ascia.it/axis-cgi/mjpg/video.cgi?resolution=320x240&amp;fps=1</video1>
+          <video>http://localhost:8080/</video>
         </control>      
+        <control id="t1">
+          <title>Reset</title>
+          <type>digitalinput</type>
+          <layer>power</layer>
+          <top>320</top>
+          <left>470</left>
+          <address>2.3:Inp7</address>
+        </control>
       </page>
       <page id="wdb">
       	<src>images/wdb.png</src>

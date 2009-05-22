@@ -5,6 +5,20 @@ Revision History EDS
  + new feature
  # modification
 
+TODO
+----
+ + Comandi di gruppo
+
+DA DOCUMENTARE
+--------------
+ + Parametro //jais/EDS/skipautoupdate booleano 
+
+20090519
+--------
+ ! Considerato solo il primo messaggio broadcast, le ripetizioni vengono ignorate
+ + Parametro //jais/EDS/skipautoupdate booleano 
+ ! invalidate() di tutte le input port quando viene inviato un messaggio di variazione ingresso
+ 
 20090518
 --------
  + Gestione dei timer / soft time associati alle uscite

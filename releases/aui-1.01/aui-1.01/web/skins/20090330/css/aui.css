@@ -1,0 +1,204 @@
+body {
+	background-color: black;
+	background-image: url("../images/asciabkg.png"); 
+	font-family: "Lucida Grande", Geneva, "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	margin: 0px;
+	-webkit-tap-highlight-color:rgba(1,1,1,0.5);	
+}
+
+#pages {
+	width: 651px;
+	position: absolute; 
+}
+
+#header-out {
+	display: none; 
+	position: absolute; 
+	z-index: 30; 
+	width: 320px; 
+	height: 40px;
+	filter: alpha(opacity='60');
+	opacity: 0.6;
+	background: url('../images/barratesti.png');
+}	
+
+#header {
+	position: absolute; 
+	margin: 9px 0px; 
+	height: 22px; 
+	width: 100%; 
+	text-align: center;
+}
+
+div.page {
+	position: absolute;
+	display: none;
+}
+
+div.control {
+	position: absolute;
+	text-align: right;
+	display: none;
+}
+
+div.control-page {
+	display: block;
+}
+
+div.control div.icon {
+}
+
+div.control img {
+}
+
+div.reddot {
+	position: absolute;
+	right: 0px;
+	top: 0px;
+}
+
+td.reddot-sx {
+	background: url('../images/reddot-sx.png');
+	background-repeat: no-repeat;
+	width: 11px;
+	height: 20px;
+}	
+
+td.reddot-ce {
+	background: url('../images/reddot-1px.png');
+	background-repeat: repeat-x;
+	margin: 0px 0px;
+	height: 20px;
+}	
+
+td.reddot-dx {
+	background: url('../images/reddot-dx.png');
+	background-repeat: no-repeat;
+	width: 11px;
+	height: 20px;
+}
+
+
+
+div.reddot-sx {
+	background: url('../images/reddot-sx.png');
+	background-repeat: no-repeat;
+	width: 11px;
+	height: 20px;
+	f1loat: left;
+	z-index: 10;
+}	
+
+div.reddot-ce {
+	background: url('../images/reddot-1px.png');
+	background-repeat: repeat-x;
+	margin: 0px 0px;
+	height: 20px;
+	xwidth: 50px;
+	f1loat: left;
+	z-index: 20;
+}	
+
+div.reddot-dx {
+	background: url('../images/reddot-dx.png');
+	background-repeat: no-repeat;
+	width: 11px;
+	height: 20px;
+	f1loat: left;
+	z-index: 10;
+}
+
+div.reddot-text {
+	padding: 0px;
+	margin: 1px -6px 0px -6px;	
+	color: white;
+	font-size: 15px;
+	text-align: center;
+}
+
+div.control span {
+	padding: 0px;
+	margin: 0px;	
+	color: white;
+}
+
+div.thermo-display {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	background-color: transparent;
+	color: black;
+	font-size: 28px;
+	width: 100px;
+	height: 30px;
+	padding: 15px 10px;
+}
+
+
+div.control-type-page {
+}
+
+div.webcam {
+	position: absolute;
+}
+
+#debug {
+	color: black;
+	background-color: white;
+}
+
+#mask {
+	position: absolute; 
+	width: 1000px; 
+	height: 1000px; 
+	background-color: black; 
+	filter:alpha(opacity='70'); 
+	opacity: 0.7;
+	display: none;
+}
+
+#slider {
+	position: absolute; 
+	background: url('../images/slider-bk.png');
+	background-repeat: no-repeat;
+	width: 40px;
+	height: 152px;
+	display: none;
+	p1adding: 11px 6px;
+}
+
+#slider-cursor {
+	position: absolute;
+	bottom: 0px;
+	width: 28px;
+	height: 30px;
+	margin: 11px 6px; 
+}
+
+
+#layers {
+	display: none;	
+	margin: 0px auto; 
+	width: 320px; 
+	height: 80px; 
+	overflow: hidden; 
+	position: absolute;
+	bottom: 0px;
+}
+
+div.layer {
+	float: left; 
+	background-color: transparent; 
+	width: 80px; 
+	height: 80px; 
+	margin-top: 0px; 
+	overflow: hidden;
+}
+
+#scroller {
+	background-color: transparent; 
+	position: absolute; 
+	width: 1000px; 
+	height: 80px;	
+}
+

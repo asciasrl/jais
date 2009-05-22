@@ -1,0 +1,37 @@
+Revision History EDS
+--------------------
+
+ ! debug
+ + new feature
+ # modification
+
+TODO
+----
+ + Comandi di gruppo
+
+DA DOCUMENTARE
+--------------
+ + Parametro //jais/EDS/skipautoupdate booleano 
+
+20090519
+--------
+ ! Considerato solo il primo messaggio broadcast, le ripetizioni vengono ignorate
+ + Parametro //jais/EDS/skipautoupdate booleano 
+ ! invalidate() di tutte le input port quando viene inviato un messaggio di variazione ingresso
+ 
+20090518
+--------
+ + Gestione dei timer / soft time associati alle uscite
+ + Aggiunti modelli dispositivi: Relays (91-99) e Logica (141-151)
+
+20090504
+--------
+ ! Migliorato il parser, in modo da usare il buffer in modo circolare
+ ! Il BMC gestione scenari non effettua discover delle impostazioni delle uscite
+
+20090430
+--------
+ ! Corretta gestione messaggi per attivazione scenari
+ ! Corretto numero porte "scene" (era una in meno)
+ ! Corretto messaggio 21 per comando scenari
+  

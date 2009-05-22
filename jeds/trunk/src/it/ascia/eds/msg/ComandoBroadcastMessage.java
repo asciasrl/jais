@@ -3,6 +3,8 @@
  */
 package it.ascia.eds.msg;
 
+import java.util.Random;
+
 /**
  * Comando broadcast.
  * 
@@ -26,6 +28,9 @@ public class ComandoBroadcastMessage extends BroadcastMessage {
 		TipoMessaggio = EDSMessage.MSG_COMANDO_BROADCAST;
 		Byte1 = (Attivazione ? 0 : 1) & 0x01 + ((Modalita & 0x7F) << 1); 
 		Byte2 = Numero & 0x1F;
+		Random r = new Random();
+		Mittente = r.nextInt(255);
+		Destinatario = r.nextInt(255);
 	}
 
 	public ComandoBroadcastMessage(int[] message) {
@@ -50,9 +55,16 @@ public class ComandoBroadcastMessage extends BroadcastMessage {
 		return (Byte2 & 0x1F);
 	}
 	
+	/**
+	 * @return codice pseudorandom del messaggio 
+	 */
+	public int getRandom() {
+		return ((Mittente & 0xff) << 8) + (Destinatario & 0xff); 
+	}
+	
 	public String toString()	{
 		StringBuffer s = new StringBuffer();
-		s.append(b2h(Mittente)+":"+b2h(Destinatario)+" "+getMessageDescription()+ " ["+b2h(Byte1)+":"+b2h(Byte2)+" "+Byte1+":"+Byte2+"]");
+		s.append(b2h(getRandom())+" "+getMessageDescription()+ " ["+b2h(Byte1)+":"+b2h(Byte2)+" "+Byte1+":"+Byte2+"]");
 		s.append(" Gruppo "+ getCommandNumber());
 		if (isActivation()) {
 			s.append(" Attiva");

@@ -422,5 +422,20 @@ public class Controller {
 		}
 	}
 
+	public DevicePort getDevicePort(String fullAddress) {
+		String address = getDeviceFromAddress(fullAddress);
+		Device device = getDevice(address);
+		if (device == null) {
+			return null;
+		}
+		String portId = getPortFromAddress(fullAddress);
+		try {
+			return device.getPort(portId);
+		} catch (Exception e) {
+			logger.warn(e);
+			return null;
+		}
+	}
+
 }
 

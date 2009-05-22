@@ -6,12 +6,22 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.configuration.HierarchicalConfiguration;
+
 public abstract class BUSControllerModule extends ControllerModule {
 
 	protected List myConnectors = new Vector();
 	
 	protected AutoUpdater autoUpdater = null;
-
+	
+	public void start() {
+		super.start();
+ 		int autoupdate = getConfiguration().getInt("autoupdate",0);
+ 		autoUpdater = new AutoUpdater(autoupdate);
+ 		autoUpdater.setName("AutoUpdater");
+ 		autoUpdater.start();
+	}
+	
 	/**
 	 * Chiude tutti i connettori
 	 */
@@ -35,15 +45,25 @@ public abstract class BUSControllerModule extends ControllerModule {
 
 		/**
 		 * Aggiorna automaticamente i device connessi
-		 * @param a Tempo di attesa in mS fra una richiesta di aggiornamento e la successiva
+		 * @param a Tempo di attesa in mS fra una richiesta di aggiornamento e la successiva; se = 0 l'aggiornamento NON viene effettuato
 		 */
 		public AutoUpdater(long a) {
 			autoupdate = a;
 		}
 
+		/**
+		 * Esegue periodicamente la richiesta di aggiornamento delle porte.
+		 * Vengono scandite tutte le porte di tutti i connettori e se una di
+		 * queste deve essere aggiornata, viene invocato il metodo updatePort di
+		 * Device
+		 */
 		public void run() {
 			if (autoupdate > 0) {
-				logger.info("Autoupdate ogni "+autoupdate+"mS");				
+				logger.info("Autoupdate ogni "+autoupdate+"mS");
+				boolean skipautoupdate = getConfiguration().getBoolean("skipautoupdate",false);
+				if (skipautoupdate) {
+					logger.info("EXPERIMENTAL Skip AutoUpdate without listener");
+				}
 				while (running) {
 					try {
 						synchronized (this) {
@@ -61,6 +81,12 @@ public abstract class BUSControllerModule extends ControllerModule {
 								for (int i = 0; i < deviceports.length; i++) {
 									DevicePort devicePort = deviceports[i];
 									if (devicePort.isDirty() || devicePort.isExpired()) {
+										if (!devicePort.hasListeners()) {
+											// TODO Experimental
+											if (skipautoupdate) {
+												continue;
+											}
+										}
 										logger.debug("AutoUpdate "+devicePort.getFullAddress());
 										try {											
 											device.updatePort(devicePort.getPortId());

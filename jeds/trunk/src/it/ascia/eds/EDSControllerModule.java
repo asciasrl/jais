@@ -15,8 +15,8 @@ import it.ascia.ais.Transport;
 public class EDSControllerModule extends BUSControllerModule {
 	
 	public void start() {
-		HierarchicalConfiguration config = getConfiguration();
-		List connectors = config.configurationsAt("connectors.connector");
+		super.start();
+		List connectors = getConfiguration().configurationsAt("connectors.connector");
 		for (Iterator c = connectors.iterator(); c.hasNext();)
 		{
 		    HierarchicalConfiguration sub = (HierarchicalConfiguration) c.next();
@@ -72,11 +72,6 @@ public class EDSControllerModule extends BUSControllerModule {
 		 		logger.fatal("Errore durante inizializzazione:",e);
 		 	}
 		}				
- 		int autoupdate = config.getInt("autoupdate",0);
- 		autoUpdater = new AutoUpdater(autoupdate);
- 		autoUpdater.setName("AutoUpdater");
- 		running = true;
- 		autoUpdater.start();
  		logger.info("Completato start");
 	}
 	

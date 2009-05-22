@@ -3,8 +3,6 @@
  */
 package it.ascia.eds.device;
 
-import java.util.HashMap;
-
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.DevicePort;
@@ -187,6 +185,7 @@ public class BMCDimmer extends BMC {
 			}
 			break;
 		case EDSMessage.MSG_ACKNOWLEDGE:
+		case EDSMessage.MSG_RISPOSTA_USCITA:
 			// messaggi ignorati
 			break;
 		default:

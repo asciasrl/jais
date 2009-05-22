@@ -200,7 +200,7 @@ String includeScript(String scriptName) {
 <%= includeScript("classes/Scene.js") %>
 <%= includeScript("classes/Thermo.js") %>
 <%= includeScript("classes/Webcam.js") %>
-<%= includeScript("classes/Input.js") %>
+<%= includeScript("classes/Digitalinput.js") %>
 
 <script language="javascript">
 AUI.Controls.controls = <%= auiControllerModule.getControls() %>;

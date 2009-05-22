@@ -5,7 +5,6 @@ package it.ascia.aui;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Controller;
-import it.ascia.ais.Device;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.DevicePortChangeEvent;
 
@@ -13,7 +12,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -31,10 +30,12 @@ import org.json.simple.JSONObject;
  */
 public class AUIStreamingServlet extends HttpServlet implements PropertyChangeListener {
 	
+	private static final String AUIModuleName = "AUI";
+	
 	private Logger logger;
 	
 	private LinkedBlockingQueue eventQueue;
-
+	
 	public AUIStreamingServlet()
 	{
 		logger = Logger.getLogger(getClass());
@@ -49,7 +50,7 @@ public class AUIStreamingServlet extends HttpServlet implements PropertyChangeLi
 		if (index > 0) {
 			page = uri.substring(index + 5);
 		}		
-		int maxEvents = ((AUIControllerModule)Controller.getController().getModule("AUI")).getMaxEventsPerRequest();
+		int maxEvents = ((AUIControllerModule)Controller.getController().getModule(AUIModuleName)).getMaxEventsPerRequest();
 		int counter = 0;
 		try {
 			PrintWriter out = response.getWriter();
@@ -58,14 +59,13 @@ public class AUIStreamingServlet extends HttpServlet implements PropertyChangeLi
 			logger.info("Inizio streaming verso "+remote+" page="+page);
 			
 			// per prima cosa aggiorna lo stato di tutte le porte
-			// TODO aggiornare solo lo stato delle porte richieste
-			DevicePort[] ports = getPagePorts(page);
-			if (ports.length < 1) {
+			List ports = getPagePorts(page);
+			if (ports.size() < 1) {
 				logger.warn("No available DevicePorts on page "+page);
 			}
 			try {
-				for (int i = 0; i < ports.length; i++) {
-					DevicePort p = ports[i];
+				for (Iterator iterator = ports.iterator(); iterator.hasNext();) {
+					DevicePort p = (DevicePort) iterator.next();
 					p.addPropertyChangeListener(this);
 					JSONObject obj=new JSONObject();
 					Object value = p.getCachedValue();  
@@ -82,7 +82,7 @@ public class AUIStreamingServlet extends HttpServlet implements PropertyChangeLi
 			}
 			
 			while (! out.checkError() && counter < maxEvents) {
-				logger.trace("Streaming "+remote);
+				logger.trace("Streaming "+remote+" ("+counter+")");
 				DevicePortChangeEvent evt = null;
 				try {
 					// uso poll in modo da inviare sempre qualcosa al client
@@ -103,8 +103,8 @@ public class AUIStreamingServlet extends HttpServlet implements PropertyChangeLi
 				counter++;
 				out.println(obj.toJSONString());
 			}
-			for (int i = 0; i < ports.length; i++) {
-				DevicePort p = ports[i];
+			for (Iterator iterator = ports.iterator(); iterator.hasNext();) {
+				DevicePort p = (DevicePort) iterator.next();
 				p.removePropertyChangeListener(this);
 			}
 			logger.debug("Fine streaming verso "+remote+" eventi="+counter);
@@ -119,24 +119,8 @@ public class AUIStreamingServlet extends HttpServlet implements PropertyChangeLi
 	 * @param page
 	 * @return
 	 */
-	private DevicePort[] getPagePorts(String page) {
-		List ports = new ArrayList();
-		try {
-			Device[] devices = Controller.getController().findDevices("*");
-			for (int i = 0; i < devices.length; i++) {
-				DevicePort[] devicePorts = devices[i].getPorts();
-				for (int j = 0; i < devicePorts.length; j++) {			
-					ports.add(devicePorts[j]);
-				}
-			}
-		} catch (AISException e) {
-			logger.error("Error getting page ports: " + e);
-		}
-		if (ports.size() > 0) {
-			return (DevicePort[]) ports.toArray();
-		} else {
-			return new DevicePort[0];			
-		}
+	private List getPagePorts(String page) {
+		return ((AUIControllerModule) Controller.getController().getModule(AUIModuleName)).getPagePorts(page);
 	}
 
 	public void propertyChange(PropertyChangeEvent evt) {

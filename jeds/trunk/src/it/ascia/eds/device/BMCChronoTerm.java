@@ -152,16 +152,13 @@ public class BMCChronoTerm extends BMC {
 	public void messageReceived(EDSMessage m) throws AISException {
 		switch (m.getMessageType()) {
 		case EDSMessage.MSG_COMANDO_BROADCAST:
+			// TODO invalidare solo le porte giuste
 			getPort(port_state).invalidate();
 			getPort(port_setpoint).invalidate();			
 			getPort(port_season).invalidate();			
 			break;
 		case EDSMessage.MSG_VARIAZIONE_INGRESSO:
-			// Qualcuno ha premuto un interruttore. Siamo dirty, finche' non
-			// vedremo un acknowledge.
-			VariazioneIngressoMessage var = 
-				(VariazioneIngressoMessage) m;
-			//setPortValue(port_state,new Integer(var.getChronoTermState()));
+			// TODO invalidare solo le porte giuste
 			getPort(port_state).invalidate();
 			getPort(port_setpoint).invalidate();			
 			getPort(port_season).invalidate();			

@@ -278,14 +278,13 @@ public class DevicePort {
 	/**
 	 * Imposta il momento di scadenza in modo che scada entro il tempo specificato
 	 * Se il valore ha una durata residua minore di quella specificata, non viene modificata
-	 * @param i Tempo di durata in mS del valore in cache
+	 * @param i Tempo di durata in mS del valore in cache ( deve essere > 0)
 	 */
 	public void setDuration(long i) {
-		if (i < 0) {
-			throw(new InvalidParameterException());
+		if (i > 0) {
+			expiration = Math.min(expiration,System.currentTimeMillis() + i);
+			logger.trace(getFullAddress()+" set duration "+i+"mS");
 		}
-		expiration = Math.min(expiration,System.currentTimeMillis() + i);
-		logger.trace(getFullAddress()+" set duration "+i+"mS");
 	}
 
 	/**

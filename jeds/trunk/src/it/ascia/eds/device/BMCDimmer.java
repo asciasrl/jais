@@ -177,10 +177,10 @@ public class BMCDimmer extends BMC {
 			RispostaParametroMessage rp = (RispostaParametroMessage) m;
 			switch (rp.getParameter()) {
 				case 1: 
-					outTimers[0] = rp.getValue() * 100;
+					setOutputTimer(0,rp.getValue() * 100);
 					break;
 				case 2: 
-					outTimers[1] = rp.getValue() * 100;
+					setOutputTimer(1,rp.getValue() * 100);
 					break;		
 			}
 			break;

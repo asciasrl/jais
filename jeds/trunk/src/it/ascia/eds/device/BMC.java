@@ -441,8 +441,10 @@ public abstract class BMC extends Device {
 	 * @param t Time in milliseconds
 	 */
 	public void setOutputTimer(int outPortNumber, long t) {
-		outTimers[outPortNumber] = t;
-		logger.info("Uscita "+outPortNumber+" timer di "+t+"mS");
+		if (t > 0) {
+			outTimers[outPortNumber] = t;
+			logger.info("Uscita "+outPortNumber+" timer di "+t+"mS");
+		}
 	}
 
 			

@@ -16,8 +16,16 @@ if (!AUI.Light) {
 	}
 	
 	AUI.Light.prototype.onTouchStart = function(event) {
-		event.preventDefault();
-		event.stopPropagation();		
+		if (event.preventDefault) {
+			event.preventDefault();
+		} else {
+			event.returnValue = false;
+		}
+		if (event.stopPropagation) {
+			event.stopPropagation();
+		} else if (window.event) {
+			window.event.cancelBubble = true;
+		} 
 		var status = this.status;
 		var newstatus = status;
 		var command = null;

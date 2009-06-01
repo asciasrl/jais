@@ -114,8 +114,16 @@ if (!AUI.Dimmer) {
 	}
 		
 	AUI.Dimmer.prototype.onMouseDown = function(event) {
-		event.preventDefault();
-		event.stopPropagation();
+		if (event.preventDefault) {
+			event.preventDefault();
+		} else {
+			event.returnValue = false;
+		}
+		if (event.stopPropagation) {
+			event.stopPropagation();
+		} else if (window.event) {
+			window.event.cancelBubble = true;
+		} 
 		this.eventType = "mouse";
 		var self = this;
 		this.mouseUp = function(e) { return self.onMouseUp(e) }
@@ -125,8 +133,16 @@ if (!AUI.Dimmer) {
 	}
 
 	AUI.Dimmer.prototype.onMouseUp = function(event) {
-		event.preventDefault();
-		event.stopPropagation();
+		if (event.preventDefault) {
+			event.preventDefault();
+		} else {
+			event.returnValue = false;
+		}
+		if (event.stopPropagation) {
+			event.stopPropagation();
+		} else if (window.event) {
+			window.event.cancelBubble = true;
+		} 
 		this.element.removeEventListener('mouseup', this.mouseUp, false);
 		this.onStop();
 		return false;
@@ -208,8 +224,16 @@ if (!AUI.Dimmer) {
 
 
 	AUI.Dimmer.prototype.onSliderMouseDown = function(event) {
-		event.preventDefault();
-		event.stopPropagation();
+		if (event.preventDefault) {
+			event.preventDefault();
+		} else {
+			event.returnValue = false;
+		}
+		if (event.stopPropagation) {
+			event.stopPropagation();
+		} else if (window.event) {
+			window.event.cancelBubble = true;
+		} 
 		var self = this;
 		this.sliderMouseMove = function(e) { return self.onSliderMouseMove(e) };
 		this.slider.addEventListener('mousemove', this.sliderMouseMove, false);
@@ -222,8 +246,16 @@ if (!AUI.Dimmer) {
 	}
 
 	AUI.Dimmer.prototype.onSliderMouseMove = function(event) {
-		event.preventDefault();
-		event.stopPropagation();
+		if (event.preventDefault) {
+			event.preventDefault();
+		} else {
+			event.returnValue = false;
+		}
+		if (event.stopPropagation) {
+			event.stopPropagation();
+		} else if (window.event) {
+			window.event.cancelBubble = true;
+		} 
 		var x = event.clientX;
 		var y = event.clientY;
 	    this.onSliderMove(x,y);
@@ -231,8 +263,16 @@ if (!AUI.Dimmer) {
 	}
 
 	AUI.Dimmer.prototype.onSliderMouseUp = function(event) {
-		event.preventDefault();
-		event.stopPropagation();
+		if (event.preventDefault) {
+			event.preventDefault();
+		} else {
+			event.returnValue = false;
+		}
+		if (event.stopPropagation) {
+			event.stopPropagation();
+		} else if (window.event) {
+			window.event.cancelBubble = true;
+		} 
 		//this.mask.removeEventListener('mousemove', this.sliderMouseMove, false);
 		this.slider.removeEventListener('mousemove', this.sliderMouseMove, false);
 		this.slider.removeEventListener('mouseup', this.sliderMouseUp, false);
@@ -241,8 +281,16 @@ if (!AUI.Dimmer) {
 	}
 
 	AUI.Dimmer.prototype.onMaskMouseDown = function(event) {
-		event.preventDefault();
-		event.stopPropagation();
+		if (event.preventDefault) {
+			event.preventDefault();
+		} else {
+			event.returnValue = false;
+		}
+		if (event.stopPropagation) {
+			event.stopPropagation();
+		} else if (window.event) {
+			window.event.cancelBubble = true;
+		} 
 		this.mask.removeEventListener('mousedown', this.maskMouseDown, false);
 		this.slider.removeEventListener('mousedown', this.sliderMouseDown, false);
 		this.slider.removeEventListener('mousemove', this.sliderMouseMove, false);

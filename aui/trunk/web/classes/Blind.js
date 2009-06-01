@@ -7,8 +7,16 @@ if (!AUI.Blind) {
 	AUI.Blind.prototype = new AUI.Device();
 	
 	AUI.Blind.prototype.onTouchStart = function(event) {
-		event.preventDefault();
-		event.stopPropagation();
+		if (event.preventDefault) {
+			event.preventDefault();
+		} else {
+			event.returnValue = false;
+		}
+		if (event.stopPropagation) {
+			event.stopPropagation();
+		} else if (window.event) {
+			window.event.cancelBubble = true;
+		} 
 		var status = this.status;
 		var command = null;
 		var newstatus = status;

@@ -7,8 +7,16 @@ if (!AUI.Webcam) {
 	AUI.Webcam.prototype = new AUI.Device();
 	
 	AUI.Webcam.prototype.onTouchStart = function(event) {
-		event.preventDefault();
-		event.stopPropagation();
+		if (event.preventDefault) {
+			event.preventDefault();
+		} else {
+			event.returnValue = false;
+		}
+		if (event.stopPropagation) {
+			event.stopPropagation();
+		} else if (window.event) {
+			window.event.cancelBubble = true;
+		} 
 		var status = this.status;
 		var newstatus = status;		
 		if (status == "play") {

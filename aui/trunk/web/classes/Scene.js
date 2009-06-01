@@ -11,8 +11,16 @@ if (!AUI.Scene) {
 	}
 	
 	AUI.Scene.prototype.onTouchStart = function(event) {
-		event.preventDefault();
-		event.stopPropagation();
+		if (event.preventDefault) {
+			event.preventDefault();
+		} else {
+			event.returnValue = false;
+		}
+		if (event.stopPropagation) {
+			event.stopPropagation();
+		} else if (window.event) {
+			window.event.cancelBubble = true;
+		} 
 		var control = this.getControl();
 		AUI.SetRequest.send(control.address,"true");
 	}

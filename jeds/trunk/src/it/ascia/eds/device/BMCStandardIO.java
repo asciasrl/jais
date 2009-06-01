@@ -229,7 +229,7 @@ public class BMCStandardIO extends BMC {
 					RichiestaUscitaMessage req = (RichiestaUscitaMessage) ru.getRequest();
 					if (req != null) {
 						int uscita = req.getUscita();
-						outTimers[uscita] = t;
+						setOutputTimer(uscita,t);
 					}
 				}
 				/**

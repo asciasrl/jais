@@ -21,9 +21,9 @@ if (!AUI.Header) {
 			}
 			this.out.style.opacity = this.opacity;
 			this.out.style.display = "block";
-			this.out.style.left = window.scrollX + "px";
-			this.out.style.top = window.scrollY + "px";
-			this.out.style.width = window.innerWidth + "px";
+			this.out.style.left = AUI.getScrollX() + "px";
+			this.out.style.top = AUI.getScrollY() + "px";
+			this.out.style.width = AUI.getInnerWidth() + "px";
 			if (this.fadeTimer > 0) {
 				clearInterval(this.fadeTimer);
 			}
@@ -39,8 +39,8 @@ if (!AUI.Header) {
 				this.out.style.display = "none";
 			} else {
 				this.out.style.opacity = v;
-				this.out.style.left = window.scrollX + "px";
-				this.out.style.top = window.scrollY + "px";
+				this.out.style.left = AUI.getScrollX() + "px";
+				this.out.style.top = AUI.getScrollY() + "px";
 				var self = this;
 				this.fadeTimer = setTimeout(function() { return self.fade() },this.fadeInterval);
 			}

@@ -20,8 +20,16 @@ if (!AUI.Controls) {
 	}
 
 	AUI.Controls.onMouseDown = function(id,event) {
-		event.preventDefault();
-		event.stopPropagation();
+		if (event.preventDefault) {
+			event.preventDefault();
+		} else {
+			event.returnValue = false;
+		}
+		if (event.stopPropagation) {
+			event.stopPropagation();
+		} else if (window.event) {
+			window.event.cancelBubble = true;
+		} 
 		this.lastEvent = event;		
 		var device = this.getDevice(id);
 		if (device) {

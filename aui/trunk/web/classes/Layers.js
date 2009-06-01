@@ -31,9 +31,14 @@ if (!AUI.Layers) {
 			// FIXME su iPod non funziona se usato come webapp dalla home
 			var self = this;
 			this.scrollFunction = function(e) { return self.onScroll(e) };
-			window.addEventListener('scroll', this.scrollFunction, false);
 			this.resizeFunction = function(e) { return self.onScroll(e) };
-			window.addEventListener('resize', this.resizeFunction, false);
+			if (window.addEventListener) {
+				window.addEventListener('scroll', this.scrollFunction, false);
+				window.addEventListener('resize', this.resizeFunction, false);
+			} else if (window.attachEvent) {
+				window.attachEvent('onscroll', this.scrollFunction, false);
+				window.attachEvent('onresize', this.resizeFunction, false);
+			}
 
 			//AUI.Pages.showLayer(this.layers[Math.round(this.position)].layer);				
 			//this.show();
@@ -43,7 +48,7 @@ if (!AUI.Layers) {
 		
 		scrollTimer : function() {
 			var self = this;
-			self.reposition();
+			this.reposition();
 			setTimeout(function() { self.scrollTimer(); },this.repositionInterval);
 		},
 		
@@ -65,15 +70,23 @@ if (!AUI.Layers) {
 		},
 		
 		reposition : function() {
-			this.element.style.left = (window.scrollX + (window.innerWidth - 320) / 2) + "px";
+			
+			this.element.style.left = (AUI.getScrollX() + (AUI.getInnerWidth() - 320) / 2) + "px";
 			//this.element.style.left = window.scrollX + "px";
-			this.element.style.top = (window.innerHeight - this.element.scrollHeight + window.scrollY) + "px";
+			this.element.style.top = (AUI.getInnerHeight() - this.element.scrollHeight + AUI.getScrollY()) + "px";
 		},
 		
 		onMouseDown : function(layer,event) {
-			event.preventDefault();
-			event.stopPropagation();
-			// TODO
+			if (event.preventDefault) {
+				event.preventDefault();
+			} else {
+				event.returnValue = false;
+			}
+			if (event.stopPropagation) {
+				event.stopPropagation();
+			} else if (window.event) {
+				window.event.cancelBubble = true;
+			} 
 			this.target = layer;
 			AUI.Logger.info("target="+layer+" position="+this.position);
 			this.startTimer();

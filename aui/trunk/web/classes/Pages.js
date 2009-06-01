@@ -51,8 +51,16 @@ if (!AUI.Pages) {
 	};
 	
 	AUI.Pages.onMouseDown = function(pageId, event) {
-		event.preventDefault();
-		event.stopPropagation();
+		if (event.preventDefault) {
+			event.preventDefault();
+		} else {
+			event.returnValue = false;
+		}
+		if (event.stopPropagation) {
+			event.stopPropagation();
+		} else if (window.event) {
+			window.event.cancelBubble = true;
+		} 
 		AUI.Layers.hide();
 		this.currentPage.addEventListener('mousemove', this.pageMouseMove, false);
 		this.currentPage.addEventListener('mouseup', this.pageMouseUp, false);
@@ -65,8 +73,16 @@ if (!AUI.Pages) {
 	};
 	
 	AUI.Pages.onPageMouseUp = function(event) {
-		event.preventDefault();
-		event.stopPropagation();
+		if (event.preventDefault) {
+			event.preventDefault();
+		} else {
+			event.returnValue = false;
+		}
+		if (event.stopPropagation) {
+			event.stopPropagation();
+		} else if (window.event) {
+			window.event.cancelBubble = true;
+		} 
 		if (this.pageHaveLayers(this.currentPageId)) {
 			AUI.Layers.show();
 		}
@@ -77,8 +93,16 @@ if (!AUI.Pages) {
 	};
 
 	AUI.Pages.onPageMouseMove = function(event) {
-		event.preventDefault();
-		event.stopPropagation();
+		if (event.preventDefault) {
+			event.preventDefault();
+		} else {
+			event.returnValue = false;
+		}
+		if (event.stopPropagation) {
+			event.stopPropagation();
+		} else if (window.event) {
+			window.event.cancelBubble = true;
+		} 
 
 		var dx = event.clientX - this.scrollStartX;
 		var dy = event.clientY - this.scrollStartY;

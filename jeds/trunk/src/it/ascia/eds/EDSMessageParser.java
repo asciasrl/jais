@@ -51,7 +51,9 @@ public class EDSMessageParser extends it.ascia.ais.MessageParser {
 
 	private int[] buff = new int[8];
 
-	protected long lastReceived;
+	private long lastReceived = 0;
+	
+	private int iBuff = 0; 
 	
 	public long TIMEOUT = 100;
 	
@@ -66,6 +68,19 @@ public class EDSMessageParser extends it.ascia.ais.MessageParser {
 			buff[i] = -1;
 		}
 		lastReceived = 0;
+		iBuff = 0;
+	}
+	
+	private void shift() {
+		if (iBuff > 0) {
+			for (int i = 1; i <= iBuff; i++) {
+				buff[i-1] = buff[i];
+			}
+			buff[iBuff] = -1;
+			iBuff--;
+		} else {
+			logger.error("shift() iBuff="+iBuff);
+		}
 	}
 	
 	public boolean isBusy() {
@@ -74,14 +89,14 @@ public class EDSMessageParser extends it.ascia.ais.MessageParser {
 
 	public String dumpBuffer() {
 		StringBuffer s = new StringBuffer();
-		s.append("STX:0x"+Integer.toHexString(buff[0])+" ");
-		s.append("DST:0x"+Integer.toHexString(buff[1])+" ");
-		s.append("MIT:0x"+Integer.toHexString(buff[2])+" ");
-		s.append("TYP:0x"+Integer.toHexString(buff[3])+" ");
-		s.append("BY1:0x"+Integer.toHexString(buff[4])+" ");
-		s.append("BY2:0x"+Integer.toHexString(buff[5])+" ");
-		s.append("CHK:0x"+Integer.toHexString(buff[6])+" ");
-		s.append("ETX:0x"+Integer.toHexString(buff[7])+" ");
+		s.append("STX:"+EDSMessage.b2h(buff[0])+" ");
+		s.append("DST:"+EDSMessage.b2h(buff[1])+" ");
+		s.append("MIT:"+EDSMessage.b2h(buff[2])+" ");
+		s.append("TYP:"+EDSMessage.b2h(buff[3])+" ");
+		s.append("BY1:"+EDSMessage.b2h(buff[4])+" ");
+		s.append("BY2:"+EDSMessage.b2h(buff[5])+" ");
+		s.append("CHK:"+EDSMessage.b2h(buff[6])+" ");
+		s.append("ETX:"+EDSMessage.b2h(buff[7])+" ");
 		return s.toString();
 	}
 
@@ -97,28 +112,38 @@ public class EDSMessageParser extends it.ascia.ais.MessageParser {
 		return chk;
 	}
 	
+	/**
+	 * Accoda 1 byte al buffer.
+	 * Ogni volta viene valutato il contenuto del buffer per verificare 
+	 * se contiene un messaggio valido, cioe' se:
+	 * 1) primo byte = Stx
+	 * 2) ottavo byte = Etx
+	 * 3) settimo byte = Checksum
+	 */
 	public void push(int b) {
 		b = b & 0xFF;
-		// TODO Implementazione inefficiente di buffer circolare: vale la pena ottimizzarlo ?
-		for (int i = 1; i < 8; i++) {
-			buff[i-1] = buff[i];
-		}
-		buff[7] = b;
-		if (!valid && (lastReceived > 0) && (System.currentTimeMillis() - lastReceived) >= TIMEOUT ) {
-			logger.error("Timeout in ricezione "+(System.currentTimeMillis() - lastReceived));
-		}
-		lastReceived = System.currentTimeMillis();
-		if ((buff[0] == Stx) && (buff[7] == Etx)) {
-			if (buff[6] == checksum()) {
-				valid = true;
-				message = createMessage();
-				clear();
-			} else {
-				logger.warn("Checksum error");
-				valid = false;
-			}
-		} else {
+		if (valid) {
 			valid = false;
+		}
+		if ((lastReceived > 0) && (System.currentTimeMillis() - lastReceived) >= TIMEOUT ) {
+			logger.warn("Timeout in ricezione "+(System.currentTimeMillis() - lastReceived)+"mS: "+dumpBuffer()+" Next:"+EDSMessage.b2h(b));
+		}
+		buff[iBuff++] = b;
+		lastReceived = System.currentTimeMillis();
+		if (iBuff==8) {
+			if ((buff[0] == Stx) && (buff[7] == Etx)) {
+				if (buff[6] == checksum()) {
+					valid = true;
+					message = createMessage();
+					clear();
+				} else {
+					logger.warn("Checksum error: "+dumpBuffer());
+					shift();
+				}
+			} else {
+				logger.warn("Invalid message: "+dumpBuffer());
+				shift();
+			}
 		}
 	}
 

@@ -54,6 +54,8 @@ if (!AUI.Controls) {
 				device = new AUI.Dimmer(id);
 			} else if (control.type == "light") {
 				device = new AUI.Light(id);
+			} else if (control.type == "pushbutton") {
+				device = new AUI.Pushbutton(id);
 			} else if (control.type == "power") {
 				device = new AUI.Power(id);
 			} else if (control.type == "blind") {

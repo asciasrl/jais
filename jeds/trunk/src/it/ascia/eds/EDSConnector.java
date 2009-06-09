@@ -32,7 +32,7 @@ public class EDSConnector extends Connector {
 	/**
      * Il messaggio che stiamo mandando, per il quale aspettiamo una risposta.
      */
-    private PTPRequest messageToBeAnswered;
+    private PTPMessage messageToBeAnswered;
     
     /**
      * Indirizzo con cui il Connettore invia messaggi sul BUS
@@ -141,9 +141,9 @@ public class EDSConnector extends Connector {
     			&& PTPMessage.class.isInstance(m) 
     			&& messageToBeAnswered.isAnsweredBy((PTPMessage) m)) {
     		if (PTPResponse.class.isInstance(m) && PTPRequest.class.isInstance(messageToBeAnswered)) {
-    			((PTPResponse) m).setRequest(messageToBeAnswered);
+    			((PTPResponse) m).setRequest((PTPRequest) messageToBeAnswered);
     		}
-			// sveglia sendPTPRequest
+			// sveglia sendPTPMessage
 			synchronized (messageToBeAnswered) {
 	    		messageToBeAnswered.setAnswered(true);
 				messageToBeAnswered.notify(); 						
@@ -235,14 +235,16 @@ public class EDSConnector extends Connector {
 				retval = true;
 			} else if (PTPMessage.class.isInstance(m)){ 
 				PTPMessage ptpm = (PTPMessage) m;
+				retval = sendPTPMessage(ptpm);
+				/*
 				if (PTPRequest.class.isInstance(ptpm)) {
-					retval = sendPTPRequest((PTPRequest) ptpm);
 				} else {
 					// Invio nudo e crudo
 					transport.write(m.getBytesMessage());
 					// non c'e' modo di sapere se e' arrivato; siamo ottimisti.
 					retval = true;
 				}
+				*/
 			} else {
 				logger.error("Messaggio di tipo sconosciuto:"+m.getClass().getName());
 				retval = false;
@@ -279,7 +281,7 @@ public class EDSConnector extends Connector {
      * 
      * <p>Il messaggio di risposta viene riconosciuto da dispatchMessage().</p>
 	 */
-	private boolean sendPTPRequest(PTPRequest m) {
+	private boolean sendPTPMessage(PTPMessage m) {
     	int tries;
     	boolean received = false;
 		if (messageToBeAnswered != null) {
@@ -294,6 +296,11 @@ public class EDSConnector extends Connector {
 				logger.error("Messaggio in attesa :"+m);
 				return false;
 			}
+    		BMC recipient = (BMC)getDevice((new Integer(m.getRecipient())).toString());
+    		if ((recipient != null) && recipient.isUnreachable()) {
+    			logger.trace("Don't send to unreachable: "+recipient.getFullAddress());
+    			return false;
+    		}
         	messageToBeAnswered = m;
 	    	synchronized (messageToBeAnswered) {
 	    		for (tries = 1;
@@ -301,8 +308,8 @@ public class EDSConnector extends Connector {
 	    			tries++) {
 	    			logger.trace("Invio "+tries+" di "+m.getMaxSendTries()+" : "+m.toHexString());
 	    			while (mp.isBusy()) {
-	    				logger.trace("Delaying... "+mp.dumpBuffer());
-	    				Thread.sleep(100);
+	    				logger.trace("Delaying 10mS ... "+mp.dumpBuffer());
+	    				Thread.sleep(10);
 	    			}
 	    			transport.write(m.getBytesMessage());
 	    			// si mette in attesa, ma se nel frattempo arriva la risposta viene avvisato
@@ -313,6 +320,17 @@ public class EDSConnector extends Connector {
 	    	    	}
 	    		}
 		    	received = m.isAnswered();
+		    	if (recipient == null) {
+		    		// riprova, potrebbe essere stato creato nel frattempo
+		    		recipient = (BMC)getDevice((new Integer(m.getRecipient())).toString());
+		    	}
+	    		if (recipient != null) {
+				    if (received) {
+						recipient.setReachable();
+					} else {
+						recipient.setUnreachable();
+					}
+	    		}
 		    	messageToBeAnswered = null;
 	    	}
 		} catch (InterruptedException e) {

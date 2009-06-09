@@ -194,6 +194,7 @@ String includeScript(String scriptName) {
 <%= includeScript("classes/Layers.js") %>
 <%= includeScript("classes/Device.js") %>
 <%= includeScript("classes/Light.js") %>
+<%= includeScript("classes/Pushbutton.js") %>
 <%= includeScript("classes/Blind.js") %>
 <%= includeScript("classes/Dimmer.js") %>
 <%= includeScript("classes/Power.js") %>

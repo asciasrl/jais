@@ -14,6 +14,11 @@
         <on>images/light_on.png</on>
         <off>images/light_off.png</off>  
       </light>
+      <pushbutton>
+        <default>images/pushbutton_green-off.png</default>
+        <on>images/pushbutton_green-on.png</on>
+        <off>images/pushbutton_green-off.png</off>  
+      </pushbutton>
       <dimmer>
         <default>images/light_off.png</default>
         <on>images/light_on.png</on>
@@ -232,6 +237,36 @@
            <left>495</left>
            <address>2.5:Out1</address>
         </control>
+        <control id="porta-light">
+           <title>Apriporta</title>
+           <type>pushbutton</type>
+           <layer>blind</layer>
+           <top>295</top>
+           <left>495</left>
+           <address>2.3:Out8</address>
+        </control>
+        <control id="porta-blinds">
+           <title>Apriporta</title>
+           <type>pushbutton</type>
+           <layer>blind</layer>
+           <top>295</top>
+           <left>495</left>
+           <address>2.3:Out8</address>
+	        <default>images/pushbutton_yellow-off.png</default>
+	        <on>images/pushbutton_yellow-on.png</on>
+	        <off>images/pushbutton_green-off.png</off>  
+        </control>
+        <control id="porta-power">
+           <title>Apriporta</title>
+           <type>pushbutton</type>
+           <layer>power</layer>
+           <top>295</top>
+           <left>495</left>
+           <address>2.3:Out8</address>
+	        <default>images/pushbutton_blue-off.png</default>
+	        <on>images/pushbutton_blue-on.png</on>
+	        <off>images/pushbutton_blue-off.png</off>  
+        </control>
         <control id="b1">
            <title>Tapparella lunga</title>
            <type>blind</type>
@@ -280,8 +315,7 @@
           <width>320</width>
           <height>240</height>
           <layer>security</layer>
-          <video1>http://video.ascia.it/axis-cgi/mjpg/video.cgi?resolution=320x240&amp;fps=1</video1>
-          <video>http://localhost:8080/</video>
+          <video>http://video.ascia.it/axis-cgi/mjpg/video.cgi?resolution=320x240&amp;fps=1</video>
         </control>      
         <control id="t1">
           <title>Reset</title>

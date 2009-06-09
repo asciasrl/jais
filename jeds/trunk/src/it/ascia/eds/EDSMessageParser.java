@@ -73,11 +73,23 @@ public class EDSMessageParser extends it.ascia.ais.MessageParser {
 	
 	private void shift() {
 		if (iBuff > 0) {
-			for (int i = 1; i <= iBuff; i++) {
-				buff[i-1] = buff[i];
+			int j;
+			for (j = 1; j < 8; j++) {
+				// cerca un Stx successivo
+				if (buff[j] == Stx) {
+					// sposta l'Stx trovato all'inizio
+					for (int i = j; i < iBuff; i++) {
+						buff[i-j] = buff[i];
+					}
+					break;
+				}
 			}
-			buff[iBuff] = -1;
-			iBuff--;
+			iBuff = 8 - j;
+			// svuota il resto
+			for (int i = iBuff; i < 8; i++) {
+				buff[i] = -1;						
+			}
+			logger.trace("After shift: "+dumpBuffer());
 		} else {
 			logger.error("shift() iBuff="+iBuff);
 		}
@@ -125,8 +137,12 @@ public class EDSMessageParser extends it.ascia.ais.MessageParser {
 		if (valid) {
 			valid = false;
 		}
+		if (iBuff == 0 && b != Stx) {
+			logger.warn("Non Stx: "+EDSMessage.b2h(b));
+			return;
+		}
 		if ((lastReceived > 0) && (System.currentTimeMillis() - lastReceived) >= TIMEOUT ) {
-			logger.warn("Timeout in ricezione "+(System.currentTimeMillis() - lastReceived)+"mS: "+dumpBuffer()+" Next:"+EDSMessage.b2h(b));
+			logger.warn("Timeout in ricezione "+(System.currentTimeMillis() - lastReceived)+"mS: "+dumpBuffer()+" Next("+iBuff+"): "+EDSMessage.b2h(b));
 		}
 		buff[iBuff++] = b;
 		lastReceived = System.currentTimeMillis();

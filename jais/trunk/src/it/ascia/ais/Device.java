@@ -34,6 +34,31 @@ public abstract class Device {
 	protected LinkedHashMap ports = new LinkedHashMap();
 
 	/**
+	 * How much (mS) wait for each unaswered message
+	 */
+	private static final long UNREACHABLE_PAUSE_1 = 1000;
+
+	/**
+	 * Max time to pause polling/sending to unreacheable device 
+	 */
+	private static final long UNREACHABLE_PAUSE_MAX = 60000;
+
+	/**
+	 * When device not answered last time
+	 */
+	private long lastReachError = 0;
+
+	/**
+	 * How many consecutives times device not aswered
+	 */
+	private int reachErrors = 0;
+	
+	/**
+	 * Enable retry 
+	 */
+	private boolean reachRetry = false;
+	
+	/**
 	 * Device con indirizzo vuoto
 	 * @param connector
 	 * @throws AISException
@@ -212,7 +237,12 @@ public abstract class Device {
 		p.setName(portName);
 	}
 	
-	public void invalidate(String portId) throws AISException {
+	/**
+	 * Utility function to invalidate a port
+	 * @param portId Nome della porta
+	 * @throws AISException
+	 */
+	protected void invalidate(String portId) throws AISException {
 		DevicePort p = getPort(portId);
 		p.invalidate();
 	}
@@ -251,6 +281,7 @@ public abstract class Device {
      * <li>non puo' essere fatto</li>
      * </ul>
      * altrimenti il chiamante deve attendere il tempo previsto prima di leggere il valore.
+     * 
      * </p>
 	 * @param portId
 	 * @return Tempo massimo previsto per l'aggiornamento in millisecondi
@@ -313,4 +344,51 @@ public abstract class Device {
 	public void fireDevicePortChangeEvent(DevicePortChangeEvent evt) {
 		connector.fireDevicePortChangeEvent( evt );
 	}
+
+	/**
+	 * Determine if device is not reachable.  
+	 * Device implementation should recover automatically after a while, letting connector retry.    
+	 * @return true if device cannot be reach
+	 */
+	public boolean isUnreachable() {
+		if (reachRetry) {
+			// riprova finche' non si presenta un altro errore
+			return false;
+		}
+		if (reachErrors >= 1) {
+			// dopo un po riprova
+			if ((lastReachError + Math.min(reachErrors * UNREACHABLE_PAUSE_1, UNREACHABLE_PAUSE_MAX)) < System.currentTimeMillis()) {
+				lastReachError = System.currentTimeMillis();
+				reachRetry = true;
+				return false;
+			} else {
+				return true;
+			}			
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Called from Connector when detect that the device is not reacheable
+	 * Increments error counter and record last error timestamp.
+	 */
+	public void setUnreachable() {
+		lastReachError = System.currentTimeMillis();
+		reachRetry = false;
+		reachErrors++;
+		logger.warn("Unreachable ("+reachErrors+"): "+getFullAddress());		
+	}
+
+	/**
+	 * Called from Connector when detect that the device is reacheable.
+	 * Reset errors counter
+	 */
+	public void setReachable() {
+		lastReachError = 0;
+		reachErrors = 0;
+	}
+
+
+	
 }

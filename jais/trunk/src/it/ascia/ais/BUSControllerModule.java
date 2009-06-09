@@ -77,6 +77,9 @@ public abstract class BUSControllerModule extends ControllerModule {
 							for (Iterator iterator = devices.values().iterator(); iterator
 									.hasNext();) {
 								Device device = (Device) iterator.next();
+								if (device.isUnreachable()) {
+									break;
+								}
 								DevicePort[] deviceports = device.getPorts();
 								for (int i = 0; i < deviceports.length; i++) {
 									DevicePort devicePort = deviceports[i];
@@ -86,6 +89,9 @@ public abstract class BUSControllerModule extends ControllerModule {
 											if (skipautoupdate) {
 												continue;
 											}
+										}
+										if (device.isUnreachable()) {
+											break;
 										}
 										logger.debug("AutoUpdate "+devicePort.getFullAddress());
 										try {											

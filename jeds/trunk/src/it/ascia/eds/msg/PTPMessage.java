@@ -16,7 +16,7 @@ public abstract class PTPMessage extends EDSMessage {
 	 * Il messaggio viene re-inviato se non arriva risposta.
 	 */
 	public int getMaxSendTries() {
-		return 2;
+		return 8;
 	}
 	
 	
@@ -43,5 +43,24 @@ public abstract class PTPMessage extends EDSMessage {
 		return false;
 	}
 
+	/**
+	 * True se il messaggio ha ricevuto una risposta.
+	 */
+	private boolean isAnswered = false;
+	
+	/**
+	 * @param isAnswered the isAnswered to set
+	 */
+	public void setAnswered(boolean isAnswered) {
+		this.isAnswered = isAnswered;
+	}
+
+	/**
+	 * @return the isAnswered
+	 */
+	public boolean isAnswered() {
+		return isAnswered;
+	}
+	
 	
 }

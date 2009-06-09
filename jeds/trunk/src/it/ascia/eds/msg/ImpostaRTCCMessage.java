@@ -1,6 +1,6 @@
 package it.ascia.eds.msg;
 
-public class ImpostaRTCCMessage extends PTPRequest {
+public class ImpostaRTCCMessage extends PTPMessage {
 
 	public String getMessageDescription() {
 		return "Impostazione RTCC";

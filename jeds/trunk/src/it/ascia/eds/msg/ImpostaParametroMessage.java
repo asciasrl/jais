@@ -11,7 +11,7 @@ package it.ascia.eds.msg;
  * 
  * @author sergio, arrigo
  */
-public class ImpostaParametroMessage extends PTPRequest {
+public class ImpostaParametroMessage extends PTPMessage {
 
 	/**
 	 * Costruttore.

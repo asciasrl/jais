@@ -13,7 +13,7 @@ package it.ascia.eds.msg;
  * 
  * Codice EDS 202.
  */
-public class ImpostaSetPointMessage extends PTPRequest {
+public class ImpostaSetPointMessage extends PTPMessage {
 
 	/**
 	 * Elenco giorni della settimana 

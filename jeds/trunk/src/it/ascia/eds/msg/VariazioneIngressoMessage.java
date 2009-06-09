@@ -16,7 +16,7 @@ import it.ascia.eds.device.BMCChronoTerm;
  * 
  * @author sergio, arrigo
  */
-public class VariazioneIngressoMessage extends PTPRequest
+public class VariazioneIngressoMessage extends PTPMessage
 	{
 
 	/**

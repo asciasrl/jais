@@ -28,23 +28,21 @@ import org.json.simple.JSONObject;
  * @author Sergio
  *
  */
-public class AUIStreamingServlet extends HttpServlet implements PropertyChangeListener {
+public class AUIStreamingServlet extends HttpServlet {
 	
 	private static final String AUIModuleName = "AUI";
 	
 	private Logger logger;
 	
-	private LinkedBlockingQueue eventQueue;
-	
 	public AUIStreamingServlet()
 	{
 		logger = Logger.getLogger(getClass());
-		eventQueue = new LinkedBlockingQueue();
 	}
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) {
 		String remote = request.getRemoteAddr()+":"+request.getRemotePort();
 		String uri = request.getRequestURI();
+		portEventQueue eventQueue = new portEventQueue();
 		int index = uri.lastIndexOf("page-");
 		String page = "";
 		if (index > 0) {
@@ -66,7 +64,7 @@ public class AUIStreamingServlet extends HttpServlet implements PropertyChangeLi
 			try {
 				for (Iterator iterator = ports.iterator(); iterator.hasNext();) {
 					DevicePort p = (DevicePort) iterator.next();
-					p.addPropertyChangeListener(this);
+					p.addPropertyChangeListener(eventQueue);
 					JSONObject obj=new JSONObject();
 					Object value = p.getCachedValue();  
 					if (value == null) {
@@ -82,7 +80,6 @@ public class AUIStreamingServlet extends HttpServlet implements PropertyChangeLi
 			}
 			
 			while (! out.checkError() && counter < maxEvents) {
-				logger.trace("Streaming "+remote+" ("+counter+")");
 				DevicePortChangeEvent evt = null;
 				try {
 					// uso poll in modo da inviare sempre qualcosa al client
@@ -92,9 +89,8 @@ public class AUIStreamingServlet extends HttpServlet implements PropertyChangeLi
 				}
 				JSONObject obj=new JSONObject();
 				if (evt != null) {
-					logger.trace("Streaming "+evt.toString());
 					if (evt.getNewValue() == null) {
-						logger.trace("Non invio evento con valore null");
+						logger.trace("Non invio evento con valore null: "+evt.toString());
 					} else {
 						obj.put("A",evt.getFullAddress());
 						obj.put("V",evt.getNewValue().toString());
@@ -102,10 +98,11 @@ public class AUIStreamingServlet extends HttpServlet implements PropertyChangeLi
 				}
 				counter++;
 				out.println(obj.toJSONString());
+				logger.trace("Streaming "+remote+" ("+counter+"): "+obj.toJSONString());
 			}
 			for (Iterator iterator = ports.iterator(); iterator.hasNext();) {
 				DevicePort p = (DevicePort) iterator.next();
-				p.removePropertyChangeListener(this);
+				p.removePropertyChangeListener(eventQueue);
 			}
 			logger.debug("Fine streaming verso "+remote+" eventi="+counter);
 		} catch (IOException e) {
@@ -123,8 +120,11 @@ public class AUIStreamingServlet extends HttpServlet implements PropertyChangeLi
 		return ((AUIControllerModule) Controller.getController().getModule(AUIModuleName)).getPagePorts(page);
 	}
 
-	public void propertyChange(PropertyChangeEvent evt) {
-		eventQueue.offer(evt);
+	private class portEventQueue extends LinkedBlockingQueue implements PropertyChangeListener {
+
+		public void propertyChange(PropertyChangeEvent evt) {
+			this.offer(evt);
+		}
 	}
 	
 }

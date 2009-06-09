@@ -11,7 +11,7 @@ package it.ascia.eds.msg;
  * 
  * I campi Byte1 e Byte2 sono uguali a quelli del messaggio a cui si risponde.
  */
-public class AcknowledgeMessage extends PTPResponse {
+public class AcknowledgeMessage extends PTPMessage {
 
 	/**
 	 * Costruttore a partire dai dati di un messaggio ACK ricevuto.

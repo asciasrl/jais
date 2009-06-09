@@ -42,7 +42,7 @@ public class RichiestaStatoTermostatoMessage extends PTPRequest {
 	 * <p>Per richiedere uno stato non bisogna insistere.</p>
 	 */
 	public int getMaxSendTries() {
-		return 3;
+		return 2;
 	}
 
 	public int getMessageType() {

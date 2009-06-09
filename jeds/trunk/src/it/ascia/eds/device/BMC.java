@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.Device;
-import it.ascia.ais.DevicePort;
 import it.ascia.eds.*;
 import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.PTPRequest;
@@ -37,6 +36,7 @@ import it.ascia.eds.msg.RispostaUscitaMessage;
  * @author arrigo
  */
 public abstract class BMC extends Device {
+	
 	/**
 	 * Il modello di questo BMC.
 	 */
@@ -86,7 +86,7 @@ public abstract class BMC extends Device {
 	 * Tempo del timer associato ad una uscita
 	 */
 	protected long[] outTimers;
-	
+
 	/**
 	 * Costruttore.
 	 * 
@@ -374,9 +374,10 @@ public abstract class BMC extends Device {
 			return timeout;
 		}
 		getConnector().sendMessage(m);
-		return timeout;		
+		// NON tornare 0: bisogna aspettare il dispatch ! 
+		return timeout;	
 	}
-	
+
 	/**
 	 * Ritorna il numero del primo ingresso.
 	 * 
@@ -590,5 +591,6 @@ public abstract class BMC extends Device {
 	public long updatePort(String portId) throws AISException {
 		return updateStatus();
 	}
+
 
 }

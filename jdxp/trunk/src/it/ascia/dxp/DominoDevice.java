@@ -15,5 +15,20 @@ public abstract class DominoDevice extends Device {
 	public abstract void messageReceived(Message m);
 
 	public abstract void messageSent(Message m);
+
+	public boolean isUnreachable() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void setReachable() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setUnreachable() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

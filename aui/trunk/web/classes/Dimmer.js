@@ -167,9 +167,7 @@ if (!AUI.Dimmer) {
 		    this.mask.removeEventListener('touchstart', this.touchEnd, false);
 		    this.slider.removeEventListener('touchmove', this.touchMove , false);
 			this.mask.style.display = 'none';
-		    //this.slider.removeEventListener('touchend', this.touchEnd, false);			
 		} else {
-		    //this.element.removeEventListener('touchmove', this.touchMove , false);
 		    this.element.removeEventListener('touchend', this.touchEnd, false);			
 		}
 		this.onStop();

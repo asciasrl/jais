@@ -13,8 +13,6 @@ public class CmdControllerModule extends ControllerModule {
  		cmd.setName("CmdConsole");
  		running = true;
  		cmd.start();
- 		logger.info("Completato start");
-
 	}
 
 	public void stop() {

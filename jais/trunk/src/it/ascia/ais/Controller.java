@@ -374,9 +374,9 @@ public class Controller {
 			ControllerModule module = getModule(moduleName);
 			logger.info("Avvio modulo "+moduleName);
 			module.start();		
-			logger.info("Avviato modulo "+moduleName+" in "+(System.currentTimeMillis()-start1)/1000.0+" secondi.");
+			logger.debug("Avviato modulo "+moduleName+" in "+(System.currentTimeMillis()-start1)/1000.0+" secondi.");
 		}
-		logger.info("Avviati "+modules.size()+" moduli in "+(System.currentTimeMillis()-start)/1000.0+" secondi.");
+		logger.debug("Avviati "+modules.size()+" moduli in "+(System.currentTimeMillis()-start)/1000.0+" secondi.");
 	}
 
 	/**
@@ -384,23 +384,18 @@ public class Controller {
 	 */
 	public void stop() {
 		Iterator i = modules.keySet().iterator();
+		logger.info("Arresto di "+modules.size()+" moduli");
 		while (i.hasNext()) {
 			String moduleName = (String) i.next();
 			ControllerModule module = getModule(moduleName);
-			logger.trace("Doing "+moduleName+".stop()");
+			logger.info("Arresto modulo "+moduleName);
 			module.stop();			
-			logger.trace("Done "+moduleName+".stop()");
+			logger.debug("Arrestato modulo "+moduleName);
 		}		
 	}
 	
 	public void restart() {
 		stop();
-		try {
-			logger.info("Waiting to restart");
-			Thread.sleep(3000); // FIXME viene interrotto subito
-		} catch (InterruptedException e) {
-			logger.error("Controller:",e);
-		}
 		start();
 	}
 

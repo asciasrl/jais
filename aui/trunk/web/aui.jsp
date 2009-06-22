@@ -113,6 +113,7 @@ for (Iterator it = pages.iterator(); it.hasNext();) {
 <%
 		}
 %>
+	<div id="<%= id %>-caption" class="caption"><%= controlConfig.getString("title",controlConfig.getString("address")) %></div>
 </div>
 <%				
 	} // controls

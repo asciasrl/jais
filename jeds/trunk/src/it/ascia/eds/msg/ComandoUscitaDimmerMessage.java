@@ -24,6 +24,10 @@ public class ComandoUscitaDimmerMessage extends PTPMessage {
 		load(message);
 	}
 
+	public boolean isAnswered() {
+		return true;
+	}
+	
 	public String getMessageDescription() {
 		return "Comando uscita dimmer";
 	}

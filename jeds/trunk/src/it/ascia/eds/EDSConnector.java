@@ -304,20 +304,25 @@ public class EDSConnector extends Connector {
         	messageToBeAnswered = m;
 	    	synchronized (messageToBeAnswered) {
 	    		for (tries = 1;
-	    			(tries <= m.getMaxSendTries()) && (!m.isAnswered()); 
+	    			tries <= m.getMaxSendTries(); 
 	    			tries++) {
 	    			logger.trace("Invio "+tries+" di "+m.getMaxSendTries()+" : "+m.toHexString());
 	    			while (mp.isBusy()) {
-	    				logger.trace("Delaying 10mS ... "+mp.dumpBuffer());
-	    				Thread.sleep(10);
+	    				logger.trace("Delaying 30mS ... "+mp.dumpBuffer());
+	    				Thread.sleep(30);
 	    			}
 	    			transport.write(m.getBytesMessage());
-	    			// si mette in attesa, ma se nel frattempo arriva la risposta viene avvisato
-	    	    	try {
-	    	    		messageToBeAnswered.wait((long)(getRetryTimeout() * (1 + 0.2 * Math.random())));
-	    	    	} catch (InterruptedException e) {
-	    				logger.trace("sendPTPRequest wait:2");
-	    	    	}
+	    			if (!m.isAnswered()) {
+		    			// si mette in attesa, ma se nel frattempo arriva la risposta viene avvisato
+		    	    	try {
+		    	    		messageToBeAnswered.wait((long)(getRetryTimeout() * (1 + 0.2 * Math.random())));
+		    	    	} catch (InterruptedException e) {
+		    				logger.trace("sendPTPRequest interrupted");
+		    	    	}
+	    			}
+	    			if (m.isAnswered()) {
+	    				break;
+	    			}
 	    		}
 		    	received = m.isAnswered();
 		    	if (recipient == null) {

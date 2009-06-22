@@ -152,7 +152,7 @@ public class EDSConnector extends Connector {
     	if (BroadcastMessage.class.isInstance(m)) {
 			ComandoBroadcastMessage bmsg = (ComandoBroadcastMessage) m;
 			if (lastBroadcast == bmsg.getRandom()) {
-				logger.debug("Messaggio ripetuto: "+m);
+				logger.trace("Messaggio ripetuto: "+m);
 			} else {
 				lastBroadcast = bmsg.getRandom();
 	    		// Mandiamo il messaggio a tutti

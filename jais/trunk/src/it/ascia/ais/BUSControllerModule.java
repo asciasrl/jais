@@ -29,11 +29,16 @@ public abstract class BUSControllerModule extends ControllerModule {
 		running = false;
 		if (autoUpdater != null) {
 			autoUpdater.interrupt();
+			try {
+				autoUpdater.join();
+			} catch (InterruptedException e) {
+				logger.debug("Interrotto:",e);
+			}
 		}
 		for (Iterator c = myConnectors.iterator(); c.hasNext();)
 		{
 			Connector connector = (Connector) c.next(); 
-			logger.info("Chiusura connettore "+connector.getName());
+			logger.debug("Chiusura connettore "+connector.getName());
 			connector.close();
 			logger.trace("Chiuso connettore "+connector.getName());
 		}

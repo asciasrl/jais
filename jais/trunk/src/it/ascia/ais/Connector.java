@@ -217,8 +217,18 @@ public abstract class Connector {
 			transport.close();
 		}
 		running = false;
-    	receivingThread.interrupt();
+		receivingThread.interrupt();
+    	try {
+			receivingThread.join();
+		} catch (InterruptedException e) {
+			logger.error("Interrupted:",e);
+		}
 		sendingThread.interrupt();
+    	try {
+	    	sendingThread.join();
+		} catch (InterruptedException e) {
+			logger.error("Interrupted:",e);
+		}
 	}
 	
     /**

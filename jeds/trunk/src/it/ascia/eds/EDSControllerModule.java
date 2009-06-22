@@ -70,6 +70,7 @@ public class EDSControllerModule extends BUSControllerModule {
 				myConnectors.add(eds);
 		 	} catch (Exception e) {
 		 		logger.fatal("Errore durante inizializzazione:",e);
+		 		eds.close();
 		 	}
 		}				
  		logger.info("Completato start");

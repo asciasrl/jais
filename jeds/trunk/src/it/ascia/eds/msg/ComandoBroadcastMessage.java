@@ -64,7 +64,7 @@ public class ComandoBroadcastMessage extends BroadcastMessage {
 	
 	public String toString()	{
 		StringBuffer s = new StringBuffer();
-		s.append(b2h(getRandom())+" "+getMessageDescription()+ " ["+b2h(Byte1)+":"+b2h(Byte2)+" "+Byte1+":"+Byte2+"]");
+		s.append(getRandom()+" "+getMessageDescription()+ " ["+b2h(Byte1)+":"+b2h(Byte2)+" "+Byte1+":"+Byte2+"]");
 		s.append(" Gruppo "+ getCommandNumber());
 		if (isActivation()) {
 			s.append(" Attiva");

@@ -19,6 +19,7 @@ public class DigitalInputPort extends DevicePort {
 	}
 
 	public boolean writeValue(Object newValue) {
+		logger.error("Cannot write value to digital input");
 		return false;
 	}
 

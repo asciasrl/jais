@@ -45,16 +45,52 @@ div.control-page {
 	display: block;
 }
 
+div.control-icon {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 10;
+}
+
+div.control-button {
+	position: absolute;
+	display: none;
+	top: 0px;
+	left: 0px;
+	z-index: 10;
+}
+
+div.control-button-open {
+	top: -55px;
+}
+
+div.control-button-close {
+	top: 55px;
+}
+
+div.caption {
+	position: absolute;
+	top: 60px;
+	font-size: 11px;
+	font-weight: bold;
+	color: white;
+	width: 60px;
+	vertical-align: top;
+	line-height: 11px; 
+}
+
+
 div.control div.icon {
 }
 
-div.control img {	
+div.control img {
 }
 
 div.reddot {
 	position: absolute;
-	right: 0px;
-	top: 0px;
+	right: -60px;
+	top: -5px;
+	z-index: 15;
 }
 
 td.reddot-sx {
@@ -122,16 +158,21 @@ div.control span {
 	color: white;
 }
 
+div.control-thermo div.caption {
+	width: 120px;
+}
+
 div.thermo-display {
 	position: absolute;
 	top: 0px;
-	right: 0px;
+	left: 0px;
 	background-color: transparent;
 	color: black;
 	font-size: 28px;
 	width: 100px;
 	height: 30px;
 	padding: 15px 10px;
+	z-index: 11;
 }
 
 
@@ -200,14 +241,6 @@ div.layer {
 	position: absolute; 
 	width: 1000px; 
 	height: 80px;	
-}
-
-div.caption {
-	font-size: 11px;
-	font-weight: bold;
-	color: white;
-	vertical-align: top;
-	line-height: 11px; 
 }
 
 

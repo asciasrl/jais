@@ -74,6 +74,7 @@ public class AUIStreamingServlet extends HttpServlet {
 						obj.put("V",value.toString());
 					}
 					out.println(obj.toJSONString());
+					logger.trace("Streaming "+remote+" : "+obj.toJSONString());
 				}				
 			} catch (AISException e) {
 				logger.warn("Errore durante streaming con "+remote+":",e);

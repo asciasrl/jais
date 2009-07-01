@@ -104,8 +104,10 @@ public class EDSConnector extends Connector {
     /**
      * Gestisce ogni byte ricevuto finchè compone un messaggio e quindi ne effettua il dispacciamento
      */
-    public void received(int b) {
+    public void received(int b) {    	
 		mp.push(b);
+		// 20 mS is time for 2 telegrams at 9600 bps
+		setGuardtimeEnd(System.currentTimeMillis()+20);
 		if (mp.isValid()) {
 			EDSMessage m = (EDSMessage) mp.getMessage();
 			if (m != null) {
@@ -297,10 +299,12 @@ public class EDSConnector extends Connector {
 				return false;
 			}
     		BMC recipient = (BMC)getDevice((new Integer(m.getRecipient())).toString());
+    		/*
     		if ((recipient != null) && recipient.isUnreachable()) {
     			logger.trace("Don't send to unreachable: "+recipient.getFullAddress());
     			return false;
     		}
+    		*/
         	messageToBeAnswered = m;
 	    	synchronized (messageToBeAnswered) {
 	    		for (tries = 1;
@@ -308,7 +312,7 @@ public class EDSConnector extends Connector {
 	    			tries++) {
 	    			logger.trace("Invio "+tries+" di "+m.getMaxSendTries()+" : "+m.toHexString());
 	    			while (mp.isBusy()) {
-	    				logger.trace("Delaying 30mS ... "+mp.dumpBuffer());
+	    				logger.trace("MessageParser busy, delaying 30mS ... "+mp.dumpBuffer());
 	    				Thread.sleep(30);
 	    			}
 	    			transport.write(m.getBytesMessage());

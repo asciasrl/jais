@@ -290,8 +290,9 @@ public class AUIControllerModule extends ControllerModule {
 		List controls = pageConfig.configurationsAt("control");
 		for (Iterator ic = controls.iterator(); ic.hasNext(); ) {
 			HierarchicalConfiguration controlConfig = (HierarchicalConfiguration) ic.next();
-			String address = controlConfig.getString("address");
-			if (address != null) {
+			List addresses = controlConfig.configurationsAt("address");
+			for (int i = 0; i < addresses.size(); i++) {
+				String address = (String) ((SubnodeConfiguration) addresses.get(i)).getRoot().getValue();
 				DevicePort p = controller.getDevicePort(address);
 				if (p != null) {
 					ports.add(p);

@@ -49,25 +49,17 @@ if (!AUI.Controls) {
 			return null;
 		}
 		var device = control.device;
+		var controlclass = control.controlclass;
+		if (controlclass == null) {
+			var str = control.type;
+		    var f = str.charAt(0).toUpperCase();
+		    controlclass = f + str.substr(1);
+		}
 		if (device == null) {
-			if (control.type == "dimmer") {
-				device = new AUI.Dimmer(id);
-			} else if (control.type == "light") {
-				device = new AUI.Light(id);
-			} else if (control.type == "pushbutton") {
-				device = new AUI.Pushbutton(id);
-			} else if (control.type == "power") {
-				device = new AUI.Power(id);
-			} else if (control.type == "blind") {
-				device = new AUI.Blind(id);
-			} else if (control.type == "digitalinput") {
-				device = new AUI.Digitalinput(id);
-			} else if (control.type == "scene") {
-				device = new AUI.Scene(id);
-			} else if (control.type == "thermo") {
-				device = new AUI.Thermo(id);
-			} else if (control.type == "webcam") {
-				device = new AUI.Webcam(id);
+			if (controlclass == "Page") {
+				device = new AUI.Device(id);
+			} else {
+				eval("device = new AUI."+controlclass+"('"+id+"')");
 			}
 			if (device == null) {
 				AUI.Logger.error("device non disponibile per controllo di tipo: "+control.type);
@@ -122,6 +114,7 @@ if (!AUI.Controls) {
 			var newValue = devicePortChangeEvent.V;
 			var port = address.split(":")[1];
 			try {
+				AUI.Logger.info("setPortValue device="+id+" port="+port+" value="+newValue);
 				device.setPortValue(port,newValue);
 			} catch(e) {
 				AUI.Logger.error("address:"+address);

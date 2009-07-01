@@ -92,8 +92,10 @@ for (Iterator it = pages.iterator(); it.hasNext();) {
 		}
 		
 %>
-<div id="<%= id %>" class="control control-<%= type %>" style="left: <%= controlConfig.getString("left") %>px; top: <%= controlConfig.getString("top") %>px;" <%= eventType %>="<%= eventHandler %>">
-	<img id="<%= id %>-img" src="<%= skin + controlConfig.getString("default",auiConfig.getString("controls."+type+".default")) %>" title="<%= controlConfig.getString("title",controlConfig.getString("address")) %>" border="0" alt="<%= type %>"/>
+<div id="<%= id %>" class="control control-<%= type %>" style="left: <%= controlConfig.getString("left") %>px; top: <%= controlConfig.getString("top") %>px;">
+	<div class="control-icon" <%= eventType %>="<%= eventHandler %>">
+		<img id="<%= id %>-img" src="<%= skin + controlConfig.getString("default",auiConfig.getString("controls."+type+".default")) %>" title="<%= controlConfig.getString("title",controlConfig.getString("address")) %>" border="0" alt="<%= type %>"/>
+	</div>
 <%
 		if (type.equals("dimmer")) {
 %>	
@@ -105,6 +107,15 @@ for (Iterator it = pages.iterator(); it.hasNext();) {
 	    	<td class="reddot-dx"></td>
 	    </tr>
 	  </table>
+	</div>
+<% 
+		} else if (type.equals("blind")) {
+%>	
+	<div id="<%= id %>-open" class="control-button control-button-open control-<%= type %>-open">
+		<img id="<%= id %>-open-img" src="<%= skin + controlConfig.getString("open",auiConfig.getString("controls."+type+".open")) %>" title="Open <%= controlConfig.getString("title",controlConfig.getString("address")) %>" border="0" alt="Open <%= type %>"/>
+	</div>
+	<div id="<%= id %>-close" class="control-button control-button-close control-<%= type %>-close">
+		<img id="<%= id %>-close-img" src="<%= skin + controlConfig.getString("close",auiConfig.getString("controls."+type+".close")) %>" title="Close <%= controlConfig.getString("title",controlConfig.getString("address")) %>" border="0" alt="Close <%= type %>"/>
 	</div>
 <% 
 		} else if (type.equals("thermo")) {
@@ -169,7 +180,6 @@ for (int iLayer = 0;  iLayer < (5 + nLayers); iLayer++) {
 <div id="slider">
 	<img id="slider-cursor" src="<%= skin %>/images/slider-cursor.png" width="128" height="130" />
 </div>
-
 
 <%!
 /**

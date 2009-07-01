@@ -2,6 +2,8 @@ if (!AUI.Blind) {
 	
 	AUI.Blind = function(id) {
 		this.id = id;
+		this.expanded = false;
+		this.fadetime = 3000;
 	}
 	
 	AUI.Blind.prototype = new AUI.Device();
@@ -16,43 +18,81 @@ if (!AUI.Blind) {
 			event.stopPropagation();
 		} else if (window.event) {
 			window.event.cancelBubble = true;
-		} 
-		var status = this.status;
-		var command = null;
-		var newstatus = status;
-		switch (status) {
-		case "stopped":
-			command = "open";
-			newstatus = "opening";
-			break;
-		case "opening":
-			command = "stop";
-			newstatus = "opened";
-			break;
-		case "opened":
-			command = "close";
-			newstatus = "closing";
-			break;
-		case "closed":
-			command = "open";
-			newstatus = "opening";
-			break;
-		case "closing":
-			command = "stop";
-			newstatus = "closed";
-			break;
-		default:
-			command = "open";
-			newstatus = "opening";
 		}
-		if (newstatus != status) {
-			this.setStatus(newstatus);
+		if (this.status == "opening" || this.status == "closing") {
+			this.stop();
 		}
-		if (command) {
-			var control = this.getControl();
-			AUI.SetRequest.send(control.address,command);
-		}		
-	}
-
+		if (this.expanded) {
+			this.collapse();
+		} else {
+			this.expand();
+		}
+	};
 	
+	AUI.Blind.prototype.expand = function() {
+		this.expanded = true;
+		var self = this;
+		
+		this.openButton = document.getElementById(this.id+'-open');
+		this.touchStartOpen = function(e) { return self.onTouchStartOpen(e) };
+		//this.openButton.addEventListener('touchstart', this.touchStartOpen, false);
+		this.mouseDownOpen = function(e) { return self.onMouseDownOpen(e) };
+		this.openButton.addEventListener('mousedown', this.mouseDownOpen, false);
+		this.openButton.style.display = 'block';
+
+		this.closeButton = document.getElementById(this.id+'-close');
+		this.touchStartClose = function(e) { return self.onTouchStartClose(e) };
+		//this.closeButton.addEventListener('touchstart', this.touchStartClose, false);
+		this.mouseDownClose = function(e) { return self.onMouseDownClose(e) };
+		this.closeButton.addEventListener('mousedown', this.mouseDownClose, false);
+		this.closeButton.style.display = 'block';
+		
+		this.timeout = setTimeout(function() { return self.collapse() },this.fadetime);		
+	};
+	
+	AUI.Blind.prototype.collapse = function() {
+		clearInterval(this.timeout);
+		this.expanded = false;
+		
+		//this.openButton.removeEventListener('touchstart', this.touchStartOpen, false);
+		this.openButton.removeEventListener('mousedown', this.mouseDownOpen, false);
+		this.openButton.style.display = 'none';
+		
+		//this.closeButton.removeEventListener('touchstart', this.touchStartClose, false);
+		this.closeButton.removeEventListener('mousedown', this.mouseDownClose, false);
+		this.closeButton.style.display = 'none';
+		//
+	};
+
+	AUI.Blind.prototype.onMouseDownClose = function() {
+		this.close();
+	};
+
+	AUI.Blind.prototype.onMouseDownOpen = function() {
+		this.open();
+	}
+	
+	AUI.Blind.prototype.open = function() {
+		this.setStatus("opening");
+		var control = this.getControl();		
+		AUI.SetRequest.send(control.address,"open");
+		this.collapse();
+	};
+	
+	
+	
+	AUI.Blind.prototype.close = function() {
+		this.setStatus("closing");
+		var control = this.getControl();
+		AUI.SetRequest.send(control.address,"close");
+		this.collapse();		
+	};
+	
+	AUI.Blind.prototype.stop = function() {
+		this.setStatus("stopped");
+		var control = this.getControl();
+		AUI.SetRequest.send(control.address,"stop");
+	};
+
+		
 }

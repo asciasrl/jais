@@ -32,6 +32,11 @@ public abstract class Connector {
 	private Thread receivingThread;
 	private boolean running = false;
 	
+	/**
+	 * Indicate until connector should be considerered busy because one conversation between devices is in place
+	 */
+	private long guardtimeEnd = 0;
+	
     /**
      * Il nostro nome secondo AUI.
      */
@@ -285,6 +290,40 @@ public abstract class Connector {
 			logger.debug("Stop.");
     	}
     }
+
+    /**
+     * @return True if busyTime is > 0 
+     */
+	public boolean isBusy() {
+		return getGuardtime() > 0;
+	}
+
+	/**
+	 * @param guardtimeEnd the guardtimeEnd to set: time in milliseconds 
+	 */
+	public void setGuardtimeEnd(long guardtimeEnd) {
+		this.guardtimeEnd = guardtimeEnd;
+	}
+
+	/**
+	 * @return the guardtimeEnd
+	 */
+	public long getGuardtimeEnd() {
+		return guardtimeEnd;
+	}
+
+	/**
+     * Connector is in Guard Time when a conversation between devices or controller is in place.
+     * Concrete connector must use setGuardtimeEnd
+	 * @return the time in millisecond to wait beacuse connector is in guard time
+	 */
+	public long getGuardtime() {
+		if (guardtimeEnd > 0 && guardtimeEnd >= System.currentTimeMillis()) {
+			return guardtimeEnd - System.currentTimeMillis();
+		} else {
+			return 0;
+		}
+	}
 
 }
 

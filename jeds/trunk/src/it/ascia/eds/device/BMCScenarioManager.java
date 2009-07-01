@@ -164,6 +164,19 @@ public class BMCScenarioManager extends BMCStandardIO {
 		}
 	}
 	
+	public void messageSent(EDSMessage m) {
+		if (isReal) {
+			switch (m.getMessageType()) {
+				case EDSMessage.MSG_COMANDO_USCITA:
+				case EDSMessage.MSG_COMANDO_USCITA_DIMMER:
+					// messaggi ignorati silentemente
+					break;
+				default:
+					super.messageSent(m);
+			}
+		} // if isReal		
+	}
+	
 	public void messageReceived(EDSMessage m) throws AISException {
 		int port;
 		switch (m.getMessageType()) {

@@ -13,6 +13,16 @@ DA DOCUMENTARE
 --------------
  + Parametro //jais/EDS/skipautoupdate booleano 
 
+20090701
+--------
+ + Implementato il "Guard time" per ridurre le collisioni
+
+20090601
+--------
+ ! modifica gestione buffer ricezione: visualizza correttamente posizione dati
+ ! considera timer uscite solo se t > 0
+ + Il Connector mette in pausa i messaggi per dipositivi non raggiungibili (1 sec per errore consecutivo, max 60 sec)
+
 20090519
 --------
  ! Considerato solo il primo messaggio broadcast, le ripetizioni vengono ignorate

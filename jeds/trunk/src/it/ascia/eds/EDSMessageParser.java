@@ -55,7 +55,8 @@ public class EDSMessageParser extends it.ascia.ais.MessageParser {
 	
 	private int iBuff = 0; 
 	
-	public long TIMEOUT = 100;
+	// 40 mS is time for telegram at 1200 bps
+	public long TIMEOUT = 40;
 	
 	public EDSMessageParser() {
 		super();
@@ -138,14 +139,14 @@ public class EDSMessageParser extends it.ascia.ais.MessageParser {
 			valid = false;
 		}
 		if (iBuff == 0 && b != Stx) {
-			logger.warn("Non Stx: "+EDSMessage.b2h(b));
+			logger.trace("Non Stx: "+EDSMessage.b2h(b));
 			return;
 		}
 		if ((lastReceived > 0) && (System.currentTimeMillis() - lastReceived) >= TIMEOUT ) {
-			logger.warn("Timeout in ricezione "+(System.currentTimeMillis() - lastReceived)+"mS: "+dumpBuffer()+" Next("+iBuff+"): "+EDSMessage.b2h(b));
+			logger.debug("Timeout in ricezione "+(System.currentTimeMillis() - lastReceived)+"mS: "+dumpBuffer()+" Next("+iBuff+"): "+EDSMessage.b2h(b));
 		}
 		buff[iBuff++] = b;
-		lastReceived = System.currentTimeMillis();
+		lastReceived = System.currentTimeMillis();		
 		if (iBuff==8) {
 			if ((buff[0] == Stx) && (buff[7] == Etx)) {
 				if (buff[6] == checksum()) {
@@ -153,11 +154,11 @@ public class EDSMessageParser extends it.ascia.ais.MessageParser {
 					message = createMessage();
 					clear();
 				} else {
-					logger.warn("Checksum error: "+dumpBuffer());
+					logger.debug("Checksum error: "+dumpBuffer());
 					shift();
 				}
 			} else {
-				logger.warn("Invalid message: "+dumpBuffer());
+				logger.debug("Invalid message: "+dumpBuffer());
 				shift();
 			}
 		}

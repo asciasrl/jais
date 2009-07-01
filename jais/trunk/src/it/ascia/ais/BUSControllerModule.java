@@ -6,8 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.commons.configuration.HierarchicalConfiguration;
-
 public abstract class BUSControllerModule extends ControllerModule {
 
 	protected List myConnectors = new Vector();
@@ -96,9 +94,18 @@ public abstract class BUSControllerModule extends ControllerModule {
 											}
 										}
 										if (device.isUnreachable()) {
-											break;
+											continue;
 										}
 										logger.debug("AutoUpdate "+devicePort.getFullAddress());
+										long guardtime = connector.getGuardtime();
+										while (guardtime > 0) {
+											logger.debug("BUS is in guard time, waiting "+guardtime+"mS");											
+											synchronized (this) {
+												wait(guardtime);							
+											}
+											logger.trace("End guard time of "+guardtime+"mS");
+											guardtime = connector.getGuardtime();
+										}
 										try {											
 											device.updatePort(devicePort.getPortId());
 											synchronized (this) {

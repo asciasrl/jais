@@ -1,7 +1,7 @@
 if (!AUI.Device) {
 		
-	AUI.Device = function() {
-		this.id = null;
+	AUI.Device = function(id) {
+		this.id = id;
 		this.oldStatus = null;
 		this.status = null;
 		this.element = null;

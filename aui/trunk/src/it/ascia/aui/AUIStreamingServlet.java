@@ -55,11 +55,15 @@ public class AUIStreamingServlet extends HttpServlet {
 			response.setContentType("text/html");
 			response.setStatus(HttpServletResponse.SC_OK);					
 			logger.info("Inizio streaming verso "+remote+" page="+page);
-			
+			logger.trace("Local address "+request.getLocalAddr()+":"+request.getLocalPort()+" Query:"+request.getQueryString());
 			// per prima cosa aggiorna lo stato di tutte le porte
 			List ports = getPagePorts(page);
 			if (ports.size() < 1) {
 				logger.warn("No available DevicePorts on page "+page);
+				JSONObject obj=new JSONObject();
+				obj.put("ERROR","No available DevicePorts on page "+page);
+				out.println(obj.toJSONString());
+				maxEvents = 1; // termina quasi subito il ciclo sottostante
 			}
 			try {
 				for (Iterator iterator = ports.iterator(); iterator.hasNext();) {
@@ -109,6 +113,11 @@ public class AUIStreamingServlet extends HttpServlet {
 		} catch (IOException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			logger.error("Errore interno durante streaming verso "+remote+" :",e);
+		}
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			logger.debug("Interrupted:",e);
 		}
 	}
 	

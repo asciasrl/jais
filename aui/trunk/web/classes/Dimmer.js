@@ -104,10 +104,9 @@ if (!AUI.Dimmer) {
 			} else {
 				newstatus = "on";
 			}
-			if (newstatus != status) {
+			if (AUI.SetRequest.send((this.getControl()).address,newstatus)) {
 				this.setStatus(newstatus);
-			}			
-			AUI.SetRequest.send((this.getControl()).address,this.status);
+			}
 		} else if (this.mode == "sliding") {
 			this.onSliderStop();
 		}

@@ -13,6 +13,11 @@ DA DOCUMENTARE
 --------------
  + Parametro //jais/EDS/skipautoupdate booleano 
 
+20090710
+--------
+ ! aumentato a 100% parte random del tempo di attesa ritrasmissione
+ ! La centralina scenari non ha ingressi o uscite interrogabili
+
 20090701
 --------
  + Implementato il "Guard time" per ridurre le collisioni

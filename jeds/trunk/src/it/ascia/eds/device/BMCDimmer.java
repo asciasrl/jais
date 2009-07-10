@@ -6,6 +6,7 @@ package it.ascia.eds.device;
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.DevicePort;
+import it.ascia.ais.DimmerPort;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.msg.ComandoBroadcastMessage;
 import it.ascia.eds.msg.ComandoUscitaDimmerMessage;
@@ -82,7 +83,16 @@ public class BMCDimmer extends BMC {
 			modelName = "Dimmer sconosciuto";
 		}
 	}
-	
+
+	public void addPort(String portId, String portName) {
+		if (portId.startsWith("Out")) {
+			ports.put(portId, new DimmerPort(this, portId, portName));		
+		} else {
+			logger.error("Id porta scorretto:"+portId);
+			//super.addPort(portId, portName);
+		}
+	}
+
 	public void discover() {
 		super.discover();
 		EDSConnector connector = (EDSConnector) getConnector();
@@ -232,6 +242,7 @@ public class BMCDimmer extends BMC {
 		return connector.getRetryTimeout() * m.getMaxSendTries(); 
 	}
 
+	/*
 	public String getStatus(String port, long timestamp) throws AISException {
 		int i;
 		String retval = "";
@@ -246,6 +257,7 @@ public class BMCDimmer extends BMC {
 		}
 		return retval;
 	}
+	*/
 	
 	/**
 	 * Imposta istantaneamente il valore di un canale.
@@ -333,6 +345,9 @@ public class BMCDimmer extends BMC {
 				numericValue = Integer.parseInt(value);
 			} catch (NumberFormatException e) {
 				throw new AISException("Valore non valido: " + value);
+			}
+			if (numericValue < 0 || numericValue > 100) {
+				throw new AISException("Valore fuori range (0-100): " + value);				
 			}
 			messageType = EDSMessage.MSG_COMANDO_USCITA_DIMMER;
 		}

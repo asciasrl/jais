@@ -5,7 +5,7 @@ package it.ascia.eds.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
-import it.ascia.ais.DeviceBlindPort;
+import it.ascia.ais.BlindPort;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.DigitalInputPort;
 import it.ascia.ais.DigitalOutputPort;
@@ -66,7 +66,7 @@ public class BMCStandardIO extends BMC {
 		} else if (portId.startsWith("Out")) {
 			ports.put(portId, new DigitalOutputPort(this, portId, portName));		
 		} else {
-			super.addPort(portId, portName);
+			logger.fatal("Id porta scorretto:"+portId);
 		}
 	}
 
@@ -287,7 +287,7 @@ public class BMCStandardIO extends BMC {
 		if (! havePort(blindPortId)) {
 			String openPortId = "Out" + (uscita + 1);
 			String closePortId = "Out" + (uscita - 2 * shift + 2);
-			DeviceBlindPort blindPort = new DeviceBlindPort(this,blindPortId,closePortId,openPortId);
+			BlindPort blindPort = new BlindPort(this,blindPortId,closePortId,openPortId);
 			addPort(blindPort);							
 			logger.info("Aggiunta porta virtuale "+blindPortId+": open="+openPortId+" close="+closePortId);
 		}

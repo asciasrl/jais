@@ -3,6 +3,7 @@ package it.ascia.aui;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import org.apache.commons.configuration.HierarchicalConfiguration;
@@ -155,7 +156,22 @@ public class AUIControllerModule extends ControllerModule {
 		}
 		return j.toJSONString();
 	}
-
+	
+	public String getAll() {
+		JSONArray ja = new JSONArray();
+		Device[] devices = controller.findDevices("*");		
+		for (int i = 0; i < devices.length; i++) {
+			Device d = devices[i]; 
+			LinkedHashMap m = new LinkedHashMap();
+			m.put("Class",d.getClass().getSimpleName());
+			m.put("Address",d.getFullAddress());
+			m.put("Info",d.getInfo());
+			m.put("Status", d.getStatus());
+			ja.add(m);
+		}
+		return ja.toJSONString();
+	}
+	
 	public String doCommand(String command, HashMap params) throws AISException {
 		String retval = "";
 		if (command.equals("getControls")) {
@@ -165,8 +181,7 @@ public class AUIControllerModule extends ControllerModule {
 			} else {
 				retval = getControls();
 			}
-		/*
-		} else if (command.equals("group")) {
+		} else if (command.equals("send")) {
 			if (params.size() == 0) {
 				throw(new AISException("mancano parametri"));
 			}
@@ -174,12 +189,11 @@ public class AUIControllerModule extends ControllerModule {
 			Entry entry = (Entry) iterator.next();
 			String message = (String) entry.getKey();
 			String value = (String) entry.getValue();
-			if (Controller.getController().sendGroupMessage(message,value)) {
+			if (controller.sendMessage(message,value)) {
 				retval = "OK";
 			} else {
 				retval = "ERROR";
 			}
-		*/
 		} else if (command.equals("get")) {
 			// Comando "get"
 			String fullAddress = (String) params.get("address");
@@ -199,20 +213,7 @@ public class AUIControllerModule extends ControllerModule {
 				retval = "ERROR: address " + fullAddress + " not found.";
 			}
 		} else if (command.equals("getAll")) {
-			// Comando "getAll": equivale a "get *:*"
-			retval = System.currentTimeMillis() + "\n";
-			Device[] devices = controller.findDevices("*");
-			long timestamp = 0;
-			if (params.containsKey("timestamp")) {
-				try {
-					timestamp = Long.parseLong((String) params.get("timestamp"));
-				} catch (NumberFormatException e) {
-					// Manteniamo il valore di default: zero
-				}
-			}
-			for (int i = 0; i < devices.length; i++) {
-				retval += devices[i].getStatus(timestamp);
-			}
+			return getAll();
 		} else if (command.equals("set")) {
 			// Comando "set"
 			if (params.size() == 0) {
@@ -221,65 +222,27 @@ public class AUIControllerModule extends ControllerModule {
 			Iterator iterator = params.entrySet().iterator();
 			Entry entry = (Entry) iterator.next();
 			String fullAddress = (String) entry.getKey();
-			String value = (String) entry.getValue();				
-			//String fullAddress = (String) params.get("address");
 			if (fullAddress == null) {
 				throw(new AISException("Parametro 'address' richiesto"));
 			}
-			//String value = (String) params.get("value");
+			String value = (String) entry.getValue();				
 			if (value == null) {
 				throw(new AISException("Parametro 'value' richiesto"));
 			}
-			// TODO semplificare
-			String deviceAddress = controller.getDeviceFromAddress(fullAddress);
-			String portId = controller.getPortFromAddress(fullAddress);
-			Device devices[] = controller.findDevices(deviceAddress);
-			if (devices.length == 1) {
-				try {
-					if (devices[0].writePortValue(portId,value)) {
-						retval = "OK";
-					} else {
-						retval = "ERROR";
-					}
-				} catch (IllegalArgumentException e) {
-					logger.error("Errore durante writeValue: ",e);
-					retval = "ERROR";					
-				}
+			DevicePort p = controller.getDevicePort(fullAddress);
+			if (p == null) {
+				throw(new AISException("Port not found"));
+			}			
+			if (p.writeValue(value)) {
+				retval = "OK";
 			} else {
-				throw(new AISException("indirizzo ambiguo"));
+				retval = "ERROR";
 			}
 		} else {
 			throw(new AISException("comando '"+command+"' non implementato.")); 
 		}
 		return retval; 		
 	}
-
-	/**
-	 * Riceve un evento e lo inoltra alle code degli stream aperti
-	 */
-	/*
-	public void propertyChange(PropertyChangeEvent evt) {
-		logger.info(evt.getPropertyName()+"="+evt.getOldValue()+" -> "+ evt.getNewValue());
-		logger.debug("Stream aperti: "+streams.size());
-		for (int i = 0; i < streams.size(); i++) {
-			LinkedBlockingQueue q = (LinkedBlockingQueue) streams.get(i);
-			q.offer(evt);
-			logger.trace("Coda "+i+", offerto evento "+evt.toString());
-		}
-	}
-	*/
-
-	/*
-	public void addStreamQueue(LinkedBlockingQueue q) {
-		streams.add(q);	
-		logger.debug("Aggiunta coda di streaming: "+streams.size());
-	}
-
-	public void removeStreamQueue(LinkedBlockingQueue q) {
-		streams.remove(q);		
-		logger.debug("Rimossa coda di streaming: "+streams.size());
-	}
-	*/
 
 	public List getPagePorts(String page) {
 		List ports = new ArrayList();
@@ -301,6 +264,12 @@ public class AUIControllerModule extends ControllerModule {
 		}
 		return ports;
 	}
-
+	
+	public void addPage(String id, String title) {
+		if (configuration.getProperty("pages.page[@id='"+id+"']") != null) {
+			throw(new AISException("Duplicated page id="+id));
+		}
+		configuration.addProperty("pages.page(-1).id", id);	
+	}	
 
 }

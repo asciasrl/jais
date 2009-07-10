@@ -1,6 +1,5 @@
 body {
-	background-color: black;
-	background-image: url("../images/asciabkg.png"); 
+	background-color: #111;
 	font-family: "Lucida Grande", Geneva, "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 	margin: 0px;
 	-webkit-tap-highlight-color:rgba(1,1,1,0.5);	
@@ -17,7 +16,6 @@ body {
 	z-index: 30; 
 	width: 320px; 
 	height: 40px;
-	filter: alpha(opacity='60');
 	opacity: 0.6;
 	background: url('../images/barratesti.png');
 }	
@@ -121,7 +119,6 @@ div.reddot-sx {
 	background-repeat: no-repeat;
 	width: 11px;
 	height: 20px;
-	f1loat: left;
 	z-index: 10;
 }	
 
@@ -130,8 +127,6 @@ div.reddot-ce {
 	background-repeat: repeat-x;
 	margin: 0px 0px;
 	height: 20px;
-	xwidth: 50px;
-	f1loat: left;
 	z-index: 20;
 }	
 
@@ -140,7 +135,6 @@ div.reddot-dx {
 	background-repeat: no-repeat;
 	width: 11px;
 	height: 20px;
-	f1loat: left;
 	z-index: 10;
 }
 
@@ -193,9 +187,9 @@ div.webcam {
 	width: 1000px; 
 	height: 1000px; 
 	background-color: black; 
-	filter:alpha(opacity='70'); 
 	opacity: 0.7;
 	display: none;
+	z-index: 27; 
 }
 
 #slider {
@@ -205,7 +199,7 @@ div.webcam {
 	width: 40px;
 	height: 152px;
 	display: none;
-	p1adding: 11px 6px;
+	z-index: 28; 
 }
 
 #slider-cursor {
@@ -214,6 +208,7 @@ div.webcam {
 	width: 28px;
 	height: 30px;
 	margin: 11px 6px; 
+	z-index: 29; 
 }
 
 

@@ -5,6 +5,8 @@ package it.ascia.ais;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -58,15 +60,6 @@ public abstract class Device {
 	 */
 	private boolean reachRetry = false;
 	
-	/**
-	 * Device con indirizzo vuoto
-	 * @param connector
-	 * @throws AISException
-	 */
-	public Device(Connector connector) throws AISException {
-		this(connector,"");
-	}
-
 	/**
 	 * Device con indirizzo specificato
 	 * Il device si aggiunge al connettore con il metodo {@link Connector.addDevice(Device)}
@@ -129,28 +122,30 @@ public abstract class Device {
 	 * Se posto a 0, richiede l'intero stato del sistema.
 	 * @throws AISException 
 	 */
-	public String getStatus(String portId, long timestamp) throws AISException {
+	public Map getStatus(String portId, long timestamp) throws AISException {
 		if (portId.equals("*")) {
 			return getStatus(timestamp);
 		} else {
 			DevicePort p = getPort(portId);
-			return p.getStatus();
+			Map m = new LinkedHashMap();
+			m.put(p.getPortId(),p.getStatus());
+			return m;
 		}
 	}
 
 	/**
 	 * Restituisce lo stato di tutte le porte del Device che sono state aggiornate dopo il timestamp
 	 * @param timestamp
-	 * @return Righe di testo nel formato: porta=valore
+	 * @return Una Array con un elemento per porta 
 	 * @throws AISException
 	 */
-	public String getStatus(long timestamp) throws AISException {
-		StringBuffer s = new StringBuffer();
+	public Map getStatus(long timestamp) throws AISException {
+		Map m = new LinkedHashMap();
 		for (Iterator i = ports.values().iterator(); i.hasNext(); ) {
 			DevicePort p = (DevicePort) i.next();				
-			s.append(p.getStatus()+"\n");
+			m.put(p.getPortId(),p.getStatus());
 		}
-		return s.toString();
+		return m;
 	}
 
 	/**
@@ -158,7 +153,7 @@ public abstract class Device {
 	 * @return Righe di testo nel formato: porta=valore
 	 * @throws AISException
 	 */
-	public String getStatus() throws AISException {
+	public Map getStatus() throws AISException {
 		return getStatus(0);
 	}
 
@@ -167,9 +162,7 @@ public abstract class Device {
 	 * @param portId
 	 * @param portName
 	 */
-	public void addPort(String portId, String portName) {
-		ports.put(portId, new DevicePort(this, portId, portName));		
-	}
+	public abstract void addPort(String portId, String portName);
 
 	/**
 	 * Aggiunge una porta con nome null

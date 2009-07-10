@@ -145,32 +145,6 @@ if (!AUI.Dimmer) {
 		return false;
 	}
 
-	AUI.Dimmer.prototype.onTouchStart = function(event) {
-		event.preventDefault();
-		event.stopPropagation();
-		this.eventType = "touch";
-		var self = this;
-		this.touchEnd = function(e) { return self.onTouchEnd(e) };
-		this.element.addEventListener('touchend', this.touchEnd, false);
-		this.onStart();
-		return false;
-	}
-
-	AUI.Dimmer.prototype.onTouchEnd = function(event) {
-		event.preventDefault();
-		event.stopPropagation();
-		var self = this;
-		if (this.mode == "sliding") {
-		    this.mask.removeEventListener('touchstart', this.touchEnd, false);
-		    this.slider.removeEventListener('touchmove', this.touchMove , false);
-			this.mask.style.display = 'none';
-		} else {
-		    this.element.removeEventListener('touchend', this.touchEnd, false);			
-		}
-		this.onStop();
-		return false;
-	}
-
 	AUI.Dimmer.prototype.getSliderValue = function(y) {
 		// 11 e 15 dipendono dalle immagini
 		AUI.Logger.log("scrollY="+window.scrollY);
@@ -267,7 +241,6 @@ if (!AUI.Dimmer) {
 		} else if (window.event) {
 			window.event.cancelBubble = true;
 		} 
-		//this.mask.removeEventListener('mousemove', this.sliderMouseMove, false);
 		this.slider.removeEventListener('mousemove', this.sliderMouseMove, false);
 		this.slider.removeEventListener('mouseup', this.sliderMouseUp, false);
 		this.slider.removeEventListener('mouseout', this.sliderMouseOut, false);
@@ -293,6 +266,32 @@ if (!AUI.Dimmer) {
 		this.onStop();
 	}
 
+
+	AUI.Dimmer.prototype.onTouchStart = function(event) {
+		event.preventDefault();
+		event.stopPropagation();
+		this.eventType = "touch";
+		var self = this;
+		this.touchEnd = function(e) { return self.onTouchEnd(e) };
+		this.element.addEventListener('touchend', this.touchEnd, false);
+		this.onStart();
+		return false;
+	}
+
+	AUI.Dimmer.prototype.onTouchEnd = function(event) {
+		event.preventDefault();
+		event.stopPropagation();
+		var self = this;
+		if (this.mode == "sliding") {
+		    this.mask.removeEventListener('touchstart', this.touchEnd, false);
+		    this.slider.removeEventListener('touchmove', this.touchMove , false);
+			this.mask.style.display = 'none';
+		} else {
+		    this.element.removeEventListener('touchend', this.touchEnd, false);			
+		}
+		this.onStop();
+		return false;
+	}
 
 	AUI.Dimmer.prototype.onSliderTouchStart = function(event) {
 		event.preventDefault();
@@ -322,13 +321,15 @@ if (!AUI.Dimmer) {
 	AUI.Dimmer.prototype.onSliderTouchEnd = function(event) {
 		event.preventDefault();
 		event.stopPropagation();
-		// TODO
+		this.slider.removeEventListener('touchmove', this.sliderTouchMove, false);
+		this.slider.removeEventListener('touchend', this.sliderTouchEnd, false);
 		this.onSliderStop();
 	}
 
 	AUI.Dimmer.prototype.onMaskTouchStart = function(event) {
 		event.preventDefault();
 		event.stopPropagation();
+		this.mask.removeEventListener('touchstart', this.maskTouchStart, false);
 		this.slider.removeEventListener('touchstart', this.sliderTouchStart, false);
 		this.slider.removeEventListener('touchmove', this.sliderTouchMove, false);
 		this.slider.removeEventListener('touchend', this.sliderTouchEnd, false);

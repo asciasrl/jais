@@ -12,8 +12,9 @@ if (!AUI.StreamRequest) {
 		errorCounter: 0
 	};
 	
-	AUI.StreamRequest.start = function() {		
+	AUI.StreamRequest.start = function() {
 		var self = AUI.StreamRequest;
+		AUI.Header.show("Connessione in corso ... "+self.requestCounter);
 		clearInterval(self.timeoutTimer);
 		if (self.streamReq == null) {
 			self.streamReq = AUI.Http.getRequest();
@@ -93,7 +94,10 @@ if (!AUI.StreamRequest) {
 					self.errorCounter++;
 					// TODO: handle exception
 					AUI.Logger.error(e);
-				}			
+				}
+				if (self.eventCounter == 1) {
+					AUI.Header.show("Connessione OK.");
+				}
 			}
 			//AUI.Logger.info("stateChange, setting timeout "+(self.sendTimeout + self.updateTimeout));
 			self.timeoutTimer = setTimeout(self.timeoutFunction,self.sendTimeout + self.updateTimeout);		

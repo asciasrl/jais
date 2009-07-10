@@ -376,7 +376,7 @@ public class EDSConnector extends Connector {
 		for(Iterator id = dispositivi.iterator(); id.hasNext();)
 		{
 		    HierarchicalConfiguration dispositivo = (HierarchicalConfiguration) id.next();
-		    String name = (String) dispositivo.getProperty("[@name]");
+		    String name = (String) dispositivo.getProperty("[@nome]");
 		    String address = (String) dispositivo.getString("indirizzo");
 		    int model = dispositivo.getInt("modello");
 		    String revision = (String) dispositivo.getString("revisione");
@@ -388,8 +388,8 @@ public class EDSConnector extends Connector {
 				for(Iterator ii = inputs.iterator(); ii.hasNext();)
 				{
 				    HierarchicalConfiguration input = (HierarchicalConfiguration) ii.next();
-				    String inputName = input.getString("[@name]",null);
-				    if (inputName != null) {
+				    String inputName = input.getString("[@nome]",null);
+				    if (inputName != null && !inputName.equals("")) {
 				    	bmc.setInputName(iInput, inputName);
 				    	logger.debug("BMC "+address+" input:"+iInput+" name:"+inputName);
 				    }
@@ -400,8 +400,8 @@ public class EDSConnector extends Connector {
 				for(Iterator io = outputs.iterator(); io.hasNext();)
 				{
 				    HierarchicalConfiguration output = (HierarchicalConfiguration) io.next();
-				    String outputName = output.getString("[@name]",null);
-				    if (outputName != null) {			    
+				    String outputName = output.getString("[@nome]",null);
+				    if (outputName != null  && !outputName.equals("")) {			    
 				    	bmc.setOutputName(iOutput, outputName);
 				    	logger.debug("BMC "+address+" output:"+iOutput+" name:"+outputName);
 				    }
@@ -434,6 +434,33 @@ public class EDSConnector extends Connector {
 		    }
 		}    		
 		return true;
+	}
+
+	public boolean sendMessage(String messageCode, Object value) {
+		if (messageCode.startsWith("Group")) {
+			try {
+				boolean v;
+				if (Boolean.class.isInstance(value)) {
+					v = ((Boolean)value).booleanValue();
+				} else if (String.class.isInstance(value)) {
+					v = Boolean.parseBoolean((String)value);
+				} else {
+					throw new IllegalArgumentException("Message "+messageCode+" valore:"+value);					
+				}						
+				int group = Integer.parseInt(messageCode.substring(5));				
+				if (group > 0 && group <= 31) {
+					queueMessage(new ComandoBroadcastMessage(group,v));
+					return true;
+				} else {
+					logger.error("Invalid group message code:"+messageCode);				
+				}
+			} catch (NumberFormatException e) {
+				logger.error("Numero gruppo scorretto",e);
+			}
+		} else {
+			logger.error("Invalid message code:"+messageCode);
+		}
+		return false;
 	}
 
 }

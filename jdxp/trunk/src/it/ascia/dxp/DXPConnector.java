@@ -142,4 +142,9 @@ public class DXPConnector extends Connector {
 		}
 	}
 
+	public boolean sendMessage(String messageCode, Object value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

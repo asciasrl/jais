@@ -84,7 +84,7 @@ public class CmdControllerModule extends ControllerModule {
 			System.out.print(message);
 			try {
 				return stdin.readLine();
-			} catch (IOException e) {
+			} catch (Exception e) {
 				return "";
 			}
 		}

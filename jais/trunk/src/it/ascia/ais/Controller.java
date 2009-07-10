@@ -160,8 +160,7 @@ public class Controller {
 		// Prima cosa: trovare i ":" per dividere porte e device.
 		temp = splitString(address, ":");
 		if (temp.length != 2) {
-			throw new AISException("L'indirizzo deve contenere uno e un solo " +
-					"\":\"");
+			logger.warn("L'indirizzo deve contenere uno e un solo \":\"");
 		}
 		return temp[0];
 	}
@@ -414,7 +413,12 @@ public class Controller {
 			return null;
 		}
 	}
-
+	
+	/**
+	 * Ritorna il riferimento ad una porta in base all'indirizzo 
+	 * @param fullAddress
+	 * @return null se la porta non esiste
+	 */
 	public DevicePort getDevicePort(String fullAddress) {
 		String address = getDeviceFromAddress(fullAddress);
 		try {
@@ -427,5 +431,26 @@ public class Controller {
 		}
 	}
 
+	/**
+	 * Invia un messaggio al sistema nel suo complesso
+	 * Il codice del messaggio deve essere composto come un indirizzo di dispositivo, 
+	 * cioe' e' composto da una prima parte che specifica il connettore da usare, 
+	 * la seconda parte e' interpretata dal connettore. 
+	 * @param message Codice del messaggio
+	 * @param value Valore da inviare con il messaggio
+	 * @return true se l'invio non ha avuto errori
+	 */
+	public boolean sendMessage(String message, Object value) {
+		logger.info("sendMessage:"+message+" Value:"+value);
+		for (Iterator it = connectors.keySet().iterator(); it.hasNext(); ) {
+			String connectorName = (String)it.next();
+			if (message.indexOf(connectorName + ".") == 0) {
+				Connector connector = (Connector)connectors.get(connectorName);
+				return connector.sendMessage(message.substring(connectorName.length() + 1), value);
+			}
+		}
+		throw new AISException("Gateway path unaivalable: " + message );
+	}
+	
 }
 

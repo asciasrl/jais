@@ -53,16 +53,12 @@ public class BMCScenarioManager extends BMCStandardIO {
 		switch(model) {
 		case 152:
 		case 161:
-			return 2;
 		case 154:
 		case 162:
-			return 4;
 		case 156:
-			return 6;
 		case 158:
 		case 163:
 		case 164:
-			return 8;
 		case 165:
 			return 0;
 		default: // This should not happen(TM)
@@ -110,16 +106,12 @@ public class BMCScenarioManager extends BMCStandardIO {
 		switch(model) {
 		case 152:
 		case 161:
-			return 2;
 		case 154:
 		case 162:
-			return 4;
 		case 156:
-			return 6;
 		case 158:
 		case 163:
 		case 164:
-			return 8;
 		case 165:
 			return 0;
 		default: // This should not happen(TM)

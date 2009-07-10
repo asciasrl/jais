@@ -2,6 +2,7 @@ if (!AUI.StreamRequest) {
 	
 	AUI.StreamRequest = {
 		streamReq: null,
+		running: false,
 		requestCounter: 0,
 		sendTimeout: 3000,
 		updateTimeout: 10000,
@@ -11,13 +12,12 @@ if (!AUI.StreamRequest) {
 		errorCounter: 0
 	};
 	
-	AUI.StreamRequest.start = function() {
+	AUI.StreamRequest.start = function() {		
 		var self = AUI.StreamRequest;
 		clearInterval(self.timeoutTimer);
 		if (self.streamReq == null) {
 			self.streamReq = AUI.Http.getRequest();
 			//this.streamReq.onreadystatechange = function(e) { return self.onReadyStateChange() };
-			self.streamReq.onreadystatechange = self.onReadyStateChange;
 			AUI.Logger.info("Start: instanziato streamReq ");		
 		} else if (self.streamReq.readyState >= 1) {
 			AUI.Logger.info("Start: abort request readyState="+this.streamReq.readyState);		
@@ -34,6 +34,8 @@ if (!AUI.StreamRequest) {
 		//this.streamReq.timeout = this.sendTimeout;
 		//this.streamReq.ontimeout = function() { return self.onTimer() };
 		self.streamReq.send(false);
+		self.running = true;
+		self.streamReq.onreadystatechange = self.onReadyStateChange;
 		//AUI.Logger.info("Start: done send()");		
 		self.streamStart = 0;
 		self.eventCounter = 0;
@@ -48,16 +50,23 @@ if (!AUI.StreamRequest) {
 		if (self.streamReq >= 1) {
 			self.streamReq.abort();
 		} else {
-			self.start();
+			if (self.running) {
+				self.start();
+			}
 		}
 	}
 
 	AUI.StreamRequest.stop = function() {
 		var self = AUI.StreamRequest;
+		self.running = false;
+		clearInterval(self.timeoutTimer);
+		if (self.streamReq == null) {
+			return;
+		}
 		AUI.Logger.info("Stop StreamRequest, readyState="+self.streamReq.readyState);
 		if (self.streamReq >= 1) {
 			self.streamReq.abort();
-		}		
+		}
 	}
 
 	AUI.StreamRequest.onReadyStateChange = function() {
@@ -93,7 +102,9 @@ if (!AUI.StreamRequest) {
 		if (streamReq.readyState == 4) {
 			//AUI.Logger.info("stateChange, readyState=4: start()");
 			self.streamReq = null;
-			self.start();		
+			if (self.running) {
+				self.start();
+			}
 		}
 	}
 	

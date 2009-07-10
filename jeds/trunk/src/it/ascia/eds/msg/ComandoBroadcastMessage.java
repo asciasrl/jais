@@ -23,14 +23,17 @@ public class ComandoBroadcastMessage extends BroadcastMessage {
 	 * @param Modalita Modalit� di funzionamento (1=MODALITA� RISPARMIO DIMMER)
 	 * @throws Exception
 	 */
-	public ComandoBroadcastMessage(int Numero, boolean Attivazione, int Modalita)
-	  throws Exception {
+	public ComandoBroadcastMessage(int Numero, boolean Attivazione, int Modalita) {
 		TipoMessaggio = EDSMessage.MSG_COMANDO_BROADCAST;
 		Byte1 = (Attivazione ? 0 : 1) & 0x01 + ((Modalita & 0x7F) << 1); 
 		Byte2 = Numero & 0x1F;
 		Random r = new Random();
 		Mittente = r.nextInt(255);
 		Destinatario = r.nextInt(255);
+	}
+	
+	public ComandoBroadcastMessage(int Numero, boolean Attivazione) {
+		this(Numero,Attivazione,0);
 	}
 
 	public ComandoBroadcastMessage(int[] message) {

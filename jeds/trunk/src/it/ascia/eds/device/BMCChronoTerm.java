@@ -7,7 +7,13 @@ package it.ascia.eds.device;
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.DevicePort;
+import it.ascia.ais.DigitalInputPort;
+import it.ascia.ais.DigitalOutputPort;
+import it.ascia.ais.SeasonPort;
 import it.ascia.ais.SlaveStatePort;
+import it.ascia.ais.StatePort;
+import it.ascia.ais.TemperaturePort;
+import it.ascia.ais.TemperatureSetpointPort;
 import it.ascia.ais.TriggerPort;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.msg.CronotermMessage;
@@ -26,16 +32,6 @@ import it.ascia.eds.msg.VariazioneIngressoMessage;
  * @author arrigo
  */
 public class BMCChronoTerm extends BMC {
-
-	/**
-	 * Estate
-	 */
-	//public static final String SEASON_SUMMER = "summer";
-	
-	/**
-	 * Estate
-	 */
-	//public static final String SEASON_WINTER = "winter";
 
 	/**
 	 * Temperatura antigelo.
@@ -125,10 +121,10 @@ public class BMCChronoTerm extends BMC {
 	 */
 	public BMCChronoTerm(Connector connector, String address, int model, String name) throws AISException {
 		super(connector, address, model, name);
-		addPort(port_state);
-		addPort(port_temperature);
-		addPort(port_setpoint);
-		addPort(port_season);
+		addPort(new StatePort(this,port_state,stateStrings));
+		addPort(new TemperaturePort(this,port_temperature));
+		addPort(new TemperatureSetpointPort(this,port_setpoint));
+		addPort(new SeasonPort(this,port_season));
 
 		addPort(new SlaveStatePort(this,stateStrings[STATE_CHRONO],port_state));
 		addPort(new SlaveStatePort(this,stateStrings[STATE_MANUAL],port_state));
@@ -142,8 +138,11 @@ public class BMCChronoTerm extends BMC {
 		addPort(new TriggerPort(this,stateStrings[STATE_TEMP_T2]));
 		addPort(new TriggerPort(this,stateStrings[STATE_TEMP_T3]));
 		
-		addPort(new SlaveStatePort(this,stateStrings[STATE_WINTER_MODE],port_season));
-		
+		addPort(new SlaveStatePort(this,stateStrings[STATE_WINTER_MODE],port_season));		
+	}
+	
+	public void addPort(String portId, String portName) {
+		logger.fatal("Id porta scorretto:"+portId);
 	}
 	
 	/* (non-Javadoc)
@@ -332,6 +331,7 @@ public class BMCChronoTerm extends BMC {
 		return null;
 	}
 
+	/*
 	public String getStatus(String portId, long timestamp) throws AISException {
 		DevicePort p = getPort(portId);
 		if (p.getTimeStamp() >= timestamp) {
@@ -340,6 +340,7 @@ public class BMCChronoTerm extends BMC {
 			return "";
 		}
 	}
+	*/
 
 	public int getOutPortsNumber() {
 		return 0;

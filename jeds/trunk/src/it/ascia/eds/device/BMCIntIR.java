@@ -41,6 +41,10 @@ public class BMCIntIR extends BMC {
 		}
 	}
 	
+	public void addPort(String portId, String portName) {
+		logger.fatal("Id porta scorretto:"+portId);
+	}
+
 	/* (non-Javadoc)
 	 * @see it.ascia.eds.device.BMC#messageReceived(it.ascia.eds.msg.Message)
 	 */
@@ -88,6 +92,7 @@ public class BMCIntIR extends BMC {
 		return getName() + ": BMC Int IR (modello " + model + ")";
 	}
 
+	/*
 	public String getStatus(String port, long timestamp) { // TODO
 		String fullAddress = getFullAddress();
 		if ((timestamp <= irInputTimestamp) &&
@@ -98,6 +103,7 @@ public class BMCIntIR extends BMC {
 			return "";
 		}
 	}
+	*/
 
 	/**
 	 * Questo e' uno dei pochi BMC con gli ingressi che possono avere

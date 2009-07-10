@@ -3,6 +3,8 @@ package it.ascia.dxp;
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.Device;
+import it.ascia.ais.DigitalInputPort;
+import it.ascia.ais.DigitalOutputPort;
 import it.ascia.ais.Message;
 
 public abstract class DominoDevice extends Device {
@@ -10,6 +12,15 @@ public abstract class DominoDevice extends Device {
 	public DominoDevice(Connector connector, String address)
 			throws AISException {
 		super(connector, address);
+	}
+	
+	public void addPort(String portId, String portName) {
+		if (portId.startsWith("i")) {
+			addPort(new DigitalInputPort(this,portId,portName));
+		} else if (portId.startsWith("o")) {
+			addPort(new DigitalOutputPort(this,portId,portName));
+		} 
+		logger.fatal("Id porta scorretto:"+portId);
 	}
 
 	public abstract void messageReceived(Message m);

@@ -2,17 +2,25 @@ if (!AUI.SetRequest) {
 
 	AUI.SetRequest = {
 			request: AUI.Http.getRequest(),
-			sending: false
+			sending: false,
+			device: null,
+			status: "default"
 	};
 	
-	AUI.SetRequest.send = function(address, value) {
+	AUI.SetRequest.send = function(device, value, status) {
 		if (this.sending) {
 			AUI.Header.show("Richiesta in corso.");
 			return false;
 		}
 		try {
+			this.device = device;
+			if (status == undefined) {
+				status = value;
+			}
+			this.status = status;
 			this.sending = true;
-			this.address = address;
+			var control = device.getControl();
+			var address = control.address;
 			this.request.open('GET', 'jais/set?'+address+'='+value, true);
 			this.request.send(null);
 			var self = this;
@@ -32,12 +40,13 @@ if (!AUI.SetRequest) {
 			AUI.Logger.debug("status="+request.status);
 			clearInterval(AUI.SetRequest.timeout);
 			if (request.status == 200) {
-				AUI.Header.show(request.responseText);
 				if (request.responseText.indexOf("ERROR") == 0) {
-					AUI.Controls.revertStatus(AUI.SetRequest.address);					
+					AUI.Header.show(request.responseText);
+				} else {
+					AUI.Logger.info("setRequest,setStatus:"+AUI.SetRequest.status);
+					AUI.SetRequest.device.setStatus(AUI.SetRequest.status);
 				}
 			} else {
-				AUI.Controls.revertStatus(AUI.SetRequest.address);
 				if (request.status == 500) {
 					AUI.Header.show("Errore del server.");
 				} else if (request.status == 400) {

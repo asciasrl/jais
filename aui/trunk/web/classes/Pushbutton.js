@@ -37,9 +37,7 @@ if (!AUI.Pushbutton) {
 
 	AUI.Pushbutton.prototype.onStart = function() {		
 		var control = this.getControl();
-		if (AUI.SetRequest.send(control.address,"true")) {
-			this.setStatus("on");
-		}
+		AUI.SetRequest.send(this,"on");
 	}
 
 	AUI.Pushbutton.prototype.onTouchEnd = function(event) {
@@ -60,9 +58,7 @@ if (!AUI.Pushbutton) {
 
 	AUI.Pushbutton.prototype.onStop = function() {		
 		var control = this.getControl();
-		if (AUI.SetRequest.send(control.address,"false")) {
-			this.setStatus("off");
-		} else {
+		if (!AUI.SetRequest.send(this,"off")) {
 			var self = this;
 			if (this.retryTimer) {
 				clearTimeout(this.retryTimer);

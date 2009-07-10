@@ -11,15 +11,12 @@ package it.ascia.ais;
 public class DigitalOutputPort extends DevicePort {
 
 	public DigitalOutputPort(Device device, String portId) {
-		super(device, portId);
+		this(device, portId,null);
 	}
 
 	public DigitalOutputPort(Device device, String portId, String portName) {
 		super(device, portId, portName);
-	}
-
-	public String[] getTags() {
-		return new String[] {"1","0","on","off","true","false"};
+		setTags(new String[] {"1","0","on","off","true","false"});
 	}
 
 	public boolean writeValue(Object newValue) throws IllegalArgumentException {

@@ -2,11 +2,12 @@ package it.ascia.ais;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.security.InvalidParameterException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-public class DevicePort {
+public abstract class DevicePort {
 
 	protected String portId;
 
@@ -25,6 +26,8 @@ public class DevicePort {
 	}
 
 	private String portName;
+	
+	private String[] tags = null;
 
 	/**
 	 * Tempo di ultimo aggiornamento del valore
@@ -114,8 +117,18 @@ public class DevicePort {
 		expiration = 0;
 	}
 
-	public String getStatus() throws AISException {
-		return getFullAddress() + "=" + getCachedValue();
+	public Map getStatus() throws AISException {
+		HashMap m = new HashMap();
+		m.put("A",getFullAddress());
+		m.put("C",getClass().getSimpleName());
+		m.put("N",getName());
+		Object value = getCachedValue();
+		if (value == null) {
+			m.put("V",value);			
+		} else {
+			m.put("V",value.toString());
+		}
+		return m;
 	}
 
 	public String getName() {
@@ -326,7 +339,14 @@ public class DevicePort {
 	 * fornisce l'elenco
 	 */
 	public String[] getTags() {
-		return null;
+		return this.tags;
+	}
+
+	/**
+	 * @param tags the tags to set
+	 */
+	public void setTags(String[] tags) {
+		this.tags = tags;
 	}
 
 }

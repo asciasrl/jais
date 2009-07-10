@@ -13,12 +13,12 @@ import java.beans.PropertyChangeListener;
  * @author Sergio
  *
  */
-public class DeviceBlindPort extends DevicePort implements PropertyChangeListener {
+public class BlindPort extends DevicePort implements PropertyChangeListener {
 	
 	private DevicePort closePort; 
 	private DevicePort openPort; 
 	
-	public DeviceBlindPort(Device device, String portId, String closePortId, String openPortId) throws AISException {
+	public BlindPort(Device device, String portId, String closePortId, String openPortId) throws AISException {
 		super(device,portId);
 		closePort = device.getPort(closePortId);
 		openPort = device.getPort(openPortId);

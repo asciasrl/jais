@@ -9,7 +9,7 @@ package it.ascia.ais;
  * @author Sergio
  *
  */
-public class TriggerPort extends DigitalOutputPort {
+public class TriggerPort extends DevicePort {
 
 	/**
 	 * Crea una porta virtuale, che serve solo da trigger per comandare il device

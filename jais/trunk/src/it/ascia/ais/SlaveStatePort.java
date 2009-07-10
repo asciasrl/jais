@@ -13,7 +13,7 @@ import java.beans.PropertyChangeListener;
  * @author Sergio
  *
  */
-public class SlaveStatePort extends DigitalInputPort implements PropertyChangeListener {
+public class SlaveStatePort extends DevicePort implements PropertyChangeListener {
 
 	private DevicePort masterPort;
 	private String refValue;

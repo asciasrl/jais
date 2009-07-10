@@ -151,7 +151,7 @@ public class EDSConnector extends Connector {
 				messageToBeAnswered.notify(); 						
 			}
     	}
-    	if (BroadcastMessage.class.isInstance(m)) {
+    	if (ComandoBroadcastMessage.class.isInstance(m)) {
 			ComandoBroadcastMessage bmsg = (ComandoBroadcastMessage) m;
 			if (lastBroadcast == bmsg.getRandom()) {
 				logger.trace("Messaggio ripetuto: "+m);
@@ -319,7 +319,7 @@ public class EDSConnector extends Connector {
 	    			if (!m.isAnswered()) {
 		    			// si mette in attesa, ma se nel frattempo arriva la risposta viene avvisato
 		    	    	try {
-		    	    		messageToBeAnswered.wait((long)(getRetryTimeout() * (1 + 0.2 * Math.random())));
+		    	    		messageToBeAnswered.wait((long)(getRetryTimeout() * (1 + Math.random())));
 		    	    	} catch (InterruptedException e) {
 		    				logger.trace("sendPTPRequest interrupted");
 		    	    	}

@@ -34,16 +34,15 @@ if (!AUI.Pages) {
 		window.scroll(0,0);
 		this.currentPage = newPage;
 		AUI.Logger.info("Cambiata pagina:"+toPageId);
-		if (AUI.StreamRequest) {
-			AUI.StreamRequest.start();
-		}		
 		if (AUI.Pages.pageHaveLayers(toPageId)) {
 			if (AUI.StreamRequest) {
+				AUI.Logger.info("Start StreamRequest");
 				AUI.StreamRequest.start();
 			}
 			AUI.Layers.show();
 		} else {
 			if (AUI.StreamRequest) {
+				AUI.Logger.info("Stop StreamRequest");
 				AUI.StreamRequest.stop();
 			}
 			AUI.Layers.hide();

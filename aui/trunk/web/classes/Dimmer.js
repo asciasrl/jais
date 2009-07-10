@@ -104,9 +104,7 @@ if (!AUI.Dimmer) {
 			} else {
 				newstatus = "on";
 			}
-			if (AUI.SetRequest.send((this.getControl()).address,newstatus)) {
-				this.setStatus(newstatus);
-			}
+			AUI.SetRequest.send(this,newstatus,"dimming");
 		} else if (this.mode == "sliding") {
 			this.onSliderStop();
 		}
@@ -206,8 +204,7 @@ if (!AUI.Dimmer) {
 	AUI.Dimmer.prototype.onSliderStop = function() {
 		AUI.Logger.log("slider stop: value="+this.sliderValue);
 		if (this.sliderValue != null) {
-			if (!AUI.SetRequest.sending && AUI.SetRequest.send((this.getControl()).address,this.sliderValue)) {
-				this.value = this.sliderValue; 
+			if (!AUI.SetRequest.sending && AUI.SetRequest.send(this,this.sliderValue,"dimming")) {
 				this.sliderValue = null;	
 			} else {
 				var self = this;
@@ -300,7 +297,7 @@ if (!AUI.Dimmer) {
 	AUI.Dimmer.prototype.onSliderTouchStart = function(event) {
 		event.preventDefault();
 		event.stopPropagation();
-		if (event.targetTouches.length > 1) return;
+		if (event.targetTouches.length > 1) return false;
 		var self = this;
 		this.sliderTouchMove = function(e) { return self.onSliderTouchMove(e) };
 		this.slider.addEventListener('touchmove', this.sliderTouchMove, false);
@@ -315,7 +312,7 @@ if (!AUI.Dimmer) {
 	AUI.Dimmer.prototype.onSliderTouchMove = function(event) {
 		event.preventDefault();
 		event.stopPropagation();
-		if (event.targetTouches.length > 1) return;
+		if (event.targetTouches.length > 1) return false;
 		var x = event.targetTouches[0].clientX;
 		var y = event.targetTouches[0].clientY;
 		this.onSliderMove(x,y);

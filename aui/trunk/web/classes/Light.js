@@ -28,20 +28,12 @@ if (!AUI.Light) {
 		} 
 		var status = this.status;
 		var newstatus = status;
-		var command = null;
 		if (status == "on") {
 			newstatus = "off";
-			command = "false";
 		} else {
 			newstatus = "on";
-			command = "true";
 		}
-		if (command) {
-			var control = this.getControl();
-			if (AUI.SetRequest.send(control.address,command)) {
-				this.setStatus(newstatus);
-			}
-		}		
+		AUI.SetRequest.send(this,newstatus)
 	}
 	
 }

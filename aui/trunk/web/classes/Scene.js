@@ -21,8 +21,7 @@ if (!AUI.Scene) {
 		} else if (window.event) {
 			window.event.cancelBubble = true;
 		} 
-		var control = this.getControl();
-		AUI.SetRequest.send(control.address,"true");
+		AUI.SetRequest.send(this,"true","default");
 	}
 	
 }

@@ -73,25 +73,22 @@ if (!AUI.Blind) {
 	}
 	
 	AUI.Blind.prototype.open = function() {
-		this.setStatus("opening");
 		var control = this.getControl();		
-		AUI.SetRequest.send(control.address,"open");
+		AUI.SetRequest.send(this,"open","opening");
 		this.collapse();
 	};
 	
 	
 	
 	AUI.Blind.prototype.close = function() {
-		this.setStatus("closing");
 		var control = this.getControl();
-		AUI.SetRequest.send(control.address,"close");
+		AUI.SetRequest.send(this,"close","closing");
 		this.collapse();		
 	};
 	
 	AUI.Blind.prototype.stop = function() {
-		this.setStatus("stopped");
 		var control = this.getControl();
-		AUI.SetRequest.send(control.address,"stop");
+		AUI.SetRequest.send(this,"stop","stopped");
 	};
 
 		

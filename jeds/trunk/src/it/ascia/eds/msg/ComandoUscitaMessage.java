@@ -125,13 +125,13 @@ public class ComandoUscitaMessage extends PTPMessage {
 	public String toString() {
 		StringBuffer s = new StringBuffer();
 		s.append(super.toString());
-		s.append(" Scena: " + getScenePortNumber());
-		s.append(" Uscita: " + getOutputPortNumber());
+		s.append(" Uscita (0-7): " + getOutputPortNumber());
 		if (isActivation()) {
 			s.append(" Attivazione/Incremento");
 		} else {
 			s.append(" Disattivazione/Decremento");
 		}
+		s.append(" Scena (0-15): " + getScenePortNumber());
 		int tempo = (Byte1 >> 3) & 0x0F;
 		switch (tempo) {
 		case 0:
@@ -147,7 +147,7 @@ public class ComandoUscitaMessage extends PTPMessage {
 
 		int percentuale = getPercentage();
 		if (percentuale == 0) {
-			s.append(" Modo rele'");
+			s.append(" Modo relay");
 		} else if (percentuale > 100) {
 			s.append(" Valore precedente");
 		} else {

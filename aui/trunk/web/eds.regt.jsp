@@ -8,10 +8,14 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>RegT</title>
-<link href="eds.regt.css" rel="stylesheet" type="text/css"/>
+<link href="skins/20090330/css/aui.css" rel="stylesheet" type="text/css"/>
+<link href="skins/20090330/css/eds.regt.css" rel="stylesheet" type="text/css"/>
+<script language="javascript" src="classes/AUI.js"></script>
+<script language="javascript" src="classes/Logger.js"></script>
+<script language="javascript" src="classes/Http.js"></script>
 <script language="javascript" src="classes/Regt.js"></script>
 </head>
-<body>
+<body onload="AUI.Regt.init();">
 
 <ul class="eds-regt-stagione">
 	<li>Estate</li>
@@ -35,11 +39,12 @@ for (int stagione = 0; stagione <= 1; stagione++) {
 	<div><%= giorni[giorno] %></div>
 <%	
 		for (int ora = 0; ora <= 23; ora++) {
+			String id = stagione + "-" + giorno + "-" + ora;
+			int v = r.nextInt(100);
 %>
-		<div id="regt-<%= stagione %>-<%= giorno%>-<%= ora %>" class="eds-regt-ora" onmouseover="Regt.onMouseOver(event);">
-			<div id="regt-<%= stagione %>-<%= giorno%>-<%= ora %>-bar" class="eds-regt-bar" style="height: <%= r.nextInt(100) %>px;">
-			</div>
+		<div class="eds-regt-ora-box">
 			<%= ora %>
+			<div class="eds-regt-ora-cursor" id="regt-<%= stagione %>-<%= giorno%>-<%= ora %>" onmouseover="AUI.Regt.onMouseOver(event,'<%= id %>');"><%= v %></div>
 		</div>		
 <%
 		}

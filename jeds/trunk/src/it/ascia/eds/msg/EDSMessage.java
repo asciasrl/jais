@@ -7,7 +7,8 @@ import it.ascia.ais.Message;
 
 /**
  * Messaggio EDS generico.
- * 
+ *
+ * @todo Spostare metodi Factory in classe separata
  * @author sergio, arrigo
  */
 public abstract class EDSMessage extends Message implements Comparable {
@@ -280,7 +281,10 @@ public abstract class EDSMessage extends Message implements Comparable {
 	 */
 	public String toString()
 	{
+		/*
 		return Mittente + " -> " + Destinatario + " " + getMessageDescription()+" ("+TipoMessaggio+") ["+b2b(Byte1)+":"+b2b(Byte2)+" "+Byte1+":"+Byte2+"]";
+		*/	
+		return Mittente + " -> " + Destinatario + " " + getMessageDescription()+" ("+TipoMessaggio+")";
 	}
 
 	public EDSMessage() {  

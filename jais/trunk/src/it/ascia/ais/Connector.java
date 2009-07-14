@@ -5,7 +5,6 @@ package it.ascia.ais;
 
 import java.util.LinkedHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.Semaphore;
 
 import org.apache.log4j.Logger;

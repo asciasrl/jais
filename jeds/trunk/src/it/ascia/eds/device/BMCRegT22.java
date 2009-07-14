@@ -12,7 +12,12 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
+import it.ascia.ais.DatePort;
 import it.ascia.ais.DevicePort;
+import it.ascia.ais.IntegerPort;
+import it.ascia.ais.StatePort;
+import it.ascia.ais.TemperaturePort;
+import it.ascia.ais.TemperatureSetpointPort;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.msg.ImpostaParametroMessage;
 import it.ascia.eds.msg.EDSMessage;
@@ -90,16 +95,16 @@ public class BMCRegT22 extends BMCStandardIO {
 		for (int i = 0; i < 16; i++) {
 			broadcastBindingsByPort[i] = new LinkedHashSet();
 		}
-		addPort(port_temperature);
-		addPort(port_mode);
-		addPort(port_alarmTemp);
-		addPort(port_autoSendTime);
-		addPort(port_setPoint);
-		addPort(port_RTCC);
+		addPort(new TemperaturePort(this,port_temperature));
+		addPort(new StatePort(this,port_mode));
+		addPort(new TemperaturePort(this,port_alarmTemp));
+		addPort(new IntegerPort(this,port_autoSendTime));
+		addPort(new TemperaturePort(this,port_setPoint));
+		addPort(new DatePort(this,port_RTCC));
 		for (int stagione = 0; stagione <= 1; stagione++) {
 			for (int giorno = 0; giorno <= 6; giorno++) {
 				for (int ora = 0; ora <= 23; ora++) {
-					addPort(getSetPointPortId(stagione,giorno,ora));					
+					addPort(new TemperatureSetpointPort(this,getSetPointPortId(stagione,giorno,ora)));					
 				}
 			}		
 		}
@@ -109,7 +114,8 @@ public class BMCRegT22 extends BMCStandardIO {
 		if (ora == 31) {
 			return "setPoint";
 		} else {
-			return "setPoint-"+ImpostaSetPointMessage.stagione(stagione)+"-"+ImpostaSetPointMessage.giorno(giorno)+"-"+ImpostaSetPointMessage.ora(ora);
+			//return "setPoint-"+ImpostaSetPointMessage.stagione(stagione)+"-"+ImpostaSetPointMessage.giorno(giorno)+"-"+ImpostaSetPointMessage.ora(ora);
+			return "setPoint-"+stagione+"-"+giorno+"-"+ora;
 		}
 	}
 	
@@ -406,13 +412,13 @@ public class BMCRegT22 extends BMCStandardIO {
 				GregorianCalendar cal = new GregorianCalendar();
 				Date date;
 				DateFormat df = DateFormat.getDateTimeInstance();				
-				if (!((String)newValue).toLowerCase().equals("now")) {
+				if (((String)newValue).toLowerCase().equals("now")) {
+					date = new Date();
+					logger.debug("Set to now: "+date);
+				} else {
 					date = df.parse((String) newValue);
 					cal.setTime(date);
 					logger.debug("Parsed data: "+newValue+" -> "+cal.getTime().toString());
-				} else {
-					date = new Date();
-					logger.debug("Set to now: "+date);
 				}
 				EDSConnector conn = (EDSConnector) getConnector();
 				int m = conn.getMyAddress();

@@ -13,7 +13,7 @@
 	</target>
 	
 	<target name="jais">
-		<property name="version.num" value="1.01"/>
+		<property name="version.num" value="1.04"/>
 		<property name="dst" value="../installer/"/>
 		<property name="lib" value="${dst}lib/"/>
 		<property name="web" value="${dst}web/"/>

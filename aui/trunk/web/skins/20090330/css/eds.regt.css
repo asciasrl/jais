@@ -1,9 +1,5 @@
 @CHARSET "ISO-8859-1";
 
-body {
-	font-size: 16px;
-}
-
 ul.eds-regt-stagione {	
 	border: 1px solid green;
 	float: left;
@@ -17,7 +13,6 @@ ul.eds-regt-stagione li {
 	border: 1px solid green;
 	float: left;
 	width: 50px;
-	height1: 32px;
 	padding: 5px;
 }
 
@@ -32,35 +27,51 @@ div#regt-1 {
 
 div.eds-regt-stagione {
 	position: relative;
+	color: white;
 	float: left;
 	clear: left;
-	width1: 1010px;
-	height1: 168px;
 } 
 
 div.eds-regt-giorno {
+	color: white;
 	position: relative;
 	border: 1px solid yellow;
 	float: left;
 	clear: left;
-	width1: 1008px;
-	height1: 22px;
 } 
 
-div.eds-regt-ora {
+div.eds-regt-ora-box {
 	position: relative;
 	border: 1px solid blue;
+	background-color: #111;
+	color: white;
+	font-size: 0.7em;
+	text-align: center;
 	float: left;
 	width: 20px;
 	height: 100px;
 	margin: 10px 0px;
+	float: left;
 }
 
-div.eds-regt-bar {
+div.eds-regt-ora {
 	position: absolute;
 	width: 20px;
-	bottom: 0px; 
+	height: 100px;
 	background-color: green;
+	color: black;
+	z-index: 20;
+}
+
+div.eds-regt-ora-cursor {
+	position: absolute;
+	text-align: center;
+	width: 20px;
+	height: 16px;
+	margin-top: 50px;
+	background-color: yellow;
+	color: black;
+	z-index: 10;
 }
 
 

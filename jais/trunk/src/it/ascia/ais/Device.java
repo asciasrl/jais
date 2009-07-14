@@ -70,6 +70,8 @@ public abstract class Device {
 	public Device(Connector connector, String address) throws AISException {
 		this.connector = connector;
 		this.address = address;
+		// FIXME il metodo addDevice di Connector deve essere invocato solo quando la creazione del BMC e' completata
+		// FIXME connector.addDevice(this); deve essere l'ultima istruzione dei costruttori delle classi concrete
 		connector.addDevice(this);
 		logger = Logger.getLogger(getClass());
 	}

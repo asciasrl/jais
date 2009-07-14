@@ -11,6 +11,7 @@ import it.ascia.ais.BUSControllerModule;
 import it.ascia.ais.SerialTransport;
 import it.ascia.ais.TCPSerialTransport;
 import it.ascia.ais.Transport;
+import it.ascia.eds.device.BMC;
 
 public class EDSControllerModule extends BUSControllerModule {
 	
@@ -68,6 +69,21 @@ public class EDSControllerModule extends BUSControllerModule {
 			 	// registra il connector
 				controller.registerConnector(eds);		
 				myConnectors.add(eds);
+				List devices = sub.configurationsAt("devices.device");
+				for (Iterator d = devices.iterator(); d.hasNext();)
+				{
+					HierarchicalConfiguration dev = (HierarchicalConfiguration) d.next();
+					String model = dev.getString("model");
+					String address = dev.getString("address");
+					try {
+						BMC bmc = eds.addBmc(model,address);						
+						if (bmc != null) {
+							bmc.discover();
+						}
+					} catch (AISException e) {
+						logger.warn("addBMC Model: "+model+" Address: "+address+" Error: ",e);
+					}
+				}
 		 	} catch (Exception e) {
 		 		logger.fatal("Errore durante inizializzazione:",e);
 		 		eds.close();

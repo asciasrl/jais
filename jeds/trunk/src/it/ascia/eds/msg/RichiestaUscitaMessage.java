@@ -42,4 +42,12 @@ public class RichiestaUscitaMessage extends PTPRequest {
 	public int getMessageType() {
 		return MSG_RICHIESTA_USCITA;
 	}
+	
+	public String toString() {
+		StringBuffer s = new StringBuffer();
+		s.append(super.toString());
+		s.append(" Uscita (0-7): "+getUscita());
+		return s.toString();
+	}
+
 }

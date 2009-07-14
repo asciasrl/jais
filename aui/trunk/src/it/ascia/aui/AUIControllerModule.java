@@ -158,19 +158,31 @@ public class AUIControllerModule extends ControllerModule {
 	}
 	
 	public String getAll() {
+		return get("*.*:*");
+	}
+
+	public String get(String fullAddress) {
 		JSONArray ja = new JSONArray();
-		Device[] devices = controller.findDevices("*");		
-		for (int i = 0; i < devices.length; i++) {
-			Device d = devices[i]; 
-			LinkedHashMap m = new LinkedHashMap();
-			m.put("Class",d.getClass().getSimpleName());
-			m.put("Address",d.getFullAddress());
-			m.put("Info",d.getInfo());
-			m.put("Status", d.getStatus());
-			ja.add(m);
+		try {
+			String deviceAddress = controller.getDeviceFromAddress(fullAddress);
+			String portName = controller.getPortFromAddress(fullAddress);
+			Device devices[] = controller.findDevices(deviceAddress);
+			logger.debug("Get, address: "+deviceAddress+" port:"+portName);
+			for (int i = 0; i < devices.length; i++) {
+				Device d = devices[i]; 
+				LinkedHashMap m = new LinkedHashMap();
+				m.put("Class",d.getClass().getSimpleName());
+				m.put("Address",d.getFullAddress());
+				m.put("Info",d.getInfo());
+				m.put("Status", d.getStatus(portName,0));
+				ja.add(m);
+			}			
+		} catch (Exception e) {
+			logger.error("get Error: "+e);
 		}
 		return ja.toJSONString();
 	}
+
 	
 	public String doCommand(String command, HashMap params) throws AISException {
 		String retval = "";
@@ -200,18 +212,7 @@ public class AUIControllerModule extends ControllerModule {
 			if (fullAddress == null) {
 				throw(new AISException("Parametro 'address' richiesto"));
 			}
-			// TODO semplificare
-			String deviceAddress = controller.getDeviceFromAddress(fullAddress);
-			String portName = controller.getPortFromAddress(fullAddress);
-			Device devices[] = controller.findDevices(deviceAddress);
-			if (devices.length > 0) {
-				retval = "";
-				for (int i = 0; i < devices.length; i++) {
-					retval += devices[i].getStatus(portName, 0);
-				}
-			} else {
-				retval = "ERROR: address " + fullAddress + " not found.";
-			}
+			return get(fullAddress);
 		} else if (command.equals("getAll")) {
 			return getAll();
 		} else if (command.equals("set")) {
@@ -265,11 +266,13 @@ public class AUIControllerModule extends ControllerModule {
 		return ports;
 	}
 	
+	/*
 	public void addPage(String id, String title) {
 		if (configuration.getProperty("pages.page[@id='"+id+"']") != null) {
 			throw(new AISException("Duplicated page id="+id));
 		}
 		configuration.addProperty("pages.page(-1).id", id);	
-	}	
+	}
+	*/	
 
 }

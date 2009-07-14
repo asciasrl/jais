@@ -22,10 +22,10 @@ if (!AUI.SetRequest) {
 			var control = device.getControl();
 			var address = control.address;
 			this.request.open('GET', 'jais/set?'+address+'='+value, true);
-			this.request.send(null);
 			var self = this;
 			this.request.onreadystatechange = self.stateChange;
 			this.timeout = window.setTimeout(self.timeoutExpired, 3000);
+			this.request.send(null);
 			AUI.Logger.info("request: "+address+"="+value);
 		} catch(e) {
 			this.sending = false;

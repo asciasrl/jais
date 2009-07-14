@@ -34,9 +34,9 @@ if (!AUI.StreamRequest) {
 		//AUI.Logger.info("Start: done open()");		
 		//this.streamReq.timeout = this.sendTimeout;
 		//this.streamReq.ontimeout = function() { return self.onTimer() };
-		self.streamReq.send(false);
 		self.running = true;
 		self.streamReq.onreadystatechange = self.onReadyStateChange;
+		self.streamReq.send(false);
 		//AUI.Logger.info("Start: done send()");		
 		self.streamStart = 0;
 		self.eventCounter = 0;

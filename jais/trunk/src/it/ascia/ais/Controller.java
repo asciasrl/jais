@@ -243,10 +243,6 @@ public class Controller {
 				}
 			} // Se il connector ci interessa
 		} // Cicla sui connector
-		if (connector == null) {
-			// Nessun connector ci e' andato bene
-			throw new AISException("Gateway path unaivalable: " + address );
-		}
 		if (retval.length == 0) {
 			throw new AISException("Target device not found: " + address );
 		}

@@ -66,7 +66,7 @@ public class BMCStandardIO extends BMC {
 		} else if (portId.startsWith("Out")) {
 			ports.put(portId, new DigitalOutputPort(this, portId, portName));		
 		} else {
-			logger.fatal("Id porta scorretto:"+portId);
+			throw(new AISException("Id porta scorretto: "+portId));
 		}
 	}
 
@@ -211,12 +211,10 @@ public class BMCStandardIO extends BMC {
 				int gruppo = mrisp.getComandoBroadcast();
 				if (gruppo > 0) {
 					int outPortNumber = mrisp.getUscita();
-					int casella = mrisp.getCasellaBMC();
 					// alcuni BMC hanno un Bug per cui non mettono nella risposta il numero di uscita/casella
 					RichiestaAssociazioneUscitaMessage mrich = (RichiestaAssociazioneUscitaMessage) mrisp.getRequest();
 					if (mrich != null) {
 						outPortNumber = mrich.getUscita();
-						casella = mrich.getCasella();
 					}
 					bindOutput(gruppo, outPortNumber);
 				}

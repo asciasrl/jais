@@ -92,7 +92,7 @@ public abstract class BMC extends Device {
 	 * 
 	 * @param bmcAddress l'indirizzo di questo BMC
 	 * @param model il modello di questo BMC
-	 * @param name il nome di questo BMC (dal file di configurazione)
+	 * @param name il nome di questo BMC (dal file di configurazione), se null lo genera automaticamente
 	 * @throws AISException 
 	 */
 	public BMC(Connector connector, String bmcAddress, int model, String name) throws AISException {
@@ -141,7 +141,11 @@ public abstract class BMC extends Device {
 	public String getName() {
 		return name;
 	}
-	
+
+	public static BMC createBMC(EDSConnector connector, String address, int model) {
+		return createBMC(connector,address,model,null);		
+	}
+
 	/**
 	 * Factory method for creating BMCs and adding them to the connector.
 	 *
@@ -150,15 +154,12 @@ public abstract class BMC extends Device {
 	 * @param model the model number of the BMC.
 	 * @param name the BMC name from the configuration file. Set it to null if 
 	 * you want it to be auto-generated.
-	 * @param isReal vero se questo BMC e' fisicamente presente sul bus. Alcuni
-	 * BMC possono essere simulati.
-	 * 
 	 * @return the newly created BMC or null if the model is unknown.
 	 * @throws AISException 
 	 * 
 	 * @throws an exception if the address is already in use by another BMC.
 	 */
-	public static BMC createBMC(Connector connector, String bmcAddress, int model, String name, boolean isReal) 
+	public static BMC createBMC(Connector connector, String bmcAddress, int model, String name) 
 		throws AISException {
 		Logger logger = Logger.getLogger("BMC.createBMC");
 		BMC bmc;
@@ -444,7 +445,7 @@ public abstract class BMC extends Device {
 	public void setOutputTimer(int outPortNumber, long t) {
 		if (t > 0) {
 			outTimers[outPortNumber] = t;
-			logger.info("Uscita "+outPortNumber+" timer di "+t+"mS");
+			logger.info(getOutputPortId(outPortNumber)+" timer "+t+"mS");
 		}
 	}
 
@@ -591,6 +592,4 @@ public abstract class BMC extends Device {
 	public long updatePort(String portId) throws AISException {
 		return updateStatus();
 	}
-
-
 }

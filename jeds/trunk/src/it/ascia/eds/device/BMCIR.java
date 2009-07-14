@@ -5,8 +5,6 @@ package it.ascia.eds.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
-import it.ascia.eds.msg.EDSMessage;
-import it.ascia.eds.msg.RispostaStatoMessage;
 
 /**
  * Un BMC con porte di input + 1 a infrarossi.

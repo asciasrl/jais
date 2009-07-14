@@ -195,7 +195,7 @@ public class EDSConnector extends Connector {
     }
 
     private BMC createBMC(String source, int modello) throws AISException {
-    	return BMC.createBMC(this, source, modello, null, true);
+    	return BMC.createBMC(this, source, modello, null);
 	}
 
 
@@ -310,7 +310,7 @@ public class EDSConnector extends Connector {
 	    		for (tries = 1;
 	    			tries <= m.getMaxSendTries(); 
 	    			tries++) {
-	    			logger.trace("Invio "+tries+" di "+m.getMaxSendTries()+" : "+m.toHexString());
+	    			logger.trace("Try "+tries+" of "+m.getMaxSendTries()+" : "+m.toString());
 	    			while (mp.isBusy()) {
 	    				logger.trace("MessageParser busy, delaying 30mS ... "+mp.dumpBuffer());
 	    				Thread.sleep(30);
@@ -369,7 +369,7 @@ public class EDSConnector extends Connector {
 		try {
 			EDSConfig = new XMLConfiguration(EDSConfigFileName);
 		} catch (ConfigurationException e) {
-			logger.error("Error reading configuration file:",e);
+			logger.error("Error reading configuration file: "+e);
 			return false;
 		}
 		List dispositivi = EDSConfig.configurationsAt("dispositivo");
@@ -380,7 +380,7 @@ public class EDSConnector extends Connector {
 		    String address = (String) dispositivo.getString("indirizzo");
 		    int model = dispositivo.getInt("modello");
 		    String revision = (String) dispositivo.getString("revisione");
-		    BMC bmc = BMC.createBMC(this, address, model, name, true);
+		    BMC bmc = BMC.createBMC(this, address, model, name);
 		    if (bmc != null) {
 		    	logger.debug(bmc.getClass().getSimpleName()+" address="+address+" model="+model+" revision="+revision);		    	
 				List inputs = dispositivo.configurationsAt("ingresso");
@@ -462,5 +462,18 @@ public class EDSConnector extends Connector {
 		}
 		return false;
 	}
-
+	
+	public BMC addBmc(String modelName, String address) throws AISException {
+		int model;
+		if (modelName.startsWith("REG-T-22")) {
+			model = 122; 
+		} else {
+			try {
+			    model = new Integer(modelName).intValue();			
+			} catch (NumberFormatException e) {
+				throw(new AISException("Invalid model for addBMC: "+modelName));
+			}			
+		}
+	    return BMC.createBMC(this, address, model);			
+	}
 }

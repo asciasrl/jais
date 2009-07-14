@@ -6,9 +6,6 @@ package it.ascia.eds.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
-import it.ascia.ais.DevicePort;
-import it.ascia.ais.DigitalInputPort;
-import it.ascia.ais.DigitalOutputPort;
 import it.ascia.ais.SeasonPort;
 import it.ascia.ais.SlaveStatePort;
 import it.ascia.ais.StatePort;
@@ -142,7 +139,7 @@ public class BMCChronoTerm extends BMC {
 	}
 	
 	public void addPort(String portId, String portName) {
-		logger.fatal("Id porta scorretto:"+portId);
+		logger.fatal("Id porta scorretto: "+portId);
 	}
 	
 	/* (non-Javadoc)

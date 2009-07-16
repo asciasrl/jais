@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jais">
 		<attributes>
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="jais/lib"/>
@@ -9,7 +8,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/jeds"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jdxp"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/aui"/>
-	<classpathentry kind="lib" path="lib/junit-4.6.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

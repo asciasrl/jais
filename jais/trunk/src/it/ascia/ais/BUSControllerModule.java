@@ -128,7 +128,7 @@ public abstract class BUSControllerModule extends ControllerModule {
 				}
 				logger.debug("Stop.");
 			} else {
-				logger.info("Autoupdate non attivo");				
+				logger.error("Autoupdate non attivo");			
 			}
 		}
 		

@@ -38,6 +38,8 @@ public abstract class Transport {
     {
     	return name;
     }
+    
+    public abstract String getInfo();
 
 	/**
      * Invia un messaggio sul transport.

@@ -227,4 +227,12 @@ public class TCPSerialTransport extends Transport {
     	}
     	logger.debug("Chiuso.");
     }
+
+	public String getInfo() {
+		if (sock == null) {
+			return "null";
+		} else {
+			return sock.toString();
+		}
+	}
 }

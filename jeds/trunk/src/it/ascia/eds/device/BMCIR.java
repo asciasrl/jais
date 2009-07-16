@@ -76,4 +76,14 @@ public class BMCIR extends BMCStandardIO {
 		}
 	}
 	
+	public void setInputName(int number, String name) throws AISException {
+		if (number < getInPortsNumber()) {
+			setPortName(getInputPortId(number), name);
+		}
+		if (number <= getIrPortsNumber()) {
+			// TODO Aggiungere anche porte IR ?
+		}		
+	}
+
+	
 }

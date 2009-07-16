@@ -8,7 +8,7 @@ package it.ascia.ais;
  * @author Sergio
  *
  */
-public class DigitalInputPort extends DevicePort {
+public class DigitalInputPort extends BooleanPort {
 
 	public DigitalInputPort(Device device, String portId) {
 		super(device, portId);

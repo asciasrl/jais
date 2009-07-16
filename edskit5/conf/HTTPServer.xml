@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<jais:configuration version="1.3">
+  <HTTPServer>
+    <port>80</port>
+    <root>../aui/web</root>
+    <debug>false</debug>
+    <verbose>false</verbose>
+    <servlets>
+      <servlet>
+        <class>it.ascia.aui.AUIStreamingServlet</class>
+        <context>/stream</context>
+      </servlet>
+      <servlet>
+        <class>it.ascia.aui.AUICommandServlet</class>
+        <context>/jais</context>
+      </servlet>
+     </servlets>
+  </HTTPServer>
+</jais:configuration>

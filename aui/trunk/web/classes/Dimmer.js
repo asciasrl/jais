@@ -104,7 +104,7 @@ if (!AUI.Dimmer) {
 			} else {
 				newstatus = "on";
 			}
-			AUI.SetRequest.send(this,newstatus,"dimming");
+			AUI.SetRequest.set(this,newstatus,"dimming");
 		} else if (this.mode == "sliding") {
 			this.onSliderStop();
 		}
@@ -178,7 +178,7 @@ if (!AUI.Dimmer) {
 	AUI.Dimmer.prototype.onSliderStop = function() {
 		AUI.Logger.log("slider stop: value="+this.sliderValue);
 		if (this.sliderValue != null) {
-			if (!AUI.SetRequest.sending && AUI.SetRequest.send(this,this.sliderValue,"dimming")) {
+			if (!AUI.SetRequest.sending && AUI.SetRequest.set(this,this.sliderValue,"dimming")) {
 				this.sliderValue = null;	
 			} else {
 				var self = this;

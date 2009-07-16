@@ -33,7 +33,7 @@ if (!AUI.Light) {
 		} else {
 			newstatus = "on";
 		}
-		AUI.SetRequest.send(this,newstatus)
+		AUI.SetRequest.set(this,newstatus)
 	}
 	
 }

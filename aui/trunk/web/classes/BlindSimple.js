@@ -50,7 +50,7 @@ if (!AUI.Blind) {
 		}
 		if (command) {
 			var control = this.getControl();
-			AUI.SetRequest.send(control.address,command);
+			AUI.SetRequest.set(control.address,command);
 		}		
 	}
 

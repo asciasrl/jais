@@ -164,6 +164,8 @@ public class BMCStandardIO extends BMC {
 				getConnector().sendMessage(answer);
 			}
 			break;
+		default:
+			super.messageReceived(m);			
 		} // switch (m.getMessageType())
 	}
 
@@ -252,7 +254,7 @@ public class BMCStandardIO extends BMC {
 				// messaggi ignorati silentemente
 				break;
 			default:
-				logger.warn("Messaggio non gestito: "+m);
+				super.messageSent(m);
 			}
 		} // if isReal
 	}

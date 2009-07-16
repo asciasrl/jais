@@ -265,14 +265,17 @@ public class AUIControllerModule extends ControllerModule {
 		}
 		return ports;
 	}
-	
-	/*
+
+	/**
+	 * FIXME Experimental
+	 * @param id
+	 * @param title
+	 */
 	public void addPage(String id, String title) {
 		if (configuration.getProperty("pages.page[@id='"+id+"']") != null) {
 			throw(new AISException("Duplicated page id="+id));
 		}
 		configuration.addProperty("pages.page(-1).id", id);	
 	}
-	*/	
 
 }

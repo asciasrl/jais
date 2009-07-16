@@ -30,5 +30,27 @@ public class RichiestaRTCCMessage extends PTPRequest {
 		}
 		return false;
 	}
+	
+	public int getIndex() {
+		return Byte1 & 0x03;
+	}
+
+	public String toString() {
+		StringBuffer s = new StringBuffer();
+		s.append(super.toString());
+		s.append(" index:"+getIndex());
+		switch (getIndex()) {
+			case 0:
+				s.append(" ore/minuti");
+				break;
+			case 1:
+				s.append(" mese/anno");
+				break;
+			case 2:
+				s.append(" giorno/secondi");
+				break;
+		}
+		return s.toString();
+	}
 
 }

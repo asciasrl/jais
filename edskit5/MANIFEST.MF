@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Ant-Version: Apache Ant 1.7.0
 Created-By: 10.0-b23 (Sun Microsystems Inc.)
 Built-By: Sergio
-Main-Class: BusTest
-Implementation-Version: 1.03-b45
-Built-Date: 2009-07-02 08:25:32
+Main-Class: it.ascia.ais.Conmtroller
+Implementation-Version: 1.05-EDSKit5-b58
+Built-Date: 2009-07-16 17:56:41
 

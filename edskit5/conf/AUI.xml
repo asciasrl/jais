@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<jais:configuration version="1.3.1">
+<jais:configuration version="1.4">
   <AUI>
-    <startPage>Hbox</startPage>
-    <title>ASCIA HomeInTheBox [AUI 0.1]</title>
+    <startPage>intro</startPage>
+    <title>EDS Kit5</title>
     <skin>skins/20090330/</skin>
     <!-- definizione di tutti i tipi di controlli -->
     <controls>
@@ -20,10 +20,7 @@
         <off>images/pushbutton_green-off.png</off>  
       </pushbutton>
       <group>
-      	<controlclass>Scene</controlclass>
-        <default>images/pushbutton_green-off.png</default>
-        <on>images/pushbutton_green-on.png</on>
-        <off>images/pushbutton_green-off.png</off>  
+        <default>images/light_off.png</default>
       </group>
       <dimmer>
         <default>images/light_off.png</default>
@@ -122,283 +119,191 @@
     </layers>
     <!-- definizione delle pagine -->
     <pages>  
-      <page id="screensaver">
-        <title>AUI screensaver - clicca per accedere</title>
-        <src>images/ascia_logo_home.png</src>
+      <page id="intro">
+        <title>AUI - clicca per accedere</title>
+        <src>images/intro.png</src>
         <area>
           <title>Piani</title>
           <shape>rect</shape>
           <coords>0,0,320,460</coords>
-          <page>piani</page>
+          <page>EDSKit5</page>
         </area>
       </page>      
-      <page id="piani">    
-        <title>Piani</title>
-        <src>images/assonometria320x370.png</src>
+      <page id="EDSKit5">    
+        <title>EDS Kit5</title>
+        <src>images/edskit5.jpg</src>
         <control id="back">
-          <title>Screensaver</title>
+           <title>Torna alla pagina iniziale</title>
           <type>page</type>
-          <page>screensaver</page>
-          <left>0</left>
-          <top>0</top>
-        </control>      
-        <area>
-          <title>Test</title>
-          <coords>0,0,320,120</coords>
-          <page>test</page>
-        </area>
-        <area>
-          <title>Home in the Box</title>
-          <coords>0,121,320,240</coords>
-          <page>Hbox</page>
-        </area>
-        <area>
-          <title>Piano Terra</title>
-          <coords>0,241,320,370</coords>
-          <page>pianoT</page>
-        </area>
-      </page>
-      <page id="test">
-        <src>images/piani-all.png</src>
-        <control id="back">
-          <title>Torna alla selezione dei piani</title>
-          <type>page</type>
-          <page>piani</page>
-          <left>0</left>
-          <top>0</top>
-        </control>      
-      </page>      
-      <page id="pianoT">    
-        <title>Mappa piano terra</title>
-        <src>images/planimetria-big.png</src>
-        <control id="back">
-          <title>Torna alla selezione dei piani</title>
-          <type>page</type>
-          <page>piani</page>
-          <left>0</left>
-          <top>0</top>
-        </control>      
-        <control id="lc">
-          <title>Luce camera</title>
-          <type>light</type>
-          <layer>light</layer>
-          <left>150</left>
-          <top>160</top>
-          <address>2.3:Out5</address>
-        </control>      
-        <control id="tc">
-          <title>Tapparella camera</title>
-          <type>blind</type>
-          <layer>blind</layer>
-          <left>145</left>
-          <top>50</top>
-          <address>2.3:Blind1</address>
-        </control>      
-        <control id="lb">
-          <title>Luce bagno</title>
-          <type>light</type>
-          <layer>light</layer>
-          <left>280</left>
-          <top>150</top>
-          <address>2.3:Out5</address>
-        </control>      
-        <control id="bb">
-          <title>Tapparella bagno</title>
-          <type>blind</type>
-          <layer>blind</layer>
-          <left>295</left>
-          <top>50</top>
-          <address>2.3:Blind2</address>
-        </control>      
-        <control id="m1l2">
-          <title>Luce scale</title>
-          <type>dimmer</type>
-          <layer>light</layer>
-          <left>100</left>
-          <top>300</top>
-          <address>2.5:Out1</address>
-        </control>      
-      </page>
-      <page id="Hbox">
-        <title>Home in The Box</title>
-        <src>images/HBox.jpg</src>
-        <control id="back">
-           <title>Torna alla selezione dei piani</title>
-          <type>page</type>
-          <page>piani</page>
-           <left>500</left>
-           <top>100</top>
-        </control>      
-        <control id="l1">
-           <title>Luce scale</title>
+          <page>intro</page>
+           <left>45</left>
+           <top>75</top>
+        </control>
+        <control id="spegni">
+           <title>Spegni e chiudi tutto</title>
+           <type>group</type>
+           <layer>scene</layer>
+           <top>245</top>
+           <left>15</left>
+           <address>EDSKit5.Group31:Disattivazione</address>
+           <default>images/uscita.png</default>
+        </control>        
+				<control id="l1">
+           <title>Cucina</title>
            <type>light</type>
            <layer>light</layer>
-           <top>145</top>
+           <top>315</top>
            <left>105</left>
-           <address>2.3:Out5</address>
+           <address>EDSKit5.1:Out1</address>
         </control>
         <control id="l2">
-           <title>Luce ingresso</title>
+           <title>Tavolo</title>
            <type>dimmer</type>
            <layer>light</layer>
-           <top>225</top>
-           <left>495</left>
-           <address>2.5:Out1</address>
+           <top>345</top>
+           <left>195</left>
+           <address>EDSKit5.5:Out1</address>
         </control>
-        <control id="porta">
-           <title>Apriporta</title>
-           <type>pushbutton</type>
-           <layer>blind</layer>
-           <top>295</top>
-           <left>495</left>
-           <address>2.3:Out8</address>
-	         <default>images/door-close.png</default>
-	         <on>images/door-open.png</on>
-	         <off>images/door-close.png</off>             
+        <control id="l3">
+           <title>Sala</title>
+           <type>dimmer</type>
+           <layer>light</layer>
+           <top>285</top>
+           <left>255</left>
+           <address>EDSKit5.5:Out2</address>
         </control>
-        <control id="allarme1">
-           <title>Allarme</title>
-           <type>group</type>
-           <layer>security</layer>
-           <top>50</top>
-           <left>50</left>
-           <address>2.Group1</address>
-           <value>true</value>
+        <control id="l4">
+           <title>Bagno</title>
+           <type>light</type>
+           <layer>light</layer>
+           <top>195</top>
+           <left>75</left>
+           <address>EDSKit5.2:Out7</address>
         </control>
-        <control id="allarme2">
-           <title>Allarme</title>
-           <type>group</type>
-           <layer>security</layer>
-           <top>50</top>
-           <left>110</left>
-           <address>2.Group1</address>
-           <value>false</value>
+        <control id="l5">
+           <title>Specchio</title>
+           <type>light</type>
+           <layer>light</layer>
+           <top>195</top>
+           <left>135</left>
+           <address>EDSKit5.2:Out8</address>
+        </control>
+        <control id="l6">
+           <title>Corridoio</title>
+           <type>light</type>
+           <layer>light</layer>
+           <top>195</top>
+           <left>195</left>
+           <address>EDSKit5.1:Out2</address>
+        </control>
+        <control id="l7">
+           <title>Scrivania</title>
+           <type>light</type>
+           <layer>light</layer>
+           <top>185</top>
+           <left>255</left>
+           <address>EDSKit5.2:Out6</address>
+        </control>
+        <control id="l8">
+           <title>Cameretta</title>
+           <type>light</type>
+           <layer>light</layer>
+           <top>165</top>
+           <left>315</left>
+           <address>EDSKit5.2:Out5</address>
+        </control>
+        <control id="l9">
+           <title>Comodino</title>
+           <type>light</type>
+           <layer>light</layer>
+           <top>95</top>
+           <left>280</left>
+           <address>EDSKit5.2:Out4</address>
+        </control>
+        <control id="l10">
+           <title>Comodino SX</title>
+           <type>light</type>
+           <layer>light</layer>
+           <top>30</top>
+           <left>240</left>
+           <address>EDSKit5.2:Out2</address>
+        </control>
+        <control id="l11">
+           <title>Comodino DX</title>
+           <type>light</type>
+           <layer>light</layer>
+           <top>0</top>
+           <left>165</left>
+           <address>EDSKit5.2:Out1</address>
+        </control>
+        <control id="l12">
+           <title>Camera</title>
+           <type>light</type>
+           <layer>light</layer>
+           <top>105</top>
+           <left>165</left>
+           <address>EDSKit5.2:Out3</address>
         </control>
         <control id="b1">
-           <title>Tapparella lunga</title>
+           <title>Sala</title>
            <type>blind</type>
            <layer>blind</layer>
-           <top>75</top>
-           <left>15</left>
-           <address>2.3:Blind1</address>
+           <top>315</top>
+           <left>315</left>
+           <address>EDSKit5.1:Blind2</address>
         </control>
         <control id="b2">
-           <title>Tapparella corta</title>
+           <title>Cameretta</title>
            <type>blind</type>
            <layer>blind</layer>
-           <top>60</top>
-           <left>95</left>
-           <address>2.3:Blind2</address>
+           <top>155</top>
+           <left>315</left>
+           <address>EDSKit5.1:Blind3</address>
         </control>
-        <control id="c1">
-          <title>Cronotermostato HI</title>
-          <type>thermo</type>
-          <layer>thermo</layer>
-          <top>300</top>
-          <left>10</left>
-          <address>2.7:temp</address>
-          <address>2.7:season</address>
-          <address>2.7:state</address>
-          <up_address>2.7:stp_up</up_address>
-          <dn_address>2.7:stp_up</dn_address>
-        </control>
-        <control id="c2">
-          <title>Cronotermostato WDB</title>
-          <type>thermo</type>
-          <layer>null</layer>
-          <top>0</top>
-          <left>500</left>
-          <address>1.255:temp</address>
-        </control>
-        <control id="p1">
-          <title>Power</title>
-          <type>power</type>
-          <layer>power</layer>
-          <top>120</top>
-          <left>570</left>
-          <address>2.3:Out7</address>
-        </control>
-        <control id="cam1">
-          <title>Telecamera</title>
-          <type>webcam</type>
-          <top>150</top>
-          <left>150</left>
-          <width>320</width>
-          <height>240</height>
-          <layer>security</layer>
-          <video>http://video.ascia.it/axis-cgi/mjpg/video.cgi?resolution=320x240&amp;fps=1</video>
-        </control>      
-        <control id="reset">
-          <title>Reset</title>
-          <type>digitalinput</type>
-          <layer>power</layer>
-          <top>320</top>
-          <left>470</left>
-          <address>2.3:Inp5</address>
-        </control>
-           <control id="SceneEntrata">
-           <title>Entrata</title>
+        <control id="b3">
+           <title>Camera</title>
+           <type>blind</type>
+           <layer>blind</layer>
+           <top>50</top>
+           <left>150</left>
+           <address>EDSKit5.1:Blind4</address>
+        </control>              
+        <control id="s1">
+           <title>Film</title>
            <type>scene</type>
            <layer>scene</layer>
-           <top>10</top>
-           <left>400</left>
-           <address>2.6:Scene1</address>
-	        <default>images/scene-enter.png</default>
-      	</control>
-      	<control id="SceneUscita">
-           <title>Uscita</title>
-           <type>scene</type>
-           <layer>scene</layer>
-           <top>10</top>
-           <left>460</left>
-           <address>2.6:Scene2</address>
-	        <default>images/scene-exit.png</default>
-      	</control>   
-      	<control id="SceneNight">
+           <top>285</top>
+           <left>245</left>
+           <address>EDSKit5.6:Scene1</address>
+           <default>images/film.png</default>
+        </control>              
+        <control id="s2">
            <title>Notte</title>
            <type>scene</type>
            <layer>scene</layer>
-           <top>80</top>
-           <left>380</left>
-           <address>2.6:Scene3</address>
-	        <default>images/scene-night.png</default>
-      	</control>
-      	<control id="SceneDay">
-           <title>Giorno</title>
+           <top>35</top>
+           <left>165</left>
+           <address>EDSKit5.6:Scene2</address>
+           <default>images/notte.png</default>
+        </control>              
+        <control id="s3">
+           <title>Notte</title>
            <type>scene</type>
            <layer>scene</layer>
-           <top>80</top>
-           <left>440</left>
-           <address>2.6:Scene4</address>
-	        <default>images/scene-relax.png</default>
-      	</control>    
-      </page>
-      <page id="chrono_c1">
-        <control id="back">
-           <title>Indietro</title>
-          <type>page</type>
-          <page>Hbox</page>
-           <top>300</top>
-           <left>130</left>
-        </control>      
-        <control id="c1">
-          <title>Cronotermostato HI</title>
-          <type>thermo</type>
-          <class>ThermoEDS</class>
-          <layer>thermo</layer>
-          <top>300</top>
-          <left>10</left>
-          <address>2.7:temp</address>
-          <address>2.7:season</address>
-          <address>2.7:state</address>
-          <address>2.7:setPoint</address>
-          <up_address>2.7:stp_up</up_address>
-          <dn_address>2.7:stp_up</dn_address>
-          <chrono_address>2.7:chrono</chrono_address>
-          <manual_address>2.7:manual</manual_address>
-          <off_address>2.7:manual</off_address>
-          <temp_t0_address>2.7:manual</temp_t0_address>
-        </control>     
+           <top>65</top>
+           <left>225</left>
+           <address>EDSKit5.6:Scene3</address>
+           <default>images/notte.png</default>
+        </control>              
+        <control id="s4">
+           <title>Notte</title>
+           <type>scene</type>
+           <layer>scene</layer>
+           <top>165</top>
+           <left>285</left>
+           <address>EDSKit5.6:Scene2</address>
+           <default>images/notte.png</default>
+        </control>              
       </page>
     </pages>
   </AUI>

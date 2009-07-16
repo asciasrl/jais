@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<jais:configuration version="1.3">
+<jais:configuration version="1.5">
   <HTTPServer>
-    <port>80</port>
-    <root>../aui/web</root>
+    <port>8080</port>
+    <root>web</root>
     <debug>false</debug>
     <verbose>false</verbose>
     <servlets>

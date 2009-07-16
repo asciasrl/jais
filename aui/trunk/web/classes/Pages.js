@@ -33,6 +33,7 @@ if (!AUI.Pages) {
 		newPage.style.display = 'block';
 		window.scroll(0,0);
 		this.currentPage = newPage;
+		this.currentPageId = toPageId;
 		AUI.Logger.info("Cambiata pagina:"+toPageId);
 		if (AUI.Pages.pageHaveLayers(toPageId)) {
 			if (AUI.StreamRequest) {
@@ -82,6 +83,7 @@ if (!AUI.Pages) {
 		} else if (window.event) {
 			window.event.cancelBubble = true;
 		} 
+		AUI.Logger.info("MouseUp "+this.currentPageId);
 		if (this.pageHaveLayers(this.currentPageId)) {
 			AUI.Layers.show();
 		}

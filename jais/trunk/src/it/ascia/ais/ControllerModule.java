@@ -1,6 +1,11 @@
 package it.ascia.ais;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
 /**
@@ -16,7 +21,7 @@ public abstract class ControllerModule {
 	
     protected Logger logger;
     
-    private HierarchicalConfiguration configuration;
+    protected XMLConfiguration configuration;
 
 	protected boolean running;
 
@@ -45,9 +50,25 @@ public abstract class ControllerModule {
 		return configuration.configurationAt(name);
 	}
 
-	public void setConfiguration(HierarchicalConfiguration config) {
+	public void setConfiguration(XMLConfiguration config) {
 		this.configuration = config;
 	}
+	
+	public void addNode(String key, Collection node) {
+		ArrayList nodes = new ArrayList();
+		nodes.add(node);
+		configuration.addNodes(key, nodes);
+	}
+	
+	public boolean saveConfiguration() {
+		try {
+			configuration.save();
+		} catch (ConfigurationException e) {
+			logger.error("Error saving configuration file "+configuration.getFileName()+":",e);
+			return false;
+		}
+		return true;
+	}	
 
 	/**
 	 * @param name the name to set

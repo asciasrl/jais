@@ -25,5 +25,21 @@ public abstract class BroadcastMessage extends EDSMessage
 	public int getSendTries() {
 		return 8;
 	}
+
+	/**
+	 * @return codice pseudorandom del messaggio 
+	 */
+	public int getRandom() {
+		return ((Mittente & 0xff) << 8) + (Destinatario & 0xff); 
+	}
+	
+	public String getHexRandom() {
+		return Integer.toHexString(getRandom());
+	}
+	
+	
+	public String toString() {
+		return getHexRandom()+" "+getMessageDescription();
+	}
 	
 }

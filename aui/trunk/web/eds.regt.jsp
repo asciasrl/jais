@@ -40,11 +40,10 @@ for (int stagione = 0; stagione <= 1; stagione++) {
 <%	
 		for (int ora = 0; ora <= 23; ora++) {
 			String id = stagione + "-" + giorno + "-" + ora;
-			int v = r.nextInt(100);
 %>
 		<div class="eds-regt-ora-box">
 			<%= ora %>
-			<div class="eds-regt-ora-cursor" id="regt-<%= stagione %>-<%= giorno%>-<%= ora %>" onmouseover="AUI.Regt.onMouseOver(event,'<%= id %>');"><%= v %></div>
+			<div class="eds-regt-ora-cursor" id="eds-regt-<%= stagione %>-<%= giorno%>-<%= ora %>" onmouseover="AUI.Regt.onMouseOver(event,'<%= id %>');">--</div>
 		</div>		
 <%
 		}

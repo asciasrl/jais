@@ -301,7 +301,7 @@
            <layer>scene</layer>
            <top>165</top>
            <left>285</left>
-           <address>EDSKit5.6:Scene2</address>
+           <address>EDSKit5.6:Scene4</address>
            <default>images/notte.png</default>
         </control>              
       </page>

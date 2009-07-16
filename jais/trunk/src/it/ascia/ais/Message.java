@@ -3,6 +3,8 @@ package it.ascia.ais;
 public abstract class Message implements Comparable {
 	
 	protected int priority = 0;
+	
+	private boolean isSent = false;
 
 	public String getMessageDescription() {
 		return getClass().getSimpleName();
@@ -73,6 +75,21 @@ public abstract class Message implements Comparable {
 	public int compareTo(Object o) {
 		Message m = (Message) o;
 		return this.priority - m.priority;
+	}
+
+	/**
+	 * Connector MUST call this method when sending the message
+	 * @param isSent is set to true
+	 */
+	public void setSent() {
+		isSent = true;
+	}
+
+	/**
+	 * @return the isSent
+	 */
+	public boolean isSent() {
+		return isSent;
 	}
 
 

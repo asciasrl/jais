@@ -387,6 +387,7 @@ public class Controller {
 			module.stop();			
 			logger.debug("Arrestato modulo "+moduleName);
 		}		
+		logger.info("Arresto completato.");
 	}
 	
 	public void restart() {

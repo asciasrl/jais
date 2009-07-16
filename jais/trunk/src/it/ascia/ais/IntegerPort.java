@@ -14,5 +14,7 @@ public class IntegerPort extends DevicePort {
 	public IntegerPort(Device device, String portId, String portName) {
 		super(device, portId, portName);
 	}
+	
+	// TODO writeValue(String text)
 
 }

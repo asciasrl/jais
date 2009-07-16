@@ -3,6 +3,8 @@
  */
 package it.ascia.eds.msg;
 
+import java.security.InvalidParameterException;
+
 /**
  * Impostazione valore del set point.
  * 
@@ -91,7 +93,7 @@ public class ImpostaSetPointMessage extends PTPMessage {
 				return n;
 			}
 		}
-		return -1;
+		throw(new InvalidParameterException("Stagione non valida: "+stagione));
 	}
 	
 	public static int giorno(String giorno) {
@@ -100,7 +102,7 @@ public class ImpostaSetPointMessage extends PTPMessage {
 				return n;
 			}
 		}
-		return -1;
+		throw(new InvalidParameterException("Giorno non valido: "+giorno));
 	}
 
 	/**
@@ -132,12 +134,12 @@ public class ImpostaSetPointMessage extends PTPMessage {
 	}
 
 	public static String fasciaOraria(int ora) {
-		if (ora <= 23 ) {
+		if (ora <= 23 && ora >= 0) {
 			return ora + ":00-"+ora+":59";
 		} else if (ora == 31){
 			return "manuale";
 		} else {
-			return null;
+			throw(new InvalidParameterException("Ora non valida: "+ora));
 		}
 	}
 

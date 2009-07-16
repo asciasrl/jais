@@ -240,8 +240,10 @@ public abstract class DevicePort {
 
 	/**
 	 * Imposta il valore della porta analizzando il testo fornito
+	 * Delega l'interpretazione del testo del nuovo valore al device
 	 */
-	public boolean writeValue(String newValue) {
+	public boolean writeValue(String newValue)
+	throws IllegalArgumentException {
 		return writeValue((Object) newValue);
 	}
 

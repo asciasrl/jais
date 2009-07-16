@@ -146,6 +146,7 @@ public class BMCRegT22 extends BMCStandardIO {
 	}
 
 	public void discover() {
+		writeRTCC();
 		discoverBroadcastBindings();
 		readSetPoints();
 	}
@@ -224,6 +225,8 @@ public class BMCRegT22 extends BMCStandardIO {
 		case EDSMessage.MSG_IMPOSTA_SET_POINT:
 		case EDSMessage.MSG_RICHIESTA_STATO_TERMOSTATO:
 		case EDSMessage.MSG_RICHIESTA_SET_POINT:
+		case EDSMessage.MSG_RICHIESTA_RTCC:
+		case EDSMessage.MSG_IMPOSTA_RTCC:
 			// messaggi gestiti dal BMC reale
 			break;
 		default:
@@ -382,6 +385,51 @@ public class BMCRegT22 extends BMCStandardIO {
 		conn.queueMessage(new RichiestaRTCCMessage(d,m,1));
 		conn.queueMessage(new RichiestaRTCCMessage(d,m,2));
 	}
+	
+	private boolean writeRTCC() {
+		return writeRTCC("now");
+	}
+	
+	private boolean writeRTCC(Object newValue) {
+		if (String.class.isInstance(newValue)) {
+			return writeRTCC((String)newValue);
+		} else if (GregorianCalendar.class.isInstance(newValue)) {
+			return writeRTCC((GregorianCalendar)newValue);
+		} else {
+			throw(new AISException("writeRTCC invalid type:"+newValue.getClass().getSimpleName()));
+		}
+	}
+	
+	private boolean writeRTCC(String newValue) {
+		try {
+			GregorianCalendar cal = new GregorianCalendar();
+			Date date;
+			DateFormat df = DateFormat.getDateTimeInstance();				
+			if (((String)newValue).toLowerCase().equals("now")) {
+				date = new Date();
+				logger.debug("Set to now: "+date);
+				cal.setTime(date);
+			} else {
+				date = df.parse((String) newValue);
+				cal.setTime(date);
+				logger.debug("Parsed data: "+newValue+" -> "+cal.getTime().toString());
+			}
+			return writeRTCC(cal);
+		} catch (ParseException e) {
+			logger.error("Data non valida: "+e);
+			return false;
+		}		
+	}
+	
+	private boolean writeRTCC(GregorianCalendar cal) {
+		EDSConnector conn = (EDSConnector) getConnector();
+		int m = conn.getMyAddress();
+		int d = getIntAddress();
+		conn.queueMessage(new ImpostaRTCCMessage(d,m,0, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE)));
+		conn.queueMessage(new ImpostaRTCCMessage(d,m,1, cal.get(Calendar.MONTH)+1, cal.get(Calendar.YEAR)-2000));
+		conn.queueMessage(new ImpostaRTCCMessage(d,m,2, cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.SECOND)));
+		return true;
+	}
 
 	/**
 	 * Ritorna lo stato della sonda sotto forma di stringa.
@@ -408,29 +456,7 @@ public class BMCRegT22 extends BMCStandardIO {
 					((Integer) newValue).intValue(),					
 					PARAM_TERM_ALARM_TEMPERATURE));
 		} else if (portId.equals(port_RTCC)) {
-			try {
-				GregorianCalendar cal = new GregorianCalendar();
-				Date date;
-				DateFormat df = DateFormat.getDateTimeInstance();				
-				if (((String)newValue).toLowerCase().equals("now")) {
-					date = new Date();
-					logger.debug("Set to now: "+date);
-				} else {
-					date = df.parse((String) newValue);
-					cal.setTime(date);
-					logger.debug("Parsed data: "+newValue+" -> "+cal.getTime().toString());
-				}
-				EDSConnector conn = (EDSConnector) getConnector();
-				int m = conn.getMyAddress();
-				int d = getIntAddress();
-				conn.queueMessage(new ImpostaRTCCMessage(d,m,0, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE)));
-				conn.queueMessage(new ImpostaRTCCMessage(d,m,1, cal.get(Calendar.MONTH)+1, cal.get(Calendar.YEAR)-2000));
-				conn.queueMessage(new ImpostaRTCCMessage(d,m,2, cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.SECOND)));
-				res = true;
-				newValue = date;
-			} catch (ParseException e) {
-				logger.error("Data non valida: "+e);
-			}
+			writeRTCC(newValue);
 		} else if (portId.startsWith("setPoint-")) {
 			String[] temp = portId.split("-");
 			String stagione = temp[1];
@@ -464,8 +490,8 @@ public class BMCRegT22 extends BMCStandardIO {
 		int m = conn.getMyAddress();
 		int d = getIntAddress();
 		String[] temp = portId.split("-");
-		String stagione = temp[1];
-		String giorno = temp[2];
+		int stagione = Integer.parseInt(temp[1]);
+		int giorno = Integer.parseInt(temp[2]);
 		int ora = Integer.parseInt(temp[3]);
 		RichiestaSetPointMessage rich = new RichiestaSetPointMessage(d,m,stagione,giorno,ora);
 		conn.queueMessage(rich);

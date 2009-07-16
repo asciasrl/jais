@@ -74,7 +74,7 @@ if (!AUI.Blind) {
 	
 	AUI.Blind.prototype.open = function() {
 		var control = this.getControl();		
-		AUI.SetRequest.send(this,"open","opening");
+		AUI.SetRequest.set(this,"open","opening");
 		this.collapse();
 	};
 	
@@ -82,13 +82,13 @@ if (!AUI.Blind) {
 	
 	AUI.Blind.prototype.close = function() {
 		var control = this.getControl();
-		AUI.SetRequest.send(this,"close","closing");
+		AUI.SetRequest.set(this,"close","closing");
 		this.collapse();		
 	};
 	
 	AUI.Blind.prototype.stop = function() {
 		var control = this.getControl();
-		AUI.SetRequest.send(this,"stop","stopped");
+		AUI.SetRequest.set(this,"stop","stopped");
 	};
 
 		

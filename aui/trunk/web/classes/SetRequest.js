@@ -7,7 +7,7 @@ if (!AUI.SetRequest) {
 			status: "default"
 	};
 	
-	AUI.SetRequest.send = function(device, value, status) {
+	AUI.SetRequest.set = function(device, value, status) {
 		if (this.sending) {
 			AUI.Header.show("Richiesta in corso.");
 			return false;
@@ -26,7 +26,7 @@ if (!AUI.SetRequest) {
 			this.request.onreadystatechange = self.stateChange;
 			this.timeout = window.setTimeout(self.timeoutExpired, 3000);
 			this.request.send(null);
-			AUI.Logger.info("request: "+address+"="+value);
+			AUI.Logger.info("Request set: "+address+"="+value);
 		} catch(e) {
 			this.sending = false;
 			throw(e);
@@ -34,6 +34,27 @@ if (!AUI.SetRequest) {
 		return true;
 	};
 	
+	AUI.SetRequest.send = function(address,value) {
+		if (this.sending) {
+			AUI.Header.show("Richiesta in corso.");
+			return false;
+		}
+		try {
+			this.sending = true;
+			this.device = null;
+			this.request.open('GET', 'jais/send?'+address+'='+value, true);					
+			var self = this;
+			this.request.onreadystatechange = self.stateChange;
+			this.timeout = window.setTimeout(self.timeoutExpired, 3000);
+			this.request.send(null);
+			AUI.Logger.info("Request send: "+address+"="+value);
+		} catch(e) {
+			this.sending = false;
+			throw(e);
+		};
+		return true;
+	};
+
 	AUI.SetRequest.stateChange = function() {
 		var request = AUI.SetRequest.request; 
 		if (request.readyState == 4) {
@@ -43,8 +64,11 @@ if (!AUI.SetRequest) {
 				if (request.responseText.indexOf("ERROR") == 0) {
 					AUI.Header.show(request.responseText);
 				} else {
-					AUI.Logger.info("setRequest,setStatus:"+AUI.SetRequest.status);
-					AUI.SetRequest.device.setStatus(AUI.SetRequest.status);
+					if (AUI.SetRequest.device) {
+						AUI.Logger.info("setRequest,setStatus:"+AUI.SetRequest.status);
+						AUI.SetRequest.device.setStatus(AUI.SetRequest.status);
+						AUI.SetRequest.device = null;
+					}
 				}
 			} else {
 				if (request.status == 500) {

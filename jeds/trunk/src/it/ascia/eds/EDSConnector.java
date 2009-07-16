@@ -273,7 +273,9 @@ public class EDSConnector extends Connector {
 	 */
 	private void sendBroadcastMessage(BroadcastMessage m) {
 		int tries = m.getSendTries();
-		for (int i = 0; i < tries; i++) {
+		transport.write(m.getBytesMessage());
+		// ripetizioni
+		for (int i = 1; i < tries; i++) {
 			try {			
 				Thread.sleep((long)(getRetryTimeout() * 2 * (1 + 2 * r.nextDouble())));
 			} catch (InterruptedException e) {
@@ -442,21 +444,26 @@ public class EDSConnector extends Connector {
 	public boolean sendMessage(String messageCode, Object value) {
 		if (messageCode.startsWith("Group")) {
 			try {
-				boolean v;
-				if (Boolean.class.isInstance(value)) {
-					v = ((Boolean)value).booleanValue();
-				} else if (String.class.isInstance(value)) {
-					v = Boolean.parseBoolean((String)value);
-				} else {
-					throw new IllegalArgumentException("Message "+messageCode+" valore:"+value);					
-				}						
-				int group = Integer.parseInt(messageCode.substring(5));				
-				if (group > 0 && group <= 31) {
-					queueMessage(new ComandoBroadcastMessage(group,v));
-					return true;
-				} else {
-					logger.error("Invalid group message code:"+messageCode);				
+				// Per EDS il value non conta
+				int colon = messageCode.indexOf(":");
+				if (colon <= 5) {
+					throw(new IllegalArgumentException("Invalid messsage code: "+messageCode));
 				}
+				int group = Integer.parseInt(messageCode.substring(5,colon));
+				if (group < 0 && group > 31) {
+					throw(new IllegalArgumentException("Invalid group: "+messageCode));
+				}
+				String mode = messageCode.substring(colon+1);				
+				boolean v;
+				if (mode.startsWith("A")) {
+					v = true;
+				} else if (mode.startsWith("D")) {
+					v = false;
+				} else {
+					throw new IllegalArgumentException("Invalid mode: "+messageCode);					
+				}				
+				sendMessage(new ComandoBroadcastMessage(group,v));
+				return true;
 			} catch (NumberFormatException e) {
 				logger.error("Numero gruppo scorretto",e);
 			}

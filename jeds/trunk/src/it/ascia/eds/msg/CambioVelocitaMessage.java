@@ -20,7 +20,7 @@ public class CambioVelocitaMessage extends BroadcastMessage
 	public CambioVelocitaMessage(int Velocita)
 	  throws AISException {
 		TipoMessaggio = 27;
-		Byte1 = (Velocita & 0x03); 
+		Byte1 = (Velocita & 0x07); 
 		Byte2 = 0;
 	}
 
@@ -34,23 +34,29 @@ public class CambioVelocitaMessage extends BroadcastMessage
 	
 	public String toString()	{
 		StringBuffer s = new StringBuffer();
-		//s.append("Timestamp: "+((Mittente & 0xFF) * 0x100 + (Destinatario & 0xFF)) +"\r\n");
-		switch (Byte1 & 0x03) {
+		s.append(super.toString());
+		switch (getSpeed()) {
 		case 1:
-			s.append("1200");
+			s.append(" 1200");
 			break;
 		case 2:
-			s.append("2400");
+			s.append(" 2400");
 			break;
 		case 3:
-			s.append("9600");
+			s.append(" 9600");
 			break;
 		case 4:
-			s.append("19200");
+			s.append(" 19200");
 			break;
+		default:
+			s.append(" "+getSpeed() + "?");			
 		}
 		s.append(" baud");
 		return s.toString();
+	}
+	
+	public int getSpeed() {
+		return Byte1 & 0x07;
 	}
 
 	public int getMessageType() {

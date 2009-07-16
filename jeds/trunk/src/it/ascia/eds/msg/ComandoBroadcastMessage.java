@@ -58,16 +58,9 @@ public class ComandoBroadcastMessage extends BroadcastMessage {
 		return (Byte2 & 0x1F);
 	}
 	
-	/**
-	 * @return codice pseudorandom del messaggio 
-	 */
-	public int getRandom() {
-		return ((Mittente & 0xff) << 8) + (Destinatario & 0xff); 
-	}
-	
 	public String toString()	{
 		StringBuffer s = new StringBuffer();
-		s.append(getRandom()+" "+getMessageDescription()+ " ["+b2h(Byte1)+":"+b2h(Byte2)+" "+Byte1+":"+Byte2+"]");
+		s.append(super.toString());
 		s.append(" Gruppo "+ getCommandNumber());
 		if (isActivation()) {
 			s.append(" Attiva");
@@ -81,4 +74,9 @@ public class ComandoBroadcastMessage extends BroadcastMessage {
 	public int getMessageType() {
 		return MSG_COMANDO_BROADCAST;
 	}
+	
+	public int getSendTries() {
+		return 1;
+	}
+
 }

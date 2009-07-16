@@ -57,7 +57,7 @@ public class AUICommandServlet extends HttpServlet {
 				command = uri;
 			}
 			logger.info("Comando '"+command+"':"+params.toString());
-			long start = System.currentTimeMillis();
+			long start = System.nanoTime();
 			String res;
 			try {
 				res = doCommand(command, params);
@@ -68,11 +68,12 @@ public class AUICommandServlet extends HttpServlet {
 				logger.error("Errore esecuzione comando "+command,e);
 				res = "ERROR: "+e.getMessage();
 			}
-			out.println(res);
+			long t = (System.nanoTime() - start) / 1000000L; 
+			out.println(res);			
 			if (res.startsWith("ERROR")) {
-				logger.error("Eseguito comando '"+command+"' in "+(System.currentTimeMillis()-start)/1000.0+"s :"+res);
+				logger.error("Eseguito comando '"+command+"' in "+t+"mS :"+res);
 			} else {
-				logger.debug("Eseguito comando '"+command+"' in "+(System.currentTimeMillis()-start)/1000.0+"s");
+				logger.debug("Eseguito comando '"+command+"' in "+t+"mS");
 			}
 		} catch (IOException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

@@ -9,6 +9,8 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.TooManyListenersException;
 
+import org.apache.log4j.Logger;
+
 import gnu.io.*;
 
 /**
@@ -20,8 +22,7 @@ import gnu.io.*;
  * @author sergio, arrigo
  */
 public class SerialTransport extends Transport {
-
-    private static Enumeration portList;
+    
     /**
      * Dove scrivere i messaggi.
      */
@@ -44,12 +45,44 @@ public class SerialTransport extends Transport {
     public SerialTransport(Connector connector, String portName, int portSpeed) {
 		this(connector, portName, portSpeed, INPUT_BUFFER_SIZE, OUTPUT_BUFFER_SIZE, RECEIVE_THRESHOLD, RECEIVE_FRAMING, RECEIVE_TIMEOUT);
 	}
+    
+    public String getInfo() {
+    	if (serialPort == null) {
+    		return "Disconnected";
+    	} else {
+    		return serialPort.getName()+" "+serialPort.getBaudRate()+" "+serialPort.getDataBits() +
+    			(serialPort.getParity() == 0 ? "N" : "E") + 
+    			serialPort.getStopBits();
+    	}
+    }
 
+
+    public String autoPortName() {
+    	Enumeration portList = CommPortIdentifier.getPortIdentifiers();
+    	while (portList.hasMoreElements()) {
+    		CommPortIdentifier portId = (CommPortIdentifier) portList.nextElement();
+    	    if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
+    	    	String portName = portId.getName();
+	    	    logger.debug("Detected serial port: " + portName);
+	        	try {
+	        		SerialPort serialPort = (SerialPort) portId.open("SerialTransport", 1000);
+	        		serialPort.close();
+	        		return portName;
+	        	} catch (PortInUseException e) {
+	    	    	logger.debug("Porta "+portName+" in uso: " + e.toString());
+	        	}
+    	    }
+    	}
+    	logger.error("No available serial port");
+		return null;
+    }
 
     /**
      * Costruttore
+     * 
+     * Specificando "auto" come nome della porta, viene usata la prima porta seriale disponibile
      *
-     * @param portName nome della porta (ad es. "COM1" o "/dev/ttyUSB0")
+     * @param portName nome della porta (ad es. "COM1" o "/dev/ttyUSB0" o "auto")
      * @param connector Conettore da associare
      * @param portSpeed velocita' della porta (default 9600)
      * @param inputBufferSize dimensione in bytes del buffer
@@ -62,19 +95,15 @@ public class SerialTransport extends Transport {
      */
     public SerialTransport(Connector connector, String portName, int portSpeed, int inputBufferSize, int outputBufferSize, int receiveThreshold, int receiveFraming, int receiveTimeout) throws AISException {
     	super(connector);
-        name = portName;  
-    	logger.info("Connessione a " + portName + " speed " +  portSpeed);    	
+    	if (portName.toLowerCase().equals("auto")) {
+    		portName = autoPortName();
+    	}
+        name = portName;
+    	logger.info("Connessione a '" + portName + "' speed " +  portSpeed);    	
     	CommPortIdentifier portId;
 		try {
 			portId = CommPortIdentifier.getPortIdentifier(portName);
 		} catch (NoSuchPortException e) {
-	    	portList = CommPortIdentifier.getPortIdentifiers();
-	    	while (portList.hasMoreElements()) {
-	    	    portId = (CommPortIdentifier) portList.nextElement();
-	    	    if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-		    	    logger.debug("Detected serial port: " + portId.getName());
-	    	    }
-	    	}
 	    	throw new AISException("Porta "+portName+" non trovata: " + e.toString());
 		}
     	try {

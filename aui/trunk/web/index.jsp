@@ -12,11 +12,11 @@ boolean iPhone = ( ua != null && ua.indexOf( "iPhone" ) != -1 );
 </head>
 <body>
 <div style="margin: 0px auto; width: 598px; height: 743px;">
-	<div style="z-index: 1; position: absolute;"><img src="images/touch-ipod_480x320_03_nero.png"></div>
+	<div style="z-index: 1; position: absolute;"><img src="itouch/touch-ipod_480x320_03_nero.png"></div>
 	<div style="z-index: 2; position: absolute; margin-left: 139px; margin-top: 107px;">
 		<!-- Barra di sistema dell iPod -->
 		<div id="iPod-system" style="width: 320px; height: 20px;">
-			<div style="position: absolute;"><img src="images/barrastato_ipod.png" /></div>
+			<div style="position: absolute;"><img src="itouch/barrastato_ipod.png" /></div>
 			<div id="iPod-clock" style="position: absolute; margin: 0px 120px; margin-top: 1px; height: 20px; width: 80px; text-align: center; color: white; font-family: Arial; font-size: 14px;">--:--</div>
 		</div>
   		<script language="javascript">

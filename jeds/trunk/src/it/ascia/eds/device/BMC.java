@@ -338,7 +338,15 @@ public abstract class BMC extends Device {
 	 * @param m il messaggio ricevuto.
 	 * @throws AISException 
 	 */
-	public abstract void messageReceived(EDSMessage m) throws AISException;
+	public void messageReceived(EDSMessage m) throws AISException {
+		switch (m.getMessageType()) {
+			case EDSMessage.MSG_RICHIESTA_MODELLO:
+				// ignorato
+				break;
+			default:
+				logger.warn("Unhandled message: "+m);		
+		}
+	}
 	
 	/** 
 	 * Il BMC (fisico) ha inviato un messaggio sul transport.
@@ -351,7 +359,15 @@ public abstract class BMC extends Device {
 	 * @param m il messaggio inviato.
 	 * @throws AISException 
 	 */
-	public abstract void messageSent(EDSMessage m) throws AISException;
+	public void messageSent(EDSMessage m) throws AISException {
+		switch (m.getMessageType()) {
+			case EDSMessage.MSG_RISPOSTA_MODELLO:
+				// ignorato
+				break;
+			default:
+				logger.warn("Unhandled message: "+m);		
+		}
+	}
 		
 	/**
 	 * Aggiorna la rappresentazione interna delle porte.

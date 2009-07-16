@@ -109,21 +109,20 @@ public class BlindPort extends DevicePort implements PropertyChangeListener {
 
 	public boolean writeValue(String text) throws IllegalArgumentException {
 		if (text.toLowerCase().equals("open")) {
-			if (((Boolean)closePort.getCachedValue()).booleanValue()) {
-				//closePort.writeValue(new Boolean(false));
+			if (Boolean.TRUE.equals(closePort.getCachedValue())) {
 				closePort.invalidate();
 			}
 			return openPort.writeValue(new Boolean(true));
 		} else if (text.toLowerCase().equals("close")) {
-			if (((Boolean)openPort.getCachedValue()).booleanValue()) {
+			if (Boolean.TRUE.equals(openPort.getCachedValue())) {
 				//openPort.writeValue(new Boolean(false));
-				openPort.invalidate();
 			}
+			openPort.invalidate();
 			return closePort.writeValue(new Boolean(true));
 		} else if (text.toLowerCase().equals("stop")) {
-			if (((Boolean)openPort.getCachedValue()).booleanValue()) {
+			if (Boolean.TRUE.equals(openPort.getCachedValue())) {
 				return openPort.writeValue(new Boolean(false));
-			} else if (((Boolean)closePort.getCachedValue()).booleanValue()) {
+			} else if (Boolean.TRUE.equals(closePort.getCachedValue())) {
 				return closePort.writeValue(new Boolean(false));			
 			} else {
 				return true;

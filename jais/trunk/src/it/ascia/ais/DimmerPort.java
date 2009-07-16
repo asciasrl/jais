@@ -12,4 +12,6 @@ public class DimmerPort extends DevicePort {
 		// TODO Auto-generated constructor stub
 	}
 
+	// TODO writeValue(String text)
+	
 }

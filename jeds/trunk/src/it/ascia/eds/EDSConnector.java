@@ -5,6 +5,7 @@ package it.ascia.eds;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
@@ -28,6 +29,8 @@ import it.ascia.eds.msg.*;
  *
  */
 public class EDSConnector extends Connector {
+
+	private Random r = new Random();
 
 	/**
      * Il messaggio che stiamo mandando, per il quale aspettiamo una risposta.
@@ -225,6 +228,9 @@ public class EDSConnector extends Connector {
 			logger.error("Transport not available for connector "+getName()+", cannot send message.");
 			return false;
 		}
+		if (m.isSent()) {
+			throw(new AISException("Messaggio gia' inviato"));
+		}
 		boolean retval = false;
 		try {
 			if (!transportSemaphore.tryAcquire()) {
@@ -252,6 +258,7 @@ public class EDSConnector extends Connector {
 				retval = false;
 			}
 			transportSemaphore.release();
+			m.setSent();
 		} catch (InterruptedException e) {
 			logger.error("Interrupted:",e);
 		}
@@ -267,8 +274,8 @@ public class EDSConnector extends Connector {
 	private void sendBroadcastMessage(BroadcastMessage m) {
 		int tries = m.getSendTries();
 		for (int i = 0; i < tries; i++) {
-			try {
-				Thread.sleep(getRetryTimeout());
+			try {			
+				Thread.sleep((long)(getRetryTimeout() * 2 * (1 + 2 * r.nextDouble())));
 			} catch (InterruptedException e) {
 			}
 			transport.write(m.getBytesMessage());
@@ -295,7 +302,7 @@ public class EDSConnector extends Connector {
 		try {
 			if (messageToBeAnswered != null) {
 				logger.error("messageToBeAnswered non nullo: "+messageToBeAnswered);
-				logger.error("Messaggio in attesa :"+m);
+				logger.error("Messaggio da inviare: "+m);
 				return false;
 			}
     		BMC recipient = (BMC)getDevice((new Integer(m.getRecipient())).toString());
@@ -310,16 +317,16 @@ public class EDSConnector extends Connector {
 	    		for (tries = 1;
 	    			tries <= m.getMaxSendTries(); 
 	    			tries++) {
-	    			logger.trace("Try "+tries+" of "+m.getMaxSendTries()+" : "+m.toString());
 	    			while (mp.isBusy()) {
-	    				logger.trace("MessageParser busy, delaying 30mS ... "+mp.dumpBuffer());
-	    				Thread.sleep(30);
+	    				logger.trace("MessageParser busy, delaying 20mS ... "+mp.dumpBuffer());
+	    				Thread.sleep(20);
 	    			}
+	    			logger.trace("Try "+tries+" of "+m.getMaxSendTries()+" : "+m.toString());
 	    			transport.write(m.getBytesMessage());
 	    			if (!m.isAnswered()) {
 		    			// si mette in attesa, ma se nel frattempo arriva la risposta viene avvisato
 		    	    	try {
-		    	    		messageToBeAnswered.wait((long)(getRetryTimeout() * (1 + Math.random())));
+		    	    		messageToBeAnswered.wait((long)(getRetryTimeout() * (1 + 2 * r.nextDouble())));
 		    	    	} catch (InterruptedException e) {
 		    				logger.trace("sendPTPRequest interrupted");
 		    	    	}
@@ -407,7 +414,8 @@ public class EDSConnector extends Connector {
 				    }
 				    if (BMCStandardIO.class.isInstance(bmc)) {
 				    	int tipo = output.getInt("tipo");
-				    	if (tipo == 14) {
+				    	// FIXME Verificare codici !
+				    	if (tipo == 4) {
 				    		((BMCStandardIO) bmc).addBlindPort(iOutput);
 				    	}
 				    }
@@ -417,12 +425,7 @@ public class EDSConnector extends Connector {
 				    for(Iterator ig = groups.iterator(); ig.hasNext();)
 				    {
 				    	SubnodeConfiguration group = output.configurationAt("gruppiAppartenenza." + ((ConfigurationNode) ig.next()).getName());
-				    	int groupNumber = 0;
-				    	if (model == 102) {
-				    		groupNumber = group.getInt("Numero");
-				    	} else {
-				    		groupNumber = group.getInt("numero");
-				    	}
+				    	int groupNumber = group.getInt("numero");
 				    	if (groupNumber > 0) {
 				    		bmc.bindOutput(groupNumber, iOutput);
 				    	}

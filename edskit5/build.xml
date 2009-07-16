@@ -1,0 +1,133 @@
+<project name="AUI Installer" default="installer">
+	
+	<target name="installer" depends="jais,jeds,jbis,jdxp,jaui,aui,conf">
+		<zip file="${dst}aui-${v}.zip" duplicate="fail" >
+			<fileset dir="${dst}">
+				<include name="lib/**" />
+				<include name="web/**" />
+				<include name="conf/**" />
+				<include name="logs/" />
+				<include name="run.bat" />
+			</fileset>
+		</zip>
+	</target>
+	
+	<target name="jais">
+		<property name="version.num" value="1.04"/>
+		<property name="dst" value="../installer/"/>
+		<property name="lib" value="${dst}lib/"/>
+		<property name="web" value="${dst}web/"/>
+		<property name="conf" value="${dst}conf/"/>
+		
+		<buildnumber file="build.num"/>
+		<tstamp>
+			<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
+			<format property="YMDHMS" pattern="yyyyMMddHHmmSS" />
+		</tstamp>
+		<property name="v" value="${version.num}.v${YMDHMS}-b${build.number}"/>
+		
+		<manifest file="MANIFEST.MF">
+			<attribute name="Built-By" value="${user.name}"/>
+			<attribute name="Main-Class" value="BusTest"/>
+			<attribute name="Implementation-Version" value="${version.num}-b${build.number}"/>   
+			<attribute name="Built-Date" value="${TODAY}"/>                 
+		</manifest>	
+
+		<jar destfile="jais.jar"
+		   basedir="../jais/bin"
+		   includes="**/*.class"
+		   manifest="MANIFEST.MF"
+		   />
+		<delete verbose="true">
+			<fileset dir="${lib}">
+			  <include name="jais*.jar"/>
+			</fileset>
+		</delete>
+		<move verbose="true" file="jais.jar" tofile="${lib}jais-${v}.jar" />
+	</target>
+	
+	<target name="jeds" depends="jais">
+		<jar destfile="jeds.jar"
+		   basedir="../jeds/bin"
+		   includes="**/*.class"
+		   manifest="MANIFEST.MF"
+		   />
+		<delete verbose="true">
+			<fileset dir="${lib}">
+			  <include name="jeds*.jar"/>
+			</fileset>
+		</delete>
+		<move verbose="true" file="jeds.jar" tofile="${lib}jeds-${v}.jar" />
+	</target>	
+
+	<target name="jaui" depends="jais">
+		<jar destfile="jaui.jar"
+		   basedir="../aui/bin"
+		   includes="**/*.class"
+		   manifest="MANIFEST.MF"
+		   />
+		<delete verbose="true">
+			<fileset dir="${lib}">
+			  <include name="jaui*.jar"/>
+			</fileset>
+		</delete>
+		<move verbose="true" file="jaui.jar" tofile="${lib}jaui-${v}.jar" />
+	</target>	
+
+	<target name="jbis" depends="jais">
+		<jar destfile="jbis.jar"
+		   basedir="../jbis/bin"
+		   includes="**/*.class"
+		   manifest="MANIFEST.MF"
+		   />
+		<delete verbose="true">
+			<fileset dir="${lib}">
+			  <include name="jbis*.jar"/>
+			</fileset>
+		</delete>
+		<move verbose="true" file="jbis.jar" tofile="${lib}jbis-${v}.jar" />
+	</target>	
+
+	<target name="jdxp" depends="jais">
+		<jar destfile="jdxp.jar"
+		   basedir="../jdxp/bin"
+		   includes="**/*.class"
+		   manifest="MANIFEST.MF"
+		   />
+		<delete verbose="true">
+			<fileset dir="${lib}">
+			  <include name="jdxp*.jar"/>
+			</fileset>
+		</delete>
+		<move verbose="true" file="jdxp.jar" tofile="${lib}jdxp-${v}.jar" />
+	</target>	
+
+	<target name="aui">
+		<delete verbose="true" includeemptydirs="true" >
+			<fileset dir="${web}">
+			  <include name="**"/>
+			</fileset>
+		</delete>
+		<copy verbose="true" todir="${web}" >
+			<fileset dir="../aui/web">
+			  <include name="**/*"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="conf">
+		<zip destfile="${conf}sample.zip"
+		   basedir="conf"
+		   includes="*.xml"
+		/>
+<!--
+		<copy verbose="true" todir="${conf}" >
+			<fileset dir="conf">
+			  <include name="*.xml"/>
+			</fileset>
+		</copy>
+-->		
+	</target>
+	
+</project>
+  

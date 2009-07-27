@@ -16,6 +16,7 @@ import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
@@ -255,6 +256,7 @@ public class Controller {
 	protected Controller() {
     	BasicConfigurator.configure();  // configurazione minimale di log4j
 		logger = Logger.getLogger(getClass());	
+		Logger.getRootLogger().setLevel(Level.INFO);
 	}
 	
 	/**
@@ -287,7 +289,6 @@ public class Controller {
 		}
 		config.setReloadingStrategy(new FileChangedReloadingStrategy());
 		String configurationVersion = config.getString("[@version]");
-		logger.info("Caricata configurazione versione "+configurationVersion+" da "+configurationFileName);		
 		// Inizializzazione logger
 	    String loggerConfigFileName = config.getString("logger[@file]","conf/log4j.xml");
 	    String loggerConfiguratorName = config.getString("logger[@configurator]","DOMConfigurator"); 
@@ -299,6 +300,7 @@ public class Controller {
 	    	logger.fatal("Configuratore file di log sconosciuto:"+loggerConfiguratorName);
 	    }
 		logger = Logger.getLogger(getClass());	
+		logger.info("Caricata configurazione versione "+configurationVersion+" da "+configurationFileName);		
 
 		// Impostazione locale
 		Locale.setDefault(new Locale(config.getString("locale[@language]","it"),config.getString("locale[@country]","IT")));

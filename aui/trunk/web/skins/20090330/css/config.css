@@ -1,0 +1,48 @@
+@CHARSET "ISO-8859-1";
+
+body {
+	color: white;
+}
+
+div.menubar {
+	background-color: #669;
+	width: 100%;
+	height: 30px;
+}
+
+div.menuitem {
+	float: left;
+	margin: 2px 7px;	
+}
+
+table {
+	width: 100%;
+	height: 100%;
+}
+
+td.header {
+	background-color: #CCC;
+	color: #111;
+	text-align: center;
+	padding: 2px 7px;
+	font-weight: bold;
+}
+
+td#impianto {
+	background-color: #666;
+	width: 200px;
+	height: 100%;
+	padding: 5px;
+}
+
+td#pagina {
+	width: auto;
+	margin: 5px;
+}
+
+td#pagine {
+	background-color: #666;
+	width: 120px;
+	margin: 5px;
+}
+

@@ -24,7 +24,7 @@ if (!AUI.SetRequest) {
 			this.request.open('GET', 'jais/set?'+address+'='+value, true);
 			var self = this;
 			this.request.onreadystatechange = self.stateChange;
-			this.timeout = window.setTimeout(self.timeoutExpired, 3000);
+			this.timeout = window.setTimeout(self.timeoutExpired, 5000);
 			this.request.send(null);
 			AUI.Logger.info("Request set: "+address+"="+value);
 		} catch(e) {
@@ -45,7 +45,7 @@ if (!AUI.SetRequest) {
 			this.request.open('GET', 'jais/send?'+address+'='+value, true);					
 			var self = this;
 			this.request.onreadystatechange = self.stateChange;
-			this.timeout = window.setTimeout(self.timeoutExpired, 3000);
+			this.timeout = window.setTimeout(self.timeoutExpired, 5000);
 			this.request.send(null);
 			AUI.Logger.info("Request send: "+address+"="+value);
 		} catch(e) {

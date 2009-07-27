@@ -184,6 +184,7 @@ public class SerialTransport extends Transport {
     public synchronized void write(byte[] b) {
     	try {
 			outputStream.write(b);
+			outputStream.flush();
 		} catch (IOException e) {
 			logger.error("Errore scrittura");
 		}
@@ -227,14 +228,16 @@ public class SerialTransport extends Transport {
 			}
             if (event.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
             	try {
-					while (inputStream.available() > 0) {
+            		int n = inputStream.available(); 
+					while (n > 0) {
 						int i = inputStream.read();
+						n--;
 						if (i == -1) {
 							logger.error("Nessun dato ricevuto");					
 						} else {			
 							counter = (counter + 1) % 10000;
-							sb.append(" "+counter+":"+i);
-							if (inputStream.available() == 0) {
+							sb.append(" "+counter+":"+Message.b2h(i));
+							if (n == 0) {
 								logger.trace("Buffer"+sb.toString());
 								sb = new StringBuffer();
 							}

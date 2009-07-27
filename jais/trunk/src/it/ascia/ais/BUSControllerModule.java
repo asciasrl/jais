@@ -14,7 +14,7 @@ public abstract class BUSControllerModule extends ControllerModule {
 	
 	public void start() {
 		super.start();
- 		int autoupdate = getConfiguration().getInt("autoupdate",0);
+ 		int autoupdate = getConfiguration().getInt("autoupdate",100);
  		autoUpdater = new AutoUpdater(autoupdate);
  		autoUpdater.setName("AutoUpdater");
  		autoUpdater.start();

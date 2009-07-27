@@ -16,7 +16,7 @@ public abstract class PTPMessage extends EDSMessage {
 	 * Il messaggio viene re-inviato se non arriva risposta.
 	 */
 	public int getMaxSendTries() {
-		return 8;
+		return 4;
 	}
 	
 	

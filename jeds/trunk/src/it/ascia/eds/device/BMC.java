@@ -341,6 +341,7 @@ public abstract class BMC extends Device {
 	public void messageReceived(EDSMessage m) throws AISException {
 		switch (m.getMessageType()) {
 			case EDSMessage.MSG_RICHIESTA_MODELLO:
+			case EDSMessage.MSG_ACKNOWLEDGE:
 				// ignorato
 				break;
 			default:

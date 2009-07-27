@@ -164,6 +164,11 @@ public class BMCStandardIO extends BMC {
 				getConnector().sendMessage(answer);
 			}
 			break;
+		case EDSMessage.MSG_RICHIESTA_USCITA:
+			if (!isReal) {
+				logger.error("Gestione "+m.getMessageDescription() + " non implementata.");
+			}
+			break;
 		default:
 			super.messageReceived(m);			
 		} // switch (m.getMessageType())

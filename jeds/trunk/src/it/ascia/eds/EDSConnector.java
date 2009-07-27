@@ -53,7 +53,7 @@ public class EDSConnector extends Connector {
 	 * 8 / 120 = 660 msec. In quello migliore (9600 bps), la trasmissione 
 	 * richiede 82 msec. Questa costante deve tener conto del caso migliore.</p>
 	 */
-	protected int RETRY_TIMEOUT = 200;
+	protected int RETRY_TIMEOUT = 50;
 
 	/**
 	 * Quante volte provare a reinviare un messaggio che richiede una risposta.
@@ -175,7 +175,12 @@ public class EDSConnector extends Connector {
 				bmc = createBMC(risposta.getSource(), risposta.getModello());
 				if (bmc != null) {
 					logger.info("Creato BMC "+bmc+" Indirizzo:"+bmc.getFullAddress());
-					bmc.discover();
+					if (isDiscoverNew()) {
+						logger.debug("Discover new device");
+						bmc.discover();
+					} else {
+						logger.debug("Disabled discover of new device in configuration");
+					}
 				}
 			} else {
 				bmc.messageSent(m);
@@ -203,8 +208,8 @@ public class EDSConnector extends Connector {
 
 
 	public int getRetryTimeout() {
-    	return RETRY_TIMEOUT;
-    }
+		return getConfiguration().getInt("retrytimeout", RETRY_TIMEOUT);
+	}
 
     public boolean sendMessage(Message m) {
     	if (EDSMessage.class.isInstance(m)) {
@@ -485,5 +490,9 @@ public class EDSConnector extends Connector {
 			}			
 		}
 	    return BMC.createBMC(this, address, model);			
+	}
+
+	public boolean isDiscoverNew() {
+		return getConfiguration().getBoolean("discovernew", true);
 	}
 }

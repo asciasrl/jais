@@ -6,7 +6,7 @@ if (!AUI.Group) {
 	
 	AUI.Group.prototype = new AUI.Scene();
 
-	AUI.Scene.prototype.onTouchStart = function(event) {
+	AUI.Group.prototype.onTouchStart = function(event) {
 		if (event.preventDefault) {
 			event.preventDefault();
 		} else {

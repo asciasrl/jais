@@ -19,10 +19,12 @@ ul.eds-regt-stagione li {
 
 div#regt-0 {
 	border: 3px solid red;
+	background-color: red;
 }	
 
 div#regt-1 {
 	border: 3px solid blue;
+	background-color: blue;
 }	
 
 div.eds-regt-stagione {
@@ -30,46 +32,55 @@ div.eds-regt-stagione {
 	color: white;
 	float: left;
 	clear: left;
+	margin: 4px;
 } 
 
 div.eds-regt-giorno {
 	color: white;
+	background: transparent;
 	position: relative;
-	border: 1px solid yellow;
+	border: 3px ridge yellow;
 	float: left;
 	clear: left;
+	padding: 1px 5px;	
+	margin: 2px;
 } 
 
 div.eds-regt-ora-box {
 	position: relative;
-	border: 1px solid blue;
 	background-color: #111;
 	color: white;
 	font-size: 0.7em;
 	text-align: center;
 	float: left;
-	width: 20px;
+	width: 32px;
 	height: 100px;
-	margin: 10px 0px;
+	margin: 10px 1px;
 	float: left;
+	opacity: 0.6;
+	overflow: hidden;	
 }
 
+/*
 div.eds-regt-ora {
 	position: absolute;
-	width: 20px;
+	width: 30px;
 	height: 100px;
 	background-color: green;
 	color: black;
 	z-index: 20;
 }
+*/
 
 div.eds-regt-ora-cursor {
 	position: absolute;
 	text-align: center;
-	width: 20px;
+	width: 30px;
 	height: 16px;
-	margin-top: 50px;
-	background-color: yellow;
+	margin-top: 0px;
+	bottom: -16px;
+	background-color: white;
+	opacity: 0.6;	
 	color: black;
 	z-index: 10;
 }

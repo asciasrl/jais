@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.management.openmbean.KeyAlreadyExistsException;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
@@ -98,8 +100,12 @@ public class Controller {
 	 * Aggiunge un Connector alla lista di quelli gestiti.
 	 * 
 	 * @param connector il connector da aggiungere.
+	 * @throws KeyAlreadyExistsException if a connector with the same name is already registered 
 	 */
-	public void registerConnector(Connector connector) {
+	public void registerConnector(Connector connector) throws KeyAlreadyExistsException {
+		if (connectors.containsKey(connector.getName())) {
+			throw(new KeyAlreadyExistsException("Connector name duplicated: "+connector.getName()));
+		}
 		connectors.put(connector.getName(), connector);
 	}
 	
@@ -138,11 +144,11 @@ public class Controller {
 			modules.put(name,module);
 			logger.info("Caricato modulo '"+name+"'");
 		} catch (ClassNotFoundException e) {
-			logger.error("Fallito caricamento modulo '"+name+"': non trovata classe '"+className+"'");
+			logger.fatal("Fallito caricamento modulo '"+name+"': non trovata classe '"+className+"'");
 		} catch (InstantiationException e) {
-			logger.error("Fallito caricamento modulo '"+name+"': errore instanzazione classe '"+className+"'");
+			logger.fatal("Fallito caricamento modulo '"+name+"': errore instanzazione classe '"+className+"'");
 		} catch (IllegalAccessException e) {
-			logger.error("Fallito caricamento modulo '"+name+"': accesso negato alla classe '"+className+"'");
+			logger.fatal("Fallito caricamento modulo '"+name+"': accesso negato alla classe '"+className+"'");
 		} catch (ConfigurationException e) {
 			logger.fatal("Fallito caricamento modulo '"+name+"': Errore nel file di configurazione:",e);
 		}
@@ -348,6 +354,11 @@ public class Controller {
 	 */
 	public static void main(String[] args) throws AISException {		
 		Controller c = Controller.getController();
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+            	Controller.getController().stop();
+            }
+        });;
 		if (args.length > 0) {
 			c.configure(args[0]);			
 		} else {

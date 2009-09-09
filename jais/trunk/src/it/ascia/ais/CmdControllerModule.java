@@ -98,6 +98,9 @@ public class CmdControllerModule extends ControllerModule {
 			while (running) {
 				System.out.println("JAIS Server");
 				String dest = stdio.inputString("Indirizzo dispositivo (<n>|stop|restart):");
+				if (dest == null) {
+					continue;
+				}
 				if (dest.equals("restart")) {
 					controller.restart();
 					continue;

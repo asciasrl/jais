@@ -1,1 +1,1 @@
-java -Djava.library.path=..\installer\lib -classpath "..\installer\lib\*" it.ascia.ais.Controller jais.xml
+java -Djava.library.path=lib -classpath "lib/*" it.ascia.ais.Controller

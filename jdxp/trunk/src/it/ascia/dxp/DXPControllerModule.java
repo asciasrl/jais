@@ -55,7 +55,7 @@ public class DXPControllerModule extends BUSControllerModule {
 		 		conn.close();
 		 	}
 		}				
- 		int autoupdate = config.getInt("autoupdate",0);
+ 		int autoupdate = config.getInt("autoupdate",1000);
  		autoUpdater = new AutoUpdater(autoupdate);
  		autoUpdater.setName("AutoUpdater");
  		running = true;

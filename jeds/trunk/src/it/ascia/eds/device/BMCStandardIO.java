@@ -120,7 +120,6 @@ public class BMCStandardIO extends BMC {
 				// Decidiamo noi cosa succede
 				setPortValue(getOutputPortId(port), new Boolean(vmsg.isActivation()));
 			}
-			// TODO impostare a dirty tutte le porte del mittente
 			break;
 		case EDSMessage.MSG_RICHIESTA_MODELLO:
 			// Ci chiedono chi siamo...
@@ -204,7 +203,7 @@ public class BMCStandardIO extends BMC {
 					DevicePort p = getPort(portId);
 					Boolean newValue = new Boolean(temp[i]);
 					Boolean oldValue = (Boolean) p.getCachedValue();
-					if (p.getCachedValue() != null && (p.isDirty() || ! newValue.equals(oldValue))) {
+					if (outTimers[i] > 0 && oldValue != null && (p.isDirty() || newValue.equals(new Boolean(true)) || ! newValue.equals(oldValue))) {
 						p.setValue(newValue,outTimers[i]);						
 					} else {
 						p.setValue(newValue);

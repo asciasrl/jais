@@ -344,6 +344,7 @@ public class Controller {
 	 * 
 	 */
 	public void fireDevicePortChangeEvent(DevicePortChangeEvent evt) {
+		logger.info(evt.getFullAddress() + " : " + evt.getOldValue() + " -> " + evt.getNewValue());
 		this.pcs.firePropertyChange(evt);
 	}
 
@@ -358,7 +359,7 @@ public class Controller {
             public void run() {
             	Controller.getController().stop();
             }
-        });;
+        });
 		if (args.length > 0) {
 			c.configure(args[0]);			
 		} else {

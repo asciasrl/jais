@@ -3,9 +3,18 @@ if (AUI.Regt == undefined) {
 	AUI.Regt = {
 
 		init : function() {
-			this.factor = 2;
+			this.step = 0.5; // regulation step
+			this.factor = 4; // pixels per step
+			this.minT = 15; // minimum value
+			this.maxT = 30; // minimum value
 			this.request = AUI.Http.getRequest();
-			AUI.Regt.get('1.255');
+			this.sending = false;
+			this.data = null;
+			this.id = null;
+			this.cursor = null;
+			this.value = null;
+			this.address = '1.255'; 
+			AUI.Regt.get(this.address);
 			AUI.Logger.setLevel(2);
 			var self = this;
 		},
@@ -19,6 +28,8 @@ if (AUI.Regt == undefined) {
 			this.request.onreadystatechange = AUI.Regt.stateChange;
 			this.timeout = window.setTimeout(self.timeoutExpired, 3000);
 			this.request.send(null);
+			this.sending = true;
+			AUI.Logger.setLevel(2);
 		},
 		
 		stateChange : function() {
@@ -32,9 +43,9 @@ if (AUI.Regt == undefined) {
 					} else {
 						AUI.Logger.info("request.status:"+request.status);
 						//AUI.Logger.debug("Response:"+request.responseText);
-						var data;
-						eval("data="+request.responseText+";");
-						AUI.Regt.update(data);
+						var tmp;
+						eval("tmp="+request.responseText+";");
+						AUI.Regt.update(tmp);
 					}
 				} else {
 					if (request.status == 500) {
@@ -46,16 +57,18 @@ if (AUI.Regt == undefined) {
 					}
 				}
 				AUI.Regt.sending = false;
+				AUI.Logger.setLevel(0);
 			}		
 		},
 		
-		update : function(data) {
+		update : function(newData) {
+			this.data = newData;
 			for (var stagione = 0; stagione <= 1; stagione++) {
 				for (var giorno = 0; giorno <= 6; giorno++) {
 					for (var ora = 0; ora <= 23; ora++) {
 						// setPoint-1-2-3
 						var id = stagione + "-" + giorno+"-"+ora;
-						var value = data[0].Status["setPoint-"+id].V;
+						var value = this.data[0].Status["setPoint-"+id].V;
 						AUI.Logger.debug("id="+id+" value="+value);
 						AUI.Regt.updateBar(id,value);
 					};
@@ -65,10 +78,14 @@ if (AUI.Regt == undefined) {
 		
 		updateBar : function(id,value) {
 			var el = document.getElementById("eds-regt-" + id);
-			if (value == null) {
-				value = 0;
-			};
-			el.style.bottom = (value * this.factor) + 'px';
+			el.style.bottom = ((value - this.minT ) * this.factor) + 'px';
+			el.style.display = 'block';
+			/*
+			FIXME aggiungere zero finale
+			if (Math.abs(Math.round(value) - value) < 0.1) {
+				value = value + '.0';
+			}
+			*/
 			el.innerHTML = value;
 		},
 		
@@ -93,17 +110,94 @@ if (AUI.Regt == undefined) {
 			AUI.Logger.log("onMouseOver y:"+this.y);
 		},
 		
-		onMouseMove : function(event,id) {
-			var el = document.getElementById("eds-regt-" + this.id);
-			var value = (this.y - event.clientY - window.scrollY) / this.factor;
-			AUI.Logger.log("onMouseMove id="+id+" x:"+event.clientX+" y:"+event.clientY+" value="+value);
-			//var value = el.offsetTop + 180 - event.clientY;
-			AUI.Regt.updateBar(id,value);
-			return false;
+		onMouseDownDay : function(event,id) {
+			AUI.Logger.log("onMouseDownDay id="+id+" x:"+event.clientX+" y:"+event.clientY);
+			event.preventDefault();
+			event.stopPropagation();
+		},
+
+		onMouseDownHour : function(event,id) {
+			AUI.Logger.log("onMouseDownHour id="+id+" x:"+event.clientX+" y:"+event.clientY);
+			event.preventDefault();
+			event.stopPropagation();
 		},
 		
+		cursorValue : function(cursor,y) {
+			var hourDiv = cursor.parentNode;
+			var hourPosition = AUI.getPosition(hourDiv);
+			// coordinata y del bordo inferiore del blocco dell'ora
+			var bottom = hourPosition.y + hourDiv.offsetHeight; 
+			var value = (bottom - y - window.scrollY - cursor.clientHeight / 2) / this.factor + this.minT;
+			value = Math.round(value / this.step) * this.step;
+			if (value == null) {
+				value = 0;
+			};
+			if (value < this.minT) {
+				value = this.minT;
+			}
+			if (value > this.maxT) {
+				value = this.maxT;
+			}
+			return value;
+		},
+
+		onMouseDownCursor : function(event,id) {
+			event.preventDefault();
+			event.stopPropagation();
+			this.id = id;
+			var cursor = document.getElementById("eds-regt-" + id);			
+			this.cursor = cursor;
+			var value = this.cursorValue(cursor,event.clientY); 
+			this.value = value;
+			AUI.Logger.log("onMouseDownCursor id="+id+" x:"+event.clientX+" y:"+event.clientY+" value="+value);
+			AUI.Regt.updateBar(id,value);
+			// registra listener
+			var self = this;
+			this.mouseUpCursor = function(e) { return self.onMouseUpCursor(e) };
+			cursor.addEventListener('mouseup', this.mouseUpCursor, false);					
+			this.mouseOutCursor = function(e) { return self.onMouseUpCursor(e) };
+			cursor.addEventListener('mouseout', this.mouseOutCursor, false);
+			this.mouseMoveCursor = function(e) { return self.onMouseMoveCursor(e) };
+			cursor.addEventListener('mousemove', this.mouseMoveCursor, false);					
+		},
+		
+		onMouseMoveCursor : function(event) {
+			event.preventDefault();
+			event.stopPropagation();
+			var id = this.id;
+			var cursor = this.cursor;
+			var value = this.cursorValue(cursor,event.clientY);
+			this.value = value;
+			AUI.Logger.log("onMouseMoveCursor id="+id+" x:"+event.clientX+" y:"+event.clientY+" value="+value);
+			AUI.Regt.updateBar(id,value);
+		},
+		
+		onMouseUpCursor : function(event) {
+			var cursor = this.cursor;
+			cursor.removeEventListener('mouseup', this.mouseUpCursor, false);					
+			cursor.removeEventListener('mouseout', this.mouseOutCursor, false);
+			cursor.removeEventListener('mousemove', this.mouseMoveCursor, false);
+			this.onCursorStop();
+			this.id = null;
+			this.cursor = null;
+		},
+		
+		onCursorStop : function() {
+			if (this.value != null) {
+				if (!AUI.SetRequest.sending && AUI.SetRequest.setValue(this.address+":setPoint-"+this.id,this.value)) {
+					this.value = null;
+				} else {
+					var self = this;
+					if (this.retryTimer) {
+						clearTimeout(this.retryTimer);
+					}
+					this.retryTimer = setTimeout(function() { return self.onCursorStop() },50);				
+				}
+			}
+		},
+
 		onMouseOut : function(event,id) {
-			
+			 
 		},
 		
 		abort : function() {
@@ -115,22 +209,5 @@ if (AUI.Regt == undefined) {
 			AUI.Regt.abort();
 		},
 		
-		getPosition : function(e){
-			var left = 0;
-			var top  = 0;
-
-			while (e.offsetParent){
-				left += e.offsetLeft;
-				top  += e.offsetTop;
-				e     = e.offsetParent;
-			}
-
-			left += e.offsetLeft;
-			top  += e.offsetTop;
-			
-			return {x:left, y:top};
-		}
-
-
 	};
 }		

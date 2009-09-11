@@ -7,6 +7,8 @@ if (!AUI.SetRequest) {
 			status: "default"
 	};
 	
+	// TODO unificare queste 3 funzioni
+	
 	AUI.SetRequest.set = function(device, value, status) {
 		if (this.sending) {
 			AUI.Header.show("Richiesta in corso.");
@@ -34,6 +36,27 @@ if (!AUI.SetRequest) {
 		return true;
 	};
 	
+	AUI.SetRequest.setValue = function(address, value) {
+		if (this.sending) {
+			AUI.Header.show("Richiesta in corso.");
+			return false;
+		}
+		try {
+			this.sending = true;
+			this.device = null;
+			this.request.open('GET', 'jais/set?'+address+'='+value, true);
+			var self = this;
+			this.request.onreadystatechange = self.stateChange;
+			this.timeout = window.setTimeout(self.timeoutExpired, 5000);
+			this.request.send(null);
+			AUI.Logger.info("Request set: "+address+"="+value);
+		} catch(e) {
+			this.sending = false;
+			throw(e);
+		};
+		return true;
+	};
+
 	AUI.SetRequest.send = function(address,value) {
 		if (this.sending) {
 			AUI.Header.show("Richiesta in corso.");

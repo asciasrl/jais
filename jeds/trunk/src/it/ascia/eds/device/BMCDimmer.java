@@ -100,7 +100,7 @@ public class BMCDimmer extends BMC {
 		int d = getIntAddress();
 		for (int i = 0; i < getOutPortsNumber(); i++) {
 			// richiede il parametro soft time
-			connector.queueMessage(new RichiestaParametroMessage(d,m,i+1));
+			connector.sendMessage(new RichiestaParametroMessage(d,m,i+1));
 		}
 	}
 

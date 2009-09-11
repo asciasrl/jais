@@ -165,7 +165,7 @@ public class BMCRegT22 extends BMCStandardIO {
     			RichiestaAssociazioneUscitaMessage m;
     			m = new RichiestaAssociazioneUscitaMessage(getIntAddress(),
     					connectorAddress, outPort, casella);
-        		connector.queueMessage(m);
+        		connector.sendMessage(m);
     		}
     	}
     }
@@ -381,9 +381,9 @@ public class BMCRegT22 extends BMCStandardIO {
 		EDSConnector conn = (EDSConnector) getConnector();
 		int m = conn.getMyAddress();
 		int d = getIntAddress();
-		conn.queueMessage(new RichiestaRTCCMessage(d,m,0));
-		conn.queueMessage(new RichiestaRTCCMessage(d,m,1));
-		conn.queueMessage(new RichiestaRTCCMessage(d,m,2));
+		conn.sendMessage(new RichiestaRTCCMessage(d,m,0));
+		conn.sendMessage(new RichiestaRTCCMessage(d,m,1));
+		conn.sendMessage(new RichiestaRTCCMessage(d,m,2));
 	}
 	
 	private boolean writeRTCC() {
@@ -425,9 +425,9 @@ public class BMCRegT22 extends BMCStandardIO {
 		EDSConnector conn = (EDSConnector) getConnector();
 		int m = conn.getMyAddress();
 		int d = getIntAddress();
-		conn.queueMessage(new ImpostaRTCCMessage(d,m,0, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE)));
-		conn.queueMessage(new ImpostaRTCCMessage(d,m,1, cal.get(Calendar.MONTH)+1, cal.get(Calendar.YEAR)-2000));
-		conn.queueMessage(new ImpostaRTCCMessage(d,m,2, cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.SECOND)));
+		conn.sendMessage(new ImpostaRTCCMessage(d,m,0, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE)));
+		conn.sendMessage(new ImpostaRTCCMessage(d,m,1, cal.get(Calendar.MONTH)+1, cal.get(Calendar.YEAR)-2000));
+		conn.sendMessage(new ImpostaRTCCMessage(d,m,2, cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.SECOND)));
 		return true;
 	}
 
@@ -459,12 +459,12 @@ public class BMCRegT22 extends BMCStandardIO {
 			writeRTCC(newValue);
 		} else if (portId.startsWith("setPoint-")) {
 			String[] temp = portId.split("-");
-			String stagione = temp[1];
-			String giorno = temp[2];
+			int stagione = Integer.parseInt(temp[1]);
+			int giorno = Integer.parseInt(temp[2]);
 			int ora = Integer.parseInt(temp[3]);
 			//logger.info("write:"+stagione+","+giorno+","+ora+"="+newValue);
 			res = getConnector().sendMessage(new ImpostaSetPointMessage(getIntAddress(), getBMCComputerAddress(),
-					Double.parseDouble((String) newValue), stagione, giorno, ora));
+					((Double)newValue).doubleValue(), stagione, giorno, ora));
 		} else {
 			logger.fatal("Non so come scrivere sulla porta "+portId);
 		}
@@ -479,7 +479,7 @@ public class BMCRegT22 extends BMCStandardIO {
 			for (int giorno = 0; giorno <= 6; giorno++) {
 				for (int ora = 0; ora <= 23; ora++) {					
 					RichiestaSetPointMessage rich = new RichiestaSetPointMessage(d,m,stagione,giorno,ora);
-					conn.queueMessage(rich);
+					conn.sendMessage(rich);
 				}
 			}		
 		}
@@ -494,7 +494,7 @@ public class BMCRegT22 extends BMCStandardIO {
 		int giorno = Integer.parseInt(temp[2]);
 		int ora = Integer.parseInt(temp[3]);
 		RichiestaSetPointMessage rich = new RichiestaSetPointMessage(d,m,stagione,giorno,ora);
-		conn.queueMessage(rich);
+		conn.sendMessage(rich);
 	}	
 
 }

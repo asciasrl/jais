@@ -24,15 +24,15 @@ public class AnalogOutputPort extends DevicePort {
 			return super.writeValue((Integer)newValue);
 		} else if (Double.class.isInstance(newValue)) {
 			Double d = (Double)newValue;
-			if (d.compareTo(maxValue) > 0) {
+			if (maxValue != null && d.compareTo(maxValue) > 0) {
 				throw new IllegalArgumentException(getFullAddress() + " Valore superiore al massimo ("+maxValue+"): "+newValue);				
 			}
-			if (d.compareTo(minValue) < 0) {
+			if (minValue != null && d.compareTo(minValue) < 0) {
 				throw new IllegalArgumentException(getFullAddress() + " Valore minore del minimo ("+minValue+"): "+newValue);				
 			}
-			return super.writeValue((Double)newValue);
+			return super.writeValue(newValue);
 		} else if (String.class.isInstance(newValue)) {
-			return writeValue((String) newValue);
+			return super.writeValue((String) newValue);
 		}
 		throw new IllegalArgumentException(getFullAddress() + " Tipo di valore non valido: "+newValue.getClass().getName());
 	}

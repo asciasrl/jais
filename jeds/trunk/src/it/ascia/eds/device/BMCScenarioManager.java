@@ -175,7 +175,7 @@ public class BMCScenarioManager extends BMCStandardIO {
 		case EDSMessage.MSG_COMANDO_USCITA:
 			ComandoUscitaMessage cmd = (ComandoUscitaMessage) m;
 			port = cmd.getScenePortNumber();
-			logger.info("Attivata scena "+getScenePortId(port));
+			logger.info("Attivata scena "+getFullAddress()+":"+getScenePortId(port));
 			if (port > (getOutPortsNumber() - 1)) {
 				if (port > (getSceneNumber() -1 )) {
 					throw(new AISException("Numero di scena non valido:"+port));
@@ -187,7 +187,9 @@ public class BMCScenarioManager extends BMCStandardIO {
 		case EDSMessage.MSG_VARIAZIONE_INGRESSO:
 			VariazioneIngressoMessage vmsg = (VariazioneIngressoMessage) m;
 			port = vmsg.getScenePortNumber();
-			logger.info("Attivata scena "+getScenePortId(port));
+			if (vmsg.isClose()) {
+				logger.info("Attivata scena "+getFullAddress()+":"+getScenePortId(port));
+			}
 			if (port > (getOutPortsNumber() - 1)) {
 				if (port > (getSceneNumber() -1 )) {
 					throw(new AISException("Numero di scena non valido:"+port));

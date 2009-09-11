@@ -195,10 +195,13 @@ public class SerialTransport extends Transport {
      */
     public void close() {
     	try {
+        	logger.trace("Closing streams.");
 			inputStream.close();
 	    	inputStream = null;
 			outputStream.close();
 			outputStream = null;
+		} catch (NullPointerException e) {
+			logger.error("Exception in close():",e);
 		} catch (IOException e) {
 			logger.error("Exception in close():",e);
 		}

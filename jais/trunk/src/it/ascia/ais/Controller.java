@@ -344,7 +344,9 @@ public class Controller {
 	 * 
 	 */
 	public void fireDevicePortChangeEvent(DevicePortChangeEvent evt) {
-		logger.info(evt.getFullAddress() + " : " + evt.getOldValue() + " -> " + evt.getNewValue());
+		if (evt.getOldValue() == null || (evt.getNewValue() != null && ! evt.getNewValue().equals(evt.getOldValue()))) {
+			logger.info(evt.getFullAddress() + " : " + evt.getOldValue() + " -> " + evt.getNewValue());
+		}
 		this.pcs.firePropertyChange(evt);
 	}
 

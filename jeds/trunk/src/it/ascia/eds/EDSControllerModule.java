@@ -25,6 +25,7 @@ public class EDSControllerModule extends BUSControllerModule {
 		 	Transport transport = null;
 		 	try {
 		 		eds = new EDSConnector(sub.getString("name"),controller);
+				eds.setModule(this);
 		 		eds.setAddress(sub.getInt("computer",250));
 		 		// attiva il transport		 		
 		 		List transports = sub.configurationsAt("transport");
@@ -38,11 +39,13 @@ public class EDSControllerModule extends BUSControllerModule {
 		 			int speed = transportConfig.getInt("speed");
 		 			transport = new SerialTransport(eds,port,speed);
 		 			logger.info("Connesso via seriale: "+transport.getInfo());
+		 			eds.transportSpeed = speed;
 		 		} else if (type.equals("tcp")) {
 		 			String host = transportConfig.getString("host");
 		 			int port = transportConfig.getInt("port");					
 		 			transport = new TCPSerialTransport(eds,host,port);
 		 			logger.info("Connesso via seriale a "+host+":"+port);
+		 			eds.transportSpeed = 1200;
 				} else {
 					throw(new AISException("Transport "+type+" non riconosciuto"));
 				}

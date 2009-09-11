@@ -14,9 +14,9 @@ public abstract class BUSControllerModule extends ControllerModule {
 	
 	public void start() {
 		super.start();
- 		int autoupdate = getConfiguration().getInt("autoupdate",100);
+ 		int autoupdate = getConfiguration().getInt("autoupdate",1000);
  		autoUpdater = new AutoUpdater(autoupdate);
- 		autoUpdater.setName("AutoUpdater");
+ 		autoUpdater.setName("AutoUpdater-"+getName());
  		autoUpdater.start();
 	}
 	
@@ -77,8 +77,7 @@ public abstract class BUSControllerModule extends ControllerModule {
 						{
 							Connector connector = (Connector) c.next();
 							HashMap devices = connector.getDevices();
-							for (Iterator iterator = devices.values().iterator(); iterator
-									.hasNext();) {
+							for (Iterator iterator = devices.values().iterator(); iterator.hasNext();) {
 								Device device = (Device) iterator.next();
 								if (device.isUnreachable()) {
 									break;
@@ -94,26 +93,12 @@ public abstract class BUSControllerModule extends ControllerModule {
 											}
 										}
 										if (device.isUnreachable()) {
+											break;
+										}
+										if (devicePort.isQueuedForUpdate()) {
 											continue;
 										}
-										logger.debug("AutoUpdate "+devicePort.getFullAddress());
-										long guardtime = connector.getGuardtime();
-										while (guardtime > 0) {
-											logger.debug("BUS is in guard time, waiting "+guardtime+"mS");											
-											synchronized (this) {
-												wait(guardtime);							
-											}
-											logger.trace("End guard time of "+guardtime+"mS");
-											guardtime = connector.getGuardtime();
-										}
-										try {											
-											device.updatePort(devicePort.getPortId());
-											synchronized (this) {
-												wait(autoupdate);							
-											}
-										} catch (AISException e) {
-											logger.warn("Errore durante updatePort:",e);
-										}
+										connector.queueUpdate(devicePort);
 									}
 								}
 							}

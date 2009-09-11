@@ -86,12 +86,8 @@ public class AUIStreamingServlet extends HttpServlet {
 			
 			while (! out.checkError() && counter < maxEvents) {
 				DevicePortChangeEvent evt = null;
-				try {
-					// uso poll in modo da inviare sempre qualcosa al client
-					evt = (DevicePortChangeEvent) eventQueue.poll(10,TimeUnit.SECONDS);
-				} catch (InterruptedException e) {
-					logger.trace("Interrupted:",e);
-				}
+				// uso poll in modo da inviare sempre qualcosa al client
+				evt = (DevicePortChangeEvent) eventQueue.poll(10,TimeUnit.SECONDS);
 				JSONObject obj=new JSONObject();
 				if (evt != null) {
 					if (evt.getNewValue() == null) {
@@ -110,14 +106,12 @@ public class AUIStreamingServlet extends HttpServlet {
 				p.removePropertyChangeListener(eventQueue);
 			}
 			logger.debug("Fine streaming verso "+remote+" eventi="+counter);
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			logger.debug("Interrotto.");
 		} catch (IOException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			logger.error("Errore interno durante streaming verso "+remote+" :",e);
-		}
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			logger.debug("Interrupted:",e);
 		}
 	}
 	

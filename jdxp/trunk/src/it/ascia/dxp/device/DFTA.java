@@ -23,7 +23,7 @@ public class DFTA extends DominoDevice {
 
 	public long updatePort(String portId) throws AISException {
 		RichiestaStatoIngressiMessage m = new RichiestaStatoIngressiMessage(getAddress());
-		getConnector().queueMessage(m);
+		getConnector().sendMessage(m);
 		return 100;
 	}
 

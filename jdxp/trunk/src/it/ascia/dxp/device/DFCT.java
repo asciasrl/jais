@@ -29,7 +29,7 @@ public class DFCT extends DominoDevice {
 		if (portId.equals("temp")) {
 			int d = (new Integer(getAddress())).intValue() + 1;
 			RichiestaStatoIngressiMessage m = new RichiestaStatoIngressiMessage(d);
-			getConnector().queueMessage(m);			
+			getConnector().sendMessage(m);			
 			return 100;
 		}
 		return 0;

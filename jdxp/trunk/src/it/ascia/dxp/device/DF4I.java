@@ -35,7 +35,7 @@ public class DF4I extends DominoDevice {
 		int i = portId.indexOf(".");
 		if (i > 0) {
 			RichiestaStatoIngressiMessage m = new RichiestaStatoIngressiMessage(portId.substring(1,i));
-			getConnector().queueMessage(m);
+			getConnector().sendMessage(m);
 		}
 		return 100; // TODO calcolare
 	}

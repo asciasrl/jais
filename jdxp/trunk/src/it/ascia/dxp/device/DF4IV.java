@@ -40,7 +40,7 @@ public class DF4IV extends DF4I {
 				super.updatePort(portId);
 			} else if (tipo == 'v') {
 				RichiestaStatoUsciteMessage m = new RichiestaStatoUsciteMessage(portId.substring(1,i));
-				getConnector().queueMessage(m);
+				getConnector().sendMessage(m);
 			} else {
 				throw(new AISException("Porta tipo "+tipo+" non valida"));				
 			}

@@ -13,6 +13,7 @@
 <script language="javascript" src="classes/AUI.js"></script>
 <script language="javascript" src="classes/Logger.js"></script>
 <script language="javascript" src="classes/Http.js"></script>
+<script language="javascript" src="classes/SetRequest.js"></script>
 <script language="javascript" src="classes/Regt.js"></script>
 </head>
 <body onload="AUI.Regt.init();">
@@ -30,20 +31,26 @@ String[] giorni = {"Lun","Mar","Mer","Gio","Ven","Sab","Dom"};
 
 for (int stagione = 0; stagione <= 1; stagione++) {
 %>
-<div id="regt-<%= stagione %>" class="eds-regt-stagione" >
+<div id="regt-<%= stagione %>" class="eds-regt-season" >
 <div><%= stagioni[stagione] %></div>
 <%	
 	for (int giorno = 0; giorno <= 6; giorno++) {
 %>
-	<div id="regt-<%= stagione %>-<%= giorno%>" class="eds-regt-giorno">
+	<div id="regt-<%= stagione %>-<%= giorno%>" class="eds-regt-day"
+			onmousedown="AUI.Regt.onMouseDownDay(event,'<%= stagione + "-" + giorno %>');"
+	>
 	<div><%= giorni[giorno] %></div>
 <%	
 		for (int ora = 0; ora <= 23; ora++) {
 			String id = stagione + "-" + giorno + "-" + ora;
 %>
-		<div class="eds-regt-ora-box">
+		<div class="eds-regt-hour"
+		onmousedown="AUI.Regt.onMouseDownHour(event,'<%= id %>');"
+		>
 			<%= ora %>
-			<div class="eds-regt-ora-cursor" id="eds-regt-<%= stagione %>-<%= giorno%>-<%= ora %>" onmouseover="AUI.Regt.onMouseOver(event,'<%= id %>');">--</div>
+			<div class="eds-regt-cursor" id="eds-regt-<%= id %>" 
+			onmousedown="AUI.Regt.onMouseDownCursor(event,'<%= id %>');"
+			>--</div>
 		</div>		
 <%
 		}

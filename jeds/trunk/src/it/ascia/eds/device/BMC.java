@@ -298,7 +298,7 @@ public abstract class BMC extends Device {
     	for (outPort = 0; outPort < getOutPortsNumber(); outPort++) {
     		RichiestaUscitaMessage m = new RichiestaUscitaMessage(getIntAddress(),
     					connectorAddress, outPort);
-    		connector.queueMessage(m);
+    		connector.sendMessage(m);
     	}
     }	       
 
@@ -320,7 +320,7 @@ public abstract class BMC extends Device {
     			RichiestaAssociazioneUscitaMessage m;
     			m = new RichiestaAssociazioneUscitaMessage(getIntAddress(),
     					connectorAddress, outPort, casella);
-        		connector.queueMessage(m);
+        		connector.sendMessage(m);
     		}
     	}
     }

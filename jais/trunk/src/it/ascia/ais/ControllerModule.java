@@ -83,5 +83,9 @@ public abstract class ControllerModule {
 	public String getName() {
 		return name;
 	}
-		
+
+	public void fireDevicePortChangeEvent(DevicePortChangeEvent evt) {
+		controller.fireDevicePortChangeEvent( evt );
+	}
+
 }

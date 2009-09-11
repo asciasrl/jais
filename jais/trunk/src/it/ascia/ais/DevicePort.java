@@ -47,6 +47,8 @@ public abstract class DevicePort {
 
 	protected final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
+	private boolean queuedForUpdate = false;
+
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		this.pcs.addPropertyChangeListener(listener);
 		logger.trace(pcs.getPropertyChangeListeners().length
@@ -205,8 +207,8 @@ public abstract class DevicePort {
 			// sveglia getValue()
 			notify();
 		}
-		fireDevicePortChangeEvent(new DevicePortChangeEvent(this, oldValue,
-				newValue));
+		// inviare sempre l'evento, in quanto potrebbe esserci stata una doppia variazione
+		fireDevicePortChangeEvent(new DevicePortChangeEvent(this, oldValue,newValue));
 	}
 
 	/**
@@ -233,9 +235,12 @@ public abstract class DevicePort {
 	 * @throws AISException
 	 */
 	public boolean writeValue(Object newValue) {
-		// FIXME Aggiungere setValue(newValue); ?
-		invalidate();
-		return device.sendPortValue(portId, newValue);
+		if (device.sendPortValue(portId, newValue)) {
+			invalidate();
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -267,6 +272,7 @@ public abstract class DevicePort {
 			logger.trace("Invalidate " + getFullAddress());
 		}
 		dirty = true;
+		queueUpdate();
 	}
 
 	public void setCachedValue(Object newValue) {
@@ -349,6 +355,28 @@ public abstract class DevicePort {
 	 */
 	public void setTags(String[] tags) {
 		this.tags = tags;
+	}
+
+	public void queueUpdate() {
+		if (!isQueuedForUpdate()) {
+			device.getConnector().queueUpdate(this);
+		}
+	}
+
+	public long update() {
+		return device.updatePort(portId);		
+	}
+
+	public void setQueuedForUpdate() {
+		queuedForUpdate = true;
+	}
+	
+	public void resetQueuedForUpdate() {
+		queuedForUpdate = false;
+	}
+
+	public boolean isQueuedForUpdate() {
+		return queuedForUpdate;
 	}
 
 }

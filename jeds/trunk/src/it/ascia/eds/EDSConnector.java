@@ -82,6 +82,16 @@ public class EDSConnector extends Connector {
 
 	private int lastBroadcast = -1;
 
+	/**
+	 * Indicate until connector should be considerered busy because one conversation between devices is in place
+	 */
+	private long guardtimeEnd = 0;
+
+	/**
+	 * Serial communication bitrate
+	 */
+	int transportSpeed;
+	
     /**
      * Connettore per il BUS EDS.
      * 
@@ -109,14 +119,13 @@ public class EDSConnector extends Connector {
      */
     public void received(int b) {    	
 		mp.push(b);
-		// 20 mS is time for 2 telegrams at 9600 bps
-		setGuardtimeEnd(System.currentTimeMillis()+20);
+		setGuardtime(messageTransmitTime());
 		if (mp.isValid()) {
 			EDSMessage m = (EDSMessage) mp.getMessage();
 			if (m != null) {
 				receiveQueue.offer(m);
 			}
-		}    	
+		}
     }
 
     protected void dispatchMessage(Message m) throws AISException {
@@ -176,8 +185,9 @@ public class EDSConnector extends Connector {
 				if (bmc != null) {
 					logger.info("Creato BMC "+bmc+" Indirizzo:"+bmc.getFullAddress());
 					if (isDiscoverNew()) {
-						logger.debug("Discover new device");
-						bmc.discover();
+						logger.debug("Discover new device: "+bmc.getFullAddress());
+						BmcDiscover bmcDiscover = new BmcDiscover(bmc);
+						bmcDiscover.start();
 					} else {
 						logger.debug("Disabled discover of new device in configuration");
 					}
@@ -218,7 +228,43 @@ public class EDSConnector extends Connector {
     		return false;
     	}
     }
+
+    private long messageTransmitTime() {
+    	return Math.round(1000 * 80 / transportSpeed);
+    }
     
+    /**
+     * Calculate guard time based on transport speed
+     */
+	private void setGuardtime() {
+		setGuardtime(Math.round(messageTransmitTime() * 2.5)); 		
+	}
+
+	private void setGuardtime(long dt) {
+		setGuardtimeEnd(dt + System.currentTimeMillis()); 		
+	}
+
+	/**
+	 * @param guardtimeEnd the guardtimeEnd to set: time in milliseconds 
+	 */
+	private void setGuardtimeEnd(long guardtimeEnd) {
+		this.guardtimeEnd = guardtimeEnd;
+	}
+
+	/**
+     * Connector is in Guard Time when a conversation between devices or controller is in place.
+     * Concrete connector must use setGuardtimeEnd
+	 * @return the time in millisecond to wait beacuse connector is in guard time
+	 */
+	private long getGuardtime() {
+		if (guardtimeEnd > 0 && guardtimeEnd >= System.currentTimeMillis()) {
+			return guardtimeEnd - System.currentTimeMillis();
+		} else {
+			return 0;
+		}
+	}
+
+
     /**
 	 * Invia un messaggio sul transport.
 	 * 
@@ -238,6 +284,15 @@ public class EDSConnector extends Connector {
 		}
 		boolean retval = false;
 		try {
+			long guardtime = getGuardtime();
+			while (guardtime > 0) {
+				logger.debug("BUS is in guard time, waiting "+guardtime+"mS");											
+				synchronized (this) {
+					wait(guardtime);							
+				}
+				logger.trace("End guard time of "+guardtime+"mS");
+				guardtime = getGuardtime();
+			}			
 			if (!transportSemaphore.tryAcquire()) {
 				logger.trace("Start waiting for transport semaphore ...");
 				transportSemaphore.acquire();
@@ -265,7 +320,7 @@ public class EDSConnector extends Connector {
 			transportSemaphore.release();
 			m.setSent();
 		} catch (InterruptedException e) {
-			logger.error("Interrupted:",e);
+			logger.debug("Interrupted:",e);
 		}
 		return retval;
 	}
@@ -329,6 +384,7 @@ public class EDSConnector extends Connector {
 	    				Thread.sleep(20);
 	    			}
 	    			logger.trace("Try "+tries+" of "+m.getMaxSendTries()+" : "+m.toString());
+	    			setGuardtime();
 	    			transport.write(m.getBytesMessage());
 	    			if (!m.isAnswered()) {
 		    			// si mette in attesa, ma se nel frattempo arriva la risposta viene avvisato
@@ -339,6 +395,7 @@ public class EDSConnector extends Connector {
 		    	    	}
 	    			}
 	    			if (m.isAnswered()) {
+		    			setGuardtime(0);
 	    				break;
 	    			}
 	    		}
@@ -375,7 +432,7 @@ public class EDSConnector extends Connector {
      * 
      */
     public void discoverBMC(int address) {
-    	queueMessage(new RichiestaModelloMessage(address,getMyAddress()));
+    	sendMessage(new RichiestaModelloMessage(address,getMyAddress()));
     }
 
 	public boolean loadConfig(String EDSConfigFileName) {
@@ -494,5 +551,19 @@ public class EDSConnector extends Connector {
 
 	public boolean isDiscoverNew() {
 		return getConfiguration().getBoolean("discovernew", true);
+	}
+	
+	private class BmcDiscover extends Thread {
+		
+		private BMC bmc;
+		
+		public BmcDiscover(BMC bmc) {
+			this.bmc = bmc;
+			setName("Discover-"+bmc.getFullAddress());
+		}
+		
+		public void run() {
+			bmc.discover();
+		}
 	}
 }

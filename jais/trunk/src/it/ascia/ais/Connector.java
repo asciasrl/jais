@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 
+import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.log4j.Logger;
 
 /**
@@ -27,14 +28,12 @@ public abstract class Connector {
 
 	protected LinkedBlockingQueue receiveQueue;
 	protected LinkedBlockingQueue sendQueue;
+	protected LinkedBlockingQueue updateQueue;
 	private Thread sendingThread;
 	private Thread receivingThread;
+	private Thread updatingThread;
 	private boolean running = false;
-	
-	/**
-	 * Indicate until connector should be considerered busy because one conversation between devices is in place
-	 */
-	private long guardtimeEnd = 0;
+	private ControllerModule module = null;
 	
     /**
      * Il nostro nome secondo AUI.
@@ -72,6 +71,8 @@ public abstract class Connector {
      * 
      * @param name Nome del connettore
      * @param controller Controller del sistema
+     * 
+     * TODO Sostituire Controller con ControllerModule
      */
     public Connector(String name, Controller controller) {
 		this.name = name;
@@ -89,6 +90,10 @@ public abstract class Connector {
 		sendingThread = new SendingThread();
 		sendingThread.setName("Sending-"+getClass().getSimpleName()+"-"+getName());
 		sendingThread.start();
+		updateQueue = new LinkedBlockingQueue();
+		updatingThread = new UpdatingThread();
+		updatingThread.setName("Updating-"+getClass().getSimpleName()+"-"+getName());
+		updatingThread.start();
 	}
 
 	/**
@@ -181,11 +186,31 @@ public abstract class Connector {
 		sendQueue.offer(m);
 	}
     
+    /**
+     * Aggiunge un porta alla coda delle porte da aggiornare
+     * @param m
+     */
+	public void queueUpdate(DevicePort p) {
+		if (p.isQueuedForUpdate()) {
+			logger.debug("Port already queued for update: "+p.getFullAddress());			
+		}
+		if (updateQueue.contains(p)) {
+			logger.warn("Port already in update queue: "+p.getFullAddress());
+		} else {
+			if (updateQueue.offer(p)) {
+				p.setQueuedForUpdate();
+				logger.debug("Port queued for update: "+p.getFullAddress());
+			} else {
+				logger.error("Queue full queuing for update: "+p.getFullAddress());
+			}
+		}
+	}
+    
 	/**
 	 * Propaga l'evento al controller
 	 */
 	public void fireDevicePortChangeEvent(DevicePortChangeEvent evt) {
-		getController().fireDevicePortChangeEvent( evt );
+		module.fireDevicePortChangeEvent(evt);
 	}
 
 	/**
@@ -231,6 +256,12 @@ public abstract class Connector {
 			transport.close();
 		}
 		running = false;
+		updatingThread.interrupt();
+    	try {
+    		updatingThread.join();
+		} catch (InterruptedException e) {
+			logger.error("Interrupted:",e);
+		}
 		receivingThread.interrupt();
     	try {
 			receivingThread.join();
@@ -280,6 +311,30 @@ public abstract class Connector {
     	}
     }
 
+    private class UpdatingThread extends Thread {
+        
+    	public void run() {
+    		while (running) {
+    			DevicePort p;
+				try {
+					p = (DevicePort) updateQueue.take();
+			    	logger.debug("Updating (+"+updateQueue.size()+"): " + p.getFullAddress());
+			    	if (p.isDirty() || p.isExpired()) {
+			    		p.update();
+			    	} else {
+			    		logger.trace("Port already updated: "+p.getFullAddress());
+			    	}
+			    	p.resetQueuedForUpdate();
+				} catch (InterruptedException e) {
+					logger.debug("Interrotto.");
+				} catch (Exception e) {
+					logger.fatal("Errore:",e);
+				}
+    		}
+			logger.debug("Stop.");
+    	}
+    }
+
     private class SendingThread extends Thread {
         
     	public void run() {
@@ -300,38 +355,23 @@ public abstract class Connector {
     	}
     }
 
-    /**
-     * @return True if busyTime is > 0 
-     */
-	public boolean isBusy() {
-		return getGuardtime() > 0;
+	/**
+	 * @param Set the Controller Module to which connector belongs
+	 */
+	public void setModule(ControllerModule module) {
+		this.module = module;
 	}
 
 	/**
-	 * @param guardtimeEnd the guardtimeEnd to set: time in milliseconds 
+	 * @return Get the Controller Module to which connector belongs
 	 */
-	public void setGuardtimeEnd(long guardtimeEnd) {
-		this.guardtimeEnd = guardtimeEnd;
+	public ControllerModule getModule() {
+		return module;
 	}
-
-	/**
-	 * @return the guardtimeEnd
-	 */
-	public long getGuardtimeEnd() {
-		return guardtimeEnd;
-	}
-
-	/**
-     * Connector is in Guard Time when a conversation between devices or controller is in place.
-     * Concrete connector must use setGuardtimeEnd
-	 * @return the time in millisecond to wait beacuse connector is in guard time
-	 */
-	public long getGuardtime() {
-		if (guardtimeEnd > 0 && guardtimeEnd >= System.currentTimeMillis()) {
-			return guardtimeEnd - System.currentTimeMillis();
-		} else {
-			return 0;
-		}
+	
+	
+	public HierarchicalConfiguration getConfiguration() {		
+		return getModule().getConfiguration();
 	}
 
 }

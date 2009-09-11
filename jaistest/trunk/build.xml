@@ -1,7 +1,7 @@
-<project name="AUI Installer" default="installer">
+<project name="AUI Installer" default="zip">
 	
-	<target name="installer" depends="jais,jeds,jbis,jdxp,jaui,aui,conf">
-		<zip file="${dst}aui-${v}.zip" duplicate="fail" >
+	<target name="zip" depends="jais,jeds,jaui,aui,conf">
+		<zip file="${dst}../aui-${v}.zip" duplicate="fail" >
 			<fileset dir="${dst}">
 				<include name="lib/**" />
 				<include name="web/**" />
@@ -10,29 +10,40 @@
 				<include name="run.bat" />
 			</fileset>
 		</zip>
+		<delete verbose="true" includeemptydirs="true" dir="${dst}" />
 	</target>
 	
-	<target name="jais">
-		<property name="version.num" value="1.04"/>
-		<property name="dst" value="../installer/"/>
-		<property name="lib" value="${dst}lib/"/>
-		<property name="web" value="${dst}web/"/>
-		<property name="conf" value="${dst}conf/"/>
-		
-		<buildnumber file="build.num"/>
+	<target name="base">
+		<property name="version.num" value="1.05"/>		
+		<buildnumber id="build.num" file="../jais/build.num"/>
 		<tstamp>
 			<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
 			<format property="YMDHMS" pattern="yyyyMMddHHmmSS" />
 		</tstamp>
 		<property name="v" value="${version.num}.v${YMDHMS}-b${build.number}"/>
+
+		<property name="dst" value="../installer/${v}/"/>
+		<property name="lib" value="${dst}lib/"/>
+		<property name="web" value="${dst}web/"/>
+		<property name="conf" value="${dst}conf/"/>
 		
 		<manifest file="MANIFEST.MF">
 			<attribute name="Built-By" value="${user.name}"/>
-			<attribute name="Main-Class" value="BusTest"/>
+			<attribute name="Main-Class" value="it.ascia.ais.Conmtroller"/>
 			<attribute name="Implementation-Version" value="${version.num}-b${build.number}"/>   
 			<attribute name="Built-Date" value="${TODAY}"/>                 
-		</manifest>	
+		</manifest>			
+	</target>
 
+	<target name="lib" depends="base">
+		<copy verbose="true" todir="${lib}">			
+			<fileset dir="../jais/lib/">
+			  <include name="*"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="jais" depends="lib">
 		<jar destfile="jais.jar"
 		   basedir="../jais/bin"
 		   includes="**/*.class"
@@ -44,6 +55,8 @@
 			</fileset>
 		</delete>
 		<move verbose="true" file="jais.jar" tofile="${lib}jais-${v}.jar" />
+		<copy verbose="true" file="run.bat" todir="${dst}" />
+		<mkdir dir="${dst}logs/"/>
 	</target>
 	
 	<target name="jeds" depends="jais">
@@ -103,7 +116,7 @@
 	</target>	
 
 	<target name="aui">
-		<delete verbose="true" includeemptydirs="true" >
+		<delete verbose="true" failonerror="false" includeemptydirs="true" >
 			<fileset dir="${web}">
 			  <include name="**"/>
 			</fileset>
@@ -113,20 +126,35 @@
 			  <include name="**/*"/>
 			</fileset>
 		</copy>
+		<delete verbose="true" failonerror="false" includeemptydirs="true" >
+			<fileset dir="${web}images/">
+			  <include name="**"/>
+			</fileset>
+		</delete>
+		<copy verbose="true" failonerror="false" todir="${web}images/" >
+			<fileset dir="images/">
+			  <include name="**/*"/>
+			</fileset>
+		</copy>
 	</target>
 
 	<target name="conf">
-		<zip destfile="${conf}sample.zip"
-		   basedir="conf"
-		   includes="*.xml"
-		/>
-<!--
 		<copy verbose="true" todir="${conf}" >
 			<fileset dir="conf">
 			  <include name="*.xml"/>
 			</fileset>
 		</copy>
--->		
+		<zip file="${conf}sample.zip" duplicate="fail" >
+			<fileset dir="${conf}">
+				<include name="*.xml" />
+			</fileset>
+		</zip>
+		<delete verbose="true" failonerror="false" includeemptydirs="true" >
+			<fileset dir="${conf}">
+			  <include name="*.xml"/>
+			</fileset>
+		</delete>
+
 	</target>
 	
 </project>

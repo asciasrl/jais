@@ -5,6 +5,9 @@ if (!AUI.StreamRequest) {
 		running: false,
 		requestCounter: 0,
 		sendTimeout: 3000,
+		failCounter: 0,
+		retryTimeout: 1000,
+		maxRetryTimeout: 60000,
 		updateTimeout: 10000,
 		timeoutTimer: 0,
 		streamStart: 0,
@@ -30,7 +33,7 @@ if (!AUI.StreamRequest) {
 		}
 		self.requestCounter++;
 		//AUI.Logger.info("Start: doing open()");		
-		self.streamReq.open('GET', 'stream/'+AUI.Pages.getCurrentPageId()+"?c="+this.requestCounter, true);
+		self.streamReq.open('GET', 'stream/'+AUI.Pages.getCurrentPageId()+"?c="+self.requestCounter, true);
 		//AUI.Logger.info("Start: done open()");		
 		//this.streamReq.timeout = this.sendTimeout;
 		//this.streamReq.ontimeout = function() { return self.onTimer() };
@@ -76,6 +79,7 @@ if (!AUI.StreamRequest) {
 		AUI.Logger.info("stateChange, readyState="+streamReq.readyState);
 		clearInterval(self.timeoutTimer);
 		if (((streamReq.readyState == 3) || (streamReq.readyState == 4)) && (streamReq.status == 200)) {
+			self.failCounter = 0;
 			var res = streamReq.responseText.substring(self.streamStart);
 			var i = 0;
 			while ((i = res.indexOf("\n")) > 0) {
@@ -107,7 +111,15 @@ if (!AUI.StreamRequest) {
 			//AUI.Logger.info("stateChange, readyState=4: start()");
 			self.streamReq = null;
 			if (self.running) {
-				self.start();
+				var t = self.failCounter * self.retryTimeout;
+				if (t > self.maxRetryTimeout) {
+					t = self.maxRetryTimeout;
+				}
+				if (t > 0) {
+					AUI.Header.show("Tentativo riconessione fra "+(t/1000)+ " secondi");
+				}
+				setTimeout(self.start,t);
+				self.failCounter++;
 			}
 		}
 	}

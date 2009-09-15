@@ -121,6 +121,14 @@ for (Iterator it = pages.iterator(); it.hasNext();) {
 		} else if (type.equals("thermo")) {
 %>	
 	<div class="thermo-display" id="<%= id %>-label">-,-°C</div>
+	<div id="<%= id %>-buttons">
+		<div id="<%= id %>-dn" class="control-button control-button-dn control-<%= type %>-dn">
+			<img id="<%= id %>-dn-img" src="<%= skin + controlConfig.getString("dn",auiConfig.getString("controls."+type+".dn")) %>" title="Down <%= controlConfig.getString("title",controlConfig.getString("address")) %>" border="0" alt="Down <%= type %>"/>
+		</div>		
+		<div id="<%= id %>-up" class="control-button control-button-up control-<%= type %>-up">
+			<img id="<%= id %>-up-img" src="<%= skin + controlConfig.getString("up",auiConfig.getString("controls."+type+".up")) %>" title="Up <%= controlConfig.getString("title",controlConfig.getString("address")) %>" border="0" alt="Up <%= type %>"/>
+		</div>		
+	</div>
 <%
 		}
 %>
@@ -181,38 +189,26 @@ for (int iLayer = 0;  iLayer < (5 + nLayers); iLayer++) {
 	<img id="slider-cursor" src="<%= skin %>/images/slider-cursor.png" width="128" height="130" />
 </div>
 
-<%!
-/**
- * Include uno script cambiandogli il nome, in modo da evitare il caching da
- * parte del browser.
- *
- * @return il codice HTML per includerlo.
- */
-String includeScript(String scriptName) {
-	return "<script type=\"text/javascript\" language=\"javascript\" src=\"" + scriptName +
-		"?" + System.currentTimeMillis() + "\"></script>\n";
-}
-%>
-
-<%= includeScript("classes/AUI.js") %>
-<%= includeScript("classes/Logger.js") %>
-<%= includeScript("classes/Header.js") %>
-<%= includeScript("classes/Pages.js") %>
-<%= includeScript("classes/Http.js") %>
-<%= includeScript("classes/SetRequest.js") %>
-<%= includeScript("classes/StreamRequest.js") %>
-<%= includeScript("classes/Controls.js") %>
-<%= includeScript("classes/Layers.js") %>
-<%= includeScript("classes/Device.js") %>
-<%= includeScript("classes/Light.js") %>
-<%= includeScript("classes/Pushbutton.js") %>
-<%= includeScript("classes/Blind.js") %>
-<%= includeScript("classes/Dimmer.js") %>
-<%= includeScript("classes/Power.js") %>
-<%= includeScript("classes/Scene.js") %>
-<%= includeScript("classes/Thermo.js") %>
-<%= includeScript("classes/Webcam.js") %>
-<%= includeScript("classes/Digitalinput.js") %>
+<script type="text/javascript" language="javascript" src="classes/AUI.js"></script>
+<script type="text/javascript" language="javascript" src="classes/Logger.js"></script>
+<script type="text/javascript" language="javascript" src="classes/Header.js"></script>
+<script type="text/javascript" language="javascript" src="classes/Pages.js"></script>
+<script type="text/javascript" language="javascript" src="classes/Http.js"></script>
+<script type="text/javascript" language="javascript" src="classes/SetRequest.js"></script>
+<script type="text/javascript" language="javascript" src="classes/StreamRequest.js"></script>
+<script type="text/javascript" language="javascript" src="classes/Controls.js"></script>
+<script type="text/javascript" language="javascript" src="classes/Layers.js"></script>
+<script type="text/javascript" language="javascript" src="classes/Device.js"></script>
+<script type="text/javascript" language="javascript" src="classes/Light.js"></script>
+<script type="text/javascript" language="javascript" src="classes/Pushbutton.js"></script>
+<script type="text/javascript" language="javascript" src="classes/Blind.js"></script>
+<script type="text/javascript" language="javascript" src="classes/Dimmer.js"></script>
+<script type="text/javascript" language="javascript" src="classes/Power.js"></script>
+<script type="text/javascript" language="javascript" src="classes/Scene.js"></script>
+<script type="text/javascript" language="javascript" src="classes/Group.js"></script>
+<script type="text/javascript" language="javascript" src="classes/Thermo.js"></script>
+<script type="text/javascript" language="javascript" src="classes/Webcam.js"></script>
+<script type="text/javascript" language="javascript" src="classes/Digitalinput.js"></script>
 
 <script language="javascript">
 AUI.Controls.controls = <%= auiControllerModule.getControls() %>;

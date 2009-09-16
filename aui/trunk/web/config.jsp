@@ -13,15 +13,13 @@
 <script language="javascript" src="classes/Logger.js"></script>
 <script language="javascript" src="classes/Http.js"></script>
 <script language="javascript" src="classes/Config.js"></script>
+<script type="text/javascript" src="JSCookMenu/JSCookMenu.js"></script>
+<link rel="stylesheet" href="JSCookMenu/ThemeOffice2003/theme.css" type="text/css">
+<script type="text/javascript" src="JSCookMenu/ThemeOffice2003/theme.js"></script>
 </head>
 <body onload="AUI.Regt.init();">
 
-<div class="menubar">
-	<div class="menuitem"></div>
-	<div class="menuitem">File</div>
-	<div class="menuitem">Impianto</div>
-	<div class="menuitem">Pagina</div>
-</div>
+<div id="mainMenu" class="menubar"></div>
 
 <table id="main" cellpadding="0" cellspacing="0" border="0">
 	<tr>
@@ -44,6 +42,47 @@ for (int i=0; i < 30; i++) {
 		<td scope="row" id="pagine">Pagine</td>	
 	</tr>
 </table>
+
+<script type="text/javascript"><!--
+var myMenu =
+[
+		 ['&nbsp;', 'File', null, null, null,
+		  ['<img src="JSCookMenu/ThemeOffice/new.gif"/>', 'Nuovo', '?cmd=New', '', 'Nuovo progetto'],  // a menu item
+		  ['<img class="seq1" src="JSCookMenu/ThemeOffice/open.gif" /><img class="seq2" src="JSCookMenu/ThemeOffice/openshadow.gif" />', 'Apri ...', null, null, null],
+		  _cmSplit,
+		  ['<img class="seq1" src="JSCookMenu/ThemeOffice/save.gif" /><img class="seq2" src="JSCookMenu/ThemeOffice/saveshadow.gif" />', 'Salva', null, null, null],
+		  ['<img class="seq1" src="JSCookMenu/ThemeOffice/save.gif" /><img class="seq2" src="JSCookMenu/ThemeOffice/saveshadow.gif" />', 'Salva con nome ...', null, null, null],
+		  _cmSplit,
+		  [null, 'Anteprima', '/aui.jsp?nomobile=1', '_blank', 'Apre anteprima in una nuova finestra'],
+		  _cmSplit,
+		  [null, 'Esci', '/', null, null]
+		],
+    [null, 'Impianto', null, null, null,
+     	[null, 'Nuova connessione ...', '?do=NewConnector', null, null]
+    ],
+    ['icon', 'title', 'url', 'target', 'description'],  // a menu item
+    _cmSplit,
+    ['', 'Strumenti', '', '', '',
+        [null, 'Amministrazione', null, null, null,
+            [null, 'Cambio password', '?do=ChangePassword', null, null],
+            [null, 'title', 'url', 'target', 'description']
+        ],
+        [null, 'Aggiornamenti', null, null, null,
+         		[null, 'Cambio password', '?do=ChangePassword', null, null],
+         		[null, 'title', 'url', 'target', 'description']
+		    ],
+        [null, 'Connessioni', null, null, null,
+         		[null, 'Rete senza fili', '?do=ConfigWifi', null, null],
+          	[null, 'Rete locale', '?do=ConfigLan', null, null]
+        ],           	
+        [null, 'Server',null,null,null,
+         		[null, 'Imposta data e ora', '?do=DateTime', null, null],
+         		[null, 'Password accesso remoto', '?do=Passwd', null, null]
+        ]
+    ]
+];
+cmDraw ('mainMenu', myMenu, 'hbr', cmThemeOffice2003);
+--></script>
 
 </body>
 </html>

@@ -5,8 +5,13 @@ body {
 }
 
 div.menubar {
-	background-color: #669;
+	background-color: #A1C0F5;
 	width: 100%;
+	height: 18px;
+	color: black;
+}
+
+table.ThemeOfficeMenu {
 	height: 30px;
 }
 
@@ -15,7 +20,7 @@ div.menuitem {
 	margin: 2px 7px;	
 }
 
-table {
+table#main {
 	width: 100%;
 	height: 100%;
 }

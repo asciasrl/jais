@@ -5,6 +5,17 @@
  * Se riceviamo il parametro "nomobile" allora siamo sul fisso.
  */
 boolean mobile = request.getParameter("nomobile") == null;
+
+if (mobile) {
+  String ua1 = request.getHeader( "User-Agent" );
+  if (( ua1 != null && ua1.indexOf( "iPod" ) != -1 ) ||
+     ( ua1 != null && ua1.indexOf( "iPhone" ) != -1 )) {
+	  mobile = true;
+  } else {
+	  mobile = false;
+  }
+}
+
 int debugLevel = 0;
 try {
 	debugLevel = (new Integer(request.getParameter("debug"))).intValue();

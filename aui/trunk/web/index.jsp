@@ -2,8 +2,9 @@
 String ua = request.getHeader( "User-Agent" );
 boolean iPod = ( ua != null && ua.indexOf( "iPod" ) != -1 );
 boolean iPhone = ( ua != null && ua.indexOf( "iPhone" ) != -1 );
+boolean SymbianOS = ( ua != null && ua.indexOf( "SymbianOS" ) != -1 );
 %>
-<% if (iPod | iPhone) { %>
+<% if (iPod | iPhone | SymbianOS) { %>
 <%@ include file="aui.jsp" %>
 <% } else { %>
 <html>

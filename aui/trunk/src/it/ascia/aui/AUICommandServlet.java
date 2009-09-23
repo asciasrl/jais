@@ -17,22 +17,12 @@ import org.apache.log4j.Logger;
 public class AUICommandServlet extends HttpServlet {
 
 	private Logger logger;
+	private Controller controller;
 
 	public AUICommandServlet()
 	{
-		logger = Logger.getLogger(getClass());		
-	}
-	
-	/**
-	 * Ruota un comando ad un modulo
-	 * TODO gestire il routing dinamico, non solo ad AUI
-	 * @param command
-	 * @param params
-	 * @return
-	 * @throws AISException 
-	 */
-	public String doCommand(String command, HashMap params) throws AISException {		
-		return ((AUIControllerModule)Controller.getController().getModule("AUI")).doCommand(command, params);
+		logger = Logger.getLogger(getClass());
+		controller = Controller.getController();
 	}
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) {
@@ -60,7 +50,7 @@ public class AUICommandServlet extends HttpServlet {
 			long start = System.nanoTime();
 			String res;
 			try {
-				res = doCommand(command, params);
+				res = controller.doCommand(command, params);
 				response.setStatus(HttpServletResponse.SC_OK);					
 				//logger.trace(res);
 			} catch (AISException e) {

@@ -5,6 +5,7 @@ package it.ascia.ais;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -42,6 +43,12 @@ public class Controller {
 	 * <p>I Connector qui dentro sono accessibili dal loro nome (stringa).</p>
 	 */
 	private Map connectors = new LinkedHashMap();
+
+	/**
+	 * Comandi registrati.
+	 * 
+	 */
+	private Map commands = new LinkedHashMap();
 
 	/**
 	 * Moduli del controllore
@@ -107,6 +114,37 @@ public class Controller {
 			throw(new KeyAlreadyExistsException("Connector name duplicated: "+connector.getName()));
 		}
 		connectors.put(connector.getName(), connector);
+	}
+	
+	/**
+	 * Registra un comando per la successiva esecuzione tramite doCommand
+	 * 
+	 * @param name Nome del comando, deve essere unico
+	 * @param command
+	 * @throws KeyAlreadyExistsException
+	 */
+	public void registerCommand(String name, Command command) throws KeyAlreadyExistsException {
+		if (connectors.containsKey(name)) {
+			throw(new KeyAlreadyExistsException("Command name duplicated: "+name));
+		}
+		commands.put(name, command);
+		logger.info("Registered command '"+name+"' "+command.getClass());
+	}
+	
+	/**
+	 * Esegue un comando registrato
+	 * 
+	 * @param name Nome del comando da eseguire
+	 * @param params Paramtri per il comando
+	 * @return Risultato della esecuzione del comando, viene inviata come testo al richiedente
+	 * @throws AISException Comando non registrato
+	 */
+	public String doCommand(String name, HashMap params) throws AISException {
+		Command command = (Command) commands.get(name);
+		if (command == null) {
+			throw(new AISException("Command "+name+" not registered."));
+		}
+		return command.execute(params);
 	}
 	
 	public ControllerModule getModule(String name) {
@@ -359,6 +397,9 @@ public class Controller {
 		Controller c = Controller.getController();
 		Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
+            	this.setName("ShutdownHook");
+            	Logger logger = Logger.getLogger(getClass());
+            	logger.info("Shutdown initiated");
             	Controller.getController().stop();
             }
         });
@@ -399,9 +440,11 @@ public class Controller {
 		while (i.hasNext()) {
 			String moduleName = (String) i.next();
 			ControllerModule module = getModule(moduleName);
-			logger.info("Arresto modulo "+moduleName);
-			module.stop();			
-			logger.debug("Arrestato modulo "+moduleName);
+			if (module.isRunning()) {
+				logger.info("Arresto modulo "+moduleName);
+				module.stop();			
+				logger.debug("Arrestato modulo "+moduleName);
+			}
 		}		
 		logger.info("Arresto completato.");
 	}

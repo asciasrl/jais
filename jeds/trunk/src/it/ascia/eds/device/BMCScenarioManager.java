@@ -5,7 +5,7 @@ package it.ascia.eds.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
-import it.ascia.ais.TriggerPort;
+import it.ascia.ais.ScenePort;
 import it.ascia.eds.msg.ComandoUscitaMessage;
 import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.VariazioneIngressoMessage;
@@ -34,7 +34,7 @@ public class BMCScenarioManager extends BMCStandardIO {
 		super(connector, address, model, name);
 		// aggiunge le porte per l'attivazione delle scene
 		for (int i = 1; i <= getSceneNumber(); i++) {
-			addPort(new TriggerPort(this,"Scene"+i));
+			addPort(new ScenePort(this,"Scene"+i));
 		}
 	}
 

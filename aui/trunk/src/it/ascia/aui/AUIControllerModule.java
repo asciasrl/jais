@@ -12,6 +12,7 @@ import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import it.ascia.ais.AISException;
+import it.ascia.ais.Command;
 import it.ascia.ais.Controller;
 import it.ascia.ais.ControllerModule;
 import it.ascia.ais.Device;
@@ -21,6 +22,12 @@ public class AUIControllerModule extends ControllerModule {
 		
 	public AUIControllerModule() {
 		super();
+		Controller c = Controller.getController();
+		c.registerCommand("get", new getCommand());
+		c.registerCommand("getAll", new getAllCommand());
+		c.registerCommand("getPorts", new getPortsCommand());
+		c.registerCommand("send", new sendCommand());
+		c.registerCommand("set", new setCommand());
 	}
 
 	/**
@@ -184,16 +191,8 @@ public class AUIControllerModule extends ControllerModule {
 	}
 
 	
-	public String doCommand(String command, HashMap params) throws AISException {
-		String retval = "";
-		if (command.equals("getControls")) {
-			if (params.containsKey("mapId")) {
-				String mapId = (String) params.get("mapId");
-				retval = getMapControls(mapId);
-			} else {
-				retval = getControls();
-			}
-		} else if (command.equals("send")) {
+	class sendCommand implements Command {
+		public String execute(HashMap params) {
 			if (params.size() == 0) {
 				throw(new AISException("mancano parametri"));
 			}
@@ -202,20 +201,55 @@ public class AUIControllerModule extends ControllerModule {
 			String message = (String) entry.getKey();
 			String value = (String) entry.getValue();
 			if (controller.sendMessage(message,value)) {
-				retval = "OK";
+				return "OK";
 			} else {
-				retval = "ERROR";
+				return "ERROR";
 			}
-		} else if (command.equals("get")) {
+		}
+	}
+
+	class getCommand implements Command {
+		public String execute(HashMap params) {
 			// Comando "get"
 			String fullAddress = (String) params.get("address");
 			if (fullAddress == null) {
 				throw(new AISException("Parametro 'address' richiesto"));
 			}
 			return get(fullAddress);
-		} else if (command.equals("getAll")) {
+		}
+	}
+	
+	class getAllCommand implements Command {
+		public String execute(HashMap params) {
 			return getAll();
-		} else if (command.equals("set")) {
+		} 
+	}
+	
+	class getPortsCommand implements Command {
+		public String execute(HashMap params) {
+			JSONArray ja = new JSONArray();
+			Device devices[] = controller.findDevices("*");
+			for (int i = 0; i < devices.length; i++) {
+				Device d = devices[i];
+				DevicePort[] ports = d.getPorts();
+				for (int j = 0; j < ports.length; j++) {
+					LinkedHashMap m = new LinkedHashMap();
+					DevicePort p = ports[j];
+					m.put("Address",p.getFullAddress());
+					m.put("Class",p.getClass().getSimpleName());
+					//m.put("DeviceClass",d.getClass().getSimpleName());
+					//m.put("DeviceInfo",d.getInfo());
+					m.put("Name",p.getName());						
+					ja.add(m);						
+				}
+				
+			}			
+			return ja.toString();
+		} 
+	}
+
+	class setCommand implements Command {
+		public String execute(HashMap params) {
 			// Comando "set"
 			if (params.size() == 0) {
 				throw(new AISException("mancano parametri"));
@@ -235,14 +269,11 @@ public class AUIControllerModule extends ControllerModule {
 				throw(new AISException("Port not found"));
 			}			
 			if (p.writeValue(value)) {
-				retval = "OK";
+				return "OK";
 			} else {
-				retval = "ERROR";
+				return "ERROR";
 			}
-		} else {
-			throw(new AISException("comando '"+command+"' non implementato.")); 
 		}
-		return retval; 		
 	}
 
 	public List getPagePorts(String page) {

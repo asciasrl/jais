@@ -2,6 +2,8 @@ package it.ascia.ais;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
+
 import javax.servlet.http.HttpServlet;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.jasper.servlet.JspServlet;
@@ -9,6 +11,7 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.DefaultServlet;
+import org.mortbay.jetty.servlet.HashSessionIdManager;
 import org.mortbay.jetty.servlet.ServletHolder;
 
 public class HTTPServerControllerModule extends ControllerModule {
@@ -35,6 +38,7 @@ public class HTTPServerControllerModule extends ControllerModule {
 			System.setProperty("VERBOSE","true");			
 		}
 		server = new Server(port);
+		server.setSessionIdManager(new HashSessionIdManager(new Random()));
 		ContextHandlerCollection contexts = new ContextHandlerCollection();
 		server.setHandler(contexts);
 		Context rootContext = new Context(contexts, "/", Context.SESSIONS);
@@ -79,6 +83,7 @@ public class HTTPServerControllerModule extends ControllerModule {
 			logger.fatal("Errore avvio server HTTP: "+e.getMessage());
 		}		
 		logger.info("Avviato server HTTP");
+		super.start();
 	}
 
 	public void stop() {
@@ -89,7 +94,8 @@ public class HTTPServerControllerModule extends ControllerModule {
 		} catch (Exception e) {
 			logger.error("Errore durante l'arresto del server: " +
 					e.getMessage());
-		}		
+		}	
+		super.stop();
 	}
 	
 

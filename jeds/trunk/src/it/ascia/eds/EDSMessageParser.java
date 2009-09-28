@@ -11,6 +11,7 @@ import it.ascia.eds.msg.ComandoUscitaDimmerMessage;
 import it.ascia.eds.msg.ComandoUscitaMessage;
 import it.ascia.eds.msg.CronotermMessage;
 import it.ascia.eds.msg.EDSMessage;
+import it.ascia.eds.msg.ImpostaAssociazioneUscitaMessage;
 import it.ascia.eds.msg.ImpostaParametroMessage;
 import it.ascia.eds.msg.ImpostaRTCCMessage;
 import it.ascia.eds.msg.ImpostaSetPointMessage;
@@ -187,6 +188,8 @@ public class EDSMessageParser extends it.ascia.ais.MessageParser {
 			return new RichiestaUscitaMessage(buff);
 		case EDSMessage.MSG_RISPOSTA_USCITA:
 			return new RispostaUscitaMessage(buff);
+		case EDSMessage.MSG_IMPOSTA_ASSOCIAZIONE_BROADCAST: 
+			return new ImpostaAssociazioneUscitaMessage(buff);
 		case EDSMessage.MSG_RICHIESTA_ASSOCIAZIONE_BROADCAST: 
 			return new RichiestaAssociazioneUscitaMessage(buff);
 		case EDSMessage.MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST: 

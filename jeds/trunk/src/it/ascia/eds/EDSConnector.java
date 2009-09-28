@@ -123,7 +123,9 @@ public class EDSConnector extends Connector {
 		if (mp.isValid()) {
 			EDSMessage m = (EDSMessage) mp.getMessage();
 			if (m != null) {
-				receiveQueue.offer(m);
+				//receiveQueue.offer(m);
+		    	logger.debug("Dispatching: " + m);
+				dispatchMessage(m);
 			}
 		}
     }
@@ -241,6 +243,10 @@ public class EDSConnector extends Connector {
 	}
 
 	private void setGuardtime(long dt) {
+		// windows ho uno scheduler che non garantisce i tempi bassi 
+		if (dt > 0 && dt < 50) {
+			dt += 30;
+		}
 		setGuardtimeEnd(dt + System.currentTimeMillis()); 		
 	}
 

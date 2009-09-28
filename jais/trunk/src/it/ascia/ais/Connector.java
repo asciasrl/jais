@@ -26,11 +26,7 @@ import org.apache.log4j.Logger;
  */
 public abstract class Connector {
 
-	protected LinkedBlockingQueue receiveQueue;
-	protected LinkedBlockingQueue sendQueue;
 	protected LinkedBlockingQueue updateQueue;
-	private Thread sendingThread;
-	private Thread receivingThread;
 	private Thread updatingThread;
 	private boolean running = false;
 	private ControllerModule module = null;
@@ -82,14 +78,6 @@ public abstract class Connector {
 		logger = Logger.getLogger(getClass());
 		transportSemaphore = new Semaphore(1,true);
 		running = true;
-		receiveQueue = new LinkedBlockingQueue();
-		receivingThread = new ReceivingThread();
-		receivingThread.setName("Receiving-"+getClass().getSimpleName()+"-"+getName());
-		receivingThread.start();
-		sendQueue = new LinkedBlockingQueue();
-		sendingThread = new SendingThread();
-		sendingThread.setName("Sending-"+getClass().getSimpleName()+"-"+getName());
-		sendingThread.start();
 		updateQueue = new LinkedBlockingQueue();
 		updatingThread = new UpdatingThread();
 		updatingThread.setName("Updating-"+getClass().getSimpleName()+"-"+getName());
@@ -179,14 +167,6 @@ public abstract class Connector {
     public abstract boolean sendMessage(String messageCode, Object value);
 
     /**
-     * Aggiunge un messaggio alla coda dei messaggi da inviare e ritorna immediatamente
-     * @param m
-     */
-	public void queueMessage(Message m) {
-		sendQueue.offer(m);
-	}
-    
-    /**
      * Aggiunge un porta alla coda delle porte da aggiornare
      * @param m
      */
@@ -262,18 +242,6 @@ public abstract class Connector {
 		} catch (InterruptedException e) {
 			logger.error("Interrupted:",e);
 		}
-		receivingThread.interrupt();
-    	try {
-			receivingThread.join();
-		} catch (InterruptedException e) {
-			logger.error("Interrupted:",e);
-		}
-		sendingThread.interrupt();
-    	try {
-	    	sendingThread.join();
-		} catch (InterruptedException e) {
-			logger.error("Interrupted:",e);
-		}
 	}
 	
     /**
@@ -289,27 +257,6 @@ public abstract class Connector {
 	public Controller getController() {
 		return controller;
 	}
-
-	private class ReceivingThread extends Thread {
-        
-    	public void run() {
-    		while (running) {
-    			Message m;
-				try {
-					m = (Message) receiveQueue.take();
-			    	logger.debug("Dispatching (+"+receiveQueue.size()+"): " + m);
-					dispatchMessage(m);
-				} catch (InterruptedException e) {
-					logger.debug("Interrotto.");
-				} catch (AISException e) {
-					logger.error(e.getMessage(),e);
-				} catch (Exception e) {
-					logger.fatal(e.getMessage(),e);
-				}
-    		}
-			logger.debug("Stop.");
-    	}
-    }
 
     private class UpdatingThread extends Thread {
         
@@ -335,25 +282,6 @@ public abstract class Connector {
     	}
     }
 
-    private class SendingThread extends Thread {
-        
-    	public void run() {
-    		while (running) {
-    			Message m;
-				try {
-					//logger.debug("Messaggi in coda: "+sendQueue.size());
-					m = (Message) sendQueue.take();
-			    	logger.debug("Sending (+"+sendQueue.size()+"): " + m);
-					sendMessage(m);
-				} catch (InterruptedException e) {
-					logger.debug("Interrotto.");
-				} catch (Exception e) {
-					logger.fatal("Errore:",e);
-				}
-    		}
-			logger.debug("Stop.");
-    	}
-    }
 
 	/**
 	 * @param Set the Controller Module to which connector belongs

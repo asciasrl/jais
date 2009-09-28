@@ -97,9 +97,9 @@ public class BMCRegT22 extends BMCStandardIO {
 		}
 		addPort(new TemperaturePort(this,port_temperature));
 		addPort(new StatePort(this,port_mode));
-		addPort(new TemperaturePort(this,port_alarmTemp));
+		addPort(new TemperatureSetpointPort(this,port_alarmTemp));
 		addPort(new IntegerPort(this,port_autoSendTime));
-		addPort(new TemperaturePort(this,port_setPoint));
+		addPort(new TemperatureSetpointPort(this,port_setPoint));
 		addPort(new DatePort(this,port_RTCC));
 		for (int stagione = 0; stagione <= 1; stagione++) {
 			for (int giorno = 0; giorno <= 6; giorno++) {
@@ -127,14 +127,14 @@ public class BMCRegT22 extends BMCStandardIO {
 	}
 
 	public int getInPortsNumber() {
-		return 2;
+		return 0;
 	}
 
 	/* (non-Javadoc)
 	 * @see it.ascia.eds.device.BMC#getOutPortsNumber()
 	 */
 	public int getOutPortsNumber() {
-		return 2;
+		return 0;
 	}
 
 
@@ -147,6 +147,11 @@ public class BMCRegT22 extends BMCStandardIO {
 
 	public void discover() {
 		writeRTCC();
+		try {
+			logger.trace("Attendo stabilizzazione BMC...");
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+		}
 		discoverBroadcastBindings();
 		readSetPoints();
 	}
@@ -425,10 +430,10 @@ public class BMCRegT22 extends BMCStandardIO {
 		EDSConnector conn = (EDSConnector) getConnector();
 		int m = conn.getMyAddress();
 		int d = getIntAddress();
-		conn.sendMessage(new ImpostaRTCCMessage(d,m,0, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE)));
-		conn.sendMessage(new ImpostaRTCCMessage(d,m,1, cal.get(Calendar.MONTH)+1, cal.get(Calendar.YEAR)-2000));
-		conn.sendMessage(new ImpostaRTCCMessage(d,m,2, cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.SECOND)));
-		return true;
+		boolean s1 = conn.sendMessage(new ImpostaRTCCMessage(d,m,0, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE)));
+		boolean s2 = conn.sendMessage(new ImpostaRTCCMessage(d,m,1, cal.get(Calendar.MONTH)+1, cal.get(Calendar.YEAR)-2000));
+		boolean s3 = conn.sendMessage(new ImpostaRTCCMessage(d,m,2, cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.SECOND)));
+		return s1 && s2 && s3;		
 	}
 
 	/**

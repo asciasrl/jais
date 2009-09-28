@@ -39,6 +39,8 @@ public abstract class EDSMessage extends Message implements Comparable {
 	 * Risposta opzioni uscita
 	 */
 	public final static int MSG_RISPOSTA_USCITA = 8;
+	
+	public static final int MSG_IMPOSTA_ASSOCIAZIONE_BROADCAST = 14;
 	/**
 	 * Richiesta lettura associazione di un'uscita a un comando broadcast.
 	 */

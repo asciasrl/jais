@@ -13,18 +13,17 @@ public abstract class BUSControllerModule extends ControllerModule {
 	protected AutoUpdater autoUpdater = null;
 	
 	public void start() {
-		super.start();
  		int autoupdate = getConfiguration().getInt("autoupdate",1000);
  		autoUpdater = new AutoUpdater(autoupdate);
  		autoUpdater.setName("AutoUpdater-"+getName());
  		autoUpdater.start();
+		super.start();
 	}
 	
 	/**
 	 * Chiude tutti i connettori
 	 */
-	public void stop() {	
-		running = false;
+	public void stop() {
 		if (autoUpdater != null) {
 			autoUpdater.interrupt();
 			try {
@@ -40,11 +39,24 @@ public abstract class BUSControllerModule extends ControllerModule {
 			connector.close();
 			logger.trace("Chiuso connettore "+connector.getName());
 		}
+		super.stop();
 	}
 
 	public class AutoUpdater extends Thread {
 		
 		long autoupdate = 0;
+		
+		private boolean running = false;
+		
+		public void start() {
+			running = true;
+			super.start();
+		}
+		
+		public void interrupt() {
+			running = false;
+			super.interrupt();
+		}
 
 		/**
 		 * Aggiorna automaticamente i device connessi
@@ -67,6 +79,7 @@ public abstract class BUSControllerModule extends ControllerModule {
 				if (skipautoupdate) {
 					logger.info("EXPERIMENTAL Skip AutoUpdate without listener");
 				}
+				running = true;
 				while (running) {
 					try {
 						synchronized (this) {

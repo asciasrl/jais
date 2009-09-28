@@ -11,8 +11,8 @@ public class CmdControllerModule extends ControllerModule {
 	public void start() {
  		cmd = new CmdConsole();
  		cmd.setName("CmdConsole");
- 		running = true;
  		cmd.start();
+ 		super.start();
 	}
 
 	public void stop() {
@@ -20,6 +20,7 @@ public class CmdControllerModule extends ControllerModule {
 		if (cmd != null) {
 			cmd.interrupt();
 		}
+ 		super.stop();
 	}
 	
 	/**

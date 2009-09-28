@@ -88,4 +88,8 @@ public abstract class ControllerModule {
 		controller.fireDevicePortChangeEvent( evt );
 	}
 
+	public boolean isRunning() {
+		return running;
+	}
+
 }

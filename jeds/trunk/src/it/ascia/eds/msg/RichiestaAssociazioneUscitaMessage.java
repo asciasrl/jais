@@ -54,10 +54,28 @@ public class RichiestaAssociazioneUscitaMessage extends PTPRequest {
 	}
 	
 	/**
+	 * Ritorna il numero dell'uscita del termostato (0 - 15).
+	 */
+	public int getUscitaT() {
+		return Byte1 & 15;
+	}
+	
+	/**
 	 * Ritorna il numero della casella sull'uscita che si vuole interrogare.
 	 */
 	public int getCasella() {
 		return Byte2 & 7;
+	}
+	
+	/**
+	 * Ritorna il numero della casella di attivazione per dimmer.
+	 * 
+	 * Questo metodo va usato in alternativa a getCasellaBMC() e activatesBMC().
+	 * 
+	 * @return un valore tra 0 e 7.
+	 */
+	public int getCasellaDimmer() {
+		return (Byte2 >> 5) & 7;
 	}
 	
 	/*
@@ -93,7 +111,7 @@ public class RichiestaAssociazioneUscitaMessage extends PTPRequest {
 	public String toString() {
 		StringBuffer s = new StringBuffer();
 		s.append(super.toString());
-		s.append(" Uscita:" + getUscita() + " Casella:"+getCasella());
+		s.append(" Uscita:" + getUscita()+"/"+getUscitaT()+ " Casella:"+getCasella()+"/"+getCasellaDimmer());
 		return s.toString();		
 	}
 }

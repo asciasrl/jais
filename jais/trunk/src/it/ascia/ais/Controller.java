@@ -128,7 +128,7 @@ public class Controller {
 			throw(new KeyAlreadyExistsException("Command name duplicated: "+name));
 		}
 		commands.put(name, command);
-		logger.info("Registered command '"+name+"' "+command.getClass());
+		logger.debug("Registered command '"+name+"' "+command.getClass());
 	}
 	
 	/**
@@ -416,19 +416,25 @@ public class Controller {
 	 * 
 	 * @see ControllerModule.start
 	 */
-	public void start() {
+	public void start() throws AISException {
 		Iterator i = modules.keySet().iterator();
 		logger.info("Avvio di "+modules.size()+" moduli");
 		long start = System.currentTimeMillis();
-		while (i.hasNext()) {
-			long start1 = System.currentTimeMillis();
-			String moduleName = (String) i.next();
-			ControllerModule module = getModule(moduleName);
-			logger.info("Avvio modulo "+moduleName);
-			module.start();		
-			logger.debug("Avviato modulo "+moduleName+" in "+(System.currentTimeMillis()-start1)/1000.0+" secondi.");
+		try {
+			while (i.hasNext()) {
+				long start1 = System.currentTimeMillis();
+				String moduleName = (String) i.next();
+				ControllerModule module = getModule(moduleName);
+				logger.info("Avvio modulo "+moduleName);
+				module.start();
+				logger.debug("Avviato modulo "+moduleName+" in "+(System.currentTimeMillis()-start1)/1000.0+" secondi.");
+			}
+			logger.debug("Avviati "+modules.size()+" moduli in "+(System.currentTimeMillis()-start)/1000.0+" secondi.");			
+		} catch (Exception e) {
+			logger.fatal("Start exception:",e);
+			stop();
+			throw(new AISException("Cannot start all modules"));
 		}
-		logger.debug("Avviati "+modules.size()+" moduli in "+(System.currentTimeMillis()-start)/1000.0+" secondi.");
 	}
 
 	/**
@@ -442,8 +448,12 @@ public class Controller {
 			ControllerModule module = getModule(moduleName);
 			if (module.isRunning()) {
 				logger.info("Arresto modulo "+moduleName);
-				module.stop();			
-				logger.debug("Arrestato modulo "+moduleName);
+				try {
+					module.stop();								
+					logger.debug("Arrestato modulo "+moduleName);
+				} catch (Exception e) {
+					logger.fatal("Stop exception:",e);					
+				}
 			}
 		}		
 		logger.info("Arresto completato.");

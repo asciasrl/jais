@@ -310,24 +310,17 @@ public class EDSConnector extends Connector {
 			} else if (PTPMessage.class.isInstance(m)){ 
 				PTPMessage ptpm = (PTPMessage) m;
 				retval = sendPTPMessage(ptpm);
-				/*
-				if (PTPRequest.class.isInstance(ptpm)) {
-				} else {
-					// Invio nudo e crudo
-					transport.write(m.getBytesMessage());
-					// non c'e' modo di sapere se e' arrivato; siamo ottimisti.
-					retval = true;
-				}
-				*/
 			} else {
 				logger.error("Messaggio di tipo sconosciuto:"+m.getClass().getName());
 				retval = false;
 			}
-			transportSemaphore.release();
 			m.setSent();
 		} catch (InterruptedException e) {
 			logger.debug("Interrupted:",e);
+		} catch (Exception e) {
+			logger.error("Exception:",e);
 		}
+		transportSemaphore.release();
 		return retval;
 	}
 
@@ -374,12 +367,6 @@ public class EDSConnector extends Connector {
 				return false;
 			}
     		BMC recipient = (BMC)getDevice((new Integer(m.getRecipient())).toString());
-    		/*
-    		if ((recipient != null) && recipient.isUnreachable()) {
-    			logger.trace("Don't send to unreachable: "+recipient.getFullAddress());
-    			return false;
-    		}
-    		*/
         	messageToBeAnswered = m;
 	    	synchronized (messageToBeAnswered) {
 	    		for (tries = 1;
@@ -417,11 +404,13 @@ public class EDSConnector extends Connector {
 						recipient.setUnreachable();
 					}
 	    		}
-		    	messageToBeAnswered = null;
 	    	}
 		} catch (InterruptedException e) {
-			logger.error("Interrupted:",e);
+			logger.debug("Interrupted:",e);
+		} catch (Exception e) {
+			logger.error("Exception:",e);
 		}
+    	messageToBeAnswered = null;
     	if (! received) {
     		logger.error("Messaggio non risposto: "+m);
     	}

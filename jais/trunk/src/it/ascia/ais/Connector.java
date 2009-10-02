@@ -234,6 +234,7 @@ public abstract class Connector {
 	public void close() {
 		if (transport != null) {
 			transport.close();
+			transport = null;
 		}
 		running = false;
 		updatingThread.interrupt();

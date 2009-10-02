@@ -132,7 +132,7 @@ if (!AUI.Pages) {
 		var o = AUI.Pages.pageLayers[pageId];
 		if (typeof(o) == 'object') {
 			for (i in o) {
-				if (i != 'null') {
+				if (i != 'null' && i != '') {
 					return true;
 				}
 			}
@@ -167,7 +167,7 @@ if (!AUI.Pages) {
 		var pageId = this.getCurrentPageId();
 		var layers = this.pageLayers[pageId];
 		for (i in layers) {
-			if (i == 'null') {
+			if (i == 'null' || i == '') {
 				continue;
 			}
 			if (i == layer) {

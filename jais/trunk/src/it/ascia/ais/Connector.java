@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
  */
 public abstract class Connector {
 
+	public static final boolean DEGUG = false;
 	protected LinkedBlockingQueue updateQueue;
 	private Thread updatingThread;
 	private boolean running = false;
@@ -172,14 +173,14 @@ public abstract class Connector {
      */
 	public void queueUpdate(DevicePort p) {
 		if (p.isQueuedForUpdate()) {
-			logger.debug("Port already queued for update: "+p.getFullAddress());			
+			logger.trace("Port already queued for update: "+p.getFullAddress());			
 		}
 		if (updateQueue.contains(p)) {
 			logger.warn("Port already in update queue: "+p.getFullAddress());
 		} else {
 			if (updateQueue.offer(p)) {
 				p.setQueuedForUpdate();
-				logger.debug("Port queued for update: "+p.getFullAddress());
+				logger.trace("Port queued for update: "+p.getFullAddress());
 			} else {
 				logger.error("Queue full queuing for update: "+p.getFullAddress());
 			}
@@ -266,11 +267,11 @@ public abstract class Connector {
     			DevicePort p;
 				try {
 					p = (DevicePort) updateQueue.take();
-			    	logger.debug("Updating (+"+updateQueue.size()+"): " + p.getFullAddress());
 			    	if (p.isDirty() || p.isExpired()) {
+				    	logger.trace("Updating (+"+updateQueue.size()+"): " + p.getFullAddress());
 			    		p.update();
 			    	} else {
-			    		logger.trace("Port already updated: "+p.getFullAddress());
+			    		if (DEGUG) logger.trace("Port already updated: "+p.getFullAddress());
 			    	}
 			    	p.resetQueuedForUpdate();
 				} catch (InterruptedException e) {

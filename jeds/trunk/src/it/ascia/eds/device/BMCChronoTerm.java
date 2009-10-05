@@ -228,7 +228,7 @@ public class BMCChronoTerm extends BMC {
 		// FIXME calcolare il timeout oggettivamente
 		long timeout = 2 * 2 * ((EDSConnector)getConnector()).getRetryTimeout();		
 		if (updating) {
-			logger.warn("update in corso, richiesta omessa");
+			logger.trace("update in corso, richiesta omessa");
 			return timeout;
 		}		
 		updateTermStatus();

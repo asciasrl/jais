@@ -23,7 +23,8 @@ import gnu.io.*;
  */
 public class SerialTransport extends Transport {
     
-    /**
+    public static final boolean DEBUG = false;
+	/**
      * Dove scrivere i messaggi.
      */
     private OutputStream outputStream;
@@ -221,7 +222,7 @@ public class SerialTransport extends Transport {
 
 		public SerialListener(String portName) {
 			name = portName;
-			sb = new StringBuffer();
+			if (DEBUG) sb = new StringBuffer();
 		}
 
 		public void serialEvent(SerialPortEvent event) {
@@ -238,11 +239,13 @@ public class SerialTransport extends Transport {
 						if (i == -1) {
 							logger.error("Nessun dato ricevuto");					
 						} else {			
-							counter = (counter + 1) % 10000;
-							sb.append(" "+counter+":"+Message.b2h(i));
-							if (n == 0) {
-								logger.trace("Buffer"+sb.toString());
-								sb = new StringBuffer();
+							if (DEBUG) {
+								counter = (counter + 1) % 10000;
+								sb.append(" "+counter+":"+Message.b2h(i));
+								if (n == 0) {
+									logger.trace("Buffer"+sb.toString());
+									sb = new StringBuffer();
+								}
 							}
 							connector.received(i);
 						}

@@ -104,7 +104,7 @@ public abstract class DevicePort {
 	 * @param device
 	 * @param portId
 	 * @param portName
-	 *            se null il default è connector.address:portId
+	 *            se null il default e' connector.address:portId
 	 */
 	public DevicePort(Device device, String portId, String portName) {
 		logger = Logger.getLogger(getClass());

@@ -78,7 +78,7 @@ public class VariazioneIngressoMessage extends PTPMessage
 	}
 	
 	/**
-	 * Indica la modalità di variazione dell’ingresso verso massa 
+	 * Indica la modalita' di variazione dell'ingresso verso massa 
 	 * (0 = apertura verso GND, 1 = chiusura verso GND)
 	 * 
 	 * @return true Ingresso chiuso

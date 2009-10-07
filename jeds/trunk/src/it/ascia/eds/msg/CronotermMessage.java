@@ -44,7 +44,7 @@ public class CronotermMessage extends PTPResponse {
 		StringBuffer s = new StringBuffer();
 		s.append(super.toString());
 		s.append(isWinter() ? " Inverno "  : " Estate ");
-		s.append("Tset="+ getSetPoint() +"°C");
+		s.append("Tset="+ getSetPoint() +"\u00B0C");
 		return s.toString();
 	}
 

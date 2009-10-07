@@ -29,7 +29,7 @@ public abstract class MessageParser {
 
 	/**
 	 * Accoda i byte ricevuti dalla seriale fino ad ottenere una sequenza che rappresenta un messaggio.
-	 * Non appena è stato composto un messaggio valido {@link #isValid()} restituisce true, viene instanziato il messaggio e 
+	 * Non appena e' stato composto un messaggio valido {@link #isValid()} restituisce true, viene instanziato il messaggio e 
 	 * puo' essere letto con {@link #getMessage()}
 	 * @param b Byte letto dalla seriale, inteso come unsigned short (8 bit), cioe' un numero nell'intervallo 0-255 
 	 */

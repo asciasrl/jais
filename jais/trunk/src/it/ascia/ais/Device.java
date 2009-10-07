@@ -78,7 +78,7 @@ public abstract class Device {
 	
 	/**
 	 * Ritorna l'indirizzo del Device, senza considerare il connettore.
-	 * La sintassi dell'indirizzo dipende dal tipo di connettore, cioè della tecnologia
+	 * La sintassi dell'indirizzo dipende dal tipo di connettore, cioe' della tecnologia
 	 * di trasmissione utilizzata. Ad esempio:
 	 * - KNX: 1.3.5
 	 * - EDS: 12
@@ -287,7 +287,7 @@ public abstract class Device {
 	/**
 	 * Aggiorna il valore della porta memorizzato localmente.
 	 * Per scrivere un nuovo valore sulla porta del dispositivo fisico, usare {@see #writePortValue}
-	 * Se il valore della porta è modificato genera un DevicePortChangeEvent
+	 * Se il valore della porta e' modificato genera un DevicePortChangeEvent
 	 * @param portId
 	 * @param newValue
 	 * @throws AISException

@@ -115,7 +115,7 @@ public class EDSConnector extends Connector {
     }
         
     /**
-     * Gestisce ogni byte ricevuto finchè compone un messaggio e quindi ne effettua il dispacciamento
+     * Gestisce ogni byte ricevuto finche' compone un messaggio e quindi ne effettua il dispacciamento
      */
     public void received(int b) {    	
 		mp.push(b);

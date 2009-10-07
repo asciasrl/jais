@@ -103,7 +103,7 @@ public class RispostaStatoTermostatoMessage	extends PTPResponse {
 		StringBuffer s = new StringBuffer();
 		s.append(super.toString());
 		s.append(getAlarm() ? " Antigelo":"");
-		s.append("T="+ getChronoTermTemperature()+"°C");
+		s.append("T="+ getChronoTermTemperature()+"\u00B0C");
 		s.append(isOn()?" ON ":" OFF ");
 		s.append(getModeDescription());
 		s.append(" allarme:"+(getAlarm() ? "ON" : "OFF"));

@@ -8,10 +8,23 @@ Revision History EDS
 TODO
 ----
  + Comandi di gruppo
+ # Deprecato Connector.queueMessage (serviva per il discover, ora in Thread separato)
+ # BMC.updateStatus non dovrebbe ritornare un tempo di attesa: bisogna modificare EDSConnector.dispatchMessage in modo che faccia il dispatch PRIMA di messageToBeAnswered.notify()
+ ! La richiesta RTCC di BMCRegT che si fa in 3 messaggi deve modificare atomicamente la porta dopo la ricezione dell'ultimo dei 3 entro un tempo basso (es. 1 secondo)
 
 DA DOCUMENTARE
 --------------
  + Parametro //jais/EDS/skipautoupdate booleano 
+
+20090910
+--------
+ + Il discover viene eseguito in un Thread separato
+ + il Thread di autoupdate accoda la porta per l'aggiornamento
+ + il guardTime e' spostato da BUSControllerModule a EDSConnector
+ + Connector gestisce la coda delle porte da aggiornare in un suo Thread 
+ # l'evento di variazione viene propagato da DevicePort a Device a Connector a ControllerModule a Controller
+ + Controller scrive su log INFO sull'evento di variazione se c'e' una effettiva variazione
+ # Le uscite con timer vengono aggiornate con frequenza pari al timer finche' sono attive
 
 20090710
 --------

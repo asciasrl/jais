@@ -266,7 +266,7 @@ public class BMCStandardIO extends BMC {
 	
 	/**
 	 * Aggiunge al Device una porta di tipo Blind<br/>
-	 * Normalmente la prima uscita della coppia è quella che comanda l'apertura.
+	 * Normalmente la prima uscita della coppia e' quella che comanda l'apertura.
 	 * 
 	 * <p>Esempio 1:</p>
 	 * <ul>

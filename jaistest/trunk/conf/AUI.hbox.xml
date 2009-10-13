@@ -4,13 +4,6 @@
     <startPage>Hbox</startPage>
     <title>ASCIA HomeInTheBox [AUI 0.1]</title>
     <skin>skins/20090330/</skin>
-    <!-- utenti abilitati -->
-    <users>
-    	<user>
-    		<username>utente</username>
-    		<password>demo</password>
-    	</user>
-    </users>
     <!-- definizione di tutti i tipi di controlli -->
     <controls>
       <page>
@@ -26,14 +19,10 @@
         <on>images/pushbutton_green-on.png</on>
         <off>images/pushbutton_green-off.png</off>  
       </pushbutton>
-      <group>
-        <default>images/pushbutton_green-off.png</default>
-      </group>
       <dimmer>
         <default>images/light_off.png</default>
         <on>images/light_on.png</on>
         <off>images/light_off.png</off>
-        <dimming>images/light_dimming.png</dimming>
         <up>images/light_up.png</up>
         <down>images/light_down.png</down>  
         <timer>500</timer>
@@ -147,9 +136,9 @@
           <top>0</top>
         </control>      
         <area>
-          <title>Test</title>
+          <title>Primo piano</title>
           <coords>0,0,320,120</coords>
-          <page>test</page>
+          <page>pianoT</page>
         </area>
         <area>
           <title>Home in the Box</title>
@@ -157,9 +146,9 @@
           <page>Hbox</page>
         </area>
         <area>
-          <title>Piano Terra</title>
+          <title>World Data Bus</title>
           <coords>0,241,320,370</coords>
-          <page>pianoT</page>
+          <page>wdb</page>
         </area>
       </page>
       <page id="test">
@@ -260,22 +249,6 @@
 	         <on>images/door-open.png</on>
 	         <off>images/door-close.png</off>             
         </control>
-        <control id="allarme1">
-           <title>Allarme</title>
-           <type>group</type>
-           <layer>security</layer>
-           <top>50</top>
-           <left>50</left>
-           <address>2.Group1:Attivazione</address>
-        </control>
-        <control id="allarme2">
-           <title>Allarme</title>
-           <type>group</type>
-           <layer>security</layer>
-           <top>50</top>
-           <left>110</left>
-           <address>2.Group1:Disattivazione</address>
-        </control>
         <control id="b1">
            <title>Tapparella lunga</title>
            <type>blind</type>
@@ -304,6 +277,14 @@
           <up_address>2.7:stp_up</up_address>
           <dn_address>2.7:stp_up</dn_address>
         </control>
+        <control id="go_c1">
+           <title>Va a Chrono</title>
+          <type>page</type>
+          <layer>thermo</layer>
+          <page>chrono_c1</page>
+           <top>300</top>
+           <left>130</left>
+        </control>      
         <control id="c2">
           <title>Cronotermostato WDB</title>
           <type>thermo</type>
@@ -338,7 +319,7 @@
           <left>470</left>
           <address>2.3:Inp5</address>
         </control>
-        <control id="SceneEntrata">
+           <control id="SceneEntrata">
            <title>Entrata</title>
            <type>scene</type>
            <layer>scene</layer>
@@ -376,7 +357,6 @@
       	</control>    
       </page>
       <page id="chrono_c1">
-        <title>Test crono</title>
         <control id="back">
            <title>Indietro</title>
           <type>page</type>
@@ -387,7 +367,7 @@
         <control id="c1">
           <title>Cronotermostato HI</title>
           <type>thermo</type>
-          <class>ThermoEDS</class>
+          <controlclass>ThermoEDS</controlclass>
           <layer>thermo</layer>
           <top>300</top>
           <left>10</left>
@@ -402,6 +382,81 @@
           <off_address>2.7:manual</off_address>
           <temp_t0_address>2.7:manual</temp_t0_address>
         </control>     
+      </page>
+      <page id="wdb">
+      	<src>images/wdb.png</src>
+      	<title>Ufficio World Data Bus Milano</title>
+        <control id="back">
+          <title>Screensaver</title>
+          <type>page</type>
+          <page>piani</page>
+          <left>70</left>
+          <top>230</top>
+        </control>      
+      	<control id="NeonIngresso">
+           <title>Neon ingresso</title>
+           <type>light</type>
+           <layer>light</layer>
+           <top>280</top>
+           <left>200</left>
+           <address>wdb.1:Out2</address>
+      	</control>
+      	<control id="CorsiSX">
+           <title>Tapparella Corsi SX</title>
+           <type>blind</type>
+           <layer>blind</layer>
+           <top>50</top>
+           <left>250</left>
+           <address>wdb.2:Blind1</address>
+      	</control>
+      	<control id="CorsiDX">
+           <title>Tapparella Corsi DX</title>
+           <type>blind</type>
+           <layer>blind</layer>
+           <top>50</top>
+           <left>330</left>
+           <address>wdb.2:Blind2</address>
+      	</control>
+      	<control id="CorsiDimmer">
+           <title>Dimmer aula corsi</title>
+           <type>dimmer</type>
+           <layer>light</layer>
+           <top>150</top>
+           <left>300</left>
+           <address>wdb.22:Out1</address>
+      	</control>
+      	<control id="NeonLabCentro">
+           <title>Neon Laboratorio Centro</title>
+           <type>light</type>
+           <layer>light</layer>
+           <top>150</top>
+           <left>470</left>
+           <address>wdb.3:Out1</address>
+      	</control>
+      	<control id="NeonLabLato">
+           <title>Neon Laboratorio Lato</title>
+           <type>light</type>
+           <layer>light</layer>
+           <top>150</top>
+           <left>550</left>
+           <address>wdb.3:Out2</address>
+      	</control>      	      	
+      	<control id="UffSX">
+           <title>Tapparella Ufficio SX</title>
+           <type>blind</type>
+           <layer>blind</layer>
+           <top>450</top>
+           <left>500</left>
+           <address>wdb.6:Blind1</address>
+      	</control>
+      	<control id="UffDX">
+           <title>Tapparella Ufficio DX</title>
+           <type>blind</type>
+           <layer>blind</layer>
+           <top>450</top>
+           <left>400</left>
+           <address>wdb.6:Blind2</address>
+      	</control>
       </page>
     </pages>
   </AUI>

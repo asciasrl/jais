@@ -11,10 +11,12 @@
       <class>it.ascia.eds.EDSControllerModule</class>
       <config>conf/EDS.xml</config>
     </module>
+<!--     
     <module name="DXP">
       <class>it.ascia.dxp.DXPControllerModule</class>
       <config>conf/DXP.xml</config>
     </module>
+-->
     <module name="AUI">
       <class>it.ascia.aui.AUIControllerModule</class>
       <config>conf/AUI.xml</config>

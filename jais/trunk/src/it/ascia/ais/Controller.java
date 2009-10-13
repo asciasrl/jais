@@ -288,9 +288,6 @@ public class Controller {
 				}
 			} // Se il connector ci interessa
 		} // Cicla sui connector
-		if (retval.length == 0) {
-			throw new AISException("Target device not found: " + address );
-		}
 		return retval;
 	}
 	

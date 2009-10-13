@@ -61,6 +61,7 @@ public class HTTPServerControllerModule extends ControllerModule {
 			    Class servletClass = moduleLoader.loadClass(className);
 			    HttpServlet servlet = (HttpServlet) servletClass.newInstance();
 				Context servletContext = new Context(contexts, context, Context.SESSIONS);
+				servletContext.setResourceBase(root);
 				ServletHolder servletHolder = new ServletHolder(servlet);
 				servletContext.addServlet(servletHolder, "/*");
 				logger.info("Caricata servlet '"+context+"'");

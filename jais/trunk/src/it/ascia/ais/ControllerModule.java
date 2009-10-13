@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
@@ -46,7 +46,7 @@ public abstract class ControllerModule {
 		this.controller = controller;		
 	}
 
-	public HierarchicalConfiguration getConfiguration() {
+	public SubnodeConfiguration getConfiguration() {
 		return configuration.configurationAt(name);
 	}
 

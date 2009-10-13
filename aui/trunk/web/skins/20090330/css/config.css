@@ -2,14 +2,260 @@
 
 body {
 	color: white;
+	background-color: black;
+	font-size: 11px;
 }
 
-div.menubar {
-	background-color: #A1C0F5;
+/* barra del menu, la prima in alto */
+
+#menubar {
+	position: fixed;
+	top: 0px;
+	height: 21px;
 	width: 100%;
-	height: 18px;
-	color: black;
+	padding: 0px 0px;
+	z-index: 100;
+	background-image: url('../config.images/bkg_menubar.png');
+	color: white;
 }
+
+#mainmenu {
+	margin: 0px 20px;
+}
+
+/* barra di stato per visualizzazzione messaggi */
+
+#statusbar {
+	position: fixed;
+	top: 21px;
+	z-index: 99;
+	height: 16px;
+	padding: 2px;
+	padding-left: 20px; 
+	width: 100%;
+	color: black;
+	background-color: white;
+}
+
+#main {
+	position: fixed;
+	top: 44px;
+	height: 100%;
+}	
+
+#pages {
+	position: relative;
+	float: left;	
+	top: 42px;
+	width: 150px;
+	height: 400px;
+	border-right: 2px solid white;	
+	padding: 20px;
+	overflow: auto;
+}
+
+#page {
+	position: relative;
+	float: none;
+	top: 42px;
+	padding: 20px;
+	width: 100%;
+	height: 480px;
+	margin-left: 192px;
+	margin-right: 342px;
+	overflow: auto;
+}
+
+#controls {
+	position: relative;
+	float: right;
+	top: 42px;
+	margin-right: 0px;
+	width: 300px;
+	height: 400px;
+	overflow: auto;
+	padding: 20px;
+	border-left: 2px solid white;
+}	
+
+#footer {
+	position: fixed;
+	bottom: 0px;
+	width: 100%;
+	height: 16px;
+	color: white;
+	text-align: center;
+	border-top: 1px solid white;
+}
+
+div.popup {
+	background-color: #333;
+	border: 1px solid white;
+	z-index: 110;
+	position: absolute;
+	top: 80px;
+	left: 230px;
+	padding: 5px;
+	visibility: hidden;	
+}
+
+#login {
+	width: 254px;
+}
+
+#upload {
+	width: 454px;
+}
+
+#changeBackground {
+	width: 454px;
+}
+
+#changeBackground div {
+	width: 444px;
+	height: 300px;
+	overflow: auto;
+}
+
+#changeBackground div img {
+	max-width: 100px;
+	max-height: 100px;
+	margin: 5px;
+	border: 1px solid white;
+}
+
+form label {
+	float: left;
+	padding: 2px 0px;
+	height: 21px;
+	float: left;
+	width: 100px;
+	clear: left;	
+}
+
+form input {
+	font-family: inherit;
+	font-size: inherit;
+	left: 100px;
+	height: 16px;
+	width: 150px;
+	padding: 0px 0px;
+	clear: right;
+	float: left;
+}
+
+#upload input {
+	height: 21px;
+	width: 250px;
+}		
+
+form button {
+	float: left;
+	position: relative;
+	left: 100px;
+	clear: both;	
+}
+
+.error  {
+	color: #FF0000;
+	background-color: #FFEEEE;
+	font-weight: bold;
+	padding: 0px 5px;
+}	
+
+#mask {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	background-color: #000010;
+	width: 100px;
+	height: 100px; 
+	opacity: 0.8;
+	display: block;
+	visibility: hidden;
+	z-index: 101; 		
+}
+		
+div.pageItem, div.pageItemSelected {
+	text-align: center;
+}
+
+div.pageItem p, div.pageItemSelected p {
+	margin-top: 0px;
+}
+
+div.pageItem img, div.pageItemSelected img{
+	width: 120px;
+	margin: 2px;
+	border: 1px solid white;
+}
+
+div.pageItemSelected {
+	background-color: gray;
+}
+
+div.controlItem {
+	float: left;
+}
+
+div.controlItem img {
+	float: left;
+	clear: both;
+}
+
+div.controlItem p {
+	float: left;
+	margin: 0px;
+	padding: 5px;
+}
+
+div.controlItem p label {
+	font-weight: bold;
+}
+
+div.controlItemSelected {
+	background-color: gray;
+}
+
+div.controlSelected {
+	background-color: gray;	
+	margin: 1px solid white;
+	padding: 2px;
+	margin: -3px;
+	border: 1px solid white;
+	z-index: 90;
+}
+
+div.caption {
+	position: relative;
+	top: 0px;
+}
+
+div.control-icon {
+	position: relative;
+}
+
+div.control div.info {
+	position: absolute;
+	left: 0px;
+	margin-top: 3px;
+	min-width: 150px;
+	display: none;
+	background-color: #003;
+	border: 1px solid white;
+	text-align: left;
+	white-space: nowrap;
+}	
+
+div.controlSelected div.info {
+	display: block;
+}
+
+div.info label {
+	font-weight: bold;
+}
+
+/* Modifiche per gli stili del menu */
 
 table.ThemeOfficeMenu {
 	height: 30px;
@@ -20,34 +266,22 @@ div.menuitem {
 	margin: 2px 7px;	
 }
 
-table#main {
-	width: 100%;
-	height: 100%;
+.ThemeOffice2003Menu, .ThemeOffice2003SubMenuTable {
+	font-family:arial,sans-serif;
+	font-size:11px;
 }
 
-td.header {
-	background-color: #CCC;
-	color: #111;
-	text-align: center;
-	padding: 2px 7px;
-	font-weight: bold;
+.ThemeOffice2003MainItem, .ThemeOffice2003MainItemHover,.ThemeOffice2003MainItemActive
+{
+	background-color: transparent;
+	background-image:	none;
+	vertical-align: middle;
 }
 
-td#impianto {
-	background-color: #666;
-	width: 200px;
-	height: 100%;
-	padding: 5px;
+.ThemeOffice2003MainItem, .ThemeOffice2003MainItemHover, .ThemeOffice2003MainItemActive {
+	color: white;
 }
 
-td#pagina {
-	width: auto;
-	margin: 5px;
+.ThemeOffice2003MenuItem, .ThemeOffice2003MenuItemHover, .ThemeOffice2003MenuItemActive {
+	color: black;
 }
-
-td#pagine {
-	background-color: #666;
-	width: 120px;
-	margin: 5px;
-}
-

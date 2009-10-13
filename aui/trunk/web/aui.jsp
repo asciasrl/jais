@@ -1,5 +1,5 @@
 <!-- (C) Copyright 2007,2009 Ascia S.r.l. -->
-<%@ page import="it.ascia.ais.Controller, it.ascia.aui.AUIControllerModule, org.apache.commons.configuration.HierarchicalConfiguration, java.util.*,org.apache.log4j.Logger, org.json.simple.JSONObject, org.json.simple.JSONArray" %>
+<%@ page import="it.ascia.ais.Controller, it.ascia.aui.AUIControllerModule, org.apache.commons.configuration.SubnodeConfiguration, org.apache.commons.configuration.HierarchicalConfiguration, java.util.*,org.apache.log4j.Logger, org.json.simple.JSONObject, org.json.simple.JSONArray" %>
 <%
 /**
  * Se riceviamo il parametro "nomobile" allora siamo sul fisso.
@@ -30,7 +30,7 @@ AUIControllerModule auiControllerModule = (AUIControllerModule) c.getModule("AUI
 if (auiControllerModule == null) {
 	logger.fatal("Modulo AUI non caricato");
 }
-HierarchicalConfiguration auiConfig = auiControllerModule.getConfiguration();
+SubnodeConfiguration auiConfig = auiControllerModule.getConfiguration();
 String skin = auiConfig.getString("skin","");
 %>
 <?xml version="1.0" encoding="iso-8859-1"?>

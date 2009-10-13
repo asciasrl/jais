@@ -1,1 +1,1020 @@
-<home><edsnetwork nome="Impianto Rilevato"><dispositivo nome="Comando tapparelle aula corsi (88,51)"><indirizzo>1</indirizzo><modello>88</modello><versione>51</versione><uscita nome="Uscita 1"><indirizzo>0</indirizzo><tipo>7</tipo><ritardo>30</ritardo><ritardata>0</ritardata><invertita>0</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>1</gruppoDisattivazione><gruppiAppartenenza>6;7;13;0</gruppiAppartenenza></uscita><uscita nome="Uscita 2"><indirizzo>1</indirizzo><tipo>7</tipo><ritardo>25</ritardo><ritardata>0</ritardata><invertita>0</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>6;7;13;0</gruppiAppartenenza></uscita><uscita nome="Uscita 3"><indirizzo>2</indirizzo><tipo>7</tipo><ritardo>30</ritardo><ritardata>0</ritardata><invertita>0</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>1</gruppoDisattivazione><gruppiAppartenenza>6;13;0;0</gruppiAppartenenza></uscita><uscita nome="Uscita 4"><indirizzo>3</indirizzo><tipo>7</tipo><ritardo>25</ritardo><ritardata>0</ritardata><invertita>0</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>6;13;0;0</gruppiAppartenenza></uscita><uscita nome="Uscita 5"><indirizzo>4</indirizzo><tipo>7</tipo><ritardo>30</ritardo><ritardata>0</ritardata><invertita>0</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>1</gruppoDisattivazione><gruppiAppartenenza>6;7;13;0</gruppiAppartenenza></uscita><uscita nome="Uscita 6"><indirizzo>5</indirizzo><tipo>7</tipo><ritardo>25</ritardo><ritardata>0</ritardata><invertita>0</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>6;7;13;0</gruppiAppartenenza></uscita><uscita nome="Uscita 7"><indirizzo>6</indirizzo><tipo>7</tipo><ritardo>30</ritardo><ritardata>0</ritardata><invertita>0</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>6;0;0;0</gruppiAppartenenza></uscita><uscita nome="Uscita 8"><indirizzo>7</indirizzo><tipo>7</tipo><ritardo>25</ritardo><ritardata>0</ritardata><invertita>0</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>6;0;0;0</gruppiAppartenenza></uscita><ingresso nome="Tapparella SX SU'"><indirizzo>1</indirizzo><dispositivoControllato>43</dispositivoControllato><uscitaControllata>0</uscitaControllata><sincronizzato>0</sincronizzato><sicuro>0</sicuro><invertito>0</invertito><disattivazione>0</disattivazione><monostabile>1</monostabile><gruppiAppartenenza>0</gruppiAppartenenza><gruppoDisattivazione>0</gruppoDisattivazione><gruppoPassoPasso>0</gruppoPassoPasso></ingresso><ingresso nome="Tapparella SX GIU'"><indirizzo>2</indirizzo><dispositivoControllato>43</dispositivoControllato><uscitaControllata>1</uscitaControllata><sincronizzato>0</sincronizzato><sicuro>0</sicuro><invertito>0</invertito><disattivazione>0</disattivazione><monostabile>1</monostabile><gruppiAppartenenza>0</gruppiAppartenenza><gruppoDisattivazione>0</gruppoDisattivazione><gruppoPassoPasso>0</gruppoPassoPasso></ingresso><ingresso nome="Ingresso 3"><indirizzo>3</indirizzo><dispositivoControllato>43</dispositivoControllato><uscitaControllata>2</uscitaControllata><sincronizzato>0</sincronizzato><sicuro>0</sicuro><invertito>0</invertito><disattivazione>0</disattivazione><monostabile>1</monostabile><gruppiAppartenenza>0</gruppiAppartenenza><gruppoDisattivazione>0</gruppoDisattivazione><gruppoPassoPasso>0</gruppoPassoPasso></ingresso><ingresso nome="Ingresso 4"><indirizzo>4</indirizzo><dispositivoControllato>43</dispositivoControllato><uscitaControllata>3</uscitaControllata><sincronizzato>0</sincronizzato><sicuro>0</sicuro><invertito>0</invertito><disattivazione>0</disattivazione><monostabile>1</monostabile><gruppiAppartenenza>0</gruppiAppartenenza><gruppoDisattivazione>0</gruppoDisattivazione><gruppoPassoPasso>0</gruppoPassoPasso></ingresso><ingresso nome="Tapparella DX SU'"><indirizzo>5</indirizzo><dispositivoControllato>43</dispositivoControllato><uscitaControllata>4</uscitaControllata><sincronizzato>0</sincronizzato><sicuro>0</sicuro><invertito>0</invertito><disattivazione>0</disattivazione><monostabile>1</monostabile><gruppiAppartenenza>0</gruppiAppartenenza><gruppoDisattivazione>0</gruppoDisattivazione><gruppoPassoPasso>0</gruppoPassoPasso></ingresso><ingresso nome="Tapparella DX GIU'"><indirizzo>6</indirizzo><dispositivoControllato>43</dispositivoControllato><uscitaControllata>5</uscitaControllata><sincronizzato>0</sincronizzato><sicuro>0</sicuro><invertito>0</invertito><disattivazione>0</disattivazione><monostabile>1</monostabile><gruppiAppartenenza>0</gruppiAppartenenza><gruppoDisattivazione>0</gruppoDisattivazione><gruppoPassoPasso>0</gruppoPassoPasso></ingresso><ingresso nome="Ingresso 7"><indirizzo>7</indirizzo><dispositivoControllato>43</dispositivoControllato><uscitaControllata>6</uscitaControllata><sincronizzato>0</sincronizzato><sicuro>0</sicuro><invertito>0</invertito><disattivazione>0</disattivazione><monostabile>1</monostabile><gruppiAppartenenza>0</gruppiAppartenenza><gruppoDisattivazione>0</gruppoDisattivazione><gruppoPassoPasso>0</gruppoPassoPasso></ingresso><ingresso nome="Ingresso 8"><indirizzo>8</indirizzo><dispositivoControllato>43</dispositivoControllato><uscitaControllata>7</uscitaControllata><sincronizzato>0</sincronizzato><sicuro>0</sicuro><invertito>0</invertito><disattivazione>0</disattivazione><monostabile>1</monostabile><gruppiAppartenenza>0</gruppiAppartenenza><gruppoDisattivazione>0</gruppoDisattivazione><gruppoPassoPasso>0</gruppoPassoPasso></ingresso></dispositivo><dispositivo nome="Schermo proiezione aula corsi (88,47)"><indirizzo>5</indirizzo><modello>88</modello><versione>47</versione><uscita nome="Schermo proiezione SU'"><indirizzo>0</indirizzo><tipo>7</tipo><ritardo>30</ritardo><ritardata>0</ritardata><invertita>0</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>0;0;0;0</gruppiAppartenenza></uscita><uscita nome="Schermo proiezione GIU'"><indirizzo>1</indirizzo><tipo>7</tipo><ritardo>30</ritardo><ritardata>0</ritardata><invertita>0</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>0;0;0;0</gruppiAppartenenza></uscita><uscita nome="Uscita 3"><indirizzo>2</indirizzo><tipo>3</tipo><ritardo>0</ritardo><ritardata>0</ritardata><invertita>1</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>13;0;0;0</gruppiAppartenenza></uscita><uscita nome="Uscita 4"><indirizzo>3</indirizzo><tipo>0</tipo><ritardo>0</ritardo><ritardata>0</ritardata><invertita>0</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>5;13;0;0</gruppiAppartenenza></uscita><uscita nome="Uscita 5"><indirizzo>4</indirizzo><tipo>3</tipo><ritardo>0</ritardo><ritardata>0</ritardata><invertita>0</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>5;13;0;0</gruppiAppartenenza></uscita><uscita nome="Uscita 6"><indirizzo>5</indirizzo><tipo>2</tipo><ritardo>3</ritardo><ritardata>0</ritardata><invertita>0</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>1;0;0;0</gruppiAppartenenza></uscita><uscita nome="Uscita 7"><indirizzo>6</indirizzo><tipo>0</tipo><ritardo>0</ritardo><ritardata>0</ritardata><invertita>0</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>1;0;0;0</gruppiAppartenenza></uscita><uscita nome="Uscita 8"><indirizzo>7</indirizzo><tipo>0</tipo><ritardo>0</ritardo><ritardata>0</ritardata><invertita>0</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>0;0;0;0</gruppiAppartenenza></uscita><ingresso nome="Ingresso 1"><indirizzo>1</indirizzo><dispositivoControllato>5</dispositivoControllato><uscitaControllata>0</uscitaControllata><sincronizzato>0</sincronizzato><sicuro>0</sicuro><invertito>0</invertito><disattivazione>0</disattivazione><monostabile>1</monostabile><gruppiAppartenenza>0</gruppiAppartenenza><gruppoDisattivazione>0</gruppoDisattivazione><gruppoPassoPasso>0</gruppoPassoPasso></ingresso><ingresso nome="Ingresso 2"><indirizzo>2</indirizzo><dispositivoControllato>5</dispositivoControllato><uscitaControllata>1</uscitaControllata><sincronizzato>0</sincronizzato><sicuro>0</sicuro><invertito>0</invertito><disattivazione>0</disattivazione><monostabile>1</monostabile><gruppiAppartenenza>0</gruppiAppartenenza><gruppoDisattivazione>0</gruppoDisattivazione><gruppoPassoPasso>0</gruppoPassoPasso></ingresso><ingresso nome="Ingresso 3"><indirizzo>3</indirizzo><dispositivoControllato>0</dispositivoControllato><uscitaControllata>0</uscitaControllata><sincronizzato>0</sincronizzato><sicuro>0</sicuro><invertito>0</invertito><disattivazione>0</disattivazione><monostabile>0</monostabile><gruppiAppartenenza>0</gruppiAppartenenza><gruppoDisattivazione>0</gruppoDisattivazione><gruppoPassoPasso>0</gruppoPassoPasso></ingresso><ingresso nome="Ingresso 4"><indirizzo>4</indirizzo><dispositivoControllato>5</dispositivoControllato><uscitaControllata>3</uscitaControllata><sincronizzato>0</sincronizzato><sicuro>0</sicuro><invertito>0</invertito><disattivazione>0</disattivazione><monostabile>1</monostabile><gruppiAppartenenza>0</gruppiAppartenenza><gruppoDisattivazione>0</gruppoDisattivazione><gruppoPassoPasso>0</gruppoPassoPasso></ingresso><ingresso nome="Ingresso 5"><indirizzo>5</indirizzo><dispositivoControllato>5</dispositivoControllato><uscitaControllata>4</uscitaControllata><sincronizzato>0</sincronizzato><sicuro>0</sicuro><invertito>0</invertito><disattivazione>0</disattivazione><monostabile>1</monostabile><gruppiAppartenenza>0</gruppiAppartenenza><gruppoDisattivazione>0</gruppoDisattivazione><gruppoPassoPasso>0</gruppoPassoPasso></ingresso><ingresso nome="Ingresso 6"><indirizzo>6</indirizzo><dispositivoControllato>5</dispositivoControllato><uscitaControllata>5</uscitaControllata><sincronizzato>0</sincronizzato><sicuro>0</sicuro><invertito>0</invertito><disattivazione>0</disattivazione><monostabile>1</monostabile><gruppiAppartenenza>0</gruppiAppartenenza><gruppoDisattivazione>0</gruppoDisattivazione><gruppoPassoPasso>0</gruppoPassoPasso></ingresso><ingresso nome="Ingresso 7"><indirizzo>7</indirizzo><dispositivoControllato>0</dispositivoControllato><uscitaControllata>0</uscitaControllata><sincronizzato>0</sincronizzato><sicuro>0</sicuro><invertito>0</invertito><disattivazione>0</disattivazione><monostabile>0</monostabile><gruppiAppartenenza>1</gruppiAppartenenza><gruppoDisattivazione>1</gruppoDisattivazione><gruppoPassoPasso>0</gruppoPassoPasso></ingresso><ingresso nome="Ingresso 8"><indirizzo>8</indirizzo><dispositivoControllato>5</dispositivoControllato><uscitaControllata>7</uscitaControllata><sincronizzato>0</sincronizzato><sicuro>0</sicuro><invertito>0</invertito><disattivazione>0</disattivazione><monostabile>1</monostabile><gruppiAppartenenza>0</gruppiAppartenenza><gruppoDisattivazione>0</gruppoDisattivazione><gruppoPassoPasso>0</gruppoPassoPasso></ingresso></dispositivo><dispositivo nome="Dimmer aula corsi (102,16)"><indirizzo>30</indirizzo><modello>102</modello><versione>16</versione><uscita nome="Uscita 1"><indirizzo>0</indirizzo><tipo>29</tipo><ritardo>180</ritardo><ritardata>44</ritardata><invertita>0</invertita><volatile>30</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><ValoreMinimo>5</ValoreMinimo><ValoreMassimo>95</ValoreMassimo><gruppiAppartenenza>4083;4084;1941;3222;4069;4064;4064;4064</gruppiAppartenenza></uscita><uscita nome="Uscita 2"><indirizzo>1</indirizzo><tipo>29</tipo><ritardo>180</ritardo><ritardata>25</ritardata><invertita>0</invertita><volatile>30</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><ValoreMinimo>2</ValoreMinimo><ValoreMassimo>95</ValoreMassimo><gruppiAppartenenza>4064;4064;4064;4064;4064;4064;4064;4064</gruppiAppartenenza></uscita></dispositivo><dispositivo nome="Modulo tapparelle aula corsi (8,53)"><indirizzo>43</indirizzo><modello>8</modello><versione>53</versione><uscita nome="Tapparella SX SU'"><indirizzo>0</indirizzo><tipo>7</tipo><ritardo>30</ritardo><ritardata>0</ritardata><invertita>0</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>1</gruppoDisattivazione><gruppiAppartenenza>6;0;0;0</gruppiAppartenenza></uscita><uscita nome="Tapparella SX GIU'"><indirizzo>1</indirizzo><tipo>7</tipo><ritardo>30</ritardo><ritardata>0</ritardata><invertita>0</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>6;0;0;0</gruppiAppartenenza></uscita><uscita nome="Uscita 3"><indirizzo>2</indirizzo><tipo>7</tipo><ritardo>30</ritardo><ritardata>0</ritardata><invertita>0</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>0;0;0;0</gruppiAppartenenza></uscita><uscita nome="Uscita 4"><indirizzo>3</indirizzo><tipo>7</tipo><ritardo>30</ritardo><ritardata>0</ritardata><invertita>0</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>0;0;0;0</gruppiAppartenenza></uscita><uscita nome="Tapparella DX SU'"><indirizzo>4</indirizzo><tipo>7</tipo><ritardo>30</ritardo><ritardata>0</ritardata><invertita>0</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>1</gruppoDisattivazione><gruppiAppartenenza>6;0;0;0</gruppiAppartenenza></uscita><uscita nome="Tapparella DX GIU'"><indirizzo>5</indirizzo><tipo>7</tipo><ritardo>30</ritardo><ritardata>0</ritardata><invertita>0</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>6;0;0;0</gruppiAppartenenza></uscita><uscita nome="Uscita 7"><indirizzo>6</indirizzo><tipo>7</tipo><ritardo>30</ritardo><ritardata>0</ritardata><invertita>0</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>0;0;0;0</gruppiAppartenenza></uscita><uscita nome="Uscita 8"><indirizzo>7</indirizzo><tipo>7</tipo><ritardo>30</ritardo><ritardata>0</ritardata><invertita>0</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>0;0;0;0</gruppiAppartenenza></uscita></dispositivo><dispositivo nome="Modulo faretti aula corsi (88,47)"><indirizzo>6</indirizzo><modello>88</modello><versione>47</versione><uscita nome="Faretto 1 aula corsi"><indirizzo>0</indirizzo><tipo>3</tipo><ritardo>0</ritardo><ritardata>0</ritardata><invertita>1</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>3;4;5;12</gruppiAppartenenza></uscita><uscita nome="Faretto 2 aula corsi"><indirizzo>1</indirizzo><tipo>3</tipo><ritardo>0</ritardo><ritardata>0</ritardata><invertita>1</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>3;11;5;12</gruppiAppartenenza></uscita><uscita nome="Faretto 3 aula corsi"><indirizzo>2</indirizzo><tipo>3</tipo><ritardo>0</ritardo><ritardata>0</ritardata><invertita>1</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>3;11;5;12</gruppiAppartenenza></uscita><uscita nome="Uscita 4"><indirizzo>3</indirizzo><tipo>3</tipo><ritardo>0</ritardo><ritardata>0</ritardata><invertita>1</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>12;0;0;0</gruppiAppartenenza></uscita><uscita nome="Faretto 5 aula corsi"><indirizzo>4</indirizzo><tipo>3</tipo><ritardo>0</ritardo><ritardata>0</ritardata><invertita>1</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>3;4;5;12</gruppiAppartenenza></uscita><uscita nome="Faretto 6 aula corsi"><indirizzo>5</indirizzo><tipo>3</tipo><ritardo>0</ritardo><ritardata>0</ritardata><invertita>1</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>3;4;5;12</gruppiAppartenenza></uscita><uscita nome="Faretto 4 aula corsi"><indirizzo>6</indirizzo><tipo>3</tipo><ritardo>0</ritardo><ritardata>0</ritardata><invertita>1</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>3;11;5;12</gruppiAppartenenza></uscita><uscita nome="Uscita 8"><indirizzo>7</indirizzo><tipo>3</tipo><ritardo>0</ritardo><ritardata>0</ritardata><invertita>1</invertita><volatile>0</volatile><desyncGruppo>0</desyncGruppo><gruppoDisattivazione>0</gruppoDisattivazione><gruppiAppartenenza>3;0;5;0</gruppiAppartenenza></uscita><ingresso nome="Ingresso 1"><indirizzo>1</indirizzo><dispositivoControllato>6</dispositivoControllato><uscitaControllata>0</uscitaControllata><sincronizzato>0</sincronizzato><sicuro>0</sicuro><invertito>0</invertito><disattivazione>0</disattivazione><monostabile>1</monostabile><gruppiAppartenenza>0</gruppiAppartenenza><gruppoDisattivazione>0</gruppoDisattivazione><gruppoPassoPasso>0</gruppoPassoPasso></ingresso><ingresso nome="Ingresso 2"><indirizzo>2</indirizzo><dispositivoControllato>6</dispositivoControllato><uscitaControllata>1</uscitaControllata><sincronizzato>0</sincronizzato><sicuro>0</sicuro><invertito>0</invertito><disattivazione>0</disattivazione><monostabile>1</monostabile><gruppiAppartenenza>0</gruppiAppartenenza><gruppoDisattivazione>0</gruppoDisattivazione><gruppoPassoPasso>0</gruppoPassoPasso></ingresso><ingresso nome="Ingresso 3"><indirizzo>3</indirizzo><dispositivoControllato>6</dispositivoControllato><uscitaControllata>0</uscitaControllata><sincronizzato>0</sincronizzato><sicuro>0</sicuro><invertito>0</invertito><disattivazione>0</disattivazione><monostabile>1</monostabile><gruppiAppartenenza>0</gruppiAppartenenza><gruppoDisattivazione>0</gruppoDisattivazione><gruppoPassoPasso>0</gruppoPassoPasso></ingresso><ingresso nome="Ingresso 4"><indirizzo>4</indirizzo><dispositivoControllato>6</dispositivoControllato><uscitaControllata>3</uscitaControllata><sincronizzato>0</sincronizzato><sicuro>0</sicuro><invertito>0</invertito><disattivazione>0</disattivazione><monostabile>1</monostabile><gruppiAppartenenza>0</gruppiAppartenenza><gruppoDisattivazione>0</gruppoDisattivazione><gruppoPassoPasso>0</gruppoPassoPasso></ingresso><ingresso nome="Ingresso 5"><indirizzo>5</indirizzo><dispositivoControllato>6</dispositivoControllato><uscitaControllata>4</uscitaControllata><sincronizzato>0</sincronizzato><sicuro>0</sicuro><invertito>0</invertito><disattivazione>0</disattivazione><monostabile>1</monostabile><gruppiAppartenenza>0</gruppiAppartenenza><gruppoDisattivazione>0</gruppoDisattivazione><gruppoPassoPasso>0</gruppoPassoPasso></ingresso><ingresso nome="Ingresso 6"><indirizzo>6</indirizzo><dispositivoControllato>6</dispositivoControllato><uscitaControllata>5</uscitaControllata><sincronizzato>0</sincronizzato><sicuro>0</sicuro><invertito>0</invertito><disattivazione>0</disattivazione><monostabile>1</monostabile><gruppiAppartenenza>0</gruppiAppartenenza><gruppoDisattivazione>0</gruppoDisattivazione><gruppoPassoPasso>0</gruppoPassoPasso></ingresso><ingresso nome="Ingresso 7"><indirizzo>7</indirizzo><dispositivoControllato>6</dispositivoControllato><uscitaControllata>6</uscitaControllata><sincronizzato>0</sincronizzato><sicuro>0</sicuro><invertito>0</invertito><disattivazione>0</disattivazione><monostabile>1</monostabile><gruppiAppartenenza>0</gruppiAppartenenza><gruppoDisattivazione>0</gruppoDisattivazione><gruppoPassoPasso>0</gruppoPassoPasso></ingresso><ingresso nome="Ingresso 8"><indirizzo>8</indirizzo><dispositivoControllato>6</dispositivoControllato><uscitaControllata>7</uscitaControllata><sincronizzato>0</sincronizzato><sicuro>0</sicuro><invertito>0</invertito><disattivazione>0</disattivazione><monostabile>1</monostabile><gruppiAppartenenza>0</gruppiAppartenenza><gruppoDisattivazione>0</gruppoDisattivazione><gruppoPassoPasso>0</gruppoPassoPasso></ingresso></dispositivo><GruppoBroadcast nome="Gruppo 2"><indirizzo>2</indirizzo></GruppoBroadcast><GruppoBroadcast nome="Gruppo 10"><indirizzo>10</indirizzo></GruppoBroadcast><GruppoBroadcast nome="Gruppo 9"><indirizzo>9</indirizzo></GruppoBroadcast><GruppoBroadcast nome="Gruppo 8"><indirizzo>8</indirizzo></GruppoBroadcast><GruppoBroadcast nome="Gruppo 7"><indirizzo>7</indirizzo><uscita nome="Uscita 1"><indirizzo>0</indirizzo><indirizzoNodoPadre>1</indirizzoNodoPadre></uscita><uscita nome="Uscita 2"><indirizzo>1</indirizzo><indirizzoNodoPadre>1</indirizzoNodoPadre></uscita><uscita nome="Uscita 5"><indirizzo>4</indirizzo><indirizzoNodoPadre>1</indirizzoNodoPadre></uscita><uscita nome="Uscita 6"><indirizzo>5</indirizzo><indirizzoNodoPadre>1</indirizzoNodoPadre></uscita></GruppoBroadcast><GruppoBroadcast nome="Gruppo 13"><indirizzo>13</indirizzo><uscita nome="Uscita 1"><indirizzo>0</indirizzo><indirizzoNodoPadre>1</indirizzoNodoPadre></uscita><uscita nome="Uscita 2"><indirizzo>1</indirizzo><indirizzoNodoPadre>1</indirizzoNodoPadre></uscita><uscita nome="Uscita 3"><indirizzo>2</indirizzo><indirizzoNodoPadre>1</indirizzoNodoPadre></uscita><uscita nome="Uscita 4"><indirizzo>3</indirizzo><indirizzoNodoPadre>1</indirizzoNodoPadre></uscita><uscita nome="Uscita 5"><indirizzo>4</indirizzo><indirizzoNodoPadre>1</indirizzoNodoPadre></uscita><uscita nome="Uscita 6"><indirizzo>5</indirizzo><indirizzoNodoPadre>1</indirizzoNodoPadre></uscita><uscita nome="Uscita 3"><indirizzo>2</indirizzo><indirizzoNodoPadre>5</indirizzoNodoPadre></uscita><uscita nome="Uscita 4"><indirizzo>3</indirizzo><indirizzoNodoPadre>5</indirizzoNodoPadre></uscita><uscita nome="Uscita 5"><indirizzo>4</indirizzo><indirizzoNodoPadre>5</indirizzoNodoPadre></uscita></GruppoBroadcast><GruppoBroadcast nome="Gruppo 1"><indirizzo>1</indirizzo><uscita nome="Uscita 6"><indirizzo>5</indirizzo><indirizzoNodoPadre>5</indirizzoNodoPadre></uscita><uscita nome="Uscita 7"><indirizzo>6</indirizzo><indirizzoNodoPadre>5</indirizzoNodoPadre></uscita><ingresso nome="Ingresso 7"><indirizzo>7</indirizzo><indirizzoNodoPadre>5</indirizzoNodoPadre></ingresso></GruppoBroadcast><GruppoBroadcast nome="Gruppo 19"><indirizzo>19</indirizzo><uscita nome="Uscita 1"><indirizzo>0</indirizzo><indirizzoNodoPadre>30</indirizzoNodoPadre></uscita></GruppoBroadcast><GruppoBroadcast nome="Gruppo 20"><indirizzo>20</indirizzo><uscita nome="Uscita 1"><indirizzo>0</indirizzo><indirizzoNodoPadre>30</indirizzoNodoPadre></uscita></GruppoBroadcast><GruppoBroadcast nome="Gruppo 21"><indirizzo>21</indirizzo><uscita nome="Uscita 1"><indirizzo>0</indirizzo><indirizzoNodoPadre>30</indirizzoNodoPadre></uscita></GruppoBroadcast><GruppoBroadcast nome="Gruppo 22"><indirizzo>22</indirizzo><uscita nome="Uscita 1"><indirizzo>0</indirizzo><indirizzoNodoPadre>30</indirizzoNodoPadre></uscita></GruppoBroadcast><GruppoBroadcast nome="Gruppo 6"><indirizzo>6</indirizzo><uscita nome="Uscita 1"><indirizzo>0</indirizzo><indirizzoNodoPadre>1</indirizzoNodoPadre></uscita><uscita nome="Uscita 2"><indirizzo>1</indirizzo><indirizzoNodoPadre>1</indirizzoNodoPadre></uscita><uscita nome="Uscita 3"><indirizzo>2</indirizzo><indirizzoNodoPadre>1</indirizzoNodoPadre></uscita><uscita nome="Uscita 4"><indirizzo>3</indirizzo><indirizzoNodoPadre>1</indirizzoNodoPadre></uscita><uscita nome="Uscita 5"><indirizzo>4</indirizzo><indirizzoNodoPadre>1</indirizzoNodoPadre></uscita><uscita nome="Uscita 6"><indirizzo>5</indirizzo><indirizzoNodoPadre>1</indirizzoNodoPadre></uscita><uscita nome="Uscita 7"><indirizzo>6</indirizzo><indirizzoNodoPadre>1</indirizzoNodoPadre></uscita><uscita nome="Uscita 8"><indirizzo>7</indirizzo><indirizzoNodoPadre>1</indirizzoNodoPadre></uscita><uscita nome="Tapparella SX SU'"><indirizzo>0</indirizzo><indirizzoNodoPadre>43</indirizzoNodoPadre></uscita><uscita nome="Tapparella SX GIU'"><indirizzo>1</indirizzo><indirizzoNodoPadre>43</indirizzoNodoPadre></uscita><uscita nome="Tapparella DX SU'"><indirizzo>4</indirizzo><indirizzoNodoPadre>43</indirizzoNodoPadre></uscita><uscita nome="Tapparella DX GIU'"><indirizzo>5</indirizzo><indirizzoNodoPadre>43</indirizzoNodoPadre></uscita></GruppoBroadcast><GruppoBroadcast nome="Gruppo 4"><indirizzo>4</indirizzo><uscita nome="Faretto 1 aula corsi"><indirizzo>0</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita><uscita nome="Faretto 5 aula corsi"><indirizzo>4</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita><uscita nome="Faretto 6 aula corsi"><indirizzo>5</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita></GruppoBroadcast><GruppoBroadcast nome="Gruppo 11"><indirizzo>11</indirizzo><uscita nome="Faretto 2 aula corsi"><indirizzo>1</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita><uscita nome="Faretto 3 aula corsi"><indirizzo>2</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita><uscita nome="Faretto 4 aula corsi"><indirizzo>6</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita></GruppoBroadcast><GruppoBroadcast nome="Gruppo 12"><indirizzo>12</indirizzo><uscita nome="Faretto 1 aula corsi"><indirizzo>0</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita><uscita nome="Faretto 2 aula corsi"><indirizzo>1</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita><uscita nome="Faretto 3 aula corsi"><indirizzo>2</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita><uscita nome="Uscita 4"><indirizzo>3</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita><uscita nome="Faretto 5 aula corsi"><indirizzo>4</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita><uscita nome="Faretto 6 aula corsi"><indirizzo>5</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita><uscita nome="Faretto 4 aula corsi"><indirizzo>6</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita></GruppoBroadcast><GruppoBroadcast nome="Gruppo 3"><indirizzo>3</indirizzo><uscita nome="Faretto 1 aula corsi"><indirizzo>0</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita><uscita nome="Faretto 2 aula corsi"><indirizzo>1</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita><uscita nome="Faretto 3 aula corsi"><indirizzo>2</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita><uscita nome="Faretto 5 aula corsi"><indirizzo>4</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita><uscita nome="Faretto 6 aula corsi"><indirizzo>5</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita><uscita nome="Faretto 4 aula corsi"><indirizzo>6</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita><uscita nome="Uscita 8"><indirizzo>7</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita></GruppoBroadcast><GruppoBroadcast nome="Gruppo 5"><indirizzo>5</indirizzo><uscita nome="Uscita 4"><indirizzo>3</indirizzo><indirizzoNodoPadre>5</indirizzoNodoPadre></uscita><uscita nome="Uscita 5"><indirizzo>4</indirizzo><indirizzoNodoPadre>5</indirizzoNodoPadre></uscita><uscita nome="Uscita 1"><indirizzo>0</indirizzo><indirizzoNodoPadre>30</indirizzoNodoPadre></uscita><uscita nome="Faretto 1 aula corsi"><indirizzo>0</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita><uscita nome="Faretto 2 aula corsi"><indirizzo>1</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita><uscita nome="Faretto 3 aula corsi"><indirizzo>2</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita><uscita nome="Faretto 5 aula corsi"><indirizzo>4</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita><uscita nome="Faretto 6 aula corsi"><indirizzo>5</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita><uscita nome="Faretto 4 aula corsi"><indirizzo>6</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita><uscita nome="Uscita 8"><indirizzo>7</indirizzo><indirizzoNodoPadre>6</indirizzoNodoPadre></uscita></GruppoBroadcast></edsnetwork></home>
+<home>
+	<edsnetwork nome="Impianto Rilevato">
+		<dispositivo nome="Comando tapparelle aula corsi (88,51)">
+			<indirizzo>1</indirizzo>
+			<modello>88</modello>
+			<versione>51</versione>
+			<uscita nome="Uscita 1">
+				<indirizzo>0</indirizzo>
+				<tipo>7</tipo>
+				<ritardo>30</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>0</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>1</gruppoDisattivazione>
+				<gruppiAppartenenza>6;7;13;0</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Uscita 2">
+				<indirizzo>1</indirizzo>
+				<tipo>7</tipo>
+				<ritardo>25</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>0</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>6;7;13;0</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Uscita 3">
+				<indirizzo>2</indirizzo>
+				<tipo>7</tipo>
+				<ritardo>30</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>0</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>1</gruppoDisattivazione>
+				<gruppiAppartenenza>6;13;0;0</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Uscita 4">
+				<indirizzo>3</indirizzo>
+				<tipo>7</tipo>
+				<ritardo>25</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>0</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>6;13;0;0</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Uscita 5">
+				<indirizzo>4</indirizzo>
+				<tipo>7</tipo>
+				<ritardo>30</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>0</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>1</gruppoDisattivazione>
+				<gruppiAppartenenza>6;7;13;0</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Uscita 6">
+				<indirizzo>5</indirizzo>
+				<tipo>7</tipo>
+				<ritardo>25</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>0</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>6;7;13;0</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Uscita 7">
+				<indirizzo>6</indirizzo>
+				<tipo>7</tipo>
+				<ritardo>30</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>0</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>6;0;0;0</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Uscita 8">
+				<indirizzo>7</indirizzo>
+				<tipo>7</tipo>
+				<ritardo>25</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>0</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>6;0;0;0</gruppiAppartenenza>
+			</uscita>
+			<ingresso nome="Tapparella SX SU'">
+				<indirizzo>1</indirizzo>
+				<dispositivoControllato>43</dispositivoControllato>
+				<uscitaControllata>0</uscitaControllata>
+				<sincronizzato>0</sincronizzato>
+				<sicuro>0</sicuro>
+				<invertito>0</invertito>
+				<disattivazione>0</disattivazione>
+				<monostabile>1</monostabile>
+				<gruppiAppartenenza>0</gruppiAppartenenza>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppoPassoPasso>0</gruppoPassoPasso>
+			</ingresso>
+			<ingresso nome="Tapparella SX GIU'">
+				<indirizzo>2</indirizzo>
+				<dispositivoControllato>43</dispositivoControllato>
+				<uscitaControllata>1</uscitaControllata>
+				<sincronizzato>0</sincronizzato>
+				<sicuro>0</sicuro>
+				<invertito>0</invertito>
+				<disattivazione>0</disattivazione>
+				<monostabile>1</monostabile>
+				<gruppiAppartenenza>0</gruppiAppartenenza>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppoPassoPasso>0</gruppoPassoPasso>
+			</ingresso>
+			<ingresso nome="Ingresso 3">
+				<indirizzo>3</indirizzo>
+				<dispositivoControllato>43</dispositivoControllato>
+				<uscitaControllata>2</uscitaControllata>
+				<sincronizzato>0</sincronizzato>
+				<sicuro>0</sicuro>
+				<invertito>0</invertito>
+				<disattivazione>0</disattivazione>
+				<monostabile>1</monostabile>
+				<gruppiAppartenenza>0</gruppiAppartenenza>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppoPassoPasso>0</gruppoPassoPasso>
+			</ingresso>
+			<ingresso nome="Ingresso 4">
+				<indirizzo>4</indirizzo>
+				<dispositivoControllato>43</dispositivoControllato>
+				<uscitaControllata>3</uscitaControllata>
+				<sincronizzato>0</sincronizzato>
+				<sicuro>0</sicuro>
+				<invertito>0</invertito>
+				<disattivazione>0</disattivazione>
+				<monostabile>1</monostabile>
+				<gruppiAppartenenza>0</gruppiAppartenenza>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppoPassoPasso>0</gruppoPassoPasso>
+			</ingresso>
+			<ingresso nome="Tapparella DX SU'">
+				<indirizzo>5</indirizzo>
+				<dispositivoControllato>43</dispositivoControllato>
+				<uscitaControllata>4</uscitaControllata>
+				<sincronizzato>0</sincronizzato>
+				<sicuro>0</sicuro>
+				<invertito>0</invertito>
+				<disattivazione>0</disattivazione>
+				<monostabile>1</monostabile>
+				<gruppiAppartenenza>0</gruppiAppartenenza>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppoPassoPasso>0</gruppoPassoPasso>
+			</ingresso>
+			<ingresso nome="Tapparella DX GIU'">
+				<indirizzo>6</indirizzo>
+				<dispositivoControllato>43</dispositivoControllato>
+				<uscitaControllata>5</uscitaControllata>
+				<sincronizzato>0</sincronizzato>
+				<sicuro>0</sicuro>
+				<invertito>0</invertito>
+				<disattivazione>0</disattivazione>
+				<monostabile>1</monostabile>
+				<gruppiAppartenenza>0</gruppiAppartenenza>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppoPassoPasso>0</gruppoPassoPasso>
+			</ingresso>
+			<ingresso nome="Ingresso 7">
+				<indirizzo>7</indirizzo>
+				<dispositivoControllato>43</dispositivoControllato>
+				<uscitaControllata>6</uscitaControllata>
+				<sincronizzato>0</sincronizzato>
+				<sicuro>0</sicuro>
+				<invertito>0</invertito>
+				<disattivazione>0</disattivazione>
+				<monostabile>1</monostabile>
+				<gruppiAppartenenza>0</gruppiAppartenenza>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppoPassoPasso>0</gruppoPassoPasso>
+			</ingresso>
+			<ingresso nome="Ingresso 8">
+				<indirizzo>8</indirizzo>
+				<dispositivoControllato>43</dispositivoControllato>
+				<uscitaControllata>7</uscitaControllata>
+				<sincronizzato>0</sincronizzato>
+				<sicuro>0</sicuro>
+				<invertito>0</invertito>
+				<disattivazione>0</disattivazione>
+				<monostabile>1</monostabile>
+				<gruppiAppartenenza>0</gruppiAppartenenza>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppoPassoPasso>0</gruppoPassoPasso>
+			</ingresso>
+		</dispositivo>
+		<dispositivo nome="Schermo proiezione aula corsi (88,47)">
+			<indirizzo>5</indirizzo>
+			<modello>88</modello>
+			<versione>47</versione>
+			<uscita nome="Schermo proiezione SU'">
+				<indirizzo>0</indirizzo>
+				<tipo>7</tipo>
+				<ritardo>30</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>0</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>0;0;0;0</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Schermo proiezione GIU'">
+				<indirizzo>1</indirizzo>
+				<tipo>7</tipo>
+				<ritardo>30</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>0</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>0;0;0;0</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Uscita 3">
+				<indirizzo>2</indirizzo>
+				<tipo>3</tipo>
+				<ritardo>0</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>1</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>13;0;0;0</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Uscita 4">
+				<indirizzo>3</indirizzo>
+				<tipo>0</tipo>
+				<ritardo>0</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>0</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>5;13;0;0</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Uscita 5">
+				<indirizzo>4</indirizzo>
+				<tipo>3</tipo>
+				<ritardo>0</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>0</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>5;13;0;0</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Uscita 6">
+				<indirizzo>5</indirizzo>
+				<tipo>2</tipo>
+				<ritardo>3</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>0</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>1;0;0;0</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Uscita 7">
+				<indirizzo>6</indirizzo>
+				<tipo>0</tipo>
+				<ritardo>0</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>0</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>1;0;0;0</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Uscita 8">
+				<indirizzo>7</indirizzo>
+				<tipo>0</tipo>
+				<ritardo>0</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>0</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>0;0;0;0</gruppiAppartenenza>
+			</uscita>
+			<ingresso nome="Ingresso 1">
+				<indirizzo>1</indirizzo>
+				<dispositivoControllato>5</dispositivoControllato>
+				<uscitaControllata>0</uscitaControllata>
+				<sincronizzato>0</sincronizzato>
+				<sicuro>0</sicuro>
+				<invertito>0</invertito>
+				<disattivazione>0</disattivazione>
+				<monostabile>1</monostabile>
+				<gruppiAppartenenza>0</gruppiAppartenenza>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppoPassoPasso>0</gruppoPassoPasso>
+			</ingresso>
+			<ingresso nome="Ingresso 2">
+				<indirizzo>2</indirizzo>
+				<dispositivoControllato>5</dispositivoControllato>
+				<uscitaControllata>1</uscitaControllata>
+				<sincronizzato>0</sincronizzato>
+				<sicuro>0</sicuro>
+				<invertito>0</invertito>
+				<disattivazione>0</disattivazione>
+				<monostabile>1</monostabile>
+				<gruppiAppartenenza>0</gruppiAppartenenza>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppoPassoPasso>0</gruppoPassoPasso>
+			</ingresso>
+			<ingresso nome="Ingresso 3">
+				<indirizzo>3</indirizzo>
+				<dispositivoControllato>0</dispositivoControllato>
+				<uscitaControllata>0</uscitaControllata>
+				<sincronizzato>0</sincronizzato>
+				<sicuro>0</sicuro>
+				<invertito>0</invertito>
+				<disattivazione>0</disattivazione>
+				<monostabile>0</monostabile>
+				<gruppiAppartenenza>0</gruppiAppartenenza>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppoPassoPasso>0</gruppoPassoPasso>
+			</ingresso>
+			<ingresso nome="Ingresso 4">
+				<indirizzo>4</indirizzo>
+				<dispositivoControllato>5</dispositivoControllato>
+				<uscitaControllata>3</uscitaControllata>
+				<sincronizzato>0</sincronizzato>
+				<sicuro>0</sicuro>
+				<invertito>0</invertito>
+				<disattivazione>0</disattivazione>
+				<monostabile>1</monostabile>
+				<gruppiAppartenenza>0</gruppiAppartenenza>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppoPassoPasso>0</gruppoPassoPasso>
+			</ingresso>
+			<ingresso nome="Ingresso 5">
+				<indirizzo>5</indirizzo>
+				<dispositivoControllato>5</dispositivoControllato>
+				<uscitaControllata>4</uscitaControllata>
+				<sincronizzato>0</sincronizzato>
+				<sicuro>0</sicuro>
+				<invertito>0</invertito>
+				<disattivazione>0</disattivazione>
+				<monostabile>1</monostabile>
+				<gruppiAppartenenza>0</gruppiAppartenenza>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppoPassoPasso>0</gruppoPassoPasso>
+			</ingresso>
+			<ingresso nome="Ingresso 6">
+				<indirizzo>6</indirizzo>
+				<dispositivoControllato>5</dispositivoControllato>
+				<uscitaControllata>5</uscitaControllata>
+				<sincronizzato>0</sincronizzato>
+				<sicuro>0</sicuro>
+				<invertito>0</invertito>
+				<disattivazione>0</disattivazione>
+				<monostabile>1</monostabile>
+				<gruppiAppartenenza>0</gruppiAppartenenza>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppoPassoPasso>0</gruppoPassoPasso>
+			</ingresso>
+			<ingresso nome="Ingresso 7">
+				<indirizzo>7</indirizzo>
+				<dispositivoControllato>0</dispositivoControllato>
+				<uscitaControllata>0</uscitaControllata>
+				<sincronizzato>0</sincronizzato>
+				<sicuro>0</sicuro>
+				<invertito>0</invertito>
+				<disattivazione>0</disattivazione>
+				<monostabile>0</monostabile>
+				<gruppiAppartenenza>1</gruppiAppartenenza>
+				<gruppoDisattivazione>1</gruppoDisattivazione>
+				<gruppoPassoPasso>0</gruppoPassoPasso>
+			</ingresso>
+			<ingresso nome="Ingresso 8">
+				<indirizzo>8</indirizzo>
+				<dispositivoControllato>5</dispositivoControllato>
+				<uscitaControllata>7</uscitaControllata>
+				<sincronizzato>0</sincronizzato>
+				<sicuro>0</sicuro>
+				<invertito>0</invertito>
+				<disattivazione>0</disattivazione>
+				<monostabile>1</monostabile>
+				<gruppiAppartenenza>0</gruppiAppartenenza>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppoPassoPasso>0</gruppoPassoPasso>
+			</ingresso>
+		</dispositivo>
+		<dispositivo nome="Dimmer aula corsi (102,16)">
+			<indirizzo>30</indirizzo>
+			<modello>102</modello>
+			<versione>16</versione>
+			<uscita nome="Uscita 1">
+				<indirizzo>0</indirizzo>
+				<tipo>29</tipo>
+				<ritardo>180</ritardo>
+				<ritardata>44</ritardata>
+				<invertita>0</invertita>
+				<volatile>30</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<ValoreMinimo>5</ValoreMinimo>
+				<ValoreMassimo>95</ValoreMassimo>
+				<gruppiAppartenenza>4083;4084;1941;3222;4069;4064;4064;4064
+				</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Uscita 2">
+				<indirizzo>1</indirizzo>
+				<tipo>29</tipo>
+				<ritardo>180</ritardo>
+				<ritardata>25</ritardata>
+				<invertita>0</invertita>
+				<volatile>30</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<ValoreMinimo>2</ValoreMinimo>
+				<ValoreMassimo>95</ValoreMassimo>
+				<gruppiAppartenenza>4064;4064;4064;4064;4064;4064;4064;4064
+				</gruppiAppartenenza>
+			</uscita>
+		</dispositivo>
+		<dispositivo nome="Modulo tapparelle aula corsi (8,53)">
+			<indirizzo>43</indirizzo>
+			<modello>8</modello>
+			<versione>53</versione>
+			<uscita nome="Tapparella SX SU'">
+				<indirizzo>0</indirizzo>
+				<tipo>7</tipo>
+				<ritardo>30</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>0</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>1</gruppoDisattivazione>
+				<gruppiAppartenenza>6;0;0;0</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Tapparella SX GIU'">
+				<indirizzo>1</indirizzo>
+				<tipo>7</tipo>
+				<ritardo>30</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>0</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>6;0;0;0</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Uscita 3">
+				<indirizzo>2</indirizzo>
+				<tipo>7</tipo>
+				<ritardo>30</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>0</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>0;0;0;0</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Uscita 4">
+				<indirizzo>3</indirizzo>
+				<tipo>7</tipo>
+				<ritardo>30</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>0</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>0;0;0;0</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Tapparella DX SU'">
+				<indirizzo>4</indirizzo>
+				<tipo>7</tipo>
+				<ritardo>30</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>0</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>1</gruppoDisattivazione>
+				<gruppiAppartenenza>6;0;0;0</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Tapparella DX GIU'">
+				<indirizzo>5</indirizzo>
+				<tipo>7</tipo>
+				<ritardo>30</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>0</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>6;0;0;0</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Uscita 7">
+				<indirizzo>6</indirizzo>
+				<tipo>7</tipo>
+				<ritardo>30</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>0</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>0;0;0;0</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Uscita 8">
+				<indirizzo>7</indirizzo>
+				<tipo>7</tipo>
+				<ritardo>30</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>0</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>0;0;0;0</gruppiAppartenenza>
+			</uscita>
+		</dispositivo>
+		<dispositivo nome="Modulo faretti aula corsi (88,47)">
+			<indirizzo>6</indirizzo>
+			<modello>88</modello>
+			<versione>47</versione>
+			<uscita nome="Faretto 1 aula corsi">
+				<indirizzo>0</indirizzo>
+				<tipo>3</tipo>
+				<ritardo>0</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>1</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>3;4;5;12</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Faretto 2 aula corsi">
+				<indirizzo>1</indirizzo>
+				<tipo>3</tipo>
+				<ritardo>0</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>1</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>3;11;5;12</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Faretto 3 aula corsi">
+				<indirizzo>2</indirizzo>
+				<tipo>3</tipo>
+				<ritardo>0</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>1</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>3;11;5;12</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Uscita 4">
+				<indirizzo>3</indirizzo>
+				<tipo>3</tipo>
+				<ritardo>0</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>1</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>12;0;0;0</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Faretto 5 aula corsi">
+				<indirizzo>4</indirizzo>
+				<tipo>3</tipo>
+				<ritardo>0</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>1</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>3;4;5;12</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Faretto 6 aula corsi">
+				<indirizzo>5</indirizzo>
+				<tipo>3</tipo>
+				<ritardo>0</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>1</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>3;4;5;12</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Faretto 4 aula corsi">
+				<indirizzo>6</indirizzo>
+				<tipo>3</tipo>
+				<ritardo>0</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>1</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>3;11;5;12</gruppiAppartenenza>
+			</uscita>
+			<uscita nome="Uscita 8">
+				<indirizzo>7</indirizzo>
+				<tipo>3</tipo>
+				<ritardo>0</ritardo>
+				<ritardata>0</ritardata>
+				<invertita>1</invertita>
+				<volatile>0</volatile>
+				<desyncGruppo>0</desyncGruppo>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppiAppartenenza>3;0;5;0</gruppiAppartenenza>
+			</uscita>
+			<ingresso nome="Ingresso 1">
+				<indirizzo>1</indirizzo>
+				<dispositivoControllato>6</dispositivoControllato>
+				<uscitaControllata>0</uscitaControllata>
+				<sincronizzato>0</sincronizzato>
+				<sicuro>0</sicuro>
+				<invertito>0</invertito>
+				<disattivazione>0</disattivazione>
+				<monostabile>1</monostabile>
+				<gruppiAppartenenza>0</gruppiAppartenenza>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppoPassoPasso>0</gruppoPassoPasso>
+			</ingresso>
+			<ingresso nome="Ingresso 2">
+				<indirizzo>2</indirizzo>
+				<dispositivoControllato>6</dispositivoControllato>
+				<uscitaControllata>1</uscitaControllata>
+				<sincronizzato>0</sincronizzato>
+				<sicuro>0</sicuro>
+				<invertito>0</invertito>
+				<disattivazione>0</disattivazione>
+				<monostabile>1</monostabile>
+				<gruppiAppartenenza>0</gruppiAppartenenza>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppoPassoPasso>0</gruppoPassoPasso>
+			</ingresso>
+			<ingresso nome="Ingresso 3">
+				<indirizzo>3</indirizzo>
+				<dispositivoControllato>6</dispositivoControllato>
+				<uscitaControllata>0</uscitaControllata>
+				<sincronizzato>0</sincronizzato>
+				<sicuro>0</sicuro>
+				<invertito>0</invertito>
+				<disattivazione>0</disattivazione>
+				<monostabile>1</monostabile>
+				<gruppiAppartenenza>0</gruppiAppartenenza>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppoPassoPasso>0</gruppoPassoPasso>
+			</ingresso>
+			<ingresso nome="Ingresso 4">
+				<indirizzo>4</indirizzo>
+				<dispositivoControllato>6</dispositivoControllato>
+				<uscitaControllata>3</uscitaControllata>
+				<sincronizzato>0</sincronizzato>
+				<sicuro>0</sicuro>
+				<invertito>0</invertito>
+				<disattivazione>0</disattivazione>
+				<monostabile>1</monostabile>
+				<gruppiAppartenenza>0</gruppiAppartenenza>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppoPassoPasso>0</gruppoPassoPasso>
+			</ingresso>
+			<ingresso nome="Ingresso 5">
+				<indirizzo>5</indirizzo>
+				<dispositivoControllato>6</dispositivoControllato>
+				<uscitaControllata>4</uscitaControllata>
+				<sincronizzato>0</sincronizzato>
+				<sicuro>0</sicuro>
+				<invertito>0</invertito>
+				<disattivazione>0</disattivazione>
+				<monostabile>1</monostabile>
+				<gruppiAppartenenza>0</gruppiAppartenenza>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppoPassoPasso>0</gruppoPassoPasso>
+			</ingresso>
+			<ingresso nome="Ingresso 6">
+				<indirizzo>6</indirizzo>
+				<dispositivoControllato>6</dispositivoControllato>
+				<uscitaControllata>5</uscitaControllata>
+				<sincronizzato>0</sincronizzato>
+				<sicuro>0</sicuro>
+				<invertito>0</invertito>
+				<disattivazione>0</disattivazione>
+				<monostabile>1</monostabile>
+				<gruppiAppartenenza>0</gruppiAppartenenza>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppoPassoPasso>0</gruppoPassoPasso>
+			</ingresso>
+			<ingresso nome="Ingresso 7">
+				<indirizzo>7</indirizzo>
+				<dispositivoControllato>6</dispositivoControllato>
+				<uscitaControllata>6</uscitaControllata>
+				<sincronizzato>0</sincronizzato>
+				<sicuro>0</sicuro>
+				<invertito>0</invertito>
+				<disattivazione>0</disattivazione>
+				<monostabile>1</monostabile>
+				<gruppiAppartenenza>0</gruppiAppartenenza>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppoPassoPasso>0</gruppoPassoPasso>
+			</ingresso>
+			<ingresso nome="Ingresso 8">
+				<indirizzo>8</indirizzo>
+				<dispositivoControllato>6</dispositivoControllato>
+				<uscitaControllata>7</uscitaControllata>
+				<sincronizzato>0</sincronizzato>
+				<sicuro>0</sicuro>
+				<invertito>0</invertito>
+				<disattivazione>0</disattivazione>
+				<monostabile>1</monostabile>
+				<gruppiAppartenenza>0</gruppiAppartenenza>
+				<gruppoDisattivazione>0</gruppoDisattivazione>
+				<gruppoPassoPasso>0</gruppoPassoPasso>
+			</ingresso>
+		</dispositivo>
+		<GruppoBroadcast nome="Gruppo 2">
+			<indirizzo>2</indirizzo>
+		</GruppoBroadcast>
+		<GruppoBroadcast nome="Gruppo 10">
+			<indirizzo>10</indirizzo>
+		</GruppoBroadcast>
+		<GruppoBroadcast nome="Gruppo 9">
+			<indirizzo>9</indirizzo>
+		</GruppoBroadcast>
+		<GruppoBroadcast nome="Gruppo 8">
+			<indirizzo>8</indirizzo>
+		</GruppoBroadcast>
+		<GruppoBroadcast nome="Gruppo 7">
+			<indirizzo>7</indirizzo>
+			<uscita nome="Uscita 1">
+				<indirizzo>0</indirizzo>
+				<indirizzoNodoPadre>1</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Uscita 2">
+				<indirizzo>1</indirizzo>
+				<indirizzoNodoPadre>1</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Uscita 5">
+				<indirizzo>4</indirizzo>
+				<indirizzoNodoPadre>1</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Uscita 6">
+				<indirizzo>5</indirizzo>
+				<indirizzoNodoPadre>1</indirizzoNodoPadre>
+			</uscita>
+		</GruppoBroadcast>
+		<GruppoBroadcast nome="Gruppo 13">
+			<indirizzo>13</indirizzo>
+			<uscita nome="Uscita 1">
+				<indirizzo>0</indirizzo>
+				<indirizzoNodoPadre>1</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Uscita 2">
+				<indirizzo>1</indirizzo>
+				<indirizzoNodoPadre>1</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Uscita 3">
+				<indirizzo>2</indirizzo>
+				<indirizzoNodoPadre>1</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Uscita 4">
+				<indirizzo>3</indirizzo>
+				<indirizzoNodoPadre>1</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Uscita 5">
+				<indirizzo>4</indirizzo>
+				<indirizzoNodoPadre>1</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Uscita 6">
+				<indirizzo>5</indirizzo>
+				<indirizzoNodoPadre>1</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Uscita 3">
+				<indirizzo>2</indirizzo>
+				<indirizzoNodoPadre>5</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Uscita 4">
+				<indirizzo>3</indirizzo>
+				<indirizzoNodoPadre>5</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Uscita 5">
+				<indirizzo>4</indirizzo>
+				<indirizzoNodoPadre>5</indirizzoNodoPadre>
+			</uscita>
+		</GruppoBroadcast>
+		<GruppoBroadcast nome="Gruppo 1">
+			<indirizzo>1</indirizzo>
+			<uscita nome="Uscita 6">
+				<indirizzo>5</indirizzo>
+				<indirizzoNodoPadre>5</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Uscita 7">
+				<indirizzo>6</indirizzo>
+				<indirizzoNodoPadre>5</indirizzoNodoPadre>
+			</uscita>
+			<ingresso nome="Ingresso 7">
+				<indirizzo>7</indirizzo>
+				<indirizzoNodoPadre>5</indirizzoNodoPadre>
+			</ingresso>
+		</GruppoBroadcast>
+		<GruppoBroadcast nome="Gruppo 19">
+			<indirizzo>19</indirizzo>
+			<uscita nome="Uscita 1">
+				<indirizzo>0</indirizzo>
+				<indirizzoNodoPadre>30</indirizzoNodoPadre>
+			</uscita>
+		</GruppoBroadcast>
+		<GruppoBroadcast nome="Gruppo 20">
+			<indirizzo>20</indirizzo>
+			<uscita nome="Uscita 1">
+				<indirizzo>0</indirizzo>
+				<indirizzoNodoPadre>30</indirizzoNodoPadre>
+			</uscita>
+		</GruppoBroadcast>
+		<GruppoBroadcast nome="Gruppo 21">
+			<indirizzo>21</indirizzo>
+			<uscita nome="Uscita 1">
+				<indirizzo>0</indirizzo>
+				<indirizzoNodoPadre>30</indirizzoNodoPadre>
+			</uscita>
+		</GruppoBroadcast>
+		<GruppoBroadcast nome="Gruppo 22">
+			<indirizzo>22</indirizzo>
+			<uscita nome="Uscita 1">
+				<indirizzo>0</indirizzo>
+				<indirizzoNodoPadre>30</indirizzoNodoPadre>
+			</uscita>
+		</GruppoBroadcast>
+		<GruppoBroadcast nome="Gruppo 6">
+			<indirizzo>6</indirizzo>
+			<uscita nome="Uscita 1">
+				<indirizzo>0</indirizzo>
+				<indirizzoNodoPadre>1</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Uscita 2">
+				<indirizzo>1</indirizzo>
+				<indirizzoNodoPadre>1</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Uscita 3">
+				<indirizzo>2</indirizzo>
+				<indirizzoNodoPadre>1</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Uscita 4">
+				<indirizzo>3</indirizzo>
+				<indirizzoNodoPadre>1</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Uscita 5">
+				<indirizzo>4</indirizzo>
+				<indirizzoNodoPadre>1</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Uscita 6">
+				<indirizzo>5</indirizzo>
+				<indirizzoNodoPadre>1</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Uscita 7">
+				<indirizzo>6</indirizzo>
+				<indirizzoNodoPadre>1</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Uscita 8">
+				<indirizzo>7</indirizzo>
+				<indirizzoNodoPadre>1</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Tapparella SX SU'">
+				<indirizzo>0</indirizzo>
+				<indirizzoNodoPadre>43</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Tapparella SX GIU'">
+				<indirizzo>1</indirizzo>
+				<indirizzoNodoPadre>43</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Tapparella DX SU'">
+				<indirizzo>4</indirizzo>
+				<indirizzoNodoPadre>43</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Tapparella DX GIU'">
+				<indirizzo>5</indirizzo>
+				<indirizzoNodoPadre>43</indirizzoNodoPadre>
+			</uscita>
+		</GruppoBroadcast>
+		<GruppoBroadcast nome="Gruppo 4">
+			<indirizzo>4</indirizzo>
+			<uscita nome="Faretto 1 aula corsi">
+				<indirizzo>0</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Faretto 5 aula corsi">
+				<indirizzo>4</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Faretto 6 aula corsi">
+				<indirizzo>5</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+		</GruppoBroadcast>
+		<GruppoBroadcast nome="Gruppo 11">
+			<indirizzo>11</indirizzo>
+			<uscita nome="Faretto 2 aula corsi">
+				<indirizzo>1</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Faretto 3 aula corsi">
+				<indirizzo>2</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Faretto 4 aula corsi">
+				<indirizzo>6</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+		</GruppoBroadcast>
+		<GruppoBroadcast nome="Gruppo 12">
+			<indirizzo>12</indirizzo>
+			<uscita nome="Faretto 1 aula corsi">
+				<indirizzo>0</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Faretto 2 aula corsi">
+				<indirizzo>1</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Faretto 3 aula corsi">
+				<indirizzo>2</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Uscita 4">
+				<indirizzo>3</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Faretto 5 aula corsi">
+				<indirizzo>4</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Faretto 6 aula corsi">
+				<indirizzo>5</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Faretto 4 aula corsi">
+				<indirizzo>6</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+		</GruppoBroadcast>
+		<GruppoBroadcast nome="Gruppo 3">
+			<indirizzo>3</indirizzo>
+			<uscita nome="Faretto 1 aula corsi">
+				<indirizzo>0</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Faretto 2 aula corsi">
+				<indirizzo>1</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Faretto 3 aula corsi">
+				<indirizzo>2</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Faretto 5 aula corsi">
+				<indirizzo>4</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Faretto 6 aula corsi">
+				<indirizzo>5</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Faretto 4 aula corsi">
+				<indirizzo>6</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Uscita 8">
+				<indirizzo>7</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+		</GruppoBroadcast>
+		<GruppoBroadcast nome="Gruppo 5">
+			<indirizzo>5</indirizzo>
+			<uscita nome="Uscita 4">
+				<indirizzo>3</indirizzo>
+				<indirizzoNodoPadre>5</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Uscita 5">
+				<indirizzo>4</indirizzo>
+				<indirizzoNodoPadre>5</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Uscita 1">
+				<indirizzo>0</indirizzo>
+				<indirizzoNodoPadre>30</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Faretto 1 aula corsi">
+				<indirizzo>0</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Faretto 2 aula corsi">
+				<indirizzo>1</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Faretto 3 aula corsi">
+				<indirizzo>2</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Faretto 5 aula corsi">
+				<indirizzo>4</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Faretto 6 aula corsi">
+				<indirizzo>5</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Faretto 4 aula corsi">
+				<indirizzo>6</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+			<uscita nome="Uscita 8">
+				<indirizzo>7</indirizzo>
+				<indirizzoNodoPadre>6</indirizzoNodoPadre>
+			</uscita>
+		</GruppoBroadcast>
+	</edsnetwork>
+</home>

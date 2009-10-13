@@ -5,10 +5,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Map.Entry;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
+import org.jabsorb.JSONRPCBridge;
+// TODO Eliminare riferimenti a jsonsimple (usare org.json di jabsorb)
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import it.ascia.ais.AISException;
@@ -19,17 +26,35 @@ import it.ascia.ais.Device;
 import it.ascia.ais.DevicePort;
 
 public class AUIControllerModule extends ControllerModule {
+	
+	public static ResourceBundle messages = ResourceBundle.getBundle("it.ascia.aui.messages");
 		
 	public AUIControllerModule() {
 		super();
+	}
+	
+	public void start() {
+		super.start();
 		Controller c = Controller.getController();
+		// TODO registrazione automatica comandi
 		c.registerCommand("get", new getCommand());
 		c.registerCommand("getAll", new getAllCommand());
-		c.registerCommand("getPorts", new getPortsCommand());
+		//c.registerCommand("getPages", new getPagesCommand());
+		//c.registerCommand("getPorts", new getPortsCommand());
 		c.registerCommand("send", new sendCommand());
 		c.registerCommand("set", new setCommand());
-	}
 
+		JSONRPCBridge.getGlobalBridge().registerCallback(new AUIInvocationCallback(), HttpServletRequest.class);
+		JSONRPCBridge.getGlobalBridge().registerObject("AUI", new AUIRPCServer(this));
+	}
+	
+	public void stop() {
+		super.stop();
+		if (JSONRPCBridge.getGlobalBridge().lookupClass("AUI") != null) {
+			JSONRPCBridge.getGlobalBridge().unregisterObject("AUI");
+		}
+	}
+	
 	/**
 	 * Lo stream viene chiuso dopo che sono stati trasmessi uno specifico numero di eventi.
 	 * Non vengono conteggiati gli eventi trasmessi all'avvio dello streaming.
@@ -224,58 +249,106 @@ public class AUIControllerModule extends ControllerModule {
 			return getAll();
 		} 
 	}
+
+	/**
+	 * @deprecated
+	 */
+	public LinkedHashMap getPages() {
+		LinkedHashMap h = new LinkedHashMap();
+		HierarchicalConfiguration auiConfig = getConfiguration();
+		List pages = auiConfig.configurationsAt("pages.page");
+		for (Iterator iPages = pages.iterator(); iPages.hasNext(); ) {
+			HierarchicalConfiguration pageConfig = (HierarchicalConfiguration) iPages.next();
+			String pageId = pageConfig.getString("[@id]");
+			logger.trace("Pagina:"+pageId);
+			HashMap p = new HashMap();
+			p.put("id", pageId);
+			p.put("src", pageConfig.getString("src"));
+			p.put("title", pageConfig.getString("title"));
+			h.put(pageId, p);
+		}
+		return h;
+	}
 	
+	/**
+	 * @deprecated
+	 */
+	class getPagesCommand implements Command {
+		public String execute(HashMap params) {
+			JSONObject j = new JSONObject();
+			j.putAll(getPages());
+			return j.toJSONString();
+		}		
+	}
+	
+	/*
+	public String getPorts() {
+		JSONArray ja = new JSONArray();
+		Device devices[] = controller.findDevices("*");
+		for (int i = 0; i < devices.length; i++) {
+			Device d = devices[i];
+			DevicePort[] ports = d.getPorts();
+			for (int j = 0; j < ports.length; j++) {
+				LinkedHashMap m = new LinkedHashMap();
+				DevicePort p = ports[j];
+				m.put("Address",p.getFullAddress());
+				m.put("Class",p.getClass().getSimpleName());
+				//m.put("DeviceClass",d.getClass().getSimpleName());
+				//m.put("DeviceInfo",d.getInfo());
+				m.put("Name",p.getName());						
+				ja.add(m);						
+			}
+			
+		}			
+		return ja.toString();
+	}
+	*/
+	
+	/*
 	class getPortsCommand implements Command {
 		public String execute(HashMap params) {
-			JSONArray ja = new JSONArray();
-			Device devices[] = controller.findDevices("*");
-			for (int i = 0; i < devices.length; i++) {
-				Device d = devices[i];
-				DevicePort[] ports = d.getPorts();
-				for (int j = 0; j < ports.length; j++) {
-					LinkedHashMap m = new LinkedHashMap();
-					DevicePort p = ports[j];
-					m.put("Address",p.getFullAddress());
-					m.put("Class",p.getClass().getSimpleName());
-					//m.put("DeviceClass",d.getClass().getSimpleName());
-					//m.put("DeviceInfo",d.getInfo());
-					m.put("Name",p.getName());						
-					ja.add(m);						
-				}
-				
-			}			
-			return ja.toString();
+			return getPorts();
 		} 
 	}
+	*/
 
+	public String set(HashMap params) {
+		// Comando "set"
+		if (params.size() == 0) {
+			throw(new AISException("mancano parametri"));
+		}
+		Iterator iterator = params.entrySet().iterator();
+		Entry entry = (Entry) iterator.next();
+		String fullAddress = (String) entry.getKey();
+		if (fullAddress == null) {
+			throw(new AISException("Parametro 'address' richiesto"));
+		}
+		String value = (String) entry.getValue();				
+		if (value == null) {
+			throw(new AISException("Parametro 'value' richiesto"));
+		}
+		DevicePort p = controller.getDevicePort(fullAddress);
+		if (p == null) {
+			throw(new AISException("Port not found"));
+		}			
+		if (p.writeValue(value)) {
+			return "OK";
+		} else {
+			return "ERROR";
+		}		
+	}
+	
 	class setCommand implements Command {
 		public String execute(HashMap params) {
-			// Comando "set"
-			if (params.size() == 0) {
-				throw(new AISException("mancano parametri"));
-			}
-			Iterator iterator = params.entrySet().iterator();
-			Entry entry = (Entry) iterator.next();
-			String fullAddress = (String) entry.getKey();
-			if (fullAddress == null) {
-				throw(new AISException("Parametro 'address' richiesto"));
-			}
-			String value = (String) entry.getValue();				
-			if (value == null) {
-				throw(new AISException("Parametro 'value' richiesto"));
-			}
-			DevicePort p = controller.getDevicePort(fullAddress);
-			if (p == null) {
-				throw(new AISException("Port not found"));
-			}			
-			if (p.writeValue(value)) {
-				return "OK";
-			} else {
-				return "ERROR";
-			}
+			return set(params);
 		}
 	}
 
+	/**
+	 * 
+	 * @param page id della pagina
+	 * @return Elenco delle porte presenti nella pagina
+	 */
 	public List getPagePorts(String page) {
 		List ports = new ArrayList();
 		Controller controller = Controller.getController();
@@ -297,16 +370,8 @@ public class AUIControllerModule extends ControllerModule {
 		return ports;
 	}
 
-	/**
-	 * FIXME Experimental
-	 * @param id
-	 * @param title
-	 */
-	public void addPage(String id, String title) {
-		if (configuration.getProperty("pages.page[@id='"+id+"']") != null) {
-			throw(new AISException("Duplicated page id="+id));
-		}
-		configuration.addProperty("pages.page(-1).id", id);	
+	public String getImagesPath() {
+		return getConfiguration().getString("images","/images/");
 	}
-
+	
 }

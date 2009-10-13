@@ -24,7 +24,7 @@ public class DXPConnector extends Connector {
 		if (mp.isValid()) {
 			DXPMessage m = (DXPMessage) mp.getMessage();
 			if (m != null) {
-				receiveQueue.offer(m);
+				dispatchMessage(m);
 			}
 		}    	
 	}

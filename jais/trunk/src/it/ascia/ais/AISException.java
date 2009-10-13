@@ -13,9 +13,13 @@ public class AISException extends RuntimeException {
 	/**
 	 * Costruttore.
 	 * 
-	 * @param arg0 messaggio di errore.
+	 * @param message messaggio di errore.
 	 */
-	public AISException(String arg0) {
-		super(arg0);
+	public AISException(String message) {
+		super(message);
+	}
+
+	public AISException(String message, Throwable cause) {
+		super(message, cause);
 	}
 }

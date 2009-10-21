@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 /**
+ * TODO Incorporare in AUIServlet
  * @author Sergio
  *
  */

@@ -14,6 +14,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
+/**
+ * TODO Incorporare in AUIServlet 
+ * @author Sergio
+ *
+ */
+
 public class AUICommandServlet extends HttpServlet {
 
 	private Logger logger;

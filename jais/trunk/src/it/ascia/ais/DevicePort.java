@@ -144,6 +144,7 @@ public abstract class DevicePort {
 	/**
 	 * Ritorna il valore della porta. Se il valore non risulta aggiornato,
 	 * invoca Device.updatePort() per richiederne l'aggiornamento.
+	 * Questo metodo e' sincrono.
 	 * 
 	 * @return Oggetto memorizzato in cache o null
 	 * @throws AISException
@@ -163,6 +164,8 @@ public abstract class DevicePort {
 	 * essere aggiornato con setValue(), che interrompe subito l'attesa di
 	 * readValue() Se il valore non e' aggiornato, restituisce il valore in
 	 * cache
+	 * 
+	 * TODO: updatePort e' sincrona, va quindi cambiata la logica
 	 * 
 	 * @return
 	 */
@@ -340,6 +343,22 @@ public abstract class DevicePort {
 	 */
 	public String getAsText() {
 		return getValue().toString();
+	}
+
+	/**
+	 * Ritorna l'indice del tag che corrisponde al valore
+	 */
+	public Integer getTagIndex() {
+		String tag = getAsText();
+		if (tags == null) {
+			return null;
+		}
+		for(int i=0; i < tags.length; i++) {
+			if (tags[i].equalsIgnoreCase(tag)) {
+				return new Integer(i);
+			}
+		}
+		throw(new AISException("Internal mode is invalid: " + tag));
 	}
 
 	/**

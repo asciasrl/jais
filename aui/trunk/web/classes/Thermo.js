@@ -18,4 +18,23 @@ if (!AUI.Thermo) {
 			(this.getLabel()).innerHTML = s + "°C";
 		}
 	}
+	
+	AUI.Thermo.prototype.onMouseDown = function(event) {
+		if (event.preventDefault) {
+			event.preventDefault();
+		} else {
+			event.returnValue = false;
+		}
+		if (event.stopPropagation) {
+			event.stopPropagation();
+		} else if (window.event) {
+			window.event.cancelBubble = true;
+		} 
+		var self = this;
+		var control = this.getControl();
+		if (control.model != undefined && control.model == "eds.regt") {
+			window.location.href="eds.regt.jsp?address="+control.address+"&page="+AUI.Pages.getCurrentName();
+		}
+	}
+
 }

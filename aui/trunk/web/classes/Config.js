@@ -52,7 +52,7 @@ if (!AUI.Config) {
 				
 				// test
 				if (!this.jsonrpc.AUI.isLogged()) {
-					//if (console) this.login("utente","demo");					
+					//if (typeof(console) != 'undefined') this.login("utente","demo");					
 				}
 
 				if (this.jsonrpc.AUI.isLogged()) {
@@ -148,7 +148,7 @@ if (!AUI.Config) {
 					err.innerHTML = "Nome utente o password non corretti"
 				}
 			} catch(e) {
-				if (console) console.error(e);
+				if (typeof(console) != 'undefined') console.error(e);
 				err.innerHTML = e;
 			}
 			return false;
@@ -211,7 +211,7 @@ if (!AUI.Config) {
 			var images = this.jsonrpc.AUI.getImagesList().list;
 			var div = popup.getElement('div');
 			div.empty();
-			if (console) console.log("Immagini:"+images);
+			if (typeof(console) != 'undefined') console.log("Immagini:"+images);
 			for (var i=0; i < images.length; i++) {
 				var image = new Element('img',{
 					src: images[i], 
@@ -328,12 +328,12 @@ if (!AUI.Config) {
 		},
 		
 		statusMessage : function(s) {
-			if (console) console.info(s);
+			if (typeof(console) != 'undefined') console.info(s);
 			document.getElementById("statusbar").innerHTML = s;
 		},
 		
 		onPageClick : function(event) {
-			if (console) console.log(this);			
+			if (typeof(console) != 'undefined') console.log(this);			
 			event.preventDefault();
 			event.stopPropagation();
 			var i = this.id.substring(5);
@@ -402,7 +402,7 @@ if (!AUI.Config) {
 				var layer = c.map['layer'];
 				var id = 'control-' + page.id + '-' + c.map['[@id]'];
 				
-				// if (console != undefined) console.log(c);
+				// if (typeof(console) != 'undefined') console.log(c);
 
 				var control = new Element('div', {'id': id});
 				control.addClass('control');
@@ -446,7 +446,7 @@ if (!AUI.Config) {
 		},
 		
 		onClickControl : function(event) {
-			if (console) console.log("click control "+this.id);
+			if (typeof(console) != 'undefined') console.log("click control "+this.id);
 			AUI.Config.activateControl(this.id);
 		},
 		
@@ -477,11 +477,11 @@ if (!AUI.Config) {
 		},
 		
 		onTouchControl : function() {
-			if (console) console.info('Touch: ' + this.id);
+			if (typeof(console) != 'undefined') console.info('Touch: ' + this.id);
 		},
 		
 		onReleaseControl : function() {
-			if (console) console.info('Release: ' + this.id);
+			if (typeof(console) != 'undefined') console.info('Release: ' + this.id);
 		},
 
 		onDropControl : function(element, droppable, event) {
@@ -494,7 +494,7 @@ if (!AUI.Config) {
 			left = Math.round(left / this.snapGrid) * this.snapGrid;
 			top = Math.round(top / this.snapGrid) * this.snapGrid;
 			$(id).setStyles({'left': left + 'px', 'top': top + 'px'});
-			if (console) console.log(id+" left="+left+" top="+top);			
+			if (typeof(console) != 'undefined') console.log(id+" left="+left+" top="+top);			
 			var control = this.pages[this.currentPageIndex].controls.get(id);
 			try {
 				this.jsonrpc.AUI.setPageControl(id,{"javaClass":"java.util.Map","map":{"top": top, "left": left}});
@@ -669,7 +669,7 @@ if (!AUI.Config) {
 		},
 		
 		showLayerToggle : function(layerName) {
-			if (console) console.info(layerName);
+			if (typeof(console) != 'undefined') console.info(layerName);
 			if (this.layers.contains('all')) {
 				this.layers.empty();
 			}

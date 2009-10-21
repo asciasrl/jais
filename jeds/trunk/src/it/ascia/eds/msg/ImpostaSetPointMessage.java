@@ -78,6 +78,18 @@ public class ImpostaSetPointMessage extends PTPMessage {
 		this(d,m,temperatura,stagione(sStagione),giorno(sGiorno),ora);
 	}
 
+	/**
+	 * Imposta manualmente il setpoint corrente
+	 * @param d
+	 * @param m
+	 * @param temperatura
+	 * @param durata
+	 */
+	public ImpostaSetPointMessage(int d, int m,
+			double temperatura, int durata) {
+		this(d,m,temperatura,0,durata,31);
+	}
+
 	public ImpostaSetPointMessage(int d, int m, 
 			double temperatura,	int stagione, int giorno, int ora) {
 		this(d,m,temperatura(temperatura),decimale(temperatura),stagione,giorno,ora);

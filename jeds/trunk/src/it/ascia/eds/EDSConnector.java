@@ -158,6 +158,7 @@ public class EDSConnector extends Connector {
     			&& messageToBeAnswered.isAnsweredBy((PTPMessage) m)) {
     		if (PTPResponse.class.isInstance(m) && PTPRequest.class.isInstance(messageToBeAnswered)) {
     			((PTPResponse) m).setRequest((PTPRequest) messageToBeAnswered);
+    			((PTPRequest) messageToBeAnswered).setResponse((PTPResponse) m);
     		}
 			// sveglia sendPTPMessage
 			synchronized (messageToBeAnswered) {

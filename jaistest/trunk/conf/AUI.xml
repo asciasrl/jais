@@ -307,7 +307,8 @@
         <control id="c2">
           <title>Cronotermostato WDB</title>
           <type>thermo</type>
-          <layer>null</layer>
+          <model>eds.regt</model>
+          <layer>thermo</layer>
           <top>0</top>
           <left>500</left>
           <address>1.255:temp</address>

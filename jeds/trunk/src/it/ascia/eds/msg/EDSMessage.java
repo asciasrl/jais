@@ -3,6 +3,7 @@
  */
 package it.ascia.eds.msg;
 
+import it.ascia.ais.AISException;
 import it.ascia.ais.Message;
 
 /**
@@ -311,8 +312,7 @@ public abstract class EDSMessage extends Message implements Comparable {
 		Mittente = message[2];
 		TipoMessaggio = message[3];
 		if (TipoMessaggio != getMessageType()) {
-			// FIXME scrivere nel log
-			System.err.println("Tipo messaggio non corrisponde: "+TipoMessaggio+" <> "+getMessageType());
+			throw(new AISException("Tipo messaggio non corrisponde: "+TipoMessaggio+" <> "+getMessageType()));
 		}
 		Byte1 = message[4];
 		Byte2 = message[5];

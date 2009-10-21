@@ -5,6 +5,9 @@ import org.apache.log4j.Logger;
 /**
  * Mezzo di trasporto dei messaggi (seriale, tcp, ...) 
  * 
+ * 
+ * TODO Gestire riconnessioni: metodo Transport.connect(), metodo Connector.getTransport() effettua tentativi riconnessione
+ * 
  * @author Sergio
  *
  */

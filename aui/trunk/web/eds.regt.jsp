@@ -56,6 +56,7 @@ String skin = auiConfig.getString("skin","");
 	 	<img id="mode-chrono" src="<%=skin%>images/eds.regt.chrono-off.png" onclick="AUI.Regt.setMode('chrono');" title="Attiva il modo cronotermostato">
 	 	<img id="mode-manual" src="<%=skin%>images/eds.regt.manual-off.png" onclick="AUI.Regt.setMode('manual');" title="Attiva il modo manuale">
  	</div>
+ 	<!--
 	<div class="control" style="display: inline; width: 60px; float: left; position: relative;" onclick="AUI.Regt.activatePreset('T0');">
 	 	<div style="position: relative;"><img src="<%=skin%>images/eds.regt.T0-off.png"  title="Attiva il preset T0"></div>
 		<div id="T0" class="caption"></div>
@@ -72,6 +73,7 @@ String skin = auiConfig.getString("skin","");
 	 	<div style="position: relative;"><img src="<%=skin%>images/eds.regt.T3-off.png"  title="Attiva il preset T3"></div>
 		<div id="T3" class="caption"></div>
 	</div>
+	-->
 	<div class="control" style="display: inline; position: relative; float: left;"><img src="<%=skin%>images/thermo_up.png" onclick="AUI.Regt.setPointUp();"></div>
 	<div class="control control-thermo" style="display: inline; width: 120px; float: left; position: relative;">
 	 	<div style="position: relative;"><img src="<%=skin%>images/thermo_display.png"></div>

@@ -22,6 +22,7 @@ try {
 } catch (Exception e) {	
 }
 boolean debug = request.getParameter("debug") != null;
+
 %>
 <%
 Logger logger = Logger.getLogger("AUI");
@@ -60,7 +61,11 @@ String skin = auiConfig.getString("skin","");
 
 <%
 List pages = auiConfig.configurationsAt("pages.page");
-String startPage = auiConfig.getString("startPage",null); 	
+String startPage = auiConfig.getString("startPage",null); 
+String pagina = request.getParameter("page");
+if (pagina != null && !pagina.equals("null")) {
+	startPage = pagina;
+}
 for (Iterator it = pages.iterator(); it.hasNext();) {
 	HierarchicalConfiguration pageConfig = (HierarchicalConfiguration) it.next();
 	String pageId = pageConfig.getString("[@id]");
@@ -131,7 +136,7 @@ for (Iterator it = pages.iterator(); it.hasNext();) {
 <% 
 		} else if (type.equals("thermo")) {
 %>	
-	<div class="thermo-display" id="<%= id %>-label">-,-°C</div>
+	<div class="thermo-display" id="<%= id %>-label"  <%= eventType %>="<%= eventHandler %>">-,-°C</div>
 	<div id="<%= id %>-buttons">
 		<div id="<%= id %>-dn" class="control-button control-button-dn control-<%= type %>-dn">
 			<img id="<%= id %>-dn-img" src="<%= skin + controlConfig.getString("dn",auiConfig.getString("controls."+type+".dn")) %>" title="Down <%= controlConfig.getString("title",controlConfig.getString("address")) %>" border="0" alt="Down <%= type %>"/>

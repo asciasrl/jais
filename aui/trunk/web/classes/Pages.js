@@ -156,7 +156,11 @@ if (!AUI.Pages) {
 			return this.currentPageId;
 		}				
 	};
-	
+
+	AUI.Pages.getCurrentName = function() {
+		return this.currentPageId.substring(5);		
+	};
+
 	AUI.Pages.getLayerControls = function(layer) {
 		var pageId = this.getCurrentPageId();
 		var layers = this.pageLayers[pageId];

@@ -5,7 +5,7 @@
 	        classpath="lib/jsmin.0.2.3.jar"/>
 	
 	
-	<target name="zip" depends="jais,jeds,jaui,aui,conf">
+	<target name="zip" depends="jais,jeds,jaui,aui,conf,i18n">
 		<zip file="${dst}../aui-${v}.zip" duplicate="fail" >
 			<fileset dir="${dst}">
 				<include name="lib/**" />
@@ -19,7 +19,7 @@
 	</target>
 	
 	<target name="base">
-		<property name="version.num" value="1.05"/>		
+		<property name="version.num" value="1.06"/>		
 		<buildnumber id="build.num" file="../jais/build.num"/>
 		<tstamp>
 			<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
@@ -91,10 +91,14 @@
 
 	<target name="jaui" depends="jais">
 		<jar destfile="jaui.jar"
-		   basedir="../aui/bin"
-		   includes="**/*.class"
-		   manifest="MANIFEST.MF"
-		   />
+		   manifest="MANIFEST.MF">
+			<fileset dir="../aui/bin">
+    		<include name="**/*.class"/>
+			</fileset>
+			<fileset dir="../aui/src">
+    		<include name="**/*.properties"/>
+			</fileset>
+		</jar>
 		<delete verbose="true">
 			<fileset dir="${lib}">
 			  <include name="jaui*.jar"/>
@@ -174,6 +178,14 @@
 			</fileset>
 		</delete>
 
+	</target>
+	
+	<target name="i18n">
+		<jar destfile="${lib}i18n-${v}.jar">
+			<fileset dir="../translations/src">
+    		<include name="**/*.properties"/>
+			</fileset>
+		</jar>
 	</target>
 	
 </project>

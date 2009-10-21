@@ -30,6 +30,7 @@ if (!AUI.Dimmer) {
 	}
 	
 	AUI.Dimmer.prototype.onTimer = function() {
+		clearInterval(this.timeout);
 		if (this.mode == "sliding") {
 			return;
 		} else if (this.mode == "switching") {
@@ -124,11 +125,28 @@ if (!AUI.Dimmer) {
 		this.eventType = "mouse";
 		var self = this;
 		this.mouseUp = function(e) { return self.onMouseUp(e) }
-		this.element.addEventListener('mouseup', this.mouseUp, false);					
+		this.onContextMenuFunction = function(e) { return self.onContextMenu(e) }
+		this.element.addEventListener('mouseup', this.mouseUp, false);
+		this.element.addEventListener('contextmenu', this.onContextMenuFunction, false);
 		this.onStart();
 		return false;
 	}
 
+	AUI.Dimmer.prototype.onContextMenu = function(event) {
+		if (event.preventDefault) {
+			event.preventDefault();
+		} else {
+			event.returnValue = false;
+		}
+		if (event.stopPropagation) {
+			event.stopPropagation();
+		} else if (window.event) {
+			window.event.cancelBubble = true;
+		} 
+		this.element.removeEventListener('contextmenu', this.onContextMenuFunction, false);
+		this.onTimer();
+	}
+	
 	AUI.Dimmer.prototype.onMouseUp = function(event) {
 		if (event.preventDefault) {
 			event.preventDefault();

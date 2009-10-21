@@ -169,5 +169,14 @@ cmDraw ('mainmenu', myMenu, 'hbr', cmThemeOffice2003);
 	</form>
 </div>
 
+<div id="renamePage" class="popup">
+	<form action="http://null/" onsubmit="return false;">
+		<h3>Rinomina pagina</h3>
+		<p>Immettere il titolo della pagina corrente:</p>
+		<input type="text" size="100" name="title">
+		<button type="submit" onclick="AUI.Config.renamePageSubmit(this.form);">Aggiorna</button>
+	</form>
+</div>
+
 </body>
 </html>

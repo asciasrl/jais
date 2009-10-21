@@ -2,9 +2,14 @@ package it.ascia.ais;
 
 public class TemperatureSetpointPort extends AnalogOutputPort {
 
+	/**
+	 * Porta che viene aggiornata una volta ogni ora
+	 * @param device
+	 * @param portId
+	 */
 	public TemperatureSetpointPort(Device device, String portId) {
 		super(device, portId);
-		// TODO Auto-generated constructor stub
+		this.setCacheRetention(3600000);
 	}
 
 	public TemperatureSetpointPort(Device device, String portId, String portName) {

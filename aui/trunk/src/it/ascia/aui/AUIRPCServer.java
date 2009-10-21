@@ -44,11 +44,14 @@ public class AUIRPCServer implements Serializable {
 
 	protected AUIControllerModule aui;
 	
-    protected Logger logger;	
+    protected Logger logger;
+    
+    private Controller controller; 
 	
 	public AUIRPCServer(AUIControllerModule controllerModule ) {
 		logger = Logger.getLogger(getClass());		
 		this.aui = controllerModule;
+		controller = Controller.getController();
 	}
 	
 	public boolean isLogged(HttpSession session) {
@@ -86,6 +89,25 @@ public class AUIRPCServer implements Serializable {
 		logger.debug("Invalidate session "+session.getId());
 		session.invalidate();
 		return true;
+	}
+	
+	public Object getPortValue(HttpSession session,String fullAddress) {
+		DevicePort p = controller.getDevicePort(fullAddress);
+		if (p == null) {
+			throw(new AISException("Porta non trovata: "+fullAddress));
+		}
+		if (p.isExpired() || p.isDirty()) {
+			return null;
+		}
+		return p.getCachedValue();
+	}
+
+	public boolean writePortValue(HttpSession session,String fullAddress, Object newValue) {
+		DevicePort p = controller.getDevicePort(fullAddress);
+		if (p == null) {
+			throw(new AISException("Porta non trovata: "+fullAddress));
+		}
+		return p.writeValue(newValue);
 	}
 
 	private SubnodeConfiguration getConfiguration(HttpSession session) {
@@ -144,6 +166,17 @@ public class AUIRPCServer implements Serializable {
 		logger.info("Aggiunta pagina ["+id+"] "+title);
 	}
 	
+	public void setPageTitle(HttpSession session, String pageId,String title) {
+		SubnodeConfiguration auiConfig = getConfiguration(session);
+		try {
+			SubnodeConfiguration pageConfig = auiConfig.configurationAt("pages/page[@id='"+pageId+"']", true);
+			pageConfig.setProperty("title", title);			
+		} catch (IllegalArgumentException e) {
+			throw(new AISException("Page not found="+pageId));
+		}
+		logger.info("Modificato title pagina ["+pageId+"]: "+title);		
+	}
+
 	public void setPageSrc(HttpSession session, String pageId,String src) {
 		SubnodeConfiguration auiConfig = getConfiguration(session);
 		try {

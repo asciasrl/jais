@@ -357,7 +357,7 @@ public class BMCDimmer extends BMC {
 				m = new VariazioneIngressoMessage(getIntAddress(), getBMCComputerAddress(), true, outPort, true);
 				getConnector().sendMessage(m);
 				try {
-					Thread.sleep(100); // FIXME
+					Thread.sleep(100); // FIXME determinare il tempo minimo
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

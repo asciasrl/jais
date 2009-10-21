@@ -277,6 +277,8 @@ public abstract class Device {
      * </ul>
      * altrimenti il chiamante deve attendere il tempo previsto prima di leggere il valore.
      * 
+     * @TODO: updatePort e' sincrona, quindi non ha piu' senso ritornare il tempo di attesa
+     * 
      * </p>
 	 * @param portId
 	 * @return Tempo massimo previsto per l'aggiornamento in millisecondi

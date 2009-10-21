@@ -26,14 +26,4 @@ public class AUIControllerModuleTest extends TestCase {
 		acm.setConfiguration(config);
     }
 
-    public void testAddPage() {    
-    	acm.addPage("test", "Pagina di test");
-    	assertTrue(true);
-    }
-
-    public void testAddPage2() {    
-    	acm.addPage("test2", "Pagina di test 2");
-    	assertTrue(true);
-    }
-
 }

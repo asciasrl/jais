@@ -232,8 +232,7 @@ if (!AUI.Config) {
 		changeBackgroundHide : function() {
 			var el = document.getElementById("changeBackground");
 			el.style.visibility = 'hidden';
-		},
-
+		},		
 		
 		setPageSrc : function(src) {
 			if (this.currentPageIndex == null) {
@@ -298,6 +297,36 @@ if (!AUI.Config) {
 			}
 		},
 		
+		renamePageShow : function() {
+			this.showMask(this.renamePageHide);
+			var popup = document.getElementById("renamePage"); 
+			popup.style.visibility = 'visible';
+			
+			var input = popup.getElement('input');
+			if (typeof(console) != 'undefined') console.log(input);			
+			input.setProperty('value',this.pages[this.currentPageIndex].title);						
+		},
+		
+		renamePageHide : function() {
+			var popup = document.getElementById("renamePage"); 
+			popup.style.visibility = 'hidden';			
+		},
+		
+		renamePageSubmit : function(form) {
+			var title = form.title.value;
+			try {
+				var p = this.pages[this.currentPageIndex];
+				var res = this.jsonrpc.AUI.setPageTitle(p.id,title);
+				this.pages[this.currentPageIndex].title = title;
+				this.hideMask();
+				this.refreshPages();
+			} catch(e) {
+				if (typeof(console) != 'undefined') console.error(e);
+				alert(e.msg || e);
+			}
+			
+		},
+		
 		statusMessage : function(s) {
 			if (console) console.info(s);
 			document.getElementById("statusbar").innerHTML = s;
@@ -326,8 +355,11 @@ if (!AUI.Config) {
 				this.deactivatePage(this.currentPageIndex);
 			}
 			// TODO usare metodo specifico di mootools
-			$("page-"+i).setAttribute("class","pageItemSelected");
-			// TODO scrollare per far vedere la pagina
+			var item = document.getElementById("page-"+i);
+			item.addClass("pageItemSelected");
+			var pos = item.getPosition(this.pagesElement);
+			console.info(pos);
+			this.pagesElement.scrollTo(0,this.pagesElement.getScroll().y + pos.y - 20);
 			this.currentPageIndex = i;
 			this.loadPage(i);
 			this.drawPage(i);
@@ -377,7 +409,8 @@ if (!AUI.Config) {
 				control.addClass('control-'+c.map['type']);
 				control.setStyle('top',c.map['top']+'px');
 				control.setStyle('left',c.map['left']+'px');
-				if (this.layers.contains('all') || this.layers.contains(layer)) {
+				console.log("Control"+id+" Layer="+layer);
+				if (this.layers.contains('all') || this.layers.contains(layer) || typeof(layer) == 'undefined') {
 					control.setStyle('display','block');
 				}
 				
@@ -391,6 +424,9 @@ if (!AUI.Config) {
 
 				var info = new Element('div', {'class': 'info'} );
 				
+				info.grab(new Element('label').appendText("Id: "));
+				info.appendText(c.map['[@id]']);
+				info.grab(new Element('br'));
 				info.grab(new Element('label').appendText("Tipo: "));
 				info.appendText(c.map['type']);
 				info.grab(new Element('br'));
@@ -469,8 +505,7 @@ if (!AUI.Config) {
 		
 		deactivatePage : function(i) {
 			var el = document.getElementById("page-"+i);
-			// TODO usare metodo specifico di mootools
-			el.setAttribute("class","pageItem");
+			el.removeClass("pageItemSelected");
 			this.currentPageIndex = null;
 			$('page').empty();
 			$('page').appendText = this.pageEmptyMessage;
@@ -509,6 +544,7 @@ if (!AUI.Config) {
 				this.addPage(id,title,src);
 				this.refreshPages();
 				this.activatePage(this.pages.length-1);
+				this.renamePageShow();
 			} catch(e) {
 				alert(e.msg || e);
 			}
@@ -555,7 +591,7 @@ if (!AUI.Config) {
 				this.pagesElement.grab(pageElement);
 			}
 			if (this.currentPageIndex != null) {
-				$("page-"+this.currentPageIndex).setAttribute("class","pageItemSelected");
+				$("page-"+this.currentPageIndex).addClass("pageItemSelected");
 			}
 		},
 
@@ -703,8 +739,7 @@ if (!AUI.Config) {
 			if (this.currentPageIndex == null) {
 				alert("Selezionare prima la pagina di cui si vuole modificare il nome");
 			} else {
-				alert("Non implementato");
-				//this.renamePageShow();
+				this.renamePageShow();
 			}
 		},
 		

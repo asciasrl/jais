@@ -2,10 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/jais/lib/RXTXcomm.jar"/>
-	<classpathentry kind="lib" path="/jais/lib/log4j-1.2.15.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jais"/>
-	<classpathentry kind="lib" path="/jais/lib/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="/jais/lib/commons-configuration-1.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

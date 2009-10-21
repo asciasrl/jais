@@ -12,4 +12,20 @@ public abstract class PTPRequest extends PTPMessage {
 	
 	public abstract boolean isAnsweredBy(PTPMessage m);
 	
+	private PTPResponse response = null;
+
+	/**
+	 * @param response the response to set
+	 */
+	public void setResponse(PTPResponse response) {
+		this.response = response;
+	}
+
+	/**
+	 * @return the response
+	 */
+	public PTPResponse getResponse() {
+		return response;
+	}
+	
 }

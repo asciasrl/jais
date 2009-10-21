@@ -2,19 +2,22 @@ if (AUI.Regt == undefined) {
 	
 	AUI.Regt = {
 
-		init : function() {
+		init : function(address) {
 			this.step = 0.5; // regulation step
 			this.factor = 4; // pixels per step
 			this.minT = 15; // minimum value
 			this.maxT = 30; // minimum value
 			this.request = AUI.Http.getRequest();
+			this.jsonrpc = new JSONRpcClient("/aui/rpc");
+			this.jsonrpc.AUI.login("utente","demo");
 			this.sending = false;
 			this.data = null;
 			this.id = null;
 			this.cursor = null;
 			this.value = null;
-			this.address = '1.255'; 
-			AUI.Regt.get(this.address);
+			this.address = address; 
+			this.get();
+			// autologin
 			AUI.Logger.setLevel(2);
 			var self = this;
 		},
@@ -22,16 +25,124 @@ if (AUI.Regt == undefined) {
 		/**
 		 * Get RegT info from server
 		 */
-		get : function(address) {
-			this.request.open('GET', 'jais/get?address='+address+':*', true);
+		get : function() {
+			this.request.open('GET', 'jais/get?address='+this.address+':*', true);
 			var self = this;
 			this.request.onreadystatechange = AUI.Regt.stateChange;
 			this.timeout = window.setTimeout(self.timeoutExpired, 3000);
 			this.request.send(null);
 			this.sending = true;
 			AUI.Logger.setLevel(2);
+			
+			this.updateTemp();
+			this.updateSetPoint();
+			this.updateSeason();
+			this.updateMode();			
 		},
 		
+		updateTemp : function() {
+			var s = "" + this.jsonrpc.AUI.getPortValue(this.address+':temp');
+			var i = s.indexOf(".");
+			if (i>-1) {
+				s = s.substr(0,i) + "," + s.substr(i+1,1);
+			} else {
+				s += ",0";
+			}
+			$("temp").innerHTML = s + "°C";
+		},
+
+		updateMode : function() {
+			var mode = this.jsonrpc.AUI.getPortValue(this.address+':mode');
+			if (mode == "manual") {
+				var src = $("mode-manual").src;
+				src = src.replace("off.","on.");
+				$("mode-manual").src = src;
+			} else {
+				var src = $("mode-manual").src;
+				src = src.replace("on.","off.");
+				$("mode-manual").src = src;				
+			}
+			if (mode == "chrono") {
+				var src = $("mode-chrono").src;
+				src = src.replace("off.","on.");
+				$("mode-chrono").src = src;
+			} else {
+				var src = $("mode-chrono").src;
+				src = src.replace("on.","off.");
+				$("mode-chrono").src = src;				
+			}
+			if (mode == "off") {
+				var src = $("mode-off").src;
+				src = src.replace("off.","on.");
+				$("mode-off").src = src;
+			} else {
+				var src = $("mode-off").src;
+				src = src.replace("on.","off.");
+				$("mode-off").src = src;				
+			}
+		},
+
+		updateSeason : function() {
+			var season = this.jsonrpc.AUI.getPortValue(this.address+':season');
+			var src = $("season-winter").src;
+			if (season == "WINTER") {
+				src = src.replace("off.","on.");
+			} else {
+				src = src.replace("on.","off.");
+			}
+			$("season-winter").src = src;
+			src = $("season-summer").src;
+			if (season == "SUMMER") {
+				src = src.replace("off.","on.");
+			} else {
+				src = src.replace("on.","off.");
+			}
+			$("season-summer").src = src;
+		},
+
+		updateSetPoint : function() {
+			s = "" + this.jsonrpc.AUI.getPortValue(this.address+':setPoint');
+			var i = s.indexOf(".");
+			if (i>-1) {
+				s = s.substr(0,i) + "," + s.substr(i+1,1);
+			} else {
+				s += ",0";
+			}
+			$("setPoint").innerHTML = s + "°C";
+		},
+		
+		updatePreset : function() {
+			var setPoint = this.jsonrpc.AUI.getPortValue(this.address+':setPoint');
+			var stagione = this.jsonrpc.AUI.getPortValue(this.address+':season');
+			if (mode == "manual") {
+				var src = $("mode-manual").src;
+				src = src.replace("off.","on.");
+				$("mode-manual").src = src;
+			} else {
+				var src = $("mode-manual").src;
+				src = src.replace("on.","off.");
+				$("mode-manual").src = src;				
+			}
+			if (mode == "chrono") {
+				var src = $("mode-chrono").src;
+				src = src.replace("off.","on.");
+				$("mode-chrono").src = src;
+			} else {
+				var src = $("mode-chrono").src;
+				src = src.replace("on.","off.");
+				$("mode-chrono").src = src;				
+			}
+			if (mode == "off") {
+				var src = $("mode-off").src;
+				src = src.replace("off.","on.");
+				$("mode-off").src = src;
+			} else {
+				var src = $("mode-off").src;
+				src = src.replace("on.","off.");
+				$("mode-off").src = src;				
+			}
+		},
+
 		stateChange : function() {
 			var request = AUI.Regt.request; 
 			if (request.readyState == 4) {
@@ -184,7 +295,8 @@ if (AUI.Regt == undefined) {
 		
 		onCursorStop : function() {
 			if (this.value != null) {
-				if (!AUI.SetRequest.sending && AUI.SetRequest.setValue(this.address+":setPoint-"+this.id,this.value)) {
+				//if (!AUI.SetRequest.sending && AUI.SetRequest.setValue(this.address+":setPoint-"+this.id,this.value)) {
+				if (this.jsonrpc.AUI.writePortValue(this.address+":setPoint-"+this.id,this.value)) {
 					this.value = null;
 				} else {
 					var self = this;
@@ -208,6 +320,40 @@ if (AUI.Regt == undefined) {
 		timeoutExpired : function() {
 			AUI.Regt.abort();
 		},
+		
+		activatePreset : function(preset) {
+			
+		},
+		
+		setSeason : function(season) {
+			this.jsonrpc.AUI.writePortValue(this.address+':season',season);
+			var self = this;
+			setTimeout(function() { self.updateSeason(); },500);;
+			setTimeout(function() { self.updateSetPoint(); },1000);;
+		},
+
+		setMode : function(mode) {
+			this.jsonrpc.AUI.writePortValue(this.address+':mode',mode);
+			var self = this;
+			setTimeout(function() { self.updateMode(); },500);;
+			setTimeout(function() { self.updateSetPoint(); },500);;
+		},
+
+		setPointUp : function() {
+			var t = this.jsonrpc.AUI.getPortValue(this.address+':setPoint');
+			this.jsonrpc.AUI.writePortValue(this.address+':setPoint',t+0.5);
+			var self = this;
+			setTimeout(function() { self.updateSetPoint(); },500);;
+			setTimeout(function() { self.updateMode(); },500);;
+		},
+		
+		setPointDown : function() {
+			var t = this.jsonrpc.AUI.getPortValue(this.address+':setPoint');
+			this.jsonrpc.AUI.writePortValue(this.address+':setPoint',t-0.5);
+			var self = this;
+			setTimeout(function() { self.updateSetPoint(); },500);;
+			setTimeout(function() { self.updateMode(); },500);;
+		}
 		
 	};
 }		

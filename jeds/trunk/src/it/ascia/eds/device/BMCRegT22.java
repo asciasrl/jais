@@ -44,18 +44,35 @@ public class BMCRegT22 extends BMCStandardIO {
 	 * Array per trasformare la modalita' da numero a stringa.
 	 */
 	private final static String modeStrings[] = {
-		"OFF", // 0
-		"crono", // 1
+		"off", // 0
+		"chrono", // 1
 		"manual" // 2
 	};
 	/**
 	 * Nome compatto della porta "temperatura"
 	 */
 	private static final String port_temperature = "temp";
+	private static final String port_season = "season";
+
+	/**
+	 * 1 = Estate
+	 * 0 = Inverno
+	 */
+	private static final String SEASONS[] = {"WINTER","SUMMER"};
+
+	private static final String DAYS[] = {"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
+
 	/**
 	 * Nome compatto della porta "temperatura di allarme".
 	 */
-	private static final String port_alarmTemp = "alarmTemp";
+	private static final String port_alarmeTemp = "alarmTemp";
+	private static final String port_T0 = "T0";
+	private static final String port_T1_SUMMER = "T1-1";
+	private static final String port_T1_WINTER = "T1-0";
+	private static final String port_T2_SUMMER = "T2-1";
+	private static final String port_T2_WINTER = "T2-0";
+	private static final String port_T3_SUMMER = "T3-1";
+	private static final String port_T3_WINTER = "T3-0";
 	/**
 	 * Nome compatto della porta "tempo di invio automatico".
 	 */
@@ -82,7 +99,16 @@ public class BMCRegT22 extends BMCStandardIO {
 	/**
 	 * Temperatura di allarme, per una sonda termica.
 	 */
-	public static final int PARAM_TERM_ALARM_TEMPERATURE = 3;
+	private static final int PARAM_TERM_ALARM_TEMPERATURE = 3;
+	private static final int PARAM_SEASON = 5;
+	private static final int PARAM_MODE = 7;
+	private static final int PARAM_T0_VALUE = 78;
+	private static final int PARAM_T1_SUMMER_VALUE = 69;
+	private static final int PARAM_T1_WINTER_VALUE = 60;
+	private static final int PARAM_T2_SUMMER_VALUE = 72;
+	private static final int PARAM_T2_WINTER_VALUE = 63;
+	private static final int PARAM_T3_SUMMER_VALUE = 75;
+	private static final int PARAM_T3_WINTER_VALUE = 66;
 		
 	/**
 	 * Costruttore.
@@ -96,8 +122,16 @@ public class BMCRegT22 extends BMCStandardIO {
 			broadcastBindingsByPort[i] = new LinkedHashSet();
 		}
 		addPort(new TemperaturePort(this,port_temperature));
-		addPort(new StatePort(this,port_mode));
-		addPort(new TemperatureSetpointPort(this,port_alarmTemp));
+		addPort(new TemperatureSetpointPort(this,port_alarmeTemp));
+		addPort(new StatePort(this,port_season,SEASONS));
+		addPort(new StatePort(this,port_mode,modeStrings));
+		addPort(new TemperatureSetpointPort(this,port_T0));
+		addPort(new TemperatureSetpointPort(this,port_T1_SUMMER));
+		addPort(new TemperatureSetpointPort(this,port_T1_WINTER));
+		addPort(new TemperatureSetpointPort(this,port_T2_SUMMER));
+		addPort(new TemperatureSetpointPort(this,port_T2_WINTER));
+		addPort(new TemperatureSetpointPort(this,port_T3_SUMMER));
+		addPort(new TemperatureSetpointPort(this,port_T3_WINTER));
 		addPort(new IntegerPort(this,port_autoSendTime));
 		addPort(new TemperatureSetpointPort(this,port_setPoint));
 		addPort(new DatePort(this,port_RTCC));
@@ -202,25 +236,30 @@ public class BMCRegT22 extends BMCStandardIO {
 		}
 	}
 	
+	/**
+	 * Converte la temperatura di setpoint di un parametro.
+	 */
+	private double setPoint(int value) {
+		return (double)(value & 0x7F) + (double)((value & 0x80) >> 7) * 0.5;
+	}
+	
+	/**
+	 * Converte la temperatura di setpoint di un parametro.
+	 */
+	private int setPoint(double value) {
+		if (value > 60.0 || value < 0) {
+			throw(new IllegalArgumentException());
+		}
+		int t = (int)Math.floor(value);
+		return (((value - new Double(t).doubleValue()) >= 0.5) ? 0x80  : 0) + (t & 0x7F); 
+	}
+
 	/* (non-Javadoc)
 	 * @see it.ascia.eds.device.BMC#messageReceived(it.ascia.eds.msg.Message)
 	 */
 	public void messageReceived(EDSMessage m) throws AISException {
 		switch (m.getMessageType()) {
 		case EDSMessage.MSG_IMPOSTA_PARAMETRO:
-			// Aggiorniamo i parametri interni e li contrassegnamo "dirty"
-			ImpostaParametroMessage mesg = (ImpostaParametroMessage) m;
-			switch (mesg.getParameter()) {
-				case PARAM_TERM_AUTO_SEND_TIME: 
-					setPortValue(port_autoSendTime,autoSendTime(mesg.getValue()));
-					break;
-				case PARAM_TERM_ALARM_TEMPERATURE:
-					setPortValue(port_alarmTemp,alarmTemperature(mesg.getValue()));
-					break;
-				default:
-					logger.warn("Parametro non gestito: " + mesg.getParameter()+" Value:"+mesg.getValue());
-			}
-			break;
 		case EDSMessage.MSG_RICHIESTA_MODELLO:
 		case EDSMessage.MSG_RICHIESTA_ASSOCIAZIONE_BROADCAST:
 		case EDSMessage.MSG_CAMBIO_VELOCITA:
@@ -245,17 +284,7 @@ public class BMCRegT22 extends BMCStandardIO {
 	public void messageSent(EDSMessage m) throws AISException {
 		switch(m.getMessageType()) {
 		case EDSMessage.MSG_RISPOSTA_PARAMETRO:
-			RispostaParametroMessage rpm = (RispostaParametroMessage) m;
-			switch (rpm.getParameter()) {
-				case PARAM_TERM_ALARM_TEMPERATURE:
-					setPortValue(port_alarmTemp,new Integer(rpm.getValue()));
-					break;
-				case PARAM_TERM_AUTO_SEND_TIME:
-					setPortValue(port_autoSendTime,new Integer(rpm.getValue()));
-					break;
-				default:
-					logger.warn("Parametro sconosciuto: " + rpm.getParameter()+" Value:"+rpm.getValue());					
-			}
+			// Il valore della porta viene aggiornato nel metodo updatePort()
 			break;
 		case EDSMessage.MSG_RISPOSTA_SET_POINT:
 			RispostaSetPointMessage risp = (RispostaSetPointMessage) m;
@@ -273,39 +302,15 @@ public class BMCRegT22 extends BMCStandardIO {
 				logger.error("Risposta 'ora' non coerente");
 			}
 			DevicePort p = getPort(getSetPointPortId(stagione,giorno,ora));
-			p.setCacheRetention(86400000);	// 1 giorno		
 			p.setValue(new Double(risp.getSetPoint()));
 			break;
 		case EDSMessage.MSG_RISPOSTA_STATO_TERMOSTATO:
 			RispostaStatoTermostatoMessage rsttm = (RispostaStatoTermostatoMessage) m;
 			setPortValue(port_temperature,new Double(rsttm.getSensorTemperature()));
-			setPortValue(port_mode,getModeAsString(rsttm.getMode()));
+			setPortValue(port_mode,getMode(rsttm.getMode()));
 			break;
 		case EDSMessage.MSG_RISPOSTA_RTCC:
-			RispostaRTCCMessage rrtcc = (RispostaRTCCMessage) m;
-			Date d = (Date) getPortCachedValue(port_RTCC);
-			Calendar c = new GregorianCalendar();
-			if (d == null) {
-				c.setTimeInMillis(0);
-			} else {
-				c.setTime(d);
-			}
-			// TODO: verificare che siano arrivati tutti e 3 in ordine 
-			switch (rrtcc.getIndex()) {
-			case 0:
-				c.set(Calendar.HOUR_OF_DAY,rrtcc.getOre());
-				c.set(Calendar.MINUTE,rrtcc.getMinuti());
-				break;
-			case 1:
-				c.set(Calendar.MONTH,rrtcc.getMese()-1);
-				c.set(Calendar.YEAR,rrtcc.getAnno()+2000);
-				break;
-			case 2:
-				c.set(Calendar.DAY_OF_MONTH,rrtcc.getGiorno());
-				c.set(Calendar.SECOND,rrtcc.getSecondi());
-				break;
-			}
-			setPortValue(port_RTCC,c.getTime());
+			// Il valore della porta viene aggiornato nel metodo readRTCC()
 			break;
 		default:
 			super.messageSent(m);
@@ -318,7 +323,7 @@ public class BMCRegT22 extends BMCStandardIO {
 	public long updateTermStatus() {
 		getConnector().sendMessage(new RichiestaStatoTermostatoMessage(getIntAddress(), getBMCComputerAddress()));
 		// FIXME calcolare il timeout
-		return 300;
+		return 0;
 	}
 	
 	/**
@@ -326,24 +331,36 @@ public class BMCRegT22 extends BMCStandardIO {
 	 * 
 	 * <p>Invia un messaggio al BMC richiedendo il valore del parametro.</p>
 	 */
-	public long updateAlarmTemperature() {
+	private void updateAlarmTemperature() {
 		RichiestaParametroMessage m = new RichiestaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
 				PARAM_TERM_ALARM_TEMPERATURE);
-		getConnector().sendMessage(m);
-		// FIXME calcolare il timeout
-		return 300;
+		if (getConnector().sendMessage(m)) {
+			RispostaParametroMessage rpm = (RispostaParametroMessage) m.getResponse();
+			setPortValue(port_alarmeTemp,new Integer(rpm.getValue()));
+		}
 	}
-	
+
+	private void readSeason() {
+		RichiestaParametroMessage m = new RichiestaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
+				PARAM_SEASON);
+		if (getConnector().sendMessage(m)) {
+			RispostaParametroMessage rpm = (RispostaParametroMessage) m.getResponse();
+			setPortValue(port_season,getSeason(rpm.getValue()));
+		}
+	}
+
 	/**
 	 * Aggiorna il tempo di invio automatico.
 	 * 
 	 * <p>Invia un messaggio al BMC richiedendo il valore del parametro.</p>
 	 */
-	public long updateAutoSendTime() {
-		getConnector().sendMessage(new RichiestaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
-				PARAM_TERM_AUTO_SEND_TIME));
-		// FIXME calcolare il timeout
-		return 300;
+	private void updateAutoSendTime() {
+		RichiestaParametroMessage m = new RichiestaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
+				PARAM_TERM_AUTO_SEND_TIME); 
+		if (getConnector().sendMessage(m)) {
+			RispostaParametroMessage rpm = (RispostaParametroMessage) m.getResponse();
+			setPortValue(port_autoSendTime,new Integer(rpm.getValue()));
+		}
 	}
 	
 	/**
@@ -351,19 +368,19 @@ public class BMCRegT22 extends BMCStandardIO {
 	 * 
 	 * <p>Invia un messaggio al BMC richiedendo il valore del parametro.</p>
 	 */
-	public long updateSetPoint() {
+	private void updateSetPoint() {
 		getConnector().sendMessage(new RichiestaSetPointMessage(getIntAddress(), getBMCComputerAddress(), true));
-		// FIXME calcolare il timeout
-		return 300;
 	}
 
+	/**
+	 * @todo separare le chiamate
+	 */
 	public long updateStatus() {
-		long timeout = 0;
-		timeout += updateAlarmTemperature();
-		timeout += updateAutoSendTime();
-		timeout += updateTermStatus();
-		timeout += updateSetPoint();
-		return timeout;
+		updateAlarmTemperature();
+		updateAutoSendTime();
+		updateTermStatus();
+		updateSetPoint();
+		return 0;
 	}
 	
 	public long updatePort(String portId) {
@@ -373,10 +390,34 @@ public class BMCRegT22 extends BMCStandardIO {
 			return super.updateStatus();
 		} else if (portId.equals(port_RTCC)) {
 			readRTCC();
-			return 300;
+			return 0;
+		} else if (portId.equals(port_season)) {
+			readSeason();
+			return 0;
 		} else if (portId.startsWith("setPoint-")) {
 			readSetPoint(portId);
-			return 300;
+			return 0;
+		} else if (portId.equals(port_T0)) {
+			readSetpointParameter(portId,PARAM_T0_VALUE);
+			return 0;
+		} else if (portId.equals(port_T1_SUMMER)) {
+			readSetpointParameter(portId,PARAM_T1_SUMMER_VALUE);
+			return 0;
+		} else if (portId.equals(port_T1_WINTER)) {
+			readSetpointParameter(portId,PARAM_T1_WINTER_VALUE);
+			return 0;
+		} else if (portId.equals(port_T2_SUMMER)) {
+			readSetpointParameter(portId,PARAM_T2_SUMMER_VALUE);
+			return 0;
+		} else if (portId.equals(port_T2_WINTER)) {
+			readSetpointParameter(portId,PARAM_T2_WINTER_VALUE);
+			return 0;
+		} else if (portId.equals(port_T3_SUMMER)) {
+			readSetpointParameter(portId,PARAM_T3_SUMMER_VALUE);
+			return 0;
+		} else if (portId.equals(port_T3_WINTER)) {
+			readSetpointParameter(portId,PARAM_T3_WINTER_VALUE);
+			return 0;
 		} else {
 			return updateStatus();
 		}
@@ -386,9 +427,30 @@ public class BMCRegT22 extends BMCStandardIO {
 		EDSConnector conn = (EDSConnector) getConnector();
 		int m = conn.getMyAddress();
 		int d = getIntAddress();
-		conn.sendMessage(new RichiestaRTCCMessage(d,m,0));
-		conn.sendMessage(new RichiestaRTCCMessage(d,m,1));
-		conn.sendMessage(new RichiestaRTCCMessage(d,m,2));
+		Calendar c = new GregorianCalendar();
+		RichiestaRTCCMessage m0 = new RichiestaRTCCMessage(d,m,0);
+		RichiestaRTCCMessage m1 = new RichiestaRTCCMessage(d,m,1);
+		RichiestaRTCCMessage m2 = new RichiestaRTCCMessage(d,m,2); 
+		conn.sendMessage(m0);
+		if (m0.isAnswered()) {
+			RispostaRTCCMessage r0 = (RispostaRTCCMessage) m0.getResponse(); 
+			conn.sendMessage(m1);
+			if (m1.isAnswered()) {
+				RispostaRTCCMessage r1 = (RispostaRTCCMessage) m1.getResponse(); 
+				conn.sendMessage(m2);
+				if (m2.isAnswered()) {
+					RispostaRTCCMessage r2 = (RispostaRTCCMessage) m2.getResponse(); 
+					c.set(Calendar.HOUR_OF_DAY,r0.getOre());
+					c.set(Calendar.MINUTE,r0.getMinuti());
+					c.set(Calendar.MONTH,r1.getMese()-1);
+					c.set(Calendar.YEAR,r1.getAnno()+2000);
+					c.set(Calendar.DAY_OF_MONTH,r2.getGiorno());
+					c.set(Calendar.SECOND,r2.getSecondi());
+					setPortValue(port_RTCC,c.getTime());
+				}
+			}
+		}	
+		//TODO Determinare se l'orologio e' sballato e nel caso sincronizzarlo
 	}
 	
 	private boolean writeRTCC() {
@@ -433,43 +495,136 @@ public class BMCRegT22 extends BMCStandardIO {
 		boolean s1 = conn.sendMessage(new ImpostaRTCCMessage(d,m,0, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE)));
 		boolean s2 = conn.sendMessage(new ImpostaRTCCMessage(d,m,1, cal.get(Calendar.MONTH)+1, cal.get(Calendar.YEAR)-2000));
 		boolean s3 = conn.sendMessage(new ImpostaRTCCMessage(d,m,2, cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.SECOND)));
+		getPort(port_RTCC).invalidate();
 		return s1 && s2 && s3;		
 	}
 
 	/**
 	 * Ritorna lo stato della sonda sotto forma di stringa.
 	 */
-	 private String getModeAsString(int mode) {
+	 private String getSeason(int season) {
+		// Sanity check
+		if ((season >= 0) && (season < SEASONS.length)) {
+			return SEASONS[season];
+		} else {
+			throw(new AISException("Internal season is invalid: " + season));
+		}
+	}
+	 
+	/**
+	* Ritorna il modo di funzionamento
+	*/
+	private int getSeason(String season) {
+		// Sanity check
+		for(int i=0; i < SEASONS.length; i++) {
+			if (SEASONS[i].equalsIgnoreCase(season)) {
+				return i;
+			}
+		}
+		throw(new AISException("Internal season is invalid: " + season));
+	}
+
+	
+	/**
+	 * Ritorna lo stato della sonda sotto forma di stringa.
+	 */
+	 private String getMode(int mode) {
 		// Sanity check
 		if ((mode >= 0) && (mode < modeStrings.length)) {
 			return modeStrings[mode];
 		} else {
-			logger.error("Internal mode is invalid: " + mode);
-			return "ERROR";
+			throw(new AISException("Internal mode is invalid: " + mode));
 		}
 	}
 	 
+	/**
+	* Ritorna il modo di funzionamento
+	*/
+	private int getMode(String mode) {
+		// Sanity check
+		for(int i=0; i < modeStrings.length; i++) {
+			if (modeStrings[i].equalsIgnoreCase(mode)) {
+				return i;
+			}
+		}
+		throw(new AISException("Internal mode is invalid: " + mode));
+	}
 	
+	 /**
+	  * Invia un messaggio di impostazione parametro ed aggiorna il valore della porta se la comunicazione va a buon fine  
+	  * @param portId Porta nella quale memorizzare il parametro
+	  * @param param Indice del parametro
+	  * @param newValue Nuovo valore
+	  */
+	 public void sendSetpointParameter(String portId,int param,Double newValue) {
+		ImpostaParametroMessage richiesta = new ImpostaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
+				setPoint(newValue.doubleValue()),param);
+		if (getConnector().sendMessage(richiesta)) {
+			DevicePort p = getPort(portId);
+			p.setValue(newValue);
+		}
+	}
+	
+	/**
+	 * Invia un messaggio di richiesta parametro ed aggiorna il valore della porta  
+	 * @param portId Porta nella quale memorizzare il parametro
+	 * @param param Indice del parametro
+	 */
+	public void readSetpointParameter(String portId,int param) {
+		RichiestaParametroMessage richiesta = new RichiestaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
+				param);
+		if (getConnector().sendMessage(richiesta)) {
+			DevicePort p = getPort(portId);		
+			p.setValue(new Double(setPoint(((RispostaParametroMessage) (richiesta.getResponse())).getValue())));
+		}
+	}
+
 	public boolean sendPortValue(String portId, Object newValue) throws AISException {
 		boolean res = false;
 		if (portId.equals(port_autoSendTime)) {
 			res = getConnector().sendMessage(new ImpostaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
-					((Integer) newValue).intValue(),
-					PARAM_TERM_AUTO_SEND_TIME)); 
-		} else if (portId.equals(port_alarmTemp)) {
+					PARAM_TERM_AUTO_SEND_TIME,((Integer) newValue).intValue())); 
+		} else if (portId.equals(port_alarmeTemp)) {
 			res = getConnector().sendMessage(new ImpostaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
-					((Integer) newValue).intValue(),					
-					PARAM_TERM_ALARM_TEMPERATURE));
+					PARAM_TERM_ALARM_TEMPERATURE,((Integer) newValue).intValue()));
 		} else if (portId.equals(port_RTCC)) {
 			writeRTCC(newValue);
+		} else if (portId.equals(port_season)) {
+			res = getConnector().sendMessage(new ImpostaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
+					PARAM_SEASON,getSeason((String)newValue)));
+		} else if (portId.equals(port_mode)) {
+			res = getConnector().sendMessage(new ImpostaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
+					PARAM_MODE,getMode((String)newValue)));
+		} else if (portId.equals(port_setPoint)) {
+			if (Integer.class.isInstance(newValue)) {
+				newValue = new Double(((Integer)newValue).intValue());
+			}
+			res = getConnector().sendMessage(new ImpostaSetPointMessage(getIntAddress(), getBMCComputerAddress(),((Double)newValue).doubleValue(),0));					
 		} else if (portId.startsWith("setPoint-")) {
 			String[] temp = portId.split("-");
 			int stagione = Integer.parseInt(temp[1]);
 			int giorno = Integer.parseInt(temp[2]);
 			int ora = Integer.parseInt(temp[3]);
+			if (Integer.class.isInstance(newValue)) {
+				newValue = new Double(((Integer)newValue).intValue());
+			}
 			//logger.info("write:"+stagione+","+giorno+","+ora+"="+newValue);
 			res = getConnector().sendMessage(new ImpostaSetPointMessage(getIntAddress(), getBMCComputerAddress(),
 					((Double)newValue).doubleValue(), stagione, giorno, ora));
+		} else if (portId.equals(port_T0)) {
+			sendSetpointParameter(portId,PARAM_T0_VALUE,(Double)newValue);
+		} else if (portId.equals(port_T1_SUMMER)) {
+			sendSetpointParameter(portId,PARAM_T1_SUMMER_VALUE,(Double)newValue);
+		} else if (portId.equals(port_T1_WINTER)) {
+			sendSetpointParameter(portId,PARAM_T1_WINTER_VALUE,(Double)newValue);
+		} else if (portId.equals(port_T2_SUMMER)) {
+			sendSetpointParameter(portId,PARAM_T2_SUMMER_VALUE,(Double)newValue);
+		} else if (portId.equals(port_T2_WINTER)) {
+			sendSetpointParameter(portId,PARAM_T2_WINTER_VALUE,(Double)newValue);
+		} else if (portId.equals(port_T3_SUMMER)) {
+			sendSetpointParameter(portId,PARAM_T3_SUMMER_VALUE,(Double)newValue);
+		} else if (portId.equals(port_T3_WINTER)) {
+			sendSetpointParameter(portId,PARAM_T3_WINTER_VALUE,(Double)newValue);
 		} else {
 			logger.fatal("Non so come scrivere sulla porta "+portId);
 		}
@@ -490,7 +645,7 @@ public class BMCRegT22 extends BMCStandardIO {
 		}
 	}
 	
-	public void readSetPoint(String portId) {
+	private void readSetPoint(String portId) {
 		EDSConnector conn = (EDSConnector) getConnector();
 		int m = conn.getMyAddress();
 		int d = getIntAddress();
@@ -500,6 +655,7 @@ public class BMCRegT22 extends BMCStandardIO {
 		int ora = Integer.parseInt(temp[3]);
 		RichiestaSetPointMessage rich = new RichiestaSetPointMessage(d,m,stagione,giorno,ora);
 		conn.sendMessage(rich);
+		// risposta gestita da messageSent
 	}	
 
 }

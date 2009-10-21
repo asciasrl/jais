@@ -103,6 +103,14 @@ div.popup {
 	width: 254px;
 }
 
+#renamePage {
+	width: 310px;
+}
+
+#renamePage input {
+	width: 300px;
+}
+
 #upload {
 	width: 454px;
 }

@@ -49,13 +49,13 @@ if (!AUI.Controls) {
 			return null;
 		}
 		var device = control.device;
-		var controlclass = control.controlclass;
-		if (controlclass == null) {
-			var str = control.type;
-		    var f = str.charAt(0).toUpperCase();
-		    controlclass = f + str.substr(1);
-		}
 		if (device == null) {
+			var controlclass = control.controlclass;
+			if (controlclass == null) {
+				var str = control.type;
+			    var f = str.charAt(0).toUpperCase();
+			    controlclass = f + str.substr(1);
+			}
 			if (controlclass == "Page") {
 				device = new AUI.Device(id);
 			} else {

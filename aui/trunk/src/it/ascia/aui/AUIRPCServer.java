@@ -9,26 +9,24 @@ import it.ascia.ais.Device;
 import it.ascia.ais.DevicePort;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.configuration.tree.ConfigurationNode;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.apache.log4j.Logger;
-import org.jabsorb.JSONRPCBridge;
 
 /**
  * Server RPC, espone i metodi usati dal client RPC
@@ -120,16 +118,30 @@ public class AUIRPCServer implements Serializable {
 		return auiConfig = (SubnodeConfiguration) session.getAttribute("AUI.config");
 	}
 
-	public void save(HttpSession session) throws ConfigurationException {
+	public void save(HttpSession session) throws ConfigurationException, FileNotFoundException {
+		saveAs(session,"conf/AUI.xml",true);
+	}
+
+	public void saveAs(HttpSession session, String filename, boolean overwrite) throws ConfigurationException, FileNotFoundException {
 		SubnodeConfiguration auiConfig = (SubnodeConfiguration) session.getAttribute("AUI.config");
 		if (auiConfig == null) {
 			logger.debug("No configuration to save");
 			return;
 		}
-		XMLConfiguration xmlConf = new XMLConfiguration(auiConfig);
-		String fileName = "test.txt";
-		xmlConf.save(fileName);
-		logger.info("Saved config to: "+fileName);
+		if (!overwrite) {
+			File f = new File(filename);
+			if (f.exists()) {
+				throw(new FileNotFoundException("File already exists: "+filename));
+			}
+		}
+		XMLConfiguration jaisXmlConf = new XMLConfiguration();
+		jaisXmlConf.setRootElementName("jais:configuration");
+		ArrayList<ConfigurationNode> a = new ArrayList<ConfigurationNode>();
+		a.add(auiConfig.getRootNode());
+		jaisXmlConf.addNodes(null, a);
+
+		jaisXmlConf.save(filename);		
+		logger.info("Saved config to: "+filename);
 	}
 	
 	public Vector getPages(HttpSession session) {

@@ -16,11 +16,10 @@ public class CmdControllerModule extends ControllerModule {
 	}
 
 	public void stop() {
-		running = false;
+ 		super.stop();
 		if (cmd != null) {
 			cmd.interrupt();
 		}
- 		super.stop();
 	}
 	
 	/**

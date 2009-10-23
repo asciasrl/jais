@@ -187,7 +187,6 @@ public class BMCRegT22 extends BMCStandardIO {
 		} catch (InterruptedException e) {
 		}
 		discoverBroadcastBindings();
-		readSetPoints();
 	}
 	
 	public void discoverUscite() {

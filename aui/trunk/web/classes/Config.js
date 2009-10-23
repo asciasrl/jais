@@ -358,7 +358,6 @@ if (!AUI.Config) {
 			var item = document.getElementById("page-"+i);
 			item.addClass("pageItemSelected");
 			var pos = item.getPosition(this.pagesElement);
-			console.info(pos);
 			this.pagesElement.scrollTo(0,this.pagesElement.getScroll().y + pos.y - 20);
 			this.currentPageIndex = i;
 			this.loadPage(i);
@@ -409,7 +408,7 @@ if (!AUI.Config) {
 				control.addClass('control-'+c.map['type']);
 				control.setStyle('top',c.map['top']+'px');
 				control.setStyle('left',c.map['left']+'px');
-				console.log("Control"+id+" Layer="+layer);
+				if (typeof(console) != 'undefined') console.log("Control"+id+" Layer="+layer);
 				if (this.layers.contains('all') || this.layers.contains(layer) || typeof(layer) == 'undefined') {
 					control.setStyle('display','block');
 				}

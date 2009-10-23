@@ -144,16 +144,16 @@ public class AUIRPCServer implements Serializable {
 		logger.info("Saved config to: "+filename);
 	}
 	
-	public Vector getPages(HttpSession session) {
+	public Vector<HashMap<String, String>> getPages(HttpSession session) {
 		SubnodeConfiguration auiConfig = getConfiguration(session);
 		logger.trace(auiConfig.getExpressionEngine());
 		List pages = auiConfig.configurationsAt("pages/page");
-		Vector v = new Vector();
+		Vector<HashMap<String, String>> v = new Vector<HashMap<String, String>>();
 		for (Iterator iPages = pages.iterator(); iPages.hasNext(); ) {
 			HierarchicalConfiguration pageConfig = (HierarchicalConfiguration) iPages.next();
 			String pageId = pageConfig.getString("[@id]","");
 			logger.trace("Pagina:"+pageId);
-			HashMap p = new HashMap();
+			HashMap<String, String> p = new HashMap<String, String>();
 			p.put("id", pageId);
 			p.put("src", pageConfig.getString("src",""));
 			p.put("title", pageConfig.getString("title",""));
@@ -233,15 +233,15 @@ public class AUIRPCServer implements Serializable {
 	    return images;
 	}
 
-	public Vector getPageAreas(HttpSession session, String pageId) {
+	public Vector<HashMap<String, String>> getPageAreas(HttpSession session, String pageId) {
 		SubnodeConfiguration auiConfig = getConfiguration(session);
 		auiConfig.setExpressionEngine(new XPathExpressionEngine());
 		HierarchicalConfiguration pageConfig = auiConfig.configurationAt("//pages/page[@id='"+pageId+"']");
 		List areas = pageConfig.configurationsAt("area");
-		Vector pageAreas = new Vector();
+		Vector<HashMap<String, String>> pageAreas = new Vector<HashMap<String, String>>();
 		for (Iterator ic = areas.iterator(); ic.hasNext(); ) {
 			HierarchicalConfiguration areaConfig = (HierarchicalConfiguration) ic.next();
-			HashMap areaMap = new HashMap();
+			HashMap<String, String> areaMap = new HashMap<String, String>();
 			for (Iterator ip = areaConfig.getKeys(); ip.hasNext(); ) {
 				String k = (String) ip.next();
 				areaMap.put(k, areaConfig.getString(k));
@@ -251,26 +251,26 @@ public class AUIRPCServer implements Serializable {
 		return pageAreas;
 	}
 
-	public Map getPageControls(HttpSession session, String pageId) {
+	public Map<String, HashMap<String, String>> getPageControls(HttpSession session, String pageId) {
 		SubnodeConfiguration auiConfig = getConfiguration(session);
 		auiConfig.setExpressionEngine(new XPathExpressionEngine());
 		HierarchicalConfiguration pageConfig = auiConfig.configurationAt("//pages/page[@id='"+pageId+"']");
 		List controls = pageConfig.configurationsAt("control");
-		Map pageControls = new HashMap();
+		Map<String, HashMap<String, String>> pageControls = new HashMap<String, HashMap<String, String>>();
 		for (Iterator ic = controls.iterator(); ic.hasNext(); ) {
 			HierarchicalConfiguration controlConfig = (HierarchicalConfiguration) ic.next();
 			String type = controlConfig.getString("type");
 			String id = controlConfig.getString("[@id]");
 			String controlId = "control-" + pageId + "-" + id;
 			SubnodeConfiguration typeConfig = auiConfig.configurationAt("controls/"+type);
-			HashMap controlMap = new HashMap();
+			HashMap<String, String> controlMap = new HashMap<String, String>();
 			for (Iterator ip = typeConfig.getKeys(); ip.hasNext(); ) {
 				String k = (String) ip.next();
-				controlMap.put(k, typeConfig.getProperty(k));
+				controlMap.put(k, typeConfig.getString(k));
 			}
 			for (Iterator ip = controlConfig.getKeys(); ip.hasNext(); ) {
 				String k = (String) ip.next();
-				controlMap.put(k, controlConfig.getProperty(k));
+				controlMap.put(k, controlConfig.getString(k));
 			}
 			pageControls.put(controlId, controlMap);
 		}
@@ -305,19 +305,19 @@ public class AUIRPCServer implements Serializable {
 		}
 	}
 	
-	public Vector getPorts() {
+	public Vector<HashMap<String, String>> getPorts() {
 		return getPorts("*");
 	}
 	
-	public Vector getPorts(String search) {		
+	public Vector<HashMap<String, String>> getPorts(String search) {		
 		Device devices[] = Controller.getController().findDevices(search);
-		Vector ports = new Vector();
+		Vector<HashMap<String, String>> ports = new Vector<HashMap<String, String>>();
 		for (int i = 0; i < devices.length; i++) {
 			Device d = devices[i];
 			DevicePort[] devicePorts = d.getPorts();
 			for (int j = 0; j < devicePorts.length; j++) {
 				DevicePort devicePort = devicePorts[j];
-				HashMap p = new HashMap();
+				HashMap<String, String> p = new HashMap<String, String>();
 				p.put("Address",devicePort.getFullAddress());
 				p.put("Class",devicePort.getClass().getSimpleName());
 				p.put("Name",devicePort.getName());						

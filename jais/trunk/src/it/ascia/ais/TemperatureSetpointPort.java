@@ -9,7 +9,7 @@ public class TemperatureSetpointPort extends AnalogOutputPort {
 	 */
 	public TemperatureSetpointPort(Device device, String portId) {
 		super(device, portId);
-		this.setCacheRetention(3600000);
+		this.setCacheRetention(36000000); // 1 ora
 	}
 
 	public TemperatureSetpointPort(Device device, String portId, String portName) {

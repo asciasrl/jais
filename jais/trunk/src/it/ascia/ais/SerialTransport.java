@@ -9,8 +9,6 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.TooManyListenersException;
 
-import org.apache.log4j.Logger;
-
 import gnu.io.*;
 
 /**
@@ -33,6 +31,13 @@ public class SerialTransport extends Transport {
      */
     private InputStream inputStream;
     private SerialPort serialPort;
+	private String portName;
+	private int portSpeed;
+	private int inputBufferSize;
+	private int outputBufferSize;
+	private int receiveThreshold;
+	private int receiveFraming;
+	private int receiveTimeout;
 	private static int INPUT_BUFFER_SIZE = 1024;
 	private static int OUTPUT_BUFFER_SIZE = 1024;
 	private static int RECEIVE_THRESHOLD = 8;
@@ -96,10 +101,21 @@ public class SerialTransport extends Transport {
      */
     public SerialTransport(Connector connector, String portName, int portSpeed, int inputBufferSize, int outputBufferSize, int receiveThreshold, int receiveFraming, int receiveTimeout) throws AISException {
     	super(connector);
+    	this.portName = portName;
+    	this.portSpeed = portSpeed;
+    	this.inputBufferSize = inputBufferSize;
+    	this.outputBufferSize = outputBufferSize;
+    	this.receiveThreshold = receiveThreshold;
+    	this.receiveFraming = receiveFraming;
+    	this.receiveTimeout = receiveTimeout;
+    	open();
+    }
+    
+    private void open() {
     	if (portName.toLowerCase().equals("auto")) {
     		portName = autoPortName();
     	}
-        name = portName;
+        name = portName + "@" + portSpeed + "/8-N-1";
     	logger.info("Connessione a '" + portName + "' speed " +  portSpeed);    	
     	CommPortIdentifier portId;
 		try {
@@ -171,8 +187,18 @@ public class SerialTransport extends Transport {
 		}
         serialPort.notifyOnDataAvailable(true);
         serialPort.notifyOnOverrunError(true);
+        logger.debug("Opened serial transport "+this);
     }
 
+    private void reopen() {
+    	logger.info("Trying to reopen serial port");
+    	close();
+    	try {
+    		open();
+    	} catch (Exception e) {
+    		logger.fatal("Unable to reopen:",e);
+    	}
+    }
 
     
 	/**
@@ -186,8 +212,12 @@ public class SerialTransport extends Transport {
     	try {
 			outputStream.write(b);
 			outputStream.flush();
+		} catch (NullPointerException e) {
+			logger.fatal("Output stream not available");
+			reopen();
 		} catch (IOException e) {
-			logger.error("Errore scrittura");
+			logger.fatal("Write error: ",e);
+			reopen();
 		}
     }
         
@@ -196,20 +226,23 @@ public class SerialTransport extends Transport {
      */
     public void close() {
     	try {
-        	logger.trace("Closing streams.");
-			inputStream.close();
-	    	inputStream = null;
-			outputStream.close();
-			outputStream = null;
-		} catch (NullPointerException e) {
-			logger.error("Exception in close():",e);
-		} catch (IOException e) {
+    		if (inputStream != null) {
+	        	logger.trace("Closing input stream.");
+				inputStream.close();
+		    	inputStream = null;
+    		}
+    		if (outputStream != null) {
+	        	logger.trace("Closing output stream.");
+				outputStream.close();
+				outputStream = null;
+    		}
+		} catch (Exception e) {
 			logger.error("Exception in close():",e);
 		}
     	serialPort.removeEventListener();
-    	logger.trace("About to close()");
+    	logger.trace("About to close() serialPort");
     	serialPort.close();
-    	logger.debug("Chiuso.");
+    	logger.debug("SerialTransport closed.");
     }
 
 	private class SerialListener implements SerialPortEventListener {
@@ -250,8 +283,12 @@ public class SerialTransport extends Transport {
 							connector.received(i);
 						}
 					}
+        		} catch (NullPointerException e) {
+        			logger.fatal("Input stream not available");
 				} catch (IOException e) {
-	    			logger.error("Errore di lettura: " + e.getMessage());
+	    			logger.fatal("Read error: ",e);
+	    			// Non fare il reopen qui, perche' provoca dead lock
+	    			//reopen();
 				}
             } else if (event.getEventType() == SerialPortEvent.OE) {
             	logger.error("Overrun error: "+event.getSource());

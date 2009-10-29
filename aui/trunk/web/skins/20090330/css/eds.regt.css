@@ -43,12 +43,12 @@ body {
 
 h1 {
 	margin: 0px 10px;
-	font-size: 26px;
+	font-size: 30px;
 }
 
 h2 {
 	margin: 0px 10px;
-	font-size: 22px;
+	font-size: 26px;
 }
 
 ul.eds-regt-stagione {	
@@ -88,7 +88,6 @@ div.eds-regt-0-season, div.eds-regt-1-season {
 } 
 
 div.eds-regt-0-day, div.eds-regt-1-day {
-	cursor: move;
 	color: white;
 	position: relative;
 	/*
@@ -99,6 +98,7 @@ div.eds-regt-0-day, div.eds-regt-1-day {
 	clear: left;
 	padding: 1px 5px;	
 	margin: 2px 0px;
+	padding: 3px 4px 0px 3px;
 } 
 
 div.eds-regt-0-hour, div.eds-regt-1-hour {
@@ -121,8 +121,6 @@ div.eds-regt-0-hour, div.eds-regt-1-hour {
 }
 
 div.eds-regt-0-cursor, div.eds-regt-1-cursor {
-	background-image: url("../images/")
-	cursor: pointer;
 	position: absolute;
 	text-align: center;
 	width: 40px;

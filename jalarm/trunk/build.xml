@@ -1,0 +1,25 @@
+<project name="jalarm" default="jar">
+
+	<target name="jar">
+		<mkdir dir="build"/>
+		<javac srcdir="src"
+			destdir="build"
+			optimize="true"
+			classpathref="lib.path.ref"			
+		>
+	    <compilerarg value="-Xlint"/>
+		</javac>
+		<jar destfile="jalarm.jar">		
+			<fileset dir="build">
+				<include name="**/*.class"/>
+			</fileset>
+			<fileset dir="src">
+				<include name="**/*.properties"/>
+			</fileset>
+		</jar>
+
+		<delete verbose="true" includeemptydirs="true" dir="build" />
+	</target>
+		
+</project>
+  

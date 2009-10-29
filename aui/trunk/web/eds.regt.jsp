@@ -44,7 +44,7 @@ String skin = auiConfig.getString("skin","");
 	<div style="display: inline; float: left;">
 		<a href="aui.jsp?page=<%=pagina%>&layer=<%=layer%>"><img style="border: 0;" src="<%=skin%>images/page_back.png"></a>
 	</div>
-	<div class="control control-thermo" style="display: inline; width: 120px; float: left; position: relative;">
+	<div class="control control-thermo" style="display: inline; width: 120px; height: 70px; float: left; position: relative;">
 	 	<div style="position: relative;"><img src="<%=skin%>images/thermo_display.png"></div>
 		<div id="temp" class="thermo-display">--,-°C</div>
 		<div class="caption">Temperatura misurata</div>
@@ -74,13 +74,15 @@ String skin = auiConfig.getString("skin","");
 		<div id="T3" class="caption"></div>
 	</div>
 	-->
-	<div class="control" style="display: inline; position: relative; float: left;"><img src="<%=skin%>images/thermo_up.png" onclick="AUI.Regt.setPointUp();"></div>
-	<div class="control control-thermo" style="display: inline; width: 120px; float: left; position: relative;">
-	 	<div style="position: relative;"><img src="<%=skin%>images/thermo_display.png"></div>
-		<div id="setPoint" class="thermo-display">--,-°C</div>
-		<div class="caption">Set point attuale</div>
+	<div style="display: inline; float: left;">
+		<div class="control" style="display: inline; position: relative; float: left;"><img src="<%=skin%>images/thermo_up.png" onclick="AUI.Regt.setPointUp();"></div>
+		<div class="control control-thermo" style="display: inline; width: 120px; float: left; position: relative;">
+		 	<div style="position: relative;"><img src="<%=skin%>images/thermo_display.png"></div>
+			<div id="setPoint" class="thermo-display">--,-°C</div>
+			<div class="caption">Set point attuale</div>
+		</div>
+		<div class="control" style="display: inline; position: relative; float: left;"><img src="<%=skin%>images/thermo_dn.png" onclick="AUI.Regt.setPointDown();"></div>
 	</div>
-	<div class="control" style="display: inline; position: relative; float: left;"><img src="<%=skin%>images/thermo_dn.png" onclick="AUI.Regt.setPointDown();"></div>
  </div>
 </div>
 
@@ -93,29 +95,42 @@ String[] giorni = {"Dom","Lun","Mar","Mer","Gio","Ven","Sab"};
 for (int stagione = 0; stagione <= 1; stagione++) {
 %>
 <div id="regt-<%= stagione %>" class="eds-regt-<%= stagione %>-season" >
-<h1><%= stagioni[stagione] %></h1>
+	<div style="float: left;">		
+		<h1><%= stagioni[stagione] %></h1>
+	</div>
+	<div style="float: left;">
+		<img src="<%=skin %>images/reset-red.png" title="Cancella programmazione di questa stagione"  onclick="AUI.Regt.clearSeason('<%=stagione %>');">
+	</div>
+	
 <%	
 	for (int giorno = 0; giorno <= 6; giorno++) {
 %>
 	<div id="regt-<%= stagione %>-<%= giorno%>" class="eds-regt-<%= stagione %>-day"
-			onmousedown="AUI.Regt.onMouseDownDay(event,'<%=address%>'<%= stagione + "-" + giorno %>');"
+			onmousedown="AUI.Regt.onMouseDownDay(event,'<%= stagione + "-" + giorno %>');"
 	>
-	<h2><%= giorni[giorno] %></h2>
+		<div style="float: left;">		
+			<h2><%= giorni[giorno] %></h2>
+		</div>
+		<div style="float: left;">
+			<img src="<%=skin %>images/reset-red.png" title="Cancella programmazione di questo giorno" onclick="AUI.Regt.clearDay('<%=stagione %>-<%=giorno %>');">
+		</div>
+		<div style="display: inline; float: left; clear: both;">
 <%	
 		for (int ora = 0; ora <= 23; ora++) {
 			String id = stagione + "-" + giorno + "-" + ora;
 %>
-		<div class="eds-regt-<%= stagione %>-hour"
-		onmousedown="AUI.Regt.onMouseDownHour(event,'<%= id %>');"
-		>
-			<%= ora %>
-			<div class="eds-regt-<%= stagione %>-cursor" id="eds-regt-<%= id %>" 
-			onmousedown="AUI.Regt.onMouseDownCursor(event,'<%= id %>');"
-			>--</div>
-		</div>		
+			<div class="eds-regt-<%= stagione %>-hour"
+			onmousedown="AUI.Regt.onMouseDownHour(event,'<%= id %>');"
+			>
+				<%= ora %>
+				<div class="eds-regt-<%= stagione %>-cursor" id="eds-regt-<%= id %>" 
+				onmousedown="AUI.Regt.onMouseDownCursor(event,'<%= id %>');"
+				>--</div>
+			</div>		
 <%
 		}
 %>
+		</div>
 	</div>
 <%	
 	}		

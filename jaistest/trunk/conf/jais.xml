@@ -24,5 +24,9 @@
     <module name="Cmd">
       <class>it.ascia.ais.CmdControllerModule</class>
     </module>
+    <module name="Alarm">
+      <class>it.ascia.alarm.AlarmControllerModule</class>
+      <config>conf/Alarm.xml</config>
+    </module>
   </modules>
 </jais:configuration>

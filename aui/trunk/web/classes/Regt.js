@@ -26,18 +26,20 @@ if (AUI.Regt == undefined) {
 		 * Get RegT info from server
 		 */
 		get : function() {
+			this.updateSetPoints();
+			this.updateTemp();
+			this.updateSetPoint();
+			this.updateSeason();
+			this.updateMode();			
+		},
+
+		updateSetPoints : function() {
 			this.request.open('GET', 'jais/get?address='+this.address+':*', true);
 			var self = this;
 			this.request.onreadystatechange = AUI.Regt.stateChange;
 			this.timeout = window.setTimeout(self.timeoutExpired, 3000);
 			this.request.send(null);
 			this.sending = true;
-			AUI.Logger.setLevel(2);
-			
-			this.updateTemp();
-			this.updateSetPoint();
-			this.updateSeason();
-			this.updateMode();			
 		},
 		
 		updateTemp : function() {
@@ -329,7 +331,7 @@ if (AUI.Regt == undefined) {
 			this.jsonrpc.AUI.writePortValue(this.address+':season',season);
 			var self = this;
 			setTimeout(function() { self.updateSeason(); },500);;
-			setTimeout(function() { self.updateSetPoint(); },1000);;
+			setTimeout(function() { self.updateSetPoint(); },1500);;
 		},
 
 		setMode : function(mode) {
@@ -353,6 +355,21 @@ if (AUI.Regt == undefined) {
 			var self = this;
 			setTimeout(function() { self.updateSetPoint(); },500);;
 			setTimeout(function() { self.updateMode(); },500);;
+		},
+		
+		clearSeason : function(which) {
+			if (!confirm("Clean season set points ?")) return;
+			this.jsonrpc.AUI.writePortValue(this.address+':ResetSeason',which);			
+			var self = this;
+			setTimeout(function() { self.updateSetPoints(); },2000);;
+		},
+		
+		clearDay : function(which) {
+			if (!confirm("Clean day set points ?")) return;
+			this.jsonrpc.AUI.writePortValue(this.address+':ResetDay',which);			
+			var self = this;
+			setTimeout(function() { self.updateSetPoints(); },1000);;
+			
 		}
 		
 	};

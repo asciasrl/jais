@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 public class CmdControllerModule extends ControllerModule {
 
 	protected CmdConsole cmd = null;
+
+	private BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));;
 	
 	public void start() {
  		cmd = new CmdConsole();
@@ -19,6 +21,10 @@ public class CmdControllerModule extends ControllerModule {
  		super.stop();
 		if (cmd != null) {
 			cmd.interrupt();
+			try {
+				cmd.join(1000);
+			} catch (InterruptedException e) {
+			}
 		}
 	}
 	
@@ -32,8 +38,6 @@ public class CmdControllerModule extends ControllerModule {
 	 */
 	public class Stdio {
 
-		private BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));;
-		
 		/**
 		 * Richiede un intero.
 		 * 

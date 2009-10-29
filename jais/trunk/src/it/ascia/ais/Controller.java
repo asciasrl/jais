@@ -485,11 +485,15 @@ public class Controller {
 	public DevicePort getDevicePort(String fullAddress) {
 		String address = getDeviceFromAddress(fullAddress);
 		try {
-			Device device = getDevice(address);			
+			Device device = getDevice(address);
+			if (device == null) {
+				logger.warn("Port not found: "+fullAddress);
+				return null;
+			}
 			String portId = getPortFromAddress(fullAddress);
 			return device.getPort(portId);
 		} catch (Exception e) {
-			logger.warn(e);
+			logger.warn("getting '"+fullAddress+"': ",e);
 			return null;
 		}
 	}

@@ -33,6 +33,7 @@ if (!AUI.Controls) {
 		this.lastEvent = event;		
 		var device = this.getDevice(id);
 		if (device) {
+			AUI.Logger.debug("Mousedown: "+id);
 			device.onMouseDown(event);
 		} else {
 			AUI.Logger.error("Non trovato device: "+id);

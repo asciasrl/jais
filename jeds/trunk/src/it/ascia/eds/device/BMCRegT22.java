@@ -18,6 +18,7 @@ import it.ascia.ais.IntegerPort;
 import it.ascia.ais.StatePort;
 import it.ascia.ais.TemperaturePort;
 import it.ascia.ais.TemperatureSetpointPort;
+import it.ascia.ais.TriggerPort;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.msg.ImpostaParametroMessage;
 import it.ascia.eds.msg.EDSMessage;
@@ -73,6 +74,13 @@ public class BMCRegT22 extends BMCStandardIO {
 	private static final String port_T2_WINTER = "T2-0";
 	private static final String port_T3_SUMMER = "T3-1";
 	private static final String port_T3_WINTER = "T3-0";
+
+	/**
+	 * Porte virtuali, usate per inviare comandi
+	 */
+	private String virtual_RESET_DAY = "ResetDay";
+	private String virtual_RESET_SEASON = "ResetSeason";
+
 	/**
 	 * Nome compatto della porta "tempo di invio automatico".
 	 */
@@ -102,6 +110,10 @@ public class BMCRegT22 extends BMCStandardIO {
 	private static final int PARAM_TERM_ALARM_TEMPERATURE = 3;
 	private static final int PARAM_SEASON = 5;
 	private static final int PARAM_MODE = 7;
+
+	private static final int PARAM_CLEAR_SEASON = 40;
+	private static final int PARAM_CLEAR_DAY = 41;
+
 	private static final int PARAM_T0_VALUE = 78;
 	private static final int PARAM_T1_SUMMER_VALUE = 69;
 	private static final int PARAM_T1_WINTER_VALUE = 60;
@@ -135,6 +147,8 @@ public class BMCRegT22 extends BMCStandardIO {
 		addPort(new IntegerPort(this,port_autoSendTime));
 		addPort(new TemperatureSetpointPort(this,port_setPoint));
 		addPort(new DatePort(this,port_RTCC));
+		addPort(new TriggerPort(this,virtual_RESET_DAY));
+		addPort(new TriggerPort(this,virtual_RESET_SEASON));
 		for (int stagione = 0; stagione <= 1; stagione++) {
 			for (int giorno = 0; giorno <= 6; giorno++) {
 				for (int ora = 0; ora <= 23; ora++) {
@@ -289,7 +303,7 @@ public class BMCRegT22 extends BMCStandardIO {
 			RispostaSetPointMessage risp = (RispostaSetPointMessage) m;
 			RichiestaSetPointMessage rich = (RichiestaSetPointMessage) risp.getRequest();
 			int stagione = risp.getStagione();			
-			if (rich != null && rich.getStagione() != stagione) {
+			if (rich != null && rich.getOra() != 31 && rich.getStagione() != stagione) {
 				logger.error("Risposta 'stagione' non coerente. "+rich+" "+risp);
 			}
 			int giorno = risp.getGiorno();
@@ -452,6 +466,59 @@ public class BMCRegT22 extends BMCStandardIO {
 		//TODO Determinare se l'orologio e' sballato e nel caso sincronizzarlo
 	}
 	
+	/**
+	 * Reimposta i setpoint della intera stagione
+	 * @param season Stagione da cancellare {@link BMCRegT22.SEASONS}
+	 * @return true if send ok
+	 */
+	private boolean clearSeason(int season) {
+		logger.info("Cancellazione setPoint "+getSeason(season));
+		if (sendParameter(PARAM_CLEAR_SEASON,season & 0x01)) {
+			for (int day = 0; day < 7; day++) {
+				for (int h = 0; h < 24 ; h++) {
+					invalidate("setPoint-"+season+"-"+day+"-"+h);
+				}
+			}
+			return true;
+		} else {
+			return false;			
+		}
+	}
+	
+	private boolean clearSeason(String value) {
+		int season = Integer.parseInt(value);
+		return clearSeason(season);
+	}
+	
+	/**
+	 * Reimposta i setpoint della intera stagione
+	 * @param season Stagione da cancellare {@link BMCRegT22.SEASONS}
+	 * @param day Giorno da cancellare {@link BMCRegT22.DAYS}
+	 * @return true if send ok
+	 */
+	private boolean clearDay(int season, int day) {
+		logger.info("Cancellazione setPoint "+getSeason(season)+" "+getDay(day));
+		if (sendParameter(PARAM_CLEAR_DAY,((season & 0x01) << 3) + (day & 0x07))) {
+			for (int hour = 0; hour < 24 ; hour++) {
+				invalidate("setPoint-"+season+"-"+day+"-"+hour);
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private boolean clearDay(String value) {
+		String[] a = value.split("-");
+		if (a.length == 2) {
+			int season = Integer.parseInt(a[0]);
+			int day = Integer.parseInt(a[1]);
+			return clearDay(season, day);
+		} else {
+			throw(new IllegalArgumentException("Format: <season>-<day>"));
+		}
+	}
+
 	private boolean writeRTCC() {
 		return writeRTCC("now");
 	}
@@ -499,28 +566,57 @@ public class BMCRegT22 extends BMCStandardIO {
 	}
 
 	/**
-	 * Ritorna lo stato della sonda sotto forma di stringa.
+	 * Ritorna la stagione sotto forma di stringa.
+	 * @param season Indice della stagione
+	 * @return Nome della stagione
 	 */
-	 private String getSeason(int season) {
-		// Sanity check
+	private String getSeason(int season) {
 		if ((season >= 0) && (season < SEASONS.length)) {
 			return SEASONS[season];
 		} else {
-			throw(new AISException("Internal season is invalid: " + season));
+			throw(new AISException("Season is invalid: " + season));
 		}
 	}
 	 
 	/**
-	* Ritorna il modo di funzionamento
+	* Ritorna l'indice relativo alla stagione
+	* @param season Nome della stagione
+	* @return Indice della stagione
 	*/
 	private int getSeason(String season) {
-		// Sanity check
 		for(int i=0; i < SEASONS.length; i++) {
 			if (SEASONS[i].equalsIgnoreCase(season)) {
 				return i;
 			}
 		}
-		throw(new AISException("Internal season is invalid: " + season));
+		throw(new AISException("Season is invalid: " + season));
+	}
+
+	/**
+	 * Ritorna il giorno sotto forma di stringa.
+	 * @param day Indice del giorno
+	 * @return Nome del giorno
+	 */
+	private String getDay(int day) {
+		if ((day >= 0) && (day < DAYS.length)) {
+			return DAYS[day];
+		} else {
+			throw(new AISException("Day is invalid: " + day));
+		}
+	}
+	 
+	/**
+	* Ritorna l'indice relativo al giorno
+	* @param season Nome del giorno
+	* @return Indice del giorno
+	*/
+	private int getDay(String day) {
+		for(int i=0; i < DAYS.length; i++) {
+			if (DAYS[i].equalsIgnoreCase(day)) {
+				return i;
+			}
+		}
+		throw(new AISException("Day is invalid: " + day));
 	}
 
 	
@@ -555,13 +651,23 @@ public class BMCRegT22 extends BMCStandardIO {
 	  * @param param Indice del parametro
 	  * @param newValue Nuovo valore
 	  */
-	 public void sendSetpointParameter(String portId,int param,Double newValue) {
-		ImpostaParametroMessage richiesta = new ImpostaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
-				setPoint(newValue.doubleValue()),param);
-		if (getConnector().sendMessage(richiesta)) {
+	private void sendSetpointParameter(String portId,int param,Double newValue) {
+		if (sendParameter(param,setPoint(newValue.doubleValue()))) {
 			DevicePort p = getPort(portId);
 			p.setValue(newValue);
 		}
+	}
+	 
+	/**
+	 * Invia un messaggio di impostazione parametro 
+	 * @param parameter Numero del parametro
+	 * @param value Valore del parametro
+	 * @return
+	 */
+	private boolean sendParameter(int parameter, int value) {
+		ImpostaParametroMessage richiesta = new ImpostaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
+				parameter, value);
+		return getConnector().sendMessage(richiesta);		 
 	}
 	
 	/**
@@ -591,9 +697,15 @@ public class BMCRegT22 extends BMCStandardIO {
 		} else if (portId.equals(port_season)) {
 			res = getConnector().sendMessage(new ImpostaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
 					PARAM_SEASON,getSeason((String)newValue)));
+			invalidate("setPoint");
 		} else if (portId.equals(port_mode)) {
 			res = getConnector().sendMessage(new ImpostaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
 					PARAM_MODE,getMode((String)newValue)));
+			invalidate("setPoint");
+		} else if (portId.equals(virtual_RESET_DAY)) {
+			res = clearDay((String)newValue);
+		} else if (portId.equals(virtual_RESET_SEASON)) {
+			res = clearSeason((String)newValue);			
 		} else if (portId.equals(port_setPoint)) {
 			if (Integer.class.isInstance(newValue)) {
 				newValue = new Double(((Integer)newValue).intValue());

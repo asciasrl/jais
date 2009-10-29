@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<jais:configuration version="1.4">
+  <Alarm>
+    <alarmArmedPortId>2.3:Out7</alarmArmedPortId>
+    <preAlarmPortId>2.3:Out8</preAlarmPortId>
+    <alarmPortId>2.3:Out6</alarmPortId>
+    <exitDelay>10</exitDelay>
+    <enterDelay>10</enterDelay>
+    <alarmDuration>30</alarmDuration>
+    <PIN>1234</PIN>
+  </Alarm>
+</jais:configuration>

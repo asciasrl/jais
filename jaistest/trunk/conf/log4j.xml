@@ -35,6 +35,9 @@
   <logger name="org.mortbay">
     <level value="info" />
   </logger>
+  <logger name="it.ascia.alarm.AlarmControllerModule">
+  	<level value="trace" />
+  </logger>  
   <root>
     <priority value="trace" />
     <appender-ref ref="stdout" />

@@ -32,6 +32,9 @@ public class SerialTransport extends Transport {
     private InputStream inputStream;
     private SerialPort serialPort;
 	private String portName;
+	
+	private boolean closed = true;
+	
 	private int portSpeed;
 	private int inputBufferSize;
 	private int outputBufferSize;
@@ -188,9 +191,14 @@ public class SerialTransport extends Transport {
         serialPort.notifyOnDataAvailable(true);
         serialPort.notifyOnOverrunError(true);
         logger.debug("Opened serial transport "+this);
+        closed = false;
     }
 
     private void reopen() {
+    	if (closed) {
+    		logger.warn("Cannot reopen closed transport");
+    		return;
+    	}
     	logger.info("Trying to reopen serial port");
     	close();
     	try {
@@ -225,6 +233,7 @@ public class SerialTransport extends Transport {
      * Chiude la porta seriale.
      */
     public void close() {
+    	closed = true;
     	try {
     		if (inputStream != null) {
 	        	logger.trace("Closing input stream.");

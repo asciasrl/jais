@@ -1,0 +1,26 @@
+div.keypad {
+	background-image: URL('../images/key_background.png');
+	width: 320px;
+	height: 356px;
+	display: none;
+	z-index: 1000;
+	position: absolute;
+	overflow: hidden;
+}
+
+div.keypadScreen {
+	position: absolute; 
+	top: 24px; 
+	left: 28px; 
+	width: 260px; 
+	height: 60px; 
+	font-size: 60px; 
+	overflow: hidden; 
+	text-align: center;
+}
+
+div.keypadKeys {
+	position: absolute; 
+	top: 103px; 
+	left: 24px;
+}

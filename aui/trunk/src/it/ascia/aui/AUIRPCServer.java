@@ -262,11 +262,13 @@ public class AUIRPCServer implements Serializable {
 			String type = controlConfig.getString("type");
 			String id = controlConfig.getString("[@id]");
 			String controlId = "control-" + pageId + "-" + id;
-			SubnodeConfiguration typeConfig = auiConfig.configurationAt("controls/"+type);
 			HashMap<String, String> controlMap = new HashMap<String, String>();
-			for (Iterator ip = typeConfig.getKeys(); ip.hasNext(); ) {
-				String k = (String) ip.next();
-				controlMap.put(k, typeConfig.getString(k));
+			if (auiConfig.containsKey("controls/"+type+"/default")) {
+				SubnodeConfiguration typeConfig = auiConfig.configurationAt("controls/"+type);
+				for (Iterator ip = typeConfig.getKeys(); ip.hasNext(); ) {
+					String k = (String) ip.next();
+					controlMap.put(k, typeConfig.getString(k));
+				}
 			}
 			for (Iterator ip = controlConfig.getKeys(); ip.hasNext(); ) {
 				String k = (String) ip.next();

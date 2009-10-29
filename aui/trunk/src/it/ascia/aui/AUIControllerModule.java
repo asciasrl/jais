@@ -43,7 +43,7 @@ public class AUIControllerModule extends ControllerModule {
 		c.registerCommand("send", new sendCommand());
 		c.registerCommand("set", new setCommand());
 
-		JSONRPCBridge.getGlobalBridge().registerCallback(new AUIInvocationCallback(), HttpServletRequest.class);
+		// FIXME JSONRPCBridge.getGlobalBridge().registerCallback(new AUIInvocationCallback(), HttpServletRequest.class);
 		JSONRPCBridge.getGlobalBridge().registerObject("AUI", new AUIRPCServer(this));
 	}
 	
@@ -115,11 +115,13 @@ public class AUIControllerModule extends ControllerModule {
 				HierarchicalConfiguration controlConfig = (HierarchicalConfiguration) ic.next();
 				String id = "control-" + pageId + "-" + controlConfig.getString("[@id]");
 				String type = controlConfig.getString("type");
-				SubnodeConfiguration typeConfig = auiConfig.configurationAt("controls."+type);
 				HashMap controlMap = new HashMap();
-				for (Iterator ip = typeConfig.getKeys(); ip.hasNext(); ) {
-					String k = (String) ip.next();
-					controlMap.put(k, typeConfig.getString(k));
+				if (auiConfig.containsKey("controls."+type+".default")) {
+					SubnodeConfiguration typeConfig = auiConfig.configurationAt("controls."+type);
+					for (Iterator ip = typeConfig.getKeys(); ip.hasNext(); ) {
+						String k = (String) ip.next();
+						controlMap.put(k, typeConfig.getString(k));
+					}
 				}
 				for (Iterator ip = controlConfig.getKeys(); ip.hasNext(); ) {
 					String k = (String) ip.next();

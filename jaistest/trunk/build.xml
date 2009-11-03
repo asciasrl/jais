@@ -2,10 +2,12 @@
 
 	<taskdef name="jsmin"
 	        classname="net.matthaynes.jsmin.JSMin_Task"
-	        classpath="lib/jsmin.0.2.3.jar"/>
-	
+	        classpath="lib/jsmin.0.2.3.jar"/>	
 	
 	<target name="zip" depends="jais,jeds,jaui,aui,conf,i18n">
+		<copy verbose="true" file="run.bat" todir="${dst}" />
+		<mkdir dir="${dst}logs/"/>
+		<mkdir dir="${dst}web/images"/>
 		<zip file="${dst}../aui-${v}.zip" duplicate="fail" >
 			<fileset dir="${dst}">
 				<include name="lib/**" />
@@ -15,7 +17,7 @@
 				<include name="run.bat" />
 			</fileset>
 		</zip>
-		<delete verbose="true" includeemptydirs="true" dir="${dst}" />
+		<delete includeemptydirs="true" dir="${dst}" />
 	</target>
 	
 	<target name="base">
@@ -32,12 +34,6 @@
 		<property name="web" value="${dst}web/"/>
 		<property name="conf" value="${dst}conf/"/>
 		
-		<manifest file="MANIFEST.MF">
-			<attribute name="Built-By" value="${user.name}"/>
-			<attribute name="Main-Class" value="it.ascia.ais.Controller"/>
-			<attribute name="Implementation-Version" value="${version.num}.${build.number}"/>   
-			<attribute name="Built-Date" value="${TODAY}"/>                 
-		</manifest>			
 	</target>
 
 	<target name="lib" depends="base">
@@ -52,43 +48,37 @@
 	</target>
 	
 	<target name="jais" depends="lib, base">
+		<ant dir="../jais" inheritrefs="true" />
+	</target>
+
+		<target name="jais1" depends="lib, base">
+		<manifest file="MANIFEST.MF">
+			<attribute name="Built-By" value="${user.name}"/>
+			<attribute name="Main-Class" value="it.ascia.ais.Controller"/>
+			<attribute name="Implementation-Version" value="${version.num}.${build.number}"/>   
+			<attribute name="Built-Date" value="${TODAY}"/>                 
+		</manifest>			
 		<mkdir dir="${lib}jais"/>
 		<javac srcdir="../jais/src"
 			destdir="${lib}jais"
 			optimize="true"
 			classpathref="lib.path.ref"			
 		>
-	    <compilerarg value="-Xlint"/>
+	    <!-- <compilerarg value="-Xlint"/> -->
 		</javac>
 		<jar destfile="jais.jar"
 		   basedir="${lib}jais/"
 		   includes="**/*.class"
 		   manifest="MANIFEST.MF"			
 		   />
-		<delete verbose="true" includeemptydirs="true" dir="${lib}jais/" />
+		<delete includeemptydirs="true" dir="${lib}jais/" />
 		<move verbose="true" file="jais.jar" tofile="${lib}jais-${v}.jar" />
-		<copy verbose="true" file="run.bat" todir="${dst}" />
-		<mkdir dir="${dst}logs/"/>
 	</target>
 	
 	<target name="jeds" depends="jais">
-		<mkdir dir="${lib}jeds"/>
-		<javac srcdir="../jeds/src"
-			destdir="${lib}jeds"
-			optimize="true"
-			classpathref="lib.path.ref"			
-		>
-	    <compilerarg value="-Xlint"/>
-		</javac>
-		<jar destfile="jeds.jar"
-		   basedir="${lib}jeds/"
-		   includes="**/*.class"
-		   manifest="MANIFEST.MF"
-		   />
-		<delete verbose="true" includeemptydirs="true" dir="${lib}jeds/" />
-		<move verbose="true" file="jeds.jar" tofile="${lib}jeds-${v}.jar" />
-	</target>	
-
+		<ant dir="../jeds" inheritrefs="true"/>
+	</target>
+	
 	<target name="jaui" depends="jais">
 		<jar destfile="jaui.jar"
 		   manifest="MANIFEST.MF">
@@ -136,11 +126,6 @@
 	</target>	
 
 	<target name="aui">
-		<delete verbose="true" failonerror="false" includeemptydirs="true" >
-			<fileset dir="${web}">
-			  <include name="**"/>
-			</fileset>
-		</delete>
 		<copy verbose="true" todir="${web}" >
 			<fileset dir="../aui/web">
 			  <include name="**/*"/>
@@ -167,7 +152,7 @@
 			  <include name="*.xml"/>
 			</fileset>
 		</copy>
-		<zip file="${conf}sample.zip" duplicate="fail" >
+		<zip file="${conf}sample.zip" duplicate="fail">
 			<fileset dir="${conf}">
 				<include name="*.xml" />
 			</fileset>

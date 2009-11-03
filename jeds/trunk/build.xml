@@ -1,0 +1,16 @@
+<project name="jeds" default="jar">
+	<target name="jar">
+		<mkdir dir="build"/>
+		<javac srcdir="src"
+			destdir="buildtemp"
+			optimize="true"			
+			classpathref="lib.path.ref"
+		/>
+		<jar destfile="${lib}${ant.project.name}-${v}.jar"
+		   basedir="buildtemp"
+		   includes="**/*.class"
+		   />
+		<delete includeemptydirs="true" dir="buildtemp" />
+	</target>	
+</project>
+  

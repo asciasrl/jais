@@ -1,4 +1,7 @@
-package it.ascia.ais;
+package it.ascia.ais.port;
+
+import it.ascia.ais.Device;
+import it.ascia.ais.DevicePort;
 
 public class AnalogOutputPort extends DevicePort {
 	

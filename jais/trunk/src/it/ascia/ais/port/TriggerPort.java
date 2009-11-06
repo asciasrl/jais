@@ -1,7 +1,9 @@
 /**
  * 
  */
-package it.ascia.ais;
+package it.ascia.ais.port;
+
+import it.ascia.ais.Device;
 
 /**
  * Questa porta ha sempre valore false. Viene usata solo per inviare comandi al device 

@@ -18,7 +18,7 @@ import org.jabsorb.JSONRPCBridge;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import it.ascia.ais.AISException;
-import it.ascia.ais.Command;
+import it.ascia.ais.CommandInterface;
 import it.ascia.ais.Controller;
 import it.ascia.ais.ControllerModule;
 import it.ascia.ais.Device;
@@ -217,7 +217,7 @@ public class AUIControllerModule extends ControllerModule {
 	}
 
 	
-	class sendCommand implements Command {
+	class sendCommand implements CommandInterface {
 		public String execute(HashMap params) {
 			if (params.size() == 0) {
 				throw(new AISException("mancano parametri"));
@@ -234,7 +234,7 @@ public class AUIControllerModule extends ControllerModule {
 		}
 	}
 
-	class getCommand implements Command {
+	class getCommand implements CommandInterface {
 		public String execute(HashMap params) {
 			// Comando "get"
 			String fullAddress = (String) params.get("address");
@@ -245,7 +245,7 @@ public class AUIControllerModule extends ControllerModule {
 		}
 	}
 	
-	class getAllCommand implements Command {
+	class getAllCommand implements CommandInterface {
 		public String execute(HashMap params) {
 			return getAll();
 		} 
@@ -274,7 +274,7 @@ public class AUIControllerModule extends ControllerModule {
 	/**
 	 * @deprecated
 	 */
-	class getPagesCommand implements Command {
+	class getPagesCommand implements CommandInterface {
 		public String execute(HashMap params) {
 			JSONObject j = new JSONObject();
 			j.putAll(getPages());
@@ -306,7 +306,7 @@ public class AUIControllerModule extends ControllerModule {
 	*/
 	
 	/*
-	class getPortsCommand implements Command {
+	class getPortsCommand implements CommandInterface {
 		public String execute(HashMap params) {
 			return getPorts();
 		} 
@@ -339,7 +339,7 @@ public class AUIControllerModule extends ControllerModule {
 		}		
 	}
 	
-	class setCommand implements Command {
+	class setCommand implements CommandInterface {
 		public String execute(HashMap params) {
 			return set(params);
 		}

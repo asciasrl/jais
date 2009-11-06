@@ -3,9 +3,9 @@ package it.ascia.dxp;
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.Device;
-import it.ascia.ais.DigitalInputPort;
-import it.ascia.ais.DigitalOutputPort;
 import it.ascia.ais.Message;
+import it.ascia.ais.port.DigitalInputPort;
+import it.ascia.ais.port.DigitalOutputPort;
 
 public abstract class DominoDevice extends Device {
 

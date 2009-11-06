@@ -1,4 +1,8 @@
-package it.ascia.ais;
+package it.ascia.ais.port;
+
+import it.ascia.ais.AISException;
+import it.ascia.ais.Device;
+import it.ascia.ais.DevicePort;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

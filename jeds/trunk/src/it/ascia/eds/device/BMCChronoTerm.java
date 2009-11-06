@@ -6,12 +6,12 @@ package it.ascia.eds.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
-import it.ascia.ais.SeasonPort;
-import it.ascia.ais.SlaveStatePort;
-import it.ascia.ais.StatePort;
-import it.ascia.ais.TemperaturePort;
-import it.ascia.ais.TemperatureSetpointPort;
-import it.ascia.ais.TriggerPort;
+import it.ascia.ais.port.SeasonPort;
+import it.ascia.ais.port.SlaveStatePort;
+import it.ascia.ais.port.StatePort;
+import it.ascia.ais.port.TemperaturePort;
+import it.ascia.ais.port.TemperatureSetpointPort;
+import it.ascia.ais.port.TriggerPort;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.msg.CronotermMessage;
 import it.ascia.eds.msg.ImpostaSetPointMessage;

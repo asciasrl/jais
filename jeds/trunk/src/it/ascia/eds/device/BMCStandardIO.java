@@ -5,10 +5,10 @@ package it.ascia.eds.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
-import it.ascia.ais.BlindPort;
 import it.ascia.ais.DevicePort;
-import it.ascia.ais.DigitalInputPort;
-import it.ascia.ais.DigitalOutputPort;
+import it.ascia.ais.port.BlindPort;
+import it.ascia.ais.port.DigitalInputPort;
+import it.ascia.ais.port.DigitalOutputPort;
 import it.ascia.eds.msg.AcknowledgeMessage;
 import it.ascia.eds.msg.ComandoBroadcastMessage;
 import it.ascia.eds.msg.ComandoUscitaMessage;

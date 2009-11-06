@@ -5,7 +5,7 @@ package it.ascia.eds.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
-import it.ascia.ais.ScenePort;
+import it.ascia.ais.port.ScenePort;
 import it.ascia.eds.msg.ComandoUscitaMessage;
 import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.VariazioneIngressoMessage;

@@ -2,7 +2,7 @@ package it.ascia.dxp.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
-import it.ascia.ais.BlindPort;
+import it.ascia.ais.port.BlindPort;
 
 public class DFTP extends DF4R {
 

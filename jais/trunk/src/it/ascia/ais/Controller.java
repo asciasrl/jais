@@ -120,15 +120,15 @@ public class Controller {
 	 * Registra un comando per la successiva esecuzione tramite doCommand
 	 * 
 	 * @param name Nome del comando, deve essere unico
-	 * @param command
+	 * @param commandInterface
 	 * @throws KeyAlreadyExistsException
 	 */
-	public void registerCommand(String name, Command command) throws KeyAlreadyExistsException {
+	public void registerCommand(String name, CommandInterface commandInterface) throws KeyAlreadyExistsException {
 		if (connectors.containsKey(name)) {
-			throw(new KeyAlreadyExistsException("Command name duplicated: "+name));
+			throw(new KeyAlreadyExistsException("CommandInterface name duplicated: "+name));
 		}
-		commands.put(name, command);
-		logger.debug("Registered command '"+name+"' "+command.getClass());
+		commands.put(name, commandInterface);
+		logger.debug("Registered command '"+name+"' "+commandInterface.getClass());
 	}
 	
 	/**
@@ -140,11 +140,11 @@ public class Controller {
 	 * @throws AISException Comando non registrato
 	 */
 	public String doCommand(String name, HashMap params) throws AISException {
-		Command command = (Command) commands.get(name);
-		if (command == null) {
-			throw(new AISException("Command "+name+" not registered."));
+		CommandInterface commandInterface = (CommandInterface) commands.get(name);
+		if (commandInterface == null) {
+			throw(new AISException("CommandInterface "+name+" not registered."));
 		}
-		return command.execute(params);
+		return commandInterface.execute(params);
 	}
 	
 	public ControllerModule getModule(String name) {

@@ -1,4 +1,6 @@
-package it.ascia.ais;
+package it.ascia.ais.port;
+
+import it.ascia.ais.Device;
 
 public class TemperaturePort extends AnalogInputPort {
 

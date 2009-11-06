@@ -6,7 +6,7 @@ package it.ascia.eds.device;
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.DevicePort;
-import it.ascia.ais.DimmerPort;
+import it.ascia.ais.port.DimmerPort;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.msg.ComandoBroadcastMessage;
 import it.ascia.eds.msg.ComandoUscitaDimmerMessage;

@@ -40,6 +40,7 @@ String skin = auiConfig.getString("skin","");
 <head>
 <title>AUì</title>
 <link href="<%= skin %>css/aui.css" rel="stylesheet" type="text/css"/>
+<link href="<%= skin %>css/keypad.css" rel="stylesheet" type="text/css"/>
 <!--  <meta name="viewport" content="width=device-width, maximum-scale=3" /> -->
 <!--  <meta name="viewport" content="width=device-width, initial-scale = 1.0, user-scalable = no" />  -->
 <meta name="viewport" content="width=device-width, initial-scale = 1.0, maximum-scale=2, minimum-scale=0.5" />
@@ -205,6 +206,11 @@ for (int iLayer = 0;  iLayer < (5 + nLayers); iLayer++) {
 	<img id="slider-cursor" src="<%= skin %>/images/slider-cursor.png" width="128" height="130" />
 </div>
 
+<script language="javascript" src="classes/mootools-1.2.3-core-nc.js"></script>
+<script language="javascript" src="classes/mootools-1.2.3.1-more.js"></script>
+
+<script language="javascript" src="classes/jsonrpc.js"></script>
+
 <script type="text/javascript" language="javascript" src="classes/AUI.js"></script>
 <script type="text/javascript" language="javascript" src="classes/Logger.js"></script>
 <script type="text/javascript" language="javascript" src="classes/Header.js"></script>
@@ -225,6 +231,9 @@ for (int iLayer = 0;  iLayer < (5 + nLayers); iLayer++) {
 <script type="text/javascript" language="javascript" src="classes/Thermo.js"></script>
 <script type="text/javascript" language="javascript" src="classes/Webcam.js"></script>
 <script type="text/javascript" language="javascript" src="classes/Digitalinput.js"></script>
+<script type="text/javascript" language="javascript" src="classes/Alarm.js"></script>
+<script type="text/javascript" language="javascript" src="classes/Keypad.js"></script>
+<script type="text/javascript" language="javascript" src="classes/Prealarm.js"></script>
 
 <script language="javascript">
 AUI.Controls.controls = <%= auiControllerModule.getControls() %>;

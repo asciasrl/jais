@@ -3,7 +3,7 @@
   <EDS>
     <autoupdate>1000</autoupdate>
     <skipautoupdate>false</skipautoupdate>
-    <retrytimeout>50</retrytimeout>
+    <retrytimeout>100</retrytimeout>
     <discovernew>true</discovernew>
     <connectors>
       <!--

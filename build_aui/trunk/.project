@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>build_aui</name>
+	<comment></comment>
+	<projects>
+		<project>aui</project>
+		<project>jais</project>
+		<project>JaisTest</project>
+		<project>jalarm</project>
+		<project>jdxp</project>
+		<project>jeds</project>
+		<project>translations</project>
+	</projects>
+	<buildSpec>
+	</buildSpec>
+	<natures>
+	</natures>
+</projectDescription>

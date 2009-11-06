@@ -1,68 +1,57 @@
-<project name="aui" default="all">
+<project name="jaui" default="all">
 
 	<target name="all" depends="jar, web" />
+
+	<path id="lib.path.ref">
+	   <fileset dir="${lib}" includes="*.jar"/>
+	</path>
 		
 	<taskdef name="jsmin"
 	        classname="net.matthaynes.jsmin.JSMin_Task"
 	        classpath="lib/jsmin.0.2.3.jar"/>	
 	
 	<target name="jar">
-		<jar destfile="${lib}jaui-${v}.jar">
-			<fileset dir="build">
+		<property name="temp" value="buildtemp"/>		
+		<mkdir dir="${temp}"/>
+		<javac srcdir="src"
+			destdir="${temp}"
+			optimize="true"			
+			classpathref="lib.path.ref"
+		/>
+		<jar destfile="${lib}${ant.project.name}-${v}.jar">
+			<fileset dir="${temp}">
     		<include name="**/*.class"/>
 			</fileset>
 			<fileset dir="src">
     		<include name="**/*.properties"/>
 			</fileset>
 		</jar>
+		<delete includeemptydirs="true" dir="${temp}" />
 	</target>	
 
 	<target name="web">
-		<copy verbose="true" todir="${web}" >
+		<delete verbose="true">
+			<fileset dir="web">
+			  <include name="**/Thumbs.db"/>
+			</fileset>						
+		</delete>
+		<copy todir="${web}" >
 			<fileset dir="web">
 			  <include name="**/*"/>
+				<exclude name="images/**"/>
+				<exclude name="classes/**"/>
 			</fileset>
 		</copy>
 		<jsmin destdir="${web}classes" copyright="(C) 2009 www.ascia.it" force="true">
-			<fileset dir="../aui/web/classes" includes="**/*.js"/>
+			<fileset dir="web/classes" includes="**/*.js"/>
 		</jsmin>
-		<delete verbose="true" failonerror="false" includeemptydirs="true" >
-			<fileset dir="${web}images/">
-			  <include name="**"/>
-			</fileset>
-		</delete>
-		<copy verbose="true" failonerror="false" todir="${web}images/" >
-			<fileset dir="images/">
-			  <include name="**/*"/>
-			</fileset>
-		</copy>
-	</target>
-
-	<target name="conf">
-		<copy verbose="true" todir="${conf}" >
-			<fileset dir="conf">
-			  <include name="*.xml"/>
-			</fileset>
-		</copy>
-		<zip file="${conf}sample.zip" duplicate="fail">
-			<fileset dir="${conf}">
-				<include name="*.xml" />
+		<mkdir dir="${web}images"/>
+		<zip file="${web}images/samples.zip" duplicate="fail">
+			<fileset dir="web/images/">
+			  <include name="*.png"/>
+			  <include name="*.jpg"/>
 			</fileset>
 		</zip>
-		<delete verbose="true" failonerror="false" includeemptydirs="true" >
-			<fileset dir="${conf}">
-			  <include name="*.xml"/>
-			</fileset>
-		</delete>
-
-	</target>
-	
-	<target name="i18n">
-		<jar destfile="${lib}i18n-${v}.jar">
-			<fileset dir="../translations/src">
-    		<include name="**/*.properties"/>
-			</fileset>
-		</jar>
 	</target>
 	
 </project>

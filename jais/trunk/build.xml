@@ -1,23 +1,39 @@
-<project name="jais" default="jar">
-	<target name="jar">
+<project name="jais" default="all">
+
+	<target name="all" depends="lib,jar" />
+
+	<path id="lib.path.ref">
+	   <fileset dir="${lib}" includes="*.jar"/>
+	</path>
+
+	<target name="lib">
+		<copy verbose="true" todir="${lib}">			
+			<fileset dir="lib/">
+			  <include name="*"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="jar"> 
+		<property name="temp" value="buildtemp"/>
 		<manifest file="MANIFEST.MF">
 			<attribute name="Built-By" value="${user.name}"/>
 			<attribute name="Main-Class" value="it.ascia.ais.Controller"/>
 			<attribute name="Implementation-Version" value="${version.num}.${build.number}"/>   
 			<attribute name="Built-Date" value="${TODAY}"/>                 
 		</manifest>
-		<mkdir dir="build"/>
+		<mkdir dir="${temp}"/>
 		<javac srcdir="src"
-			destdir="buildtemp"
-			optimize="true"			
+			destdir="${temp}"
+			optimize="true"						
 			classpathref="lib.path.ref"
 		/>
 		<jar destfile="${lib}${ant.project.name}-${v}.jar"
-		   basedir="buildtemp"
+		   basedir="${temp}"
 		   includes="**/*.class"
 			 manifest="MANIFEST.MF"			
 		   />
-		<delete includeemptydirs="true" dir="buildtemp" />
+		<delete includeemptydirs="true" dir="${temp}" />
 	</target>	
 </project>
   

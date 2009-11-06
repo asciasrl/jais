@@ -1,10 +1,6 @@
 <project name="AUI Installer" default="zip">
 
-	<taskdef name="jsmin"
-	        classname="net.matthaynes.jsmin.JSMin_Task"
-	        classpath="lib/jsmin.0.2.3.jar"/>	
-	
-	<target name="zip" depends="jais,jeds,jaui,aui,conf,i18n">
+	<target name="zip" depends="jais,jeds,jalarm,jaui,aui,conf,i18n">
 		<copy verbose="true" file="run.bat" todir="${dst}" />
 		<mkdir dir="${dst}logs/"/>
 		<mkdir dir="${dst}web/images"/>
@@ -32,8 +28,7 @@
 		<property name="dst" value="../installer/${v}/"/>
 		<property name="lib" value="${dst}lib/"/>
 		<property name="web" value="${dst}web/"/>
-		<property name="conf" value="${dst}conf/"/>
-		
+		<property name="conf" value="${dst}conf/"/>		
 	</target>
 
 	<target name="lib" depends="base">
@@ -171,6 +166,11 @@
     		<include name="**/*.properties"/>
 			</fileset>
 		</jar>
+	</target>
+	
+	<target name="jalarm" depends="lib,jais,jeds">
+		<ant dir="../jalarm" inheritrefs="true" />
+		<move verbose="true" file="../jalarm/jalarm.jar" tofile="${lib}jalarm-${v}.jar" />
 	</target>
 	
 </project>

@@ -52,8 +52,11 @@ public class EDSConnector extends Connector {
 	 * <p>Nel caso peggiore (1200 bps), la trasmissione di un messaggio richiede 
 	 * 8 / 120 = 660 msec. In quello migliore (9600 bps), la trasmissione 
 	 * richiede 82 msec. Questa costante deve tener conto del caso migliore.</p>
+	 * 
+	 * Questo valore si puo' modificare nel file di configurazione:
+	 * /jais/EDS/retrytimeout
 	 */
-	protected int RETRY_TIMEOUT = 50;
+	protected int RETRY_TIMEOUT = 300;
 
 	/**
 	 * Quante volte provare a reinviare un messaggio che richiede una risposta.

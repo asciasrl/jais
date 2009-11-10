@@ -5,12 +5,14 @@ package it.ascia.ais;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
 
@@ -42,7 +44,7 @@ public class Controller {
 	 * 
 	 * <p>I Connector qui dentro sono accessibili dal loro nome (stringa).</p>
 	 */
-	private Map connectors = new LinkedHashMap();
+	private LinkedHashMap<String, Connector> connectors = new LinkedHashMap<String,Connector>();
 
 	/**
 	 * Comandi registrati.
@@ -77,30 +79,6 @@ public class Controller {
 
 	public XMLConfiguration getConfig() {
 		return config;
-	}
-	
-	/**
-	 * Rifa' String.split() per il GCJ che non ce l'ha.
-	 */
-	private static String[] splitString(String s, String separator) {
-		String retval[];
-		int i = 0, strings = 1, stringNo = 0, lastIndex = 0;
-		i = s.indexOf(separator, i);
-		while (i != -1) {
-			strings++;
-			i = s.indexOf(separator, i + 1);
-		}
-		retval = new String[strings];
-		i = s.indexOf(separator, lastIndex);
-		while (i != -1) {
-			retval[stringNo] = s.substring(lastIndex, i);
-			stringNo++;
-			lastIndex = i + 1;
-			i = s.indexOf(separator, lastIndex);
-		}
-		// Anche l'ultima
-		retval[stringNo] = s.substring(lastIndex);
-		return retval;
 	}
 	
 	/**
@@ -192,104 +170,29 @@ public class Controller {
 		}
 	}
 	
-	/**
-	 * Effettua il parsing di un indirizzo nella forma "device:porta".
-	 * 
-	 * @return il nome del Device indicato nell'indirizzo (la parte prima dei 
-	 * ":").
-	 * 
-	 * @throws un'eccezione se l'indirizzo non e' valido.
-	 */
-	public String getDeviceFromAddress(String address) throws AISException {
-		String temp[];
-		// Prima cosa: trovare i ":" per dividere porte e device.
-		temp = splitString(address, ":");
-		if (temp.length != 2) {
-			logger.warn("L'indirizzo deve contenere uno e un solo \":\"");
-		}
-		return temp[0];
-	}
-	
-	/**
-	 * Effettua il parsing di un indirizzo nella forma "device:porta".
-	 * 
-	 * @return il nome della porta indicata nell'indirizzo (la parte dopo i 
-	 * ":").
-	 * 
-	 * @throws un'eccezione se l'indirizzo non e' valido.
-	 */
-	public String getPortFromAddress(String address) throws AISException {
-		String temp[];
-		// Prima cosa: trovare i ":" per dividere porte e device.
-		temp = splitString(address, ":");
-		if (temp.length != 2) {
-			throw new AISException("L'indirizzo deve contenere uno e un solo " +
-					"\":\"");
-		}
-		return temp[1];
-	}
-
 	public Connector getConnector(String name) {
 		return (Connector) connectors.get(name);
 	}
-	
+
 	/**
-	 * Cerca uno o piu' Device a partire da un indirizzo.
 	 * 
-	 * <p>Perche' i Device siano rintracciabili, il loro Connector deve essere
-	 * stato preventivamente registrato usando registerConnector.
-	 * 
-	 * @param address indirizzo del/dei Device.
-	 * 
-	 * @return i Device rispondenti all'indirizzo indicato.
+	 * @param address Indirizzo del connettore 
+	 * @return Connettori che corrispondono all'indirizzo
 	 */
-	public Device[] findDevices(String address) throws AISException {
-		String connectorName = null;
-		String deviceAddress = null;
-		Connector connector = null;
-		Device retval[];
-		Iterator it;
-		if (address.equals("*")) {
-			// "*" e' una scorciatoia per "*.*"
-			address = "*.*";
+	public Collection<Device> getDevices(Address address) {
+		Vector<Device> res = new Vector<Device>();
+		for (Connector connector : connectors.values()) {
+			if (address.matchConnector(connector.getName())) {
+				res.addAll(connector.getDevices(address));			
+			}
 		}
-		retval = new Device[0];
-		it = connectors.keySet().iterator();
-		while (it.hasNext()) {
-			connectorName = (String)it.next();
-			if ((address.indexOf("*.") == 0) || 
-					(address.indexOf(connectorName + ".") == 0)) {
-				// Questo connector ci interessa!
-				int deviceNameIndex;
-				connector = (Connector)connectors.get(connectorName);
-				// Dove inizia l'indirizzo del Device?
-				if (address.indexOf("*") == 0) {
-					 // L'indirizzo ha la forma "*.nome"
-					deviceNameIndex = 2;
-				} else {
-					// L'indirizzo ha la forma "connector.nome"
-					deviceNameIndex = connectorName.length() + 1;
-				}
-				try {
-					Device temp[], temp2[];
-					deviceAddress = address.substring(deviceNameIndex);
-					temp = connector.getDevices(deviceAddress);
-					// Concateniamo temp e retval
-					temp2 = new Device[retval.length + temp.length];
-					System.arraycopy(retval, 0, temp2, 0, 
-							retval.length);
-					System.arraycopy(temp, 0, temp2, retval.length, 
-							temp.length);
-					retval = temp2;
-				} catch (StringIndexOutOfBoundsException e) {
-					throw new AISException("Impossibile distinguere " +
-							"connector e device nell'indirizzo \"" + 
-							address + "\"");
-				}
-			} // Se il connector ci interessa
-		} // Cicla sui connector
-		return retval;
+		return res;
 	}
+	
+	public Collection<Device> getDevices(String address) {
+		return getDevices(new Address(address));
+	}
+	
 	
 	/**
 	 * Inizializza il logger con {@link BasicConfigurator}
@@ -464,14 +367,13 @@ public class Controller {
 	/**
 	 * Cerca esattamente un device
 	 * @see findDevices
-	 * @param fullAddress Indirizzo completo del device
+	 * @param address Indirizzo del device
 	 * @return il Device trovato o null
-	 * @throws AISException
 	 */
-	public Device getDevice(String fullAddress) throws AISException {
-		Device[] devices = findDevices(fullAddress);
-		if (devices.length == 1) {
-			return devices[0];
+	public Device getDevice(Address address) throws AISException {
+		Collection<Device> devices = getDevices(address);
+		if (devices.size() == 1) {
+			return (Device) devices.toArray()[0];
 		} else {
 			return null;
 		}
@@ -483,14 +385,15 @@ public class Controller {
 	 * @return null se la porta non esiste
 	 */
 	public DevicePort getDevicePort(String fullAddress) {
-		String address = getDeviceFromAddress(fullAddress);
+		Address address = new Address(fullAddress);
+		//String address = getDeviceFromAddress(fullAddress);
 		try {
 			Device device = getDevice(address);
 			if (device == null) {
 				logger.warn("Port not found: "+fullAddress);
 				return null;
 			}
-			String portId = getPortFromAddress(fullAddress);
+			String portId = address.getPortId();
 			return device.getPort(portId);
 		} catch (Exception e) {
 			logger.warn("getting '"+fullAddress+"': ",e);

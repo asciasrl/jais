@@ -3,7 +3,9 @@
  */
 package it.ascia.ais;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.Vector;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 
@@ -57,7 +59,7 @@ public abstract class Connector {
 	/**
 	 * I dispositivi presenti nel sistema.
 	 */
-    private LinkedHashMap devices;
+    private LinkedHashMap<String,Device> devices;
     
 	/**
 	 * L'elenco degli indirizzi - primari o alias - dei dispositivi.
@@ -88,24 +90,25 @@ public abstract class Connector {
 	/**
      * Ritorna tutti i Device collegati che rispondono a un certo indirizzo.
      * 
-     * <p>Questa funzione deve gestire anche wildcard.</p>
-     * 
-     * @param deviceAddress l'indirizzo da cercare.
-     * @return un'array di Device, eventualmente di lunghezza zero.
-     * TODO gestire wildcards tipo 1.0.* o 1.*.0
+     * @param addr l'indirizzo da cercare.
+     * @return Elenco devices (eventualmente vuoto)
      */
-    public Device[] getDevices(String deviceAddress) {
-		if (deviceAddress.equals("*")) {
-			return (Device[]) devices.values().toArray(new Device[devices.size()]);
-		} else {
-			Device device = getDevice(deviceAddress);
-			if (device == null) {
-				return new Device[] {};
-			} else {
-				return new Device[] {device};
+    public Collection<Device> getDevices(Address addr) {
+    	if (addr.getDevice() == null) {
+    		return devices.values();
+    	}
+    	Vector<Device> res = new Vector<Device>();
+    	Device device1 = getDevice(addr);
+    	if (device1 != null) {
+    		res.add(device1);
+    	} else {
+			for (Device device : devices.values()) {
+				if (addr.matches(device.getFullAddress())) {
+					res.add(device);
+				}
 			}
-				
-		}
+    	}
+    	return res;    	
     }
     
     /**
@@ -141,6 +144,10 @@ public abstract class Connector {
      */
     public Device getDevice(String address) {
     	return (Device) devicesAlias.get(address);
+    }
+
+    public Device getDevice(Address address) {
+    	return (Device) devicesAlias.get(address.getDeviceAddress());
     }
 
     public LinkedHashMap getDevices() {

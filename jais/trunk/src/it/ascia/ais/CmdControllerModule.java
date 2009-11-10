@@ -3,6 +3,8 @@ package it.ascia.ais;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Collection;
+import java.util.Vector;
 
 public class CmdControllerModule extends ControllerModule {
 
@@ -113,25 +115,24 @@ public class CmdControllerModule extends ControllerModule {
 					controller.stop();
 					continue;
 				}
-				Device[] devices = null;
+				Collection<Device> devices = null;
 				try {
-					devices = controller.findDevices(dest);
+					devices = controller.getDevices(new Address(dest));
 				} catch (Exception e) {
-					devices = new Device[0];
+					devices = new Vector<Device>();
 				}					
-				if ( devices.length == 0) {
+				if ( devices.size() == 0) {
 					System.out.println("Device non trovato!");
 					continue;
 				}
-				if (devices.length > 1 ){
+				if (devices.size() > 1 ){
 					System.out.println("Elenco devices:");
-					for (int i = 0; i < devices.length; i++) {
-						Device device = devices[i];							
+					for (Device device : devices) {
 						System.out.println(device.getFullAddress());
 					}
 					continue;
 				} 
-				Device d = devices[0];
+				Device d = (Device) devices.toArray()[0];
 				while (d != null) {
 		 			System.out.println(d.getInfo());
 		 			System.out.println(d.getStatus());

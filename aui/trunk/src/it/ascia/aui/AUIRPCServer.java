@@ -4,6 +4,7 @@
 package it.ascia.aui;
 
 import it.ascia.ais.AISException;
+import it.ascia.ais.Address;
 import it.ascia.ais.Controller;
 import it.ascia.ais.Device;
 import it.ascia.ais.DevicePort;
@@ -12,6 +13,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -312,10 +314,9 @@ public class AUIRPCServer implements Serializable {
 	}
 	
 	public Vector<HashMap<String, String>> getPorts(String search) {		
-		Device devices[] = Controller.getController().findDevices(search);
+		Collection<Device> devices = Controller.getController().getDevices(search);
 		Vector<HashMap<String, String>> ports = new Vector<HashMap<String, String>>();
-		for (int i = 0; i < devices.length; i++) {
-			Device d = devices[i];
+		for (Device d : devices) {
 			DevicePort[] devicePorts = d.getPorts();
 			for (int j = 0; j < devicePorts.length; j++) {
 				DevicePort devicePort = devicePorts[j];

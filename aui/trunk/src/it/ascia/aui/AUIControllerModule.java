@@ -1,14 +1,13 @@
 package it.ascia.aui;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Map.Entry;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
@@ -18,6 +17,7 @@ import org.jabsorb.JSONRPCBridge;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import it.ascia.ais.AISException;
+import it.ascia.ais.Address;
 import it.ascia.ais.CommandInterface;
 import it.ascia.ais.Controller;
 import it.ascia.ais.ControllerModule;
@@ -197,21 +197,19 @@ public class AUIControllerModule extends ControllerModule {
 	public String get(String fullAddress) {
 		JSONArray ja = new JSONArray();
 		try {
-			String deviceAddress = controller.getDeviceFromAddress(fullAddress);
-			String portName = controller.getPortFromAddress(fullAddress);
-			Device devices[] = controller.findDevices(deviceAddress);
-			logger.debug("Get, address: "+deviceAddress+" port:"+portName);
-			for (int i = 0; i < devices.length; i++) {
-				Device d = devices[i]; 
+			Address addr = new Address(fullAddress);
+			String portId = addr.getPortId();
+			Collection<Device> devices = controller.getDevices(addr);
+			for (Device d : devices) {
 				LinkedHashMap m = new LinkedHashMap();
 				m.put("Class",d.getClass().getSimpleName());
 				m.put("Address",d.getFullAddress());
 				m.put("Info",d.getInfo());
-				m.put("Status", d.getStatus(portName,0));
+				m.put("Status", d.getStatus(portId,0));
 				ja.add(m);
 			}			
 		} catch (Exception e) {
-			logger.error("get Error: "+e);
+			logger.error("get Error: ",e);
 		}
 		return ja.toJSONString();
 	}

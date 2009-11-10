@@ -111,7 +111,8 @@ public abstract class DevicePort {
 		this.device = device;
 		this.portId = portId;
 		if (portName == null) {
-			this.portName = device.getFullAddress() + ":" + portId;
+			//this.portName = device.getFullAddress() + ":" + portId;
+			this.portName = getFullAddress();
 		} else {
 			this.portName = portName;
 		}
@@ -133,6 +134,10 @@ public abstract class DevicePort {
 		return m;
 	}
 
+	/**
+	 * 
+	 * @return Name of the port (default = full address)
+	 */
 	public String getName() {
 		return portName;
 	}

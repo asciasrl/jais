@@ -11,5 +11,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/aui"/>
 	<classpathentry kind="lib" path="lib/junit-4.6.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jalarm"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

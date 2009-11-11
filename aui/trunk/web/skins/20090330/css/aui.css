@@ -75,6 +75,7 @@ div.caption {
 	width: 60px;
 	vertical-align: top;
 	line-height: 11px; 
+	text-shadow: black 0px 0px 1em; 
 }
 
 

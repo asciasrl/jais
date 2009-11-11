@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="javadoc">
-    <target name="javadoc">
-        <javadoc access="public" author="true" classpath="../jais/bin;../jais/lib/slf4j-api-1.5.6.jar;../jais/lib/commons-logging-1.1.1.jar;../jais/lib/ant-1.6.5.jar;../jais/lib/jsp-2.1.jar;../jais/lib/log4j-1.2.15.jar;../jais/lib/RXTXcomm.jar;../jais/lib/jsp-api-2.1.jar;../jais/lib/jetty-6.1.7.jar;../jais/lib/core-3.1.1.jar;../jais/lib/servlet-api-2.5-6.1.7.jar;../jais/lib/commons-configuration-1.6.jar;../jais/lib/commons-lang-2.4.jar;../jais/lib/commons-collections-3.2.1.jar;../jais/lib/json_simple-1.1.jar;../jais/lib/jetty-util-6.1.7.jar;../jais/lib/slf4j-log4j12-1.5.6.jar" destdir="html" doctitle="Ascia Integration System" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="it.ascia.aui,it.ascia.eds,it.ascia.eds.device,it.ascia.dxp.device,it.ascia.eds.msg,it.ascia.dxp.msg,it.ascia.dxp,it.ascia.ais" source="1.4" sourcepath="../jeds/src;../jdxp/src;../jais/src" splitindex="true" use="true" version="true">
-            <link href="http://commons.apache.org/logging/apidocs/index.html"/>
-        </javadoc>
-    </target>
+	<target name="javadoc">
+		<javadoc access="public" author="true" destdir="html" 
+			doctitle="Ascia Integration System" nodeprecated="false" 
+			nodeprecatedlist="false" noindex="false" 
+			nonavbar="false" notree="false" 
+			source="1.5" splitindex="true" use="true" version="true">
+			<classpath>
+				<fileset dir="../jais/lib" includes="*.jar" />					
+			</classpath>
+			<sourcepath path="../jais/src" />
+			<sourcepath path="../aui/src" />
+			<sourcepath path="../jeds/src" />
+			<sourcepath path="../jdxp/src" />
+			<link href="http://commons.apache.org/logging/apidocs/index.html"/>
+		</javadoc>
+	</target>
 </project>

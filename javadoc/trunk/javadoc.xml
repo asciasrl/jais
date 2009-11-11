@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="javadoc">
+	<target name="javadoc">
+		<javadoc access="public" author="true" destdir="html" 
+			doctitle="Ascia Integration System" nodeprecated="false" 
+			nodeprecatedlist="false" noindex="false" 
+			nonavbar="false" notree="false" 
+			source="1.5" splitindex="true" use="true" version="true">
+			<classpath>
+				<fileset dir="../jais/lib" includes="*.jar" />					
+			</classpath>
+			<sourcepath path="../jais/src" />
+			<sourcepath path="../aui/src" />
+			<sourcepath path="../jeds/src" />
+			<sourcepath path="../jdxp/src" />
+			<link href="http://commons.apache.org/logging/apidocs/index.html"/>
+		</javadoc>
+	</target>
+</project>

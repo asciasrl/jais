@@ -253,18 +253,18 @@ public class AUIRPCServer implements Serializable {
 		return pageAreas;
 	}
 
-	public Map<String, HashMap<String, String>> getPageControls(HttpSession session, String pageId) {
+	public Map<String, HashMap<String, Object>> getPageControls(HttpSession session, String pageId) {
 		SubnodeConfiguration auiConfig = getConfiguration(session);
 		auiConfig.setExpressionEngine(new XPathExpressionEngine());
 		HierarchicalConfiguration pageConfig = auiConfig.configurationAt("//pages/page[@id='"+pageId+"']");
 		List controls = pageConfig.configurationsAt("control");
-		Map<String, HashMap<String, String>> pageControls = new HashMap<String, HashMap<String, String>>();
+		Map<String, HashMap<String, Object>> pageControls = new HashMap<String, HashMap<String, Object>>();
 		for (Iterator ic = controls.iterator(); ic.hasNext(); ) {
 			HierarchicalConfiguration controlConfig = (HierarchicalConfiguration) ic.next();
 			String type = controlConfig.getString("type");
 			String id = controlConfig.getString("[@id]");
 			String controlId = "control-" + pageId + "-" + id;
-			HashMap<String, String> controlMap = new HashMap<String, String>();
+			HashMap<String, Object> controlMap = new HashMap<String, Object>();
 			if (auiConfig.containsKey("controls/"+type+"/default")) {
 				SubnodeConfiguration typeConfig = auiConfig.configurationAt("controls/"+type);
 				for (Iterator ip = typeConfig.getKeys(); ip.hasNext(); ) {
@@ -274,7 +274,7 @@ public class AUIRPCServer implements Serializable {
 			}
 			for (Iterator ip = controlConfig.getKeys(); ip.hasNext(); ) {
 				String k = (String) ip.next();
-				controlMap.put(k, controlConfig.getString(k));
+				controlMap.put(k, controlConfig.getProperty(k));
 			}
 			pageControls.put(controlId, controlMap);
 		}
@@ -299,9 +299,9 @@ public class AUIRPCServer implements Serializable {
 			String key = (String) keys.next();
 			Object value = parameters.get(key);
 			if (controlConfig.containsKey(key)) {
-				Object oldValue = controlConfig.getProperty(key);
-				controlConfig.setProperty(key, value);
-				logger.debug(fullControlId + ", "+key+": "+oldValue+" -> "+value);
+				Object oldValue = controlConfig.getProperty(key);				
+				controlConfig.setProperty(key, (Object) value);
+				logger.debug(fullControlId + ", "+key+" ("+Object.class.getSimpleName()+") : "+oldValue+" -> "+value);
 			} else {
 				controlConfig.addProperty(key, value);
 				logger.debug(fullControlId + ", "+key+": "+value);

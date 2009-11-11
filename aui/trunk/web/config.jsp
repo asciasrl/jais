@@ -43,8 +43,10 @@
 <script type="text/javascript"><!--
 
 function resize() {
+	var wp = $("pages").getSize().x;
+	var wc = $("controls").getSize().x;
 	var h = (window.innerHeight - 21 - 20 - 1 - 20 - 20 - 1 - 17) + "px";
-	var w = (window.innerWidth - 192 - 192 - 20 - 20) + "px";
+	var w = (window.innerWidth - wp - wc - 20 - 20) + "px";
 	document.getElementById("pages").style.height = h;
 	document.getElementById("page").style.height = h;
 	document.getElementById("page").style.width = w;

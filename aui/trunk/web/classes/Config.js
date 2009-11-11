@@ -426,13 +426,13 @@ if (!AUI.Config) {
 				info.grab(new Element('label').appendText("Id: "));
 				info.appendText(c.map['[@id]']);
 				info.grab(new Element('br'));
-				info.grab(new Element('label').appendText("Tipo: "));
+				info.grab(new Element('label').appendText("Type: "));
 				info.appendText(c.map['type']);
 				info.grab(new Element('br'));
-				info.grab(new Element('label').appendText("Indirizzo: "));
+				info.grab(new Element('label').appendText("Addr: "));
 				info.appendText(c.map['address']);
 				info.grab(new Element('br'));
-				info.grab(new Element('label').appendText("Livello: "));
+				info.grab(new Element('label').appendText("Layer: "));
 				info.appendText(c.map['layer']);
 				
 				control.grab(info);
@@ -603,14 +603,20 @@ if (!AUI.Config) {
 			var c = new Element('div',{'id': "control-"+i, 'class': 'controlItem'});
 			c.grab(new Element('img', {'src': this.skinImages + src}));
 			var p = new Element('p');
-			p.grab((new Element('label')).appendText('Tipo:'));
+			/*
+			p.grab((new Element('label')).appendText('Type:'));
 			p.appendText(type);
 			p.grab(new Element('br'));
-			p.grab((new Element('label')).appendText('Nome:'));
-			p.appendText(name);
-			p.grab(new Element('br'));
-			p.grab((new Element('label')).appendText('Indirizzo:'));
+			p.grab((new Element('label')).appendText('Addr:'));
+			*/
 			p.appendText(address);
+			if (name != address) {
+				p.grab(new Element('br'));
+				/*
+				p.grab((new Element('label')).appendText('Name:'));
+				*/
+				p.appendText(name);
+			}
 			c.grab(p);
 			this.controlsElement.grab(c);
 						

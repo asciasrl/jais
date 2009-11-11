@@ -221,7 +221,7 @@
 </page>
 <page id="Hbox">
 <title>Home in The Box</title>
-<src>images/HBox.jpg</src>
+<src>/images/test2-HIRES.png</src>
 <control id="back">
 <title>Torna alla selezione dei piani</title>
 <type>page</type>
@@ -361,8 +361,8 @@
 <title>Reset</title>
 <type>digitalinput</type>
 <layer>power</layer>
-<top>320</top>
-<left>470</left>
+<top>390</top>
+<left>280</left>
 <address>2.3:Inp5</address>
 </control>
 <control id="SceneEntrata">

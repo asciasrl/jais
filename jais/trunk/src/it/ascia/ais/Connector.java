@@ -206,6 +206,7 @@ public abstract class Connector {
      * @param transport Il Transport associato
      */
     public void bindTransport(Transport transport) {
+    	logger.info("Using transport: "+transport.getInfo());
     	this.transport = transport;
     	transport.connector = this;
     }
@@ -294,6 +295,7 @@ public abstract class Connector {
 
 	/**
 	 * @param Set the Controller Module to which connector belongs
+	 * TODO cambiare il costruttore in modo che venga fornito il ControllerModule invece del Controller ed eliminare setModule
 	 */
 	public void setModule(ControllerModule module) {
 		this.module = module;

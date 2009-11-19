@@ -36,6 +36,9 @@ public class SerialTransport extends Transport {
 	private boolean closed = true;
 	
 	private int portSpeed;
+	private int databits = SerialPort.DATABITS_8;
+	private int parity = SerialPort.PARITY_NONE;
+	private int stopbits = SerialPort.STOPBITS_1;
 	private int inputBufferSize;
 	private int outputBufferSize;
 	private int receiveThreshold;
@@ -47,19 +50,23 @@ public class SerialTransport extends Transport {
 	private static int RECEIVE_FRAMING = 8;
 	private static int RECEIVE_TIMEOUT = 100;
 
-    public SerialTransport(Connector connector, String portName) throws AISException {
-    	this(connector, portName, 9600);
+    public SerialTransport(String portName) throws AISException {
+    	this(portName, 9600);
     }
 
-    public SerialTransport(Connector connector, String portName, int portSpeed) {
-		this(connector, portName, portSpeed, INPUT_BUFFER_SIZE, OUTPUT_BUFFER_SIZE, RECEIVE_THRESHOLD, RECEIVE_FRAMING, RECEIVE_TIMEOUT);
+    public SerialTransport(String portName, int portSpeed) {
+		this(portName, portSpeed, SerialPort.DATABITS_8, SerialPort.PARITY_NONE, SerialPort.STOPBITS_1);
 	}
     
+    public SerialTransport(String portName, int portSpeed, int databits, int parity, int stopbits) {
+    	this(portName,portSpeed, databits, parity, stopbits, INPUT_BUFFER_SIZE, OUTPUT_BUFFER_SIZE, RECEIVE_THRESHOLD, RECEIVE_FRAMING, RECEIVE_TIMEOUT);
+    }
+   
     public String getInfo() {
     	if (serialPort == null) {
-    		return "Disconnected";
+    		return getClass().getSimpleName() + " Disconnected";
     	} else {
-    		return serialPort.getName()+" "+serialPort.getBaudRate()+" "+serialPort.getDataBits() +
+    		return getClass().getSimpleName() + " " + serialPort.getName()+" "+serialPort.getBaudRate()+" "+serialPort.getDataBits() +
     			(serialPort.getParity() == 0 ? "N" : "E") + 
     			serialPort.getStopBits();
     	}
@@ -94,6 +101,9 @@ public class SerialTransport extends Transport {
      * @param portName nome della porta (ad es. "COM1" o "/dev/ttyUSB0" o "auto")
      * @param connector Conettore da associare
      * @param portSpeed velocita' della porta (default 9600)
+     * @param databits
+     * @param parity
+     * @param stopbits
      * @param inputBufferSize dimensione in bytes del buffer
      * @param outputBufferSize dimensione in bytes del buffer 
      * @param receiveThreshold 
@@ -101,11 +111,13 @@ public class SerialTransport extends Transport {
      * @param receiveTimeout in mS (multipli di 100)
      * 
      * @throws un'Exception se incontra un errore
-     */
-    public SerialTransport(Connector connector, String portName, int portSpeed, int inputBufferSize, int outputBufferSize, int receiveThreshold, int receiveFraming, int receiveTimeout) throws AISException {
-    	super(connector);
+     */    
+    public SerialTransport(String portName, int portSpeed, int databits, int parity, int stopbits, int inputBufferSize, int outputBufferSize, int receiveThreshold, int receiveFraming, int receiveTimeout) throws AISException {
     	this.portName = portName;
     	this.portSpeed = portSpeed;
+    	this.databits = databits;
+    	this.parity = parity;
+    	this.stopbits = stopbits;
     	this.inputBufferSize = inputBufferSize;
     	this.outputBufferSize = outputBufferSize;
     	this.receiveThreshold = receiveThreshold;
@@ -114,11 +126,11 @@ public class SerialTransport extends Transport {
     	open();
     }
     
-    private void open() {
+	private void open() {
     	if (portName.toLowerCase().equals("auto")) {
     		portName = autoPortName();
     	}
-        name = portName + "@" + portSpeed + "/8-N-1";
+        name = portName;
     	logger.info("Connessione a '" + portName + "' speed " +  portSpeed);    	
     	CommPortIdentifier portId;
 		try {
@@ -133,9 +145,7 @@ public class SerialTransport extends Transport {
     	}
     	
 		try {
-		    serialPort.setSerialPortParams(portSpeed, SerialPort.DATABITS_8, 
-						   SerialPort.STOPBITS_1, 
-						   SerialPort.PARITY_NONE);
+		    serialPort.setSerialPortParams(portSpeed, databits, stopbits, parity);
 		    logger.trace("Input buffer: "+serialPort.getInputBufferSize()+" bytes -> "+inputBufferSize);
 		    serialPort.setInputBufferSize(inputBufferSize);
 		    logger.debug("Input buffer: "+serialPort.getInputBufferSize()+" bytes");
@@ -289,7 +299,9 @@ public class SerialTransport extends Transport {
 									sb = new StringBuffer();
 								}
 							}
-							connector.received(i);
+							if (connector != null) {
+								connector.received(i);
+							}
 						}
 					}
         		} catch (NullPointerException e) {
@@ -304,6 +316,12 @@ public class SerialTransport extends Transport {
             }
 		}
 	}
+
+	@Override
+	public int getSpeed() {
+		return portSpeed;
+	}
+
 }
 
 

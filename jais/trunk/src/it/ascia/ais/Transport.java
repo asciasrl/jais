@@ -1,5 +1,9 @@
 package it.ascia.ais;
 
+import java.util.List;
+
+import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.log4j.Logger;
 
 /**
@@ -32,15 +36,20 @@ public abstract class Transport {
      * Costruttore.
      * @param connector Il connettore associato
      */
-    public Transport(Connector connector) {
+    public Transport() {
 		logger = Logger.getLogger(getClass());
-		this.connector = connector;		
     }
 
     public String toString()
     {
     	return name;
     }
+    
+    /**
+     * 
+     * @return Connector speed in baud
+     */
+    public abstract int getSpeed();
     
     public abstract String getInfo();
 
@@ -57,6 +66,36 @@ public abstract class Transport {
      * Chiude la connessione del transport.
      */
     public abstract void close();
+
+    /**
+     * Create transport
+     * @param sub Transport sub configuration
+     * @return a new Transport
+     */
+	public static Transport createTransport(HierarchicalConfiguration sub) {
+		Transport transport;
+ 		List transports = sub.configurationsAt("transport");
+ 		if (transports.size() == 0) {
+ 			throw(new AISException("Trasport not defined"));
+ 		}
+		SubnodeConfiguration transportConfig = (SubnodeConfiguration) transports.get(0);
+ 		String type = transportConfig.getString("type");
+ 		if (type.equals("serial")) {
+ 			String port = transportConfig.getString("port");
+ 			int speed = transportConfig.getInt("speed");
+ 			int databits = transportConfig.getInt("databits",8);
+ 			int parity = transportConfig.getInt("parity",0);
+ 			int stopbits = transportConfig.getInt("stopbits",1);
+ 			transport = new SerialTransport(port,speed,databits,parity, stopbits);
+ 		} else if (type.equals("tcp")) {
+ 			String host = transportConfig.getString("host");
+ 			int port = transportConfig.getInt("port");					
+ 			transport = new TCPSerialTransport(host,port);
+		} else {
+			throw(new AISException("Transport "+type+" non riconosciuto"));
+		}
+ 		return transport;
+	}
 
     
 }

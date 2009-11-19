@@ -90,11 +90,6 @@ public class EDSConnector extends Connector {
 	 */
 	private long guardtimeEnd = 0;
 
-	/**
-	 * Serial communication bitrate
-	 */
-	int transportSpeed;
-	
     /**
      * Connettore per il BUS EDS.
      * 
@@ -236,7 +231,7 @@ public class EDSConnector extends Connector {
     }
 
     private long messageTransmitTime() {
-    	return Math.round(1000 * 80 / transportSpeed);
+    	return Math.round(1000 * 80 / transport.getSpeed());
     }
     
     /**
@@ -431,6 +426,7 @@ public class EDSConnector extends Connector {
      * 
      */
     public void discoverBMC(int address) {
+    	// TODO Rendere sincrono il discover
     	sendMessage(new RichiestaModelloMessage(address,getMyAddress()));
     }
 

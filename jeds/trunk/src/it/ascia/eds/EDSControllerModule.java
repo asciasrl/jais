@@ -4,17 +4,15 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
-import org.apache.commons.configuration.SubnodeConfiguration;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.BUSControllerModule;
-import it.ascia.ais.SerialTransport;
-import it.ascia.ais.TCPSerialTransport;
 import it.ascia.ais.Transport;
 import it.ascia.eds.device.BMC;
 
 public class EDSControllerModule extends BUSControllerModule {
 	
+	@SuppressWarnings("unchecked")
 	public void start() {
 		super.start();
 		List connectors = getConfiguration().configurationsAt("connectors.connector");
@@ -22,33 +20,11 @@ public class EDSControllerModule extends BUSControllerModule {
 		{
 		    HierarchicalConfiguration sub = (HierarchicalConfiguration) c.next();
 		 	EDSConnector eds = null;
-		 	Transport transport = null;
 		 	try {
 		 		eds = new EDSConnector(sub.getString("name"),controller);
 				eds.setModule(this);
 		 		eds.setAddress(sub.getInt("computer",250));
-		 		// attiva il transport		 		
-		 		List transports = sub.configurationsAt("transport");
-		 		if (transports.size() == 0) {
-		 			throw(new AISException("Trasport not defined for connector "+eds.getName()));
-		 		}
-	 			SubnodeConfiguration transportConfig = (SubnodeConfiguration) transports.get(0);
-		 		String type = transportConfig.getString("type");
-		 		if (type.equals("serial")) {
-		 			String port = transportConfig.getString("port");
-		 			int speed = transportConfig.getInt("speed");
-		 			transport = new SerialTransport(eds,port,speed);
-		 			logger.info("Connesso via seriale: "+transport.getInfo());
-		 			eds.transportSpeed = speed;
-		 		} else if (type.equals("tcp")) {
-		 			String host = transportConfig.getString("host");
-		 			int port = transportConfig.getInt("port");					
-		 			transport = new TCPSerialTransport(eds,host,port);
-		 			logger.info("Connesso via seriale a "+host+":"+port);
-		 			eds.transportSpeed = 1200;
-				} else {
-					throw(new AISException("Transport "+type+" non riconosciuto"));
-				}
+			 	Transport transport = Transport.createTransport(sub);		 		
 		 		// associa transport e connector 
 		 		eds.bindTransport(transport);
 			 	// effettua il discovery
@@ -89,7 +65,9 @@ public class EDSControllerModule extends BUSControllerModule {
 				}
 		 	} catch (Exception e) {
 		 		logger.fatal("Errore durante inizializzazione:",e);
-		 		eds.close();
+		 		if (eds != null) {
+		 			eds.close();
+		 		}
 		 	}
 		}				
  		logger.info("Completato start");

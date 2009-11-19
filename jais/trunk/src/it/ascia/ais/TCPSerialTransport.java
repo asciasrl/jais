@@ -80,7 +80,9 @@ public class TCPSerialTransport extends Transport {
 					//bus.setByteBuffer(bb);
 					while (bb.hasRemaining()) {
 						byte b = bb.get();
-						connector.received(b);
+						if (connector != null) {
+							connector.received(b);
+						}
 					}
 					keys.clear();
 				}
@@ -123,8 +125,7 @@ public class TCPSerialTransport extends Transport {
      * 
      * @throws un'Exception se incontra un errore
      */
-    public TCPSerialTransport(Connector connector, String hostName, int port) throws AISException {
-    	super(connector);
+    public TCPSerialTransport(String hostName, int port) throws AISException {
     	this.tcpPort = port;
     	name = hostName + ":" + port;
 		try {
@@ -234,5 +235,10 @@ public class TCPSerialTransport extends Transport {
 		} else {
 			return sock.toString();
 		}
+	}
+
+	@Override
+	public int getSpeed() {
+		return 300;
 	}
 }

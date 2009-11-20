@@ -42,6 +42,11 @@ public abstract class BUSControllerModule extends ControllerModule {
 		super.stop();
 	}
 
+	/**
+	 * Scan device port to be updated
+	 * @author Sergio
+	 *
+	 */
 	public class AutoUpdater extends Thread {
 		
 		long autoupdate = 0;

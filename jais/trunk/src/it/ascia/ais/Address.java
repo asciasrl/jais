@@ -33,6 +33,19 @@ public class Address implements Comparable<Object> {
 	 * @param port Port id
 	 */
 	public Address(String connector, String device, String port) {
+		if (connector != null) {
+			if (connector.contains(".")) {
+				throw(new IllegalArgumentException("Connector name can't contians dots (.)"));
+			}
+			if (connector.contains(":")) {
+				throw(new IllegalArgumentException("Connector name can't contians colons (:)"));
+			}
+		}
+		if (device != null) {
+			if (device.contains(":")) {
+				throw(new IllegalArgumentException("Device name can't contians colons (:)"));
+			}
+		}
 		this.connector = connector;
 		this.device = device;
 		this.port = port;

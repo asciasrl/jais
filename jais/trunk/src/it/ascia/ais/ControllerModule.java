@@ -33,11 +33,17 @@ public abstract class ControllerModule {
 	public ControllerModule() {
 		logger = Logger.getLogger(getClass());
 	}
-
-	public void start() {
+	
+	/**
+	 * Start module and set running
+	 */
+	public void start() throws Exception {
 		running = true;
 	};
 	
+	/**
+	 * Start module and reset running
+	 */
 	public void stop() {
 		running = false;		
 	};
@@ -88,6 +94,9 @@ public abstract class ControllerModule {
 		controller.fireDevicePortChangeEvent( evt );
 	}
 
+	/**
+	 * @return true if module has been started without problems
+	 */
 	public boolean isRunning() {
 		return running;
 	}

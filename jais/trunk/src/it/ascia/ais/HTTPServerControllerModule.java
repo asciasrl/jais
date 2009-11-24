@@ -21,7 +21,7 @@ public class HTTPServerControllerModule extends ControllerModule {
 	 */
 	private Server server;
 	
-	public void start() {
+	public void start() throws Exception {
 		//logger = Logger.getLogger(getClass());
 		logger.info("Avvio server HTTP...");
 		HierarchicalConfiguration config = getConfiguration();
@@ -80,23 +80,23 @@ public class HTTPServerControllerModule extends ControllerModule {
 		rootContext.addServlet(defaultHolder, "/");
 		try {
 			server.start();
+			logger.info("Avviato server HTTP");
 		} catch (Exception e) {
-			logger.fatal("Errore avvio server HTTP: "+e.getMessage());
+			logger.fatal("Errore avvio server HTTP: ",e);
+			throw(e);
 		}		
-		logger.info("Avviato server HTTP");
 		super.start();
 	}
 
 	public void stop() {
+		super.stop();
 		logger.debug("Arresto server HTTP ...");
 		try {
 			server.stop();
-			logger.trace("Arrestato server HTTP.");
+			logger.debug("Arrestato server HTTP.");
 		} catch (Exception e) {
-			logger.error("Errore durante l'arresto del server: " +
-					e.getMessage());
+			logger.error("Errore durante l'arresto del server: ", e);
 		}	
-		super.stop();
 	}
 	
 

@@ -102,7 +102,7 @@ public class Controller {
 	 * @throws KeyAlreadyExistsException
 	 */
 	public void registerCommand(String name, CommandInterface commandInterface) throws KeyAlreadyExistsException {
-		if (connectors.containsKey(name)) {
+		if (commands.containsKey(name)) {
 			throw(new KeyAlreadyExistsException("CommandInterface name duplicated: "+name));
 		}
 		commands.put(name, commandInterface);

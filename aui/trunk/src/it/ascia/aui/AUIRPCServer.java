@@ -92,7 +92,7 @@ public class AUIRPCServer implements Serializable {
 	}
 	
 	public Object getPortValue(HttpSession session,String fullAddress) {
-		DevicePort p = controller.getDevicePort(fullAddress);
+		DevicePort p = controller.getDevicePort(new Address(fullAddress));
 		if (p == null) {
 			throw(new AISException("Porta non trovata: "+fullAddress));
 		}
@@ -103,25 +103,33 @@ public class AUIRPCServer implements Serializable {
 	}
 
 	public boolean writePortValue(HttpSession session,String fullAddress, Object newValue) {
-		DevicePort p = controller.getDevicePort(fullAddress);
+		DevicePort p = controller.getDevicePort(new Address(fullAddress));
 		if (p == null) {
 			throw(new AISException("Porta non trovata: "+fullAddress));
 		}
 		return p.writeValue(newValue);
 	}
 
-	private SubnodeConfiguration getConfiguration(HttpSession session) {
-		SubnodeConfiguration auiConfig = (SubnodeConfiguration) session.getAttribute("AUI.config");
+	private HierarchicalConfiguration getConfiguration(HttpSession session) {
+		HierarchicalConfiguration auiConfig = (SubnodeConfiguration) session.getAttribute("AUI.config");
 		if (auiConfig == null) {
 			auiConfig = aui.getConfiguration();
 			auiConfig.setExpressionEngine(new XPathExpressionEngine());
 			session.setAttribute("AUI.config",auiConfig.clone());
 		}
-		return auiConfig = (SubnodeConfiguration) session.getAttribute("AUI.config");
+		return auiConfig = (HierarchicalConfiguration) session.getAttribute("AUI.config");
 	}
 
 	public void save(HttpSession session) throws ConfigurationException, FileNotFoundException {
-		saveAs(session,"conf/AUI.xml",true);
+		SubnodeConfiguration auiConfig = (SubnodeConfiguration) session.getAttribute("AUI.config");
+		if (auiConfig == null) {
+			logger.debug("No configuration to save");
+			return;
+		}
+		AUIControllerModule aui = (AUIControllerModule) controller.getModule("AUI");
+		aui.setConfiguration(auiConfig);
+		aui.saveConfiguration();
+		logger.info("Saved configuration to: "+aui.getConfigurationFilename());
 	}
 
 	public void saveAs(HttpSession session, String filename, boolean overwrite) throws ConfigurationException, FileNotFoundException {
@@ -130,24 +138,13 @@ public class AUIRPCServer implements Serializable {
 			logger.debug("No configuration to save");
 			return;
 		}
-		if (!overwrite) {
-			File f = new File(filename);
-			if (f.exists()) {
-				throw(new FileNotFoundException("File already exists: "+filename));
-			}
-		}
-		XMLConfiguration jaisXmlConf = new XMLConfiguration();
-		jaisXmlConf.setRootElementName("jais:configuration");
-		ArrayList<ConfigurationNode> a = new ArrayList<ConfigurationNode>();
-		a.add(auiConfig.getRootNode());
-		jaisXmlConf.addNodes(null, a);
-
-		jaisXmlConf.save(filename);		
+		AUIControllerModule aui = (AUIControllerModule) controller.getModule("AUI");
+		aui.saveConfigurationAs(auiConfig,filename, overwrite);	
 		logger.info("Saved config to: "+filename);
 	}
 	
 	public Vector<HashMap<String, String>> getPages(HttpSession session) {
-		SubnodeConfiguration auiConfig = getConfiguration(session);
+		HierarchicalConfiguration auiConfig = getConfiguration(session);
 		logger.trace(auiConfig.getExpressionEngine());
 		List pages = auiConfig.configurationsAt("pages/page");
 		Vector<HashMap<String, String>> v = new Vector<HashMap<String, String>>();
@@ -170,7 +167,7 @@ public class AUIRPCServer implements Serializable {
 	 * @param src
 	 */
 	public void newPage(HttpSession session, String id, String title, String src) {
-		SubnodeConfiguration auiConfig = getConfiguration(session);
+		HierarchicalConfiguration auiConfig = getConfiguration(session);
 		if (auiConfig.containsKey("pages/page[@id='"+id+"']/title")) {
 			throw(new AISException("Duplicated page id="+id));
 		}
@@ -181,7 +178,7 @@ public class AUIRPCServer implements Serializable {
 	}
 	
 	public void setPageTitle(HttpSession session, String pageId,String title) {
-		SubnodeConfiguration auiConfig = getConfiguration(session);
+		HierarchicalConfiguration auiConfig = getConfiguration(session);
 		try {
 			SubnodeConfiguration pageConfig = auiConfig.configurationAt("pages/page[@id='"+pageId+"']", true);
 			pageConfig.setProperty("title", title);			
@@ -192,7 +189,7 @@ public class AUIRPCServer implements Serializable {
 	}
 
 	public void setPageSrc(HttpSession session, String pageId,String src) {
-		SubnodeConfiguration auiConfig = getConfiguration(session);
+		HierarchicalConfiguration auiConfig = getConfiguration(session);
 		try {
 			SubnodeConfiguration pageConfig = auiConfig.configurationAt("pages/page[@id='"+pageId+"']", true);
 			pageConfig.setProperty("src", src);			
@@ -203,7 +200,7 @@ public class AUIRPCServer implements Serializable {
 	}
 	
 	public void deletePage(HttpSession session, String id) {
-		SubnodeConfiguration auiConfig = getConfiguration(session);		
+		HierarchicalConfiguration auiConfig = getConfiguration(session);		
 		auiConfig.clearTree("pages/page[@id='"+id+"']");
 		logger.info("Removed page "+id);
 			//throw(new AISException("Page not found id="+id));
@@ -236,7 +233,7 @@ public class AUIRPCServer implements Serializable {
 	}
 
 	public Vector<HashMap<String, String>> getPageAreas(HttpSession session, String pageId) {
-		SubnodeConfiguration auiConfig = getConfiguration(session);
+		HierarchicalConfiguration auiConfig = getConfiguration(session);
 		auiConfig.setExpressionEngine(new XPathExpressionEngine());
 		HierarchicalConfiguration pageConfig = auiConfig.configurationAt("//pages/page[@id='"+pageId+"']");
 		List areas = pageConfig.configurationsAt("area");
@@ -254,7 +251,7 @@ public class AUIRPCServer implements Serializable {
 	}
 
 	public Map<String, HashMap<String, Object>> getPageControls(HttpSession session, String pageId) {
-		SubnodeConfiguration auiConfig = getConfiguration(session);
+		HierarchicalConfiguration auiConfig = getConfiguration(session);
 		auiConfig.setExpressionEngine(new XPathExpressionEngine());
 		HierarchicalConfiguration pageConfig = auiConfig.configurationAt("//pages/page[@id='"+pageId+"']");
 		List controls = pageConfig.configurationsAt("control");
@@ -282,7 +279,7 @@ public class AUIRPCServer implements Serializable {
 	}
 	
 	public void setPageControl(HttpSession session, String fullControlId, Map parameters) {
-		SubnodeConfiguration auiConfig = getConfiguration(session);
+		HierarchicalConfiguration auiConfig = getConfiguration(session);
 		auiConfig.setExpressionEngine(new XPathExpressionEngine());
 		String[] parts = fullControlId.split("-",3);
 		logger.debug("fullControlId="+fullControlId);
@@ -313,8 +310,9 @@ public class AUIRPCServer implements Serializable {
 		return getPorts("*");
 	}
 	
-	public Vector<HashMap<String, String>> getPorts(String search) {		
-		Collection<Device> devices = Controller.getController().getDevices(search);
+	public Vector<HashMap<String, String>> getPorts(String search) {
+		Address address = new Address(search);
+		Collection<Device> devices = Controller.getController().getDevices(address);
 		Vector<HashMap<String, String>> ports = new Vector<HashMap<String, String>>();
 		for (Device d : devices) {
 			DevicePort[] devicePorts = d.getPorts();
@@ -323,7 +321,7 @@ public class AUIRPCServer implements Serializable {
 				HashMap<String, String> p = new HashMap<String, String>();
 				p.put("Address",devicePort.getFullAddress());
 				p.put("Class",devicePort.getClass().getSimpleName());
-				p.put("Name",devicePort.getName());						
+				p.put("Description",devicePort.getDescription());						
 				ports.add(p);
 			}			
 		}	

@@ -3,7 +3,6 @@
  */
 package it.ascia.ais.port;
 
-import it.ascia.ais.Device;
 import it.ascia.ais.DevicePort;
 
 import java.beans.PropertyChangeEvent;
@@ -16,7 +15,7 @@ import java.beans.PropertyChangeListener;
  * @author Sergio
  *
  */
-public class SlaveStatePort extends DevicePort implements PropertyChangeListener {
+public class SlaveStatePort extends DigitalVirtualPort implements PropertyChangeListener {
 
 	private DevicePort masterPort;
 	private String refValue;
@@ -27,8 +26,8 @@ public class SlaveStatePort extends DevicePort implements PropertyChangeListener
 	 * @param portId
 	 * @param masterPortId Porta master
 	 */
-	public SlaveStatePort(Device device, String portId, String masterPortId) {
-		this(device, portId, masterPortId, portId);
+	public SlaveStatePort(String portId, DevicePort masterPort) {
+		this(portId, masterPort, portId);
 	}
 	
 	/**
@@ -38,10 +37,10 @@ public class SlaveStatePort extends DevicePort implements PropertyChangeListener
 	 * @param masterPortId Porta master
 	 * @param refValue Valore di riferimento che deve assumere la porta master
 	 */
-	public SlaveStatePort(Device device, String portId, String masterPortId, String refValue) {
-		super(device, portId);
-		masterPort = device.getPort(masterPortId);
-		masterPort.addPropertyChangeListener(this);
+	public SlaveStatePort(String portId, DevicePort masterPort, String refValue) {
+		super(portId);
+		this.masterPort = masterPort;
+		this.masterPort.addPropertyChangeListener(this);
 		this.refValue = refValue; 
 	}
 

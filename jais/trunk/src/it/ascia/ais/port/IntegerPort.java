@@ -1,6 +1,5 @@
 package it.ascia.ais.port;
 
-import it.ascia.ais.Device;
 import it.ascia.ais.DevicePort;
 
 /**
@@ -10,14 +9,10 @@ import it.ascia.ais.DevicePort;
  */
 public class IntegerPort extends DevicePort {
 
-	public IntegerPort(Device device, String portId) {
-		super(device, portId);
+	public IntegerPort(String portId) {
+		super(portId);
 	}
 
-	public IntegerPort(Device device, String portId, String portName) {
-		super(device, portId, portName);
-	}
-	
 	// TODO writeValue(String text)
 
 }

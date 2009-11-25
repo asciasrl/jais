@@ -131,17 +131,17 @@ public class SerialTransport extends Transport {
     		portName = autoPortName();
     	}
         name = portName;
-    	logger.info("Connessione a '" + portName + "' speed " +  portSpeed);    	
+    	logger.debug("Connecting to '" + portName + "'");    	
     	CommPortIdentifier portId;
 		try {
 			portId = CommPortIdentifier.getPortIdentifier(portName);
 		} catch (NoSuchPortException e) {
-	    	throw new AISException("Porta "+portName+" non trovata: " + e.toString());
+	    	throw new AISException("Port "+portName+" not found: " + e.toString());
 		}
     	try {
     		serialPort = (SerialPort) portId.open("SerialTransport", 2000);
     	} catch (PortInUseException e) {
-	    	throw new AISException("Porta "+portName+" in uso: " + e.toString());
+	    	throw new AISException("Port '"+portName+"' already in use: " + e.toString());
     	}
     	
 		try {
@@ -175,8 +175,7 @@ public class SerialTransport extends Transport {
 		    }
 		    
 		} catch (UnsupportedCommOperationException e) {
-			throw new AISException("Impossibile configurare la porta: " + 
-					e.getMessage());
+			throw new AISException("Unable to configure port: " + e.getMessage());
 		}
 		
     	try {
@@ -189,8 +188,7 @@ public class SerialTransport extends Transport {
 		    inputStream = serialPort.getInputStream();
 		    outputStream = serialPort.getOutputStream();
 		} catch (IOException e) {
-			throw new AISException("Impossibile ottenere gli stream: " + 
-					e.getMessage());
+			throw new AISException("Impossibile ottenere gli stream: " + e.getMessage());
 		}
 		
 		try {
@@ -305,7 +303,7 @@ public class SerialTransport extends Transport {
 						}
 					}
         		} catch (NullPointerException e) {
-        			logger.fatal("Input stream not available");
+        			logger.fatal("Input stream not available:",e);
 				} catch (IOException e) {
 	    			logger.fatal("Read error: ",e);
 	    			// Non fare il reopen qui, perche' provoca dead lock

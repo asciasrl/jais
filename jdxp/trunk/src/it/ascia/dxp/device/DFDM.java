@@ -4,9 +4,9 @@
 package it.ascia.dxp.device;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Connector;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.Message;
+import it.ascia.ais.port.DimmerPort;
 import it.ascia.dxp.DXPMessage;
 import it.ascia.dxp.DominoDevice;
 import it.ascia.dxp.msg.ComandoUsciteMessage;
@@ -19,9 +19,9 @@ import it.ascia.dxp.msg.RispostaStatoUsciteMessage;
  */
 public class DFDM extends DominoDevice {
 
-	public DFDM(Connector connector, String address) throws AISException {
-		super(connector, address);
-		addPort("o"+address+".1");
+	public DFDM(String address) throws AISException {
+		super(address);
+		addPort(new DimmerPort("o"+address+".1"));
 	}
 
 	public void messageReceived(Message m) {
@@ -36,7 +36,7 @@ public class DFDM extends DominoDevice {
 		switch (m.getMessageType()) {
 			case DXPMessage.RISPOSTA_STATO_USCITE:
 				RispostaStatoUsciteMessage r = (RispostaStatoUsciteMessage) m;
-				DevicePort p = getPort("o"+getAddress()+".1");
+				DevicePort p = getPort("o"+getSimpleAddress()+".1");
 				p.setCacheRetention(1000);
 				p.setValue(new Integer(r.getExitValue()));
 				break;
@@ -51,7 +51,7 @@ public class DFDM extends DominoDevice {
 	}
 
 	public long updatePort(String portId) throws AISException {
-		RichiestaStatoUsciteMessage m = new RichiestaStatoUsciteMessage(getAddress());
+		RichiestaStatoUsciteMessage m = new RichiestaStatoUsciteMessage(getSimpleAddress());
 		getConnector().sendMessage(m);
 		return 100;
 	}
@@ -73,7 +73,7 @@ public class DFDM extends DominoDevice {
 		} else if (Integer.class.isInstance(newValue)) {
 			valore = ((Integer)newValue).intValue();
 		}
-		ComandoUsciteMessage m = new ComandoUsciteMessage(getAddress(),valore);
+		ComandoUsciteMessage m = new ComandoUsciteMessage(getSimpleAddress(),valore);
 		return getConnector().sendMessage(m);
 	}
 

@@ -5,6 +5,7 @@ import java.beans.PropertyChangeListener;
 
 import org.jabsorb.JSONRPCBridge;
 
+import it.ascia.ais.Address;
 import it.ascia.ais.ControllerModule;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.DevicePortChangeEvent;
@@ -36,12 +37,12 @@ public class AlarmControllerModule extends ControllerModule implements PropertyC
 		super.start();
 		
 		alarmArmedPortId = getConfiguration().getString("alarmArmedPortId",null);
-		alarmArmedPort = controller.getDevicePort(alarmArmedPortId);
+		alarmArmedPort = controller.getDevicePort(new Address(alarmArmedPortId));
 		alarmArmedPort.addPropertyChangeListener(this);
 		logger.info("Alarm armed port=" + alarmArmedPortId);
 
 		preAlarmPortId = getConfiguration().getString("preAlarmPortId",null);;
-		preAlarmPort = controller.getDevicePort(preAlarmPortId);
+		preAlarmPort = controller.getDevicePort(new Address(preAlarmPortId));
 		preAlarmPort.addPropertyChangeListener(this);
 		exitDelay = getConfiguration().getLong("exitDelay",30);
 		enterDelay = getConfiguration().getLong("enterDelay",30);
@@ -50,7 +51,7 @@ public class AlarmControllerModule extends ControllerModule implements PropertyC
 		enterDelay *= 1000;
 		
 		alarmPortId = getConfiguration().getString("alarmPortId",null);;
-		alarmPort = controller.getDevicePort(alarmPortId);
+		alarmPort = controller.getDevicePort(new Address(alarmPortId));
 		alarmDuration = getConfiguration().getLong("alarmDuration",120);		
 		logger.info("Alarm port=" + alarmPortId + " duration=" + alarmDuration + "s");
 		alarmDuration *= 1000;

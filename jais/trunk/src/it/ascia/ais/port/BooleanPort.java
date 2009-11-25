@@ -3,7 +3,6 @@
  */
 package it.ascia.ais.port;
 
-import it.ascia.ais.Device;
 import it.ascia.ais.DevicePort;
 
 /**
@@ -16,18 +15,8 @@ public class BooleanPort extends DevicePort {
 	 * @param device
 	 * @param portId
 	 */
-	public BooleanPort(Device device, String portId) {
-		super(device, portId);
-	}
-
-	/**
-	 * @param device
-	 * @param portId
-	 * @param portName
-	 */
-	public BooleanPort(Device device, String portId, String portName) {
-		super(device, portId, portName);
-		setTags(new String[] {"1","0","on","off","true","false"});
+	public BooleanPort(String portId) {
+		super(portId);
 	}
 	
 	/**

@@ -1,6 +1,5 @@
 package it.ascia.ais.port;
 
-import it.ascia.ais.Device;
 import it.ascia.ais.DevicePort;
 
 public class AnalogOutputPort extends DevicePort {
@@ -8,16 +7,12 @@ public class AnalogOutputPort extends DevicePort {
 	Double minValue = null;
 	Double maxValue = null;
 
-	public AnalogOutputPort(Device device, String portId) {
-		super(device, portId);
+	public AnalogOutputPort(String portId) {
+		super(portId);
 	}
 
-	public AnalogOutputPort(Device device, String portId, String portName) {
-		super(device, portId, portName);
-	}
-
-	public AnalogOutputPort(Device device, String portId, String portName, Double minValue, Double maxValue) {
-		this(device, portId, portName);
+	public AnalogOutputPort(String portId, Double minValue, Double maxValue) {
+		this(portId);
 		this.minValue = minValue;
 		this.maxValue = maxValue;		
 	}

@@ -1,7 +1,6 @@
 package it.ascia.ais.port;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Device;
 import it.ascia.ais.DevicePort;
 
 import java.beans.PropertyChangeEvent;
@@ -22,10 +21,10 @@ public class BlindPort extends DevicePort implements PropertyChangeListener {
 	private DevicePort closePort; 
 	private DevicePort openPort; 
 	
-	public BlindPort(Device device, String portId, String closePortId, String openPortId) throws AISException {
-		super(device,portId);
-		closePort = device.getPort(closePortId);
-		openPort = device.getPort(openPortId);
+	public BlindPort(String portId, DevicePort closePort, DevicePort openPort) throws AISException {
+		super(portId);
+		this.closePort = closePort;
+		this.openPort = openPort;
 		closePort.addPropertyChangeListener(this);
 		openPort.addPropertyChangeListener(this);
 	}

@@ -4,6 +4,7 @@ import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.Message;
+import it.ascia.ais.port.DigitalInputPort;
 import it.ascia.dxp.DXPMessage;
 import it.ascia.dxp.DominoDevice;
 import it.ascia.dxp.msg.RichiestaStatoIngressiMessage;
@@ -16,12 +17,12 @@ public class DF4I extends DominoDevice {
 	}
 
 	public DF4I(Connector connector, String address) throws AISException {
-		super(connector, address);		
+		super(address);		
 		int intAddress = new Integer(address).intValue();
 		for (int j = 0; j < getNumInputs(); j++) {
 			connector.addDeviceAlias((new Integer(intAddress + j)).toString(), this);
 			for (int i = 1; i <= 4; i++) {
-				addPort("i"+(intAddress+j)+"."+new Integer(i).toString());
+				addPort(new DigitalInputPort("i"+(intAddress+j)+"."+new Integer(i).toString()));
 			}
 		}		
 	}

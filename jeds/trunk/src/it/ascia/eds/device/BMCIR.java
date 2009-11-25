@@ -4,7 +4,6 @@
 package it.ascia.eds.device;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Connector;
 
 /**
  * Un BMC con porte di input + 1 a infrarossi.
@@ -24,14 +23,14 @@ public class BMCIR extends BMCStandardIO {
 	 * @param model numero del modello
 	 * @throws AISException 
 	 */
-	public BMCIR(Connector connector, String address, int model, String name) throws AISException {
-		super(connector, address, model, name);
+	public BMCIR(String address, int model, String name) throws AISException {
+		super(address, model, name);
 	}
 	
 	public String getInfo() {
 		return getName() + ": BMC IR (modello " + model + ") con " 
-			+ getInPortsNumber() + " ingressi digitali, " 
-			+ getOutPortsNumber() + " uscite digitali e "
+			+ getDigitalInputPortsNumber() + " ingressi digitali, " 
+			+ getDigitalOutputPortsNumber() + " uscite digitali e "
 			+ getIrPortsNumber() + " ingressi infrarossi";
 	}
 	
@@ -42,7 +41,7 @@ public class BMCIR extends BMCStandardIO {
 		return 8;
 	}
 	
-	public int getInPortsNumber() {
+	public int getDigitalInputPortsNumber() {
 		switch (model) {
 		case 21:
 			return 2;
@@ -60,7 +59,7 @@ public class BMCIR extends BMCStandardIO {
 		}
 	}
 	
-	public int getOutPortsNumber() {
+	public int getDigitalOutputPortsNumber() {
 		switch (model) {
 		case 21:
 		case 41:
@@ -77,7 +76,7 @@ public class BMCIR extends BMCStandardIO {
 	}
 	
 	public void setInputName(int number, String name) throws AISException {
-		if (number < getInPortsNumber()) {
+		if (number < getDigitalInputPortsNumber()) {
 			setPortName(getInputPortId(number), name);
 		}
 		if (number <= getIrPortsNumber()) {

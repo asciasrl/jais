@@ -21,9 +21,7 @@ public class EDSControllerModule extends BUSControllerModule {
 		    HierarchicalConfiguration sub = (HierarchicalConfiguration) c.next();
 		 	EDSConnector eds = null;
 		 	try {
-		 		eds = new EDSConnector(sub.getString("name"),controller);
-				eds.setModule(this);
-		 		eds.setAddress(sub.getInt("computer",250));
+		 		eds = new EDSConnector(sub.getString("name"),this,sub.getInt("computer",250));
 			 	Transport transport = Transport.createTransport(sub);		 		
 		 		// associa transport e connector 
 		 		eds.bindTransport(transport);

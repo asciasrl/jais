@@ -9,8 +9,9 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import org.apache.log4j.Logger;
 import it.ascia.ais.AISException;
-import it.ascia.ais.Connector;
 import it.ascia.ais.Device;
+import it.ascia.ais.port.DigitalInputPort;
+import it.ascia.ais.port.DigitalOutputPort;
 import it.ascia.eds.*;
 import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.PTPRequest;
@@ -95,23 +96,23 @@ public abstract class BMC extends Device {
 	 * @param name il nome di questo BMC (dal file di configurazione), se null lo genera automaticamente
 	 * @throws AISException 
 	 */
-	public BMC(Connector connector, String bmcAddress, int model, String name) throws AISException {
-		super(connector, bmcAddress);
+	public BMC(String bmcAddress, int model, String name) throws AISException {
+		super(bmcAddress);
 		this.model = model;
 		this.name = name;
 		broadcastBindingsByGroup = new Set[32];
-		broadcastBindingsByPort = new Set[getOutPortsNumber()];
-		outTimers = new long[getOutPortsNumber()];
+		broadcastBindingsByPort = new Set[getDigitalOutputPortsNumber()];
+		outTimers = new long[getDigitalOutputPortsNumber()];
 		for (int i = 0; i < broadcastBindingsByGroup.length; i++) {
 			broadcastBindingsByGroup[i] = new HashSet();
 		}
-		for (int i = 0; i < getInPortsNumber(); i++) {
-			addPort(getInputPortId(i));
+		for (int i = 0; i < getDigitalInputPortsNumber(); i++) {
+			addPort(new DigitalInputPort(getInputPortId(i)));
 		}
-		for (int i = 0; i < getOutPortsNumber(); i++) {
+		for (int i = 0; i < getDigitalOutputPortsNumber(); i++) {
 			// Usiamo un tipo di Set che mantenga l'ordinamento
 			broadcastBindingsByPort[i] = new LinkedHashSet();
-			addPort(getOutputPortId(i));
+			addPort(new DigitalOutputPort(getOutputPortId(i)));
 		}
 		logger = Logger.getLogger(getClass());
 	}
@@ -132,7 +133,7 @@ public abstract class BMC extends Device {
 	 * Ritorna l'indirizzo (int) di questo BMC sul bus EDS.
 	 */
 	public int getIntAddress() {
-		return Integer.parseInt(getAddress());
+		return Integer.parseInt(getSimpleAddress());
 	}
 	
 	/**
@@ -142,8 +143,8 @@ public abstract class BMC extends Device {
 		return name;
 	}
 
-	public static BMC createBMC(EDSConnector connector, String address, int model) {
-		return createBMC(connector,address,model,null);		
+	public static BMC createBMC(String address, int model) {
+		return createBMC(address,model,null);		
 	}
 
 	/**
@@ -159,7 +160,7 @@ public abstract class BMC extends Device {
 	 * 
 	 * @throws an exception if the address is already in use by another BMC.
 	 */
-	public static BMC createBMC(Connector connector, String bmcAddress, int model, String name) 
+	public static BMC createBMC(String bmcAddress, int model, String name) 
 		throws AISException {
 		Logger logger = Logger.getLogger("BMC.createBMC");
 		BMC bmc;
@@ -179,7 +180,7 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "IO-" +model+ "-" + bmcAddress;
 			}
-			bmc = new BMCStandardIO(connector, bmcAddress, model, name);
+			bmc = new BMCStandardIO(bmcAddress, model, name);
 			break;
 		case 91:
 		case 92:
@@ -192,7 +193,7 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "IO-R-" +model+ "-" + bmcAddress;
 			}
-			bmc = new BMCRelaysIO(connector, bmcAddress, model, name);
+			bmc = new BMCRelaysIO(bmcAddress, model, name);
 			break;
 		case 21:
 		case 41:
@@ -202,7 +203,7 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "IR-" + bmcAddress;
 			}
-			bmc = new BMCIR(connector, bmcAddress, model, name);
+			bmc = new BMCIR(bmcAddress, model, name);
 			break;
 		case 101:
 		case 102:
@@ -213,13 +214,13 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "DIM-" + bmcAddress;
 			}
-			bmc = new BMCDimmer(connector, bmcAddress, model, name);
+			bmc = new BMCDimmer(bmcAddress, model, name);
 			break;
 		case 131:
 			if (name == null) {
 				name = "INT-IR-" + bmcAddress;
 			}
-			bmc = new BMCIntIR(connector, bmcAddress, model, name);
+			bmc = new BMCIntIR(bmcAddress, model, name);
 			break;
 		case 141:
 		case 142:
@@ -235,7 +236,7 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "IO-L-" +model+ "-" + bmcAddress;
 			}
-			bmc = new BMCLogicaIO(connector, bmcAddress, model, name);
+			bmc = new BMCLogicaIO(bmcAddress, model, name);
 			break;
 		case 152:
 		case 154:
@@ -244,7 +245,7 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "SC-" + bmcAddress;
 			}
-			bmc = new BMCScenarioManager(connector, bmcAddress, model, name);
+			bmc = new BMCScenarioManager(bmcAddress, model, name);
 			break;
 		case 161:
 		case 162:
@@ -254,19 +255,19 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "SC2-" + bmcAddress;
 			}
-			bmc = new BMCScenarioManager(connector, bmcAddress, model, name);
+			bmc = new BMCScenarioManager(bmcAddress, model, name);
 			break;
 		case 122:
 			if (name == null) {
 				name = "REG-T-22-" + bmcAddress; 
 			}
-			bmc = new BMCRegT22(connector, bmcAddress, model, name);
+			bmc = new BMCRegT22(bmcAddress, model, name);
 			break;
 		case 127:
 			if (name == null) {
 				name = "ChronoTerm-" + bmcAddress;
 			}
-			bmc = new BMCChronoTerm(connector, bmcAddress, model, name);
+			bmc = new BMCChronoTerm(bmcAddress, model, name);
 			break;
 		default:
 			logger.error("Modello di BMC sconosciuto: " + 
@@ -295,7 +296,7 @@ public abstract class BMC extends Device {
     	int outPort;
     	EDSConnector connector = (EDSConnector) getConnector();
     	int connectorAddress = connector.getMyAddress();
-    	for (outPort = 0; outPort < getOutPortsNumber(); outPort++) {
+    	for (outPort = 0; outPort < getDigitalOutputPortsNumber(); outPort++) {
     		RichiestaUscitaMessage m = new RichiestaUscitaMessage(getIntAddress(),
     					connectorAddress, outPort);
     		connector.sendMessage(m);
@@ -315,7 +316,7 @@ public abstract class BMC extends Device {
     	int casella;
     	EDSConnector connector = (EDSConnector) getConnector();
     	int connectorAddress = connector.getMyAddress();
-    	for (outPort = 0; outPort < getOutPortsNumber(); outPort++) {
+    	for (outPort = 0; outPort < getDigitalOutputPortsNumber(); outPort++) {
     		for (casella = 0; casella < getCaselleNumber(); casella++) {
     			RichiestaAssociazioneUscitaMessage m;
     			m = new RichiestaAssociazioneUscitaMessage(getIntAddress(),
@@ -418,7 +419,7 @@ public abstract class BMC extends Device {
 	 * costruttore della sottoclasse!</p>
 	 * TODO usare solo questi metodi getter
 	 */
-	public abstract int getInPortsNumber();
+	protected abstract int getDigitalInputPortsNumber();
 	
 	/**
 	 * Ritorna il numero di uscite.
@@ -428,7 +429,7 @@ public abstract class BMC extends Device {
 	 * costruttore della sottoclasse!</p>
 	 * TODO usare solo questi metodi getter
 	 */
-	public abstract int getOutPortsNumber();
+	protected abstract int getDigitalOutputPortsNumber();
 
 	
 	/**
@@ -480,10 +481,12 @@ public abstract class BMC extends Device {
 	 * @param number il numero della porta di ingresso (a partire da 0).
 	 * @throws AISException 
 	 */
+	/*
 	public String getInputName(int number) throws AISException {
 		String portId = getInputPortId(number);
 		return getPortName(portId);
 	}
+	*/
 
 
 	/**
@@ -499,10 +502,12 @@ public abstract class BMC extends Device {
 	 * @return null se la porta non esiste
 	 * @throws AISException 
 	 */
+	/*
 	public String getOutputName(int number) throws AISException {
 		String portId = getOutputPortId(number);
 		return getPortName(portId);
 	}
+	*/
 
 	/**
 	 * Ritorna il numero di una porta di uscita a partire dal nome compatto.
@@ -510,15 +515,11 @@ public abstract class BMC extends Device {
 	 * @return il numero della porta, oppure -1 se non e' stata trovata.
 	 */
 	public int getOutputNumberFromPortId(String portId) {
-		int retval = -1;
-		int max = getOutPortsNumber();
-		// TODO Non e' il massimo dell'efficienza, ma funziona.
-		for (int i = 0; (i < max) && (retval == -1); i++) {
-			if (portId.equals(getOutputPortId(i))) {
-				retval = i;
-			}
+		try {
+			return Integer.parseInt(portId.substring(3)) - 1;			
+		} catch (NumberFormatException e) {
+			return -1;
 		}
-		return retval;
 	}
 
 	/**

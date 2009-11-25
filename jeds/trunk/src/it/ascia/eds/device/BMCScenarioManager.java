@@ -4,7 +4,6 @@
 package it.ascia.eds.device;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Connector;
 import it.ascia.ais.port.ScenePort;
 import it.ascia.eds.msg.ComandoUscitaMessage;
 import it.ascia.eds.msg.EDSMessage;
@@ -30,11 +29,11 @@ public class BMCScenarioManager extends BMCStandardIO {
 	 * @param model numero del modello
 	 * @throws AISException 
 	 */
-	public BMCScenarioManager(Connector connector, String address, int model, String name) throws AISException {
-		super(connector, address, model, name);
+	public BMCScenarioManager(String address, int model, String name) throws AISException {
+		super(address, model, name);
 		// aggiunge le porte per l'attivazione delle scene
 		for (int i = 1; i <= getSceneNumber(); i++) {
-			addPort(new ScenePort(this,"Scene"+i));
+			addPort(new ScenePort("Scene"+i));
 		}
 	}
 
@@ -46,10 +45,10 @@ public class BMCScenarioManager extends BMCStandardIO {
 
 	public String getInfo() {
 		return getName() + ": "+getSceneNumber()+" scenari " +
-			", " + getInPortsNumber() + " ingressi e " + getOutPortsNumber() + " uscite.";
+			", " + getDigitalInputPortsNumber() + " ingressi e " + getDigitalOutputPortsNumber() + " uscite.";
 	}
 	
-	public int getOutPortsNumber() {
+	public int getDigitalOutputPortsNumber() {
 		switch(model) {
 		case 152:
 		case 161:
@@ -102,7 +101,7 @@ public class BMCScenarioManager extends BMCStandardIO {
 		return 0;
 	}
 	
-	public int getInPortsNumber() {
+	public int getDigitalInputPortsNumber() {
 		switch(model) {
 		case 152:
 		case 161:
@@ -176,7 +175,7 @@ public class BMCScenarioManager extends BMCStandardIO {
 			ComandoUscitaMessage cmd = (ComandoUscitaMessage) m;
 			port = cmd.getScenePortNumber();
 			logger.info("Attivata scena "+getFullAddress()+":"+getScenePortId(port));
-			if (port > (getOutPortsNumber() - 1)) {
+			if (port > (getDigitalOutputPortsNumber() - 1)) {
 				if (port > (getSceneNumber() -1 )) {
 					throw(new AISException("Numero di scena non valido:"+port));
 				}
@@ -190,7 +189,7 @@ public class BMCScenarioManager extends BMCStandardIO {
 			if (vmsg.isClose()) {
 				logger.info("Attivata scena "+getFullAddress()+":"+getScenePortId(port));
 			}
-			if (port > (getOutPortsNumber() - 1)) {
+			if (port > (getDigitalOutputPortsNumber() - 1)) {
 				if (port > (getSceneNumber() -1 )) {
 					throw(new AISException("Numero di scena non valido:"+port));
 				}

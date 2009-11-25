@@ -4,6 +4,7 @@ import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.Message;
+import it.ascia.ais.port.TemperaturePort;
 import it.ascia.dxp.DXPMessage;
 import it.ascia.dxp.DominoDevice;
 import it.ascia.dxp.msg.RichiestaStatoIngressiMessage;
@@ -12,12 +13,12 @@ import it.ascia.dxp.msg.RispostaStatoIngressiMessage;
 public class DFCT extends DominoDevice {
 
 	public DFCT(Connector connector, String address) throws AISException {
-		super(connector, address);
+		super(address);
 		int intAddress = new Integer(address).intValue();
 		for (int i = intAddress; i < intAddress + 7; i++) {
 			connector.addDeviceAlias((new Integer(i)).toString(), this);
 		}
-		addPort("temp");
+		addPort(new TemperaturePort("temp"));
 	}
 
 	public String getInfo() {
@@ -27,7 +28,7 @@ public class DFCT extends DominoDevice {
 
 	public long updatePort(String portId) throws AISException {
 		if (portId.equals("temp")) {
-			int d = (new Integer(getAddress())).intValue() + 1;
+			int d = (new Integer(getSimpleAddress())).intValue() + 1;
 			RichiestaStatoIngressiMessage m = new RichiestaStatoIngressiMessage(d);
 			getConnector().sendMessage(m);			
 			return 100;
@@ -51,7 +52,7 @@ public class DFCT extends DominoDevice {
 			case DXPMessage.RISPOSTA_STATO_INGRESSO:
 				RispostaStatoIngressiMessage r = (RispostaStatoIngressiMessage) m;
 				int intAddress = (new Integer(m.getSource())).intValue();
-				int myAddress = (new Integer(getAddress())).intValue();
+				int myAddress = (new Integer(getSimpleAddress())).intValue();
 				if (intAddress == (myAddress + 1)) {
 					DevicePort p = getPort("temp");
 					p.setCacheRetention(1000);

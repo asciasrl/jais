@@ -15,7 +15,7 @@ import org.apache.commons.configuration.tree.ConfigurationNode;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
-import it.ascia.ais.Controller;
+import it.ascia.ais.ControllerModule;
 import it.ascia.ais.Message;
 import it.ascia.eds.device.*;
 import it.ascia.eds.msg.*;
@@ -42,10 +42,6 @@ public class EDSConnector extends Connector {
      */
     private int myAddress = 0;
 
-	public void setAddress(int myAddress) {
-		this.myAddress = myAddress; 		
-	}
-	
     /**
 	 * Quanto tempo aspettare la risposta dopo l'invio di un messaggio.
 	 * 
@@ -95,10 +91,13 @@ public class EDSConnector extends Connector {
      * 
      * @param name il nome del Connector, che sara' la parte iniziale degli indirizzi
      * di tutti i Device collegati a questo Connector.
+     * @param address 
+     * @param edsControllerModule 
      */
-    public EDSConnector(String name, Controller controller) {
-    	super(name,controller);
-		mp = new EDSMessageParser();
+    public EDSConnector(String name, ControllerModule module, int myAddress) {
+    	super(name,module);
+		this.myAddress = myAddress; 		
+		mp = new EDSMessageParser();		
     }
 
     /**
@@ -124,6 +123,9 @@ public class EDSConnector extends Connector {
 				//receiveQueue.offer(m);
 		    	logger.debug("Dispatching: " + m);
 				dispatchMessage(m);
+				if (AcknowledgeMessage.class.isInstance(m)) {
+					//setGuardtime(0);
+				}
 			}
 		}
     }
@@ -183,6 +185,7 @@ public class EDSConnector extends Connector {
 			BMC bmc = (BMC) getDevice(risposta.getSource()); 
 			if (bmc == null) {
 				bmc = createBMC(risposta.getSource(), risposta.getModello());
+				addDevice(bmc);
 				if (bmc != null) {
 					logger.info("Creato BMC "+bmc+" Indirizzo:"+bmc.getFullAddress());
 					if (isDiscoverNew()) {
@@ -214,7 +217,7 @@ public class EDSConnector extends Connector {
     }
 
     private BMC createBMC(String source, int modello) throws AISException {
-    	return BMC.createBMC(this, source, modello, null);
+    	return BMC.createBMC(source, modello, null);
 	}
 
 
@@ -244,9 +247,14 @@ public class EDSConnector extends Connector {
 	private void setGuardtime(long dt) {
 		// windows ho uno scheduler che non garantisce i tempi bassi 
 		if (dt > 0 && dt < 50) {
-			dt += 30;
+			//dt += 30;
 		}
-		setGuardtimeEnd(dt + System.currentTimeMillis()); 		
+		setGuardtimeEnd(dt + System.currentTimeMillis());
+		if (dt == 0) {
+			synchronized (this) {
+				notify();				
+			}
+		}
 	}
 
 	/**
@@ -446,7 +454,7 @@ public class EDSConnector extends Connector {
 		    String address = (String) dispositivo.getString("indirizzo");
 		    int model = dispositivo.getInt("modello");
 		    String revision = (String) dispositivo.getString("revisione");
-		    BMC bmc = BMC.createBMC(this, address, model, name);
+		    BMC bmc = BMC.createBMC(address, model, name);
 		    if (bmc != null) {
 		    	logger.debug(bmc.getClass().getSimpleName()+" address="+address+" model="+model+" revision="+revision);		    	
 				List inputs = dispositivo.configurationsAt("ingresso");
@@ -541,7 +549,7 @@ public class EDSConnector extends Connector {
 				throw(new AISException("Invalid model for addBMC: "+modelName));
 			}			
 		}
-	    return BMC.createBMC(this, address, model);			
+	    return BMC.createBMC(address, model);			
 	}
 
 	public boolean isDiscoverNew() {

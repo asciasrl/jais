@@ -18,12 +18,14 @@ public abstract class Device {
 	/**
 	 * L'indirizzo sul connector.
 	 */
-	protected String address;
+	private String address;
 
 	/**
 	 * Il bus a cui il dispositivo e' collegato.
 	 */
 	private Connector connector;
+	
+	private String description;
 
 	/**
      * Il nostro logger.
@@ -33,15 +35,15 @@ public abstract class Device {
 	/**
 	 * le porte del dispositivo.
 	 */
-	protected LinkedHashMap ports = new LinkedHashMap();
+	private LinkedHashMap<String, DevicePort> ports = new LinkedHashMap<String, DevicePort>();
 
 	/**
-	 * How much (mS) wait for each unaswered message
+	 * How much (mS) wait for each unanswered message
 	 */
 	private static final long UNREACHABLE_PAUSE_1 = 1000;
 
 	/**
-	 * Max time to pause polling/sending to unreacheable device 
+	 * Max time to pause polling/sending to unreachable device 
 	 */
 	private static final long UNREACHABLE_PAUSE_MAX = 60000;
 
@@ -51,7 +53,7 @@ public abstract class Device {
 	private long lastReachError = 0;
 
 	/**
-	 * How many consecutives times device not aswered
+	 * How many consecutives times device not answered
 	 */
 	private int reachErrors = 0;
 	
@@ -63,36 +65,54 @@ public abstract class Device {
 	/**
 	 * Device con indirizzo specificato
 	 * Il device si aggiunge al connettore con il metodo {@link Connector.addDevice(Device)}
-	 * @param connector Connettore al quale il device si deve aggiungere
 	 * @param address Indirizzo del Device
 	 * @throws AISException
 	 */
-	public Device(Connector connector, String address) throws AISException {
-		this.connector = connector;
+	public Device(String address) throws AISException {
 		this.address = address;
-		// FIXME il metodo addDevice di Connector deve essere invocato solo quando la creazione del BMC e' completata
-		// FIXME connector.addDevice(this); deve essere l'ultima istruzione dei costruttori delle classi concrete
-		connector.addDevice(this);
 		logger = Logger.getLogger(getClass());
 	}
-	
+
 	/**
 	 * Ritorna l'indirizzo del Device, senza considerare il connettore.
 	 * La sintassi dell'indirizzo dipende dal tipo di connettore, cioe' della tecnologia
 	 * di trasmissione utilizzata. Ad esempio:
 	 * - KNX: 1.3.5
 	 * - EDS: 12
-	 * Pue' essere anche una stringa vuota
+	 * Can be an empty String
 	 */
-	public String getAddress() {
+	public String getSimpleAddress() {
 		return address;
 	}
 	
 	/**
-	 * Ritorna l'indirizzo del Device completo del nome del connettore 
+	 * @param description the description to set
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	/**
+	 * @return the description
+	 */
+	public String getDescription() {
+		return description;
+	}
+
+	/**
+	 * Ritorna l'indirizzo del Device completo del nome del connettore
+	 * @deprecated Use getAddress
 	 */
 	public String getFullAddress() {
 		return connector.getName() + "." + address;
+	}
+	
+	/**
+	 * 
+	 * @return Device address (port part of address is undefined)
+	 */
+	public Address getAddress() {
+		return new Address(connector.getName(),address,null);
 	}
 	
 	/**
@@ -105,7 +125,9 @@ public abstract class Device {
 	/**
 	 * Ritorna una descrizione del dispositivo.
 	 */
-	public abstract String getInfo();
+	public String getInfo() {
+		return getAddress() + " " + getClass().getSimpleName() + " " + getDescription();
+	}
 
 	/**
 	 * Ritorna lo stato del device cambiato rispetto a un certo istante,
@@ -161,24 +183,10 @@ public abstract class Device {
 
 	/**
 	 * Aggiunge una porta al device
-	 * @param portId
-	 * @param portName
-	 */
-	public abstract void addPort(String portId, String portName);
-
-	/**
-	 * Aggiunge una porta con nome null
-	 * @param portId
-	 */
-	public void addPort(String portId) {
-		addPort(portId, null);		
-	}
-	
-	/**
-	 * Aggiunge una porta al device
 	 * @param port
 	 */
 	public void addPort(DevicePort port) {
+		port.setDevice(this);
 		ports.put(port.getPortId(),port);
 	}
 
@@ -209,18 +217,6 @@ public abstract class Device {
 	}
 	
 	/**
-	 * Fornisce il nome descrittivo della porta del device
-	 * 
-	 * @param portId identificatore univoco della porta del device
-	 * @return null Se la porta non esiste
-	 * @throws AISException 
-	 */
-	public String getPortName(String portId) throws AISException {
-		DevicePort p = getPort(portId);
-		return p.getName();
-	}
-	
-	/**
 	 * Imposta il nome descrittivo della porta del device
 	 * 
 	 * @param portId identificatore univoco della porta del device
@@ -229,7 +225,7 @@ public abstract class Device {
 	 */
 	public void setPortName(String portId, String portName) throws AISException {
 		DevicePort p = getPort(portId);
-		p.setName(portName);
+		p.setDescription(portName);
 	}
 	
 	/**
@@ -335,14 +331,6 @@ public abstract class Device {
 	}
 
 	/**
-	 * Trasmette l'evento al Connector del Device
-	 * @param evt Evento da gestire
-	 */
-	public void fireDevicePortChangeEvent(DevicePortChangeEvent evt) {
-		connector.fireDevicePortChangeEvent( evt );
-	}
-
-	/**
 	 * Determine if device is not reachable.  
 	 * Device implementation should recover automatically after a while, letting connector retry.    
 	 * @return true if device cannot be reach
@@ -384,6 +372,10 @@ public abstract class Device {
 	public void setReachable() {
 		lastReachError = 0;
 		reachErrors = 0;
+	}
+
+	public void setConnector(Connector connector) {
+		this.connector = connector;		
 	}
 
 

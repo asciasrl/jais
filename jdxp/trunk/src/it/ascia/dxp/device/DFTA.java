@@ -1,9 +1,9 @@
 package it.ascia.dxp.device;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Connector;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.Message;
+import it.ascia.ais.port.TemperaturePort;
 import it.ascia.dxp.DXPMessage;
 import it.ascia.dxp.DominoDevice;
 import it.ascia.dxp.msg.RichiestaStatoIngressiMessage;
@@ -11,9 +11,9 @@ import it.ascia.dxp.msg.RispostaStatoIngressiMessage;
 
 public class DFTA extends DominoDevice {
 
-	public DFTA(Connector connector, String address) throws AISException {
-		super(connector, address);
-		addPort("temp");
+	public DFTA(String address) throws AISException {
+		super(address);
+		addPort(new TemperaturePort("temp"));
 	}
 
 	public String getInfo() {
@@ -22,7 +22,7 @@ public class DFTA extends DominoDevice {
 	}
 
 	public long updatePort(String portId) throws AISException {
-		RichiestaStatoIngressiMessage m = new RichiestaStatoIngressiMessage(getAddress());
+		RichiestaStatoIngressiMessage m = new RichiestaStatoIngressiMessage(getSimpleAddress());
 		getConnector().sendMessage(m);
 		return 100;
 	}

@@ -3,9 +3,12 @@
  */
 package it.ascia.eds.device;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import it.ascia.ais.AISException;
-import it.ascia.ais.Connector;
 import it.ascia.ais.DevicePort;
+import it.ascia.ais.port.DigitalOutputPort;
 import it.ascia.ais.port.DimmerPort;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.msg.ComandoBroadcastMessage;
@@ -49,8 +52,8 @@ public class BMCDimmer extends BMC {
 	 * @param model numero del modello
 	 * @throws AISException 
 	 */
-	public BMCDimmer(Connector connector, String address, int model, String name) throws AISException {
-		super(connector, address, model, name);
+	public BMCDimmer(String address, int model, String name) throws AISException {
+		super(address,model, name);
 		switch(model) {
 		case 101:
 			power = 800;
@@ -82,23 +85,33 @@ public class BMCDimmer extends BMC {
 			power = 0;
 			modelName = "Dimmer sconosciuto";
 		}
+		int n = getDimmerPortsNumber();
+		outTimers = new long[n];
+		broadcastBindingsByPort = new Set[n];
+		for (int i = 0; i < n; i++) {
+			// Usiamo un tipo di Set che mantenga l'ordinamento
+			broadcastBindingsByPort[i] = new LinkedHashSet();
+			addPort(new DimmerPort(getOutputPortId(i)));
+		}
+		
 	}
 
-	public void addPort(String portId, String portName) {
+	/*
+	public void addPort(String portId) {
 		if (portId.startsWith("Out")) {
-			ports.put(portId, new DimmerPort(this, portId, portName));		
+			addPort(new DimmerPort(portId));		
 		} else {
 			logger.error("Id porta scorretto:"+portId);
-			//super.addPort(portId, portName);
 		}
 	}
+	*/
 
 	public void discover() {
 		super.discover();
 		EDSConnector connector = (EDSConnector) getConnector();
 		int m = connector.getMyAddress();
 		int d = getIntAddress();
-		for (int i = 0; i < getOutPortsNumber(); i++) {
+		for (int i = 0; i < getDimmerPortsNumber(); i++) {
 			// richiede il parametro soft time
 			connector.sendMessage(new RichiestaParametroMessage(d,m,i+1));
 		}
@@ -160,7 +173,7 @@ public class BMCDimmer extends BMC {
 			int temp[];
 			int i;
 			temp = r.getOutputs();
-			for (i = 0; i < getOutPortsNumber(); i++) {
+			for (i = 0; i < getDimmerPortsNumber(); i++) {
 				String portId = getOutputPortId(i);
 				DevicePort p = getPort(portId);
 				Integer newValue = new Integer(temp[i]);
@@ -206,7 +219,7 @@ public class BMCDimmer extends BMC {
 	public String getInfo() {
 		String retval;
 		retval = getName() + ": Dimmer (modello " + model + ", \"" + modelName +
-			"\") con " + getOutPortsNumber() + " uscite"; 
+			"\") con " + getDimmerPortsNumber() + " uscite"; 
 		if (power >= 0) retval += " a " + power + " Watt";
 		return retval;
 	}
@@ -214,7 +227,7 @@ public class BMCDimmer extends BMC {
 	public void printStatus() throws AISException {
 		int i;
 		System.out.print("Uscite:");
-		for (i = 0; i < getOutPortsNumber(); i++) {
+		for (i = 0; i < getDimmerPortsNumber(); i++) {
 			System.out.print(" " + getPortValue(getOutputPortId(i)));
 		}
 		System.out.println();
@@ -242,23 +255,6 @@ public class BMCDimmer extends BMC {
 		return connector.getRetryTimeout() * m.getMaxSendTries(); 
 	}
 
-	/*
-	public String getStatus(String port, long timestamp) throws AISException {
-		int i;
-		String retval = "";
-		String fullAddress = getFullAddress();
-		for (i = 0; i < getOutPortsNumber(); i++) {
-			String portId = getOutputPortId(i);
-			if ((timestamp <= getPortTimestamp(portId)) &&
-					(port.equals("*") || port.equals(portId))){
-				retval += fullAddress + ":" + portId + "=" +
-					getPortValue(portId) + "\n";
-			}
-		}
-		return retval;
-	}
-	*/
-	
 	/**
 	 * Imposta istantaneamente il valore di un canale.
 	 * 
@@ -269,7 +265,7 @@ public class BMCDimmer extends BMC {
 	 * @param value il valore da impostare (da 0 a 100, dove 0 e' OFF)
 	 */
 	public void setOutputRealTime(int output, int value) {
-		if ((output >= 0) && (output <= getOutPortsNumber())) {
+		if ((output >= 0) && (output <= getDimmerPortsNumber())) {
 			if ((value >= 0) && (value <= 100)) {
 				ComandoUscitaDimmerMessage m;
 				m = new ComandoUscitaDimmerMessage(getIntAddress(), 
@@ -298,7 +294,11 @@ public class BMCDimmer extends BMC {
 		return 8;
 	}
 
-	public int getOutPortsNumber() {
+	protected int getDigitalOutputPortsNumber() {
+		return 0;
+	}
+	
+	protected int getDimmerPortsNumber() {
 		switch(model) {
 		case 101:
 		case 102:
@@ -375,7 +375,7 @@ public class BMCDimmer extends BMC {
 		return false;
 	}
 
-	public int getInPortsNumber() {
+	public int getDigitalInputPortsNumber() {
 		return 0;
 	}
 

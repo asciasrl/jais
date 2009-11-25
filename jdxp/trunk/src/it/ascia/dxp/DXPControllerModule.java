@@ -18,7 +18,7 @@ public class DXPControllerModule extends BUSControllerModule {
 		    HierarchicalConfiguration sub = (HierarchicalConfiguration) c.next();
 		 	DXPConnector conn = null;
 		 	try {
-		 		conn = new DXPConnector(sub.getString("name"),controller);
+		 		conn = new DXPConnector(sub.getString("name"),this);
 			 	Transport transport = Transport.createTransport(sub);		 		
 		 		// associa transport e connector 
 		 		conn.bindTransport(transport);
@@ -30,7 +30,7 @@ public class DXPControllerModule extends BUSControllerModule {
 				for (Iterator d = devices.iterator(); d.hasNext();)
 				{
 					HierarchicalConfiguration dev = (HierarchicalConfiguration) d.next();
-					conn.addModule(dev.getString("model"),dev.getString("address"));
+					conn.addDevice(dev.getString("model"),dev.getString("address"));
 				}
 		 	} catch (Exception e) {
 		 		logger.fatal("Errore durante inizializzazione:",e);
@@ -40,9 +40,9 @@ public class DXPControllerModule extends BUSControllerModule {
  		int autoupdate = config.getInt("autoupdate",1000);
  		autoUpdater = new AutoUpdater(autoupdate);
  		autoUpdater.setName("AutoUpdater");
- 		running = true;
  		autoUpdater.start();
  		logger.info("Completato start");
+ 		super.start();
 	}
 
 }

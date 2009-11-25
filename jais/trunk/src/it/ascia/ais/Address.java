@@ -33,6 +33,20 @@ public class Address implements Comparable<Object> {
 	 * @param port Port id
 	 */
 	public Address(String connector, String device, String port) {
+		setConnectorName(connector);
+		setDeviceAddress(device);
+		setPortId(port);
+	}
+	
+	/**
+	 * Set connector part of the address 
+	 * @param connector Name of connector
+	 * @throws IllegalArgumentException if connector is already set or contains illegal chars
+	 */
+	public void setConnectorName(String connector) {
+		if (this.connector != null) {
+			throw(new IllegalArgumentException("Connector already set"));
+		}
 		if (connector != null) {
 			if (connector.contains(".")) {
 				throw(new IllegalArgumentException("Connector name can't contians dots (.)"));
@@ -41,14 +55,45 @@ public class Address implements Comparable<Object> {
 				throw(new IllegalArgumentException("Connector name can't contians colons (:)"));
 			}
 		}
+		if (connector.equals("*")) {
+			connector = null;
+		}
+		this.connector = connector;
+	}
+	
+	/**
+	 * Set device part of the address 
+	 * @param device Address of device
+	 * @throws IllegalArgumentException if device is already set or contains illegal chars
+	 */
+	public void setDeviceAddress(String device) {
+		if (this.device != null) {
+			throw(new IllegalArgumentException("Device already set"));
+		}
 		if (device != null) {
 			if (device.contains(":")) {
 				throw(new IllegalArgumentException("Device name can't contians colons (:)"));
 			}
 		}
-		this.connector = connector;
-		this.device = device;
-		this.port = port;
+		if (device.equals("*")) {
+			device = null;
+		}
+		this.device = device;		
+	}
+	
+	/**
+	 * Set port part of the address 
+	 * @param port Id of the port
+	 * @throws IllegalArgumentException if port is already set or contains illegal chars
+	 */
+	public void setPortId(String port) {
+		if (this.port != null) {
+			throw(new IllegalArgumentException("Port already set"));
+		}
+		if (port.equals("*")) {
+			port = null;
+		}
+		this.port = port;		
 	}
 	
 	/**
@@ -90,7 +135,10 @@ public class Address implements Comparable<Object> {
 	public String getFullAddress() {
 		return getConnectorName() + "." + getDeviceAddress() + ":" + getPortId();
 	}
-	
+
+	/**
+	 * Return full address
+	 */
 	public String toString() {
 		return getFullAddress();
 	}
@@ -138,6 +186,9 @@ public class Address implements Comparable<Object> {
 		return port;
 	}
 	
+	/**
+	 * @return Port id ("*" if wildcarded or undefined)
+	 */	
 	public String getPortId() {
 		if (port == null) {
 			return "*";

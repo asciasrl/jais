@@ -1,18 +1,19 @@
 package it.ascia.dxp.device;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Connector;
 import it.ascia.ais.Message;
+import it.ascia.ais.port.DigitalInputPort;
+
 import it.ascia.dxp.DominoDevice;
 
 public class DFGSM2 extends DominoDevice {
 
-	public DFGSM2(Connector connector, String address) throws AISException {
-		super(connector, address);
+	public DFGSM2(String address) throws AISException {
+		super(address);
 		int intAddress = new Integer(address).intValue();		
 		for (int j = 0; j <= 3; j++) {
 			for (int i = 1; i <= 4; i++) {
-				addPort("i"+(intAddress+j)+"."+new Integer(i).toString());
+				addPort(new DigitalInputPort("i"+(intAddress+j)+"."+new Integer(i).toString()));
 			}
 		}		
 	}

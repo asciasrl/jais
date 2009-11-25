@@ -11,7 +11,6 @@ import java.util.GregorianCalendar;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import it.ascia.ais.AISException;
-import it.ascia.ais.Connector;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.port.DatePort;
 import it.ascia.ais.port.IntegerPort;
@@ -127,32 +126,32 @@ public class BMCRegT22 extends BMCStandardIO {
 	 * @param connector 
 	 * @throws AISException 
 	 */
-	public BMCRegT22(Connector connector, String address, int model,  String name) throws AISException {
-		super(connector, address, model, name);
+	public BMCRegT22(String address, int model,  String name) throws AISException {
+		super(address, model, name);
 		broadcastBindingsByPort = new Set[16];
 		for (int i = 0; i < 16; i++) {
 			broadcastBindingsByPort[i] = new LinkedHashSet();
 		}
-		addPort(new TemperaturePort(this,port_temperature));
-		addPort(new TemperatureSetpointPort(this,port_alarmeTemp));
-		addPort(new StatePort(this,port_season,SEASONS));
-		addPort(new StatePort(this,port_mode,modeStrings));
-		addPort(new TemperatureSetpointPort(this,port_T0));
-		addPort(new TemperatureSetpointPort(this,port_T1_SUMMER));
-		addPort(new TemperatureSetpointPort(this,port_T1_WINTER));
-		addPort(new TemperatureSetpointPort(this,port_T2_SUMMER));
-		addPort(new TemperatureSetpointPort(this,port_T2_WINTER));
-		addPort(new TemperatureSetpointPort(this,port_T3_SUMMER));
-		addPort(new TemperatureSetpointPort(this,port_T3_WINTER));
-		addPort(new IntegerPort(this,port_autoSendTime));
-		addPort(new TemperatureSetpointPort(this,port_setPoint));
-		addPort(new DatePort(this,port_RTCC));
-		addPort(new TriggerPort(this,virtual_RESET_DAY));
-		addPort(new TriggerPort(this,virtual_RESET_SEASON));
+		addPort(new TemperaturePort(port_temperature));
+		addPort(new TemperatureSetpointPort(port_alarmeTemp));
+		addPort(new StatePort(port_season,SEASONS));
+		addPort(new StatePort(port_mode,modeStrings));
+		addPort(new TemperatureSetpointPort(port_T0));
+		addPort(new TemperatureSetpointPort(port_T1_SUMMER));
+		addPort(new TemperatureSetpointPort(port_T1_WINTER));
+		addPort(new TemperatureSetpointPort(port_T2_SUMMER));
+		addPort(new TemperatureSetpointPort(port_T2_WINTER));
+		addPort(new TemperatureSetpointPort(port_T3_SUMMER));
+		addPort(new TemperatureSetpointPort(port_T3_WINTER));
+		addPort(new IntegerPort(port_autoSendTime));
+		addPort(new TemperatureSetpointPort(port_setPoint));
+		addPort(new DatePort(port_RTCC));
+		addPort(new TriggerPort(virtual_RESET_DAY));
+		addPort(new TriggerPort(virtual_RESET_SEASON));
 		for (int stagione = 0; stagione <= 1; stagione++) {
 			for (int giorno = 0; giorno <= 6; giorno++) {
 				for (int ora = 0; ora <= 23; ora++) {
-					addPort(new TemperatureSetpointPort(this,getSetPointPortId(stagione,giorno,ora)));					
+					addPort(new TemperatureSetpointPort(getSetPointPortId(stagione,giorno,ora)));					
 				}
 			}		
 		}
@@ -174,14 +173,14 @@ public class BMCRegT22 extends BMCStandardIO {
 		return 1;
 	}
 
-	public int getInPortsNumber() {
+	public int getDigitalInputPortsNumber() {
 		return 0;
 	}
 
 	/* (non-Javadoc)
 	 * @see it.ascia.eds.device.BMC#getOutPortsNumber()
 	 */
-	public int getOutPortsNumber() {
+	public int getDigitalOutputPortsNumber() {
 		return 0;
 	}
 

@@ -1,14 +1,13 @@
 package it.ascia.dxp.device;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Connector;
 import it.ascia.ais.Message;
 import it.ascia.dxp.DominoDevice;
 
 public class DFIR extends DominoDevice {
 
-	public DFIR(Connector connector, String address) throws AISException {
-		super(connector, address);
+	public DFIR(String address) throws AISException {
+		super(address);
 		// TODO Auto-generated constructor stub
 	}
 

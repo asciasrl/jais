@@ -3,9 +3,6 @@
  */
 package it.ascia.ais;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -39,6 +36,9 @@ import org.apache.log4j.xml.DOMConfigurator;
  * @author sergio
  */
 public class Controller {
+	
+	public static final String CONFIGURATION_VERSION = "1.4";
+
 	/**
 	 * Connector registrati.
 	 * 
@@ -62,8 +62,6 @@ public class Controller {
 	private XMLConfiguration config;
 
 	private static Controller controller;
-
-	protected final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
 	/**
 	 * Controller singleton
@@ -125,6 +123,11 @@ public class Controller {
 		return commandInterface.execute(params);
 	}
 	
+	/**
+	 * 
+	 * @param name Name of the ControllerModule
+	 * @return 
+	 */
 	public ControllerModule getModule(String name) {
 		return (ControllerModule) modules.get(name);
 	}
@@ -148,7 +151,6 @@ public class Controller {
 			Class moduleClass = moduleLoader.loadClass(className);
 			module = (ControllerModule) moduleClass.newInstance();
 			module.setName(name);
-			module.setController(this);
 		    if (configName == null) {		    	
 				module.setConfiguration(config);
 		    } else {
@@ -170,16 +172,21 @@ public class Controller {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param name Name of connector
+	 * @return Connector
+	 */
 	public Connector getConnector(String name) {
-		return (Connector) connectors.get(name);
+		return connectors.get(name);
 	}
 
 	/**
 	 * 
-	 * @param address Indirizzo del connettore 
-	 * @return Connettori che corrispondono all'indirizzo
+	 * @param address 
+	 * @return Devices that match the address
 	 */
-	public Collection<Device> getDevices(Address address) {
+	public Vector<Device> getDevices(Address address) {
 		Vector<Device> res = new Vector<Device>();
 		for (Connector connector : connectors.values()) {
 			if (address.matchConnector(connector.getName())) {
@@ -189,7 +196,7 @@ public class Controller {
 		return res;
 	}
 	
-	public Collection<Device> getDevices(String address) {
+	public Vector<Device> getDevices(String address) {
 		return getDevices(new Address(address));
 	}
 	
@@ -267,27 +274,6 @@ public class Controller {
 		logger.info("Configurato controller.");
 	}
 	
-	public void addPropertyChangeListener( PropertyChangeListener listener )
-    {
-        this.pcs.addPropertyChangeListener( listener );
-    }
-
-    public void removePropertyChangeListener( PropertyChangeListener listener )
-    {
-        this.pcs.removePropertyChangeListener( listener );
-    }
-	
-	/**
-	 * Comunica l'evento a tutti i Listener registrati con addPropertyChangeListener(PropertyChangeListener)
-	 * 
-	 */
-	public void fireDevicePortChangeEvent(DevicePortChangeEvent evt) {
-		if (evt.getOldValue() == null || (evt.getNewValue() != null && ! evt.getNewValue().equals(evt.getOldValue()))) {
-			logger.info(evt.getFullAddress() + " : " + evt.getOldValue() + " -> " + evt.getNewValue());
-		}
-		this.pcs.firePropertyChange(evt);
-	}
-
 	/**
 	 * Avvia il controller
 	 * @param args Come unico parametro accetta il nome del file di configurazione 
@@ -327,7 +313,11 @@ public class Controller {
 				ControllerModule module = getModule(moduleName);
 				logger.info("Avvio modulo "+moduleName);
 				module.start();
-				logger.debug("Avviato modulo "+moduleName+" in "+(System.currentTimeMillis()-start1)/1000.0+" secondi.");
+				if (module.isRunning()) {
+					logger.debug("Started module "+moduleName+" in "+(System.currentTimeMillis()-start1)/1000.0+" seconds.");
+				} else {
+					logger.fatal("Unable to start module: " + moduleName);
+				}
 			}
 			logger.debug("Avviati "+modules.size()+" moduli in "+(System.currentTimeMillis()-start)/1000.0+" secondi.");			
 		} catch (Exception e) {
@@ -366,14 +356,13 @@ public class Controller {
 
 	/**
 	 * Cerca esattamente un device
-	 * @see findDevices
 	 * @param address Indirizzo del device
 	 * @return il Device trovato o null
 	 */
 	public Device getDevice(Address address) throws AISException {
-		Collection<Device> devices = getDevices(address);
+		Vector<Device> devices = getDevices(address);
 		if (devices.size() == 1) {
-			return (Device) devices.toArray()[0];
+			return devices.firstElement();
 		} else {
 			return null;
 		}
@@ -384,19 +373,19 @@ public class Controller {
 	 * @param fullAddress
 	 * @return null se la porta non esiste
 	 */
-	public DevicePort getDevicePort(String fullAddress) {
-		Address address = new Address(fullAddress);
-		//String address = getDeviceFromAddress(fullAddress);
+	public DevicePort getDevicePort(Address address) {
 		try {
-			Device device = getDevice(address);
-			if (device == null) {
-				logger.warn("Port not found: "+fullAddress);
+			Vector<Device> devices = getDevices(address);
+			if (devices.size() == 1) {
+				Device device = devices.firstElement();
+				String portId = address.getPortId();
+				return device.getPort(portId);
+			} else {
+				logger.warn("Port not found: "+address);
 				return null;
 			}
-			String portId = address.getPortId();
-			return device.getPort(portId);
 		} catch (Exception e) {
-			logger.warn("getting '"+fullAddress+"': ",e);
+			logger.error("Getting port '"+address+"': ",e);
 			return null;
 		}
 	}

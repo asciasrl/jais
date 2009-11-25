@@ -11,6 +11,7 @@ import java.beans.PropertyChangeEvent;
  * @author sergio
  *
  */
+@SuppressWarnings("serial")
 public class DevicePortChangeEvent extends PropertyChangeEvent {
 
 	private long timeStamp;
@@ -24,23 +25,24 @@ public class DevicePortChangeEvent extends PropertyChangeEvent {
 		super(devicePort, devicePort.getFullAddress(), oldValue, newValue);
 		timeStamp = System.currentTimeMillis();
 	}
-
+	
 	/**
-	 * @return the device
+	 * @return the device of the port
+	 * @deprecated
 	 */
-	public Device getDevice() {
-		return ((DevicePort)source).getDevice();
+	public Device getDevice() {		
+		return ((DevicePort)getSource()).getDevice();
 	}
 
 	/**
 	 * @return the port fullAddress
 	 */
 	public String getFullAddress() {
-		return ((DevicePort)source).getFullAddress();
+		return getPropertyName();
 	}
 	
 	public String toString() {
-		return getFullAddress()+"@"+getTimeStamp()+"="+getNewValue();
+		return getFullAddress()+"@"+getTimeStamp()+" " + getOldValue() + " -> " + getNewValue();
 	}
 
 	/**

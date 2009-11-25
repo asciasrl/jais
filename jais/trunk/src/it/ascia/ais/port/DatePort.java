@@ -1,6 +1,5 @@
 package it.ascia.ais.port;
 
-import it.ascia.ais.Device;
 import it.ascia.ais.DevicePort;
 
 /**
@@ -10,12 +9,8 @@ import it.ascia.ais.DevicePort;
  */
 public class DatePort extends DevicePort {
 
-	public DatePort(Device device, String portId) {
-		super(device, portId);
-	}
-
-	public DatePort(Device device, String portId, String portName) {
-		super(device, portId, portName);
+	public DatePort(String portId) {
+		super(portId);
 	}
 
 }

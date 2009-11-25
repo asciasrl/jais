@@ -1,9 +1,9 @@
 package it.ascia.dxp.device;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Connector;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.Message;
+import it.ascia.ais.port.DigitalOutputPort;
 import it.ascia.dxp.DXPMessage;
 import it.ascia.dxp.DominoDevice;
 import it.ascia.dxp.msg.ComandoUsciteMessage;
@@ -12,10 +12,10 @@ import it.ascia.dxp.msg.RispostaStatoUsciteMessage;
 
 public class DF4R extends DominoDevice {
 
-	public DF4R(Connector connector, String address) throws AISException {
-		super(connector, address);
+	public DF4R(String address) throws AISException {
+		super(address);
 		for (int i = 1; i <= 4; i++) {
-			addPort("o"+address+"."+new Integer(i).toString());			
+			addPort(new DigitalOutputPort("o"+address+"."+new Integer(i).toString()));			
 		}		
 	}
 
@@ -62,7 +62,7 @@ public class DF4R extends DominoDevice {
 			case DXPMessage.RISPOSTA_STATO_USCITE:
 				RispostaStatoUsciteMessage r = (RispostaStatoUsciteMessage) m;
 				for (int i = 1; i <= 4; i++) {
-					DevicePort p = getPort("o"+getAddress()+"."+i);
+					DevicePort p = getPort("o"+getSimpleAddress()+"."+i);
 					p.setCacheRetention(1000);
 					p.setValue(new Boolean(r.getExitStatus(i)));
 				}

@@ -1,22 +1,21 @@
 package it.ascia.eds.device;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Connector;
 
 public class BMCLogicaIO extends BMCStandardIO {
 
-	public BMCLogicaIO(Connector connector, String bmcAddress, int model,
+	public BMCLogicaIO(String bmcAddress, int model,
 			String name) throws AISException {
-		super(connector, bmcAddress, model, name);
+		super(bmcAddress, model, name);
 	}
 
 	public String getInfo() {
 		return getName() + ": BMC Logica I/O (modello " + model + ") con "
-				+ getInPortsNumber() + " ingressi e " + getOutPortsNumber()
+				+ getDigitalInputPortsNumber() + " ingressi e " + getDigitalOutputPortsNumber()
 				+ " uscite digitali";
 	}
 	
-	public int getInPortsNumber() {
+	public int getDigitalInputPortsNumber() {
 		switch (model) {
 			case 141:
 			case 142:
@@ -39,7 +38,7 @@ public class BMCLogicaIO extends BMCStandardIO {
 		}
 	}
 	
-	public int getOutPortsNumber() {
+	public int getDigitalOutputPortsNumber() {
 		switch (model) {
 			case 141:
 			case 149:

@@ -5,7 +5,6 @@ package it.ascia.eds.device;
 
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Connector;
 import it.ascia.ais.port.SeasonPort;
 import it.ascia.ais.port.SlaveStatePort;
 import it.ascia.ais.port.StatePort;
@@ -116,30 +115,29 @@ public class BMCChronoTerm extends BMC {
 	 * @param model numero del modello
 	 * @throws AISException 
 	 */
-	public BMCChronoTerm(Connector connector, String address, int model, String name) throws AISException {
-		super(connector, address, model, name);
-		addPort(new StatePort(this,port_state,stateStrings));
-		addPort(new TemperaturePort(this,port_temperature));
-		addPort(new TemperatureSetpointPort(this,port_setpoint));
-		addPort(new SeasonPort(this,port_season));
+	public BMCChronoTerm(String address, int model, String name) throws AISException {
+		super(address, model, name);
+		addPort(new TemperaturePort(port_temperature));
+		addPort(new TemperatureSetpointPort(port_setpoint));
 
-		addPort(new SlaveStatePort(this,stateStrings[STATE_CHRONO],port_state));
-		addPort(new SlaveStatePort(this,stateStrings[STATE_MANUAL],port_state));
-		addPort(new SlaveStatePort(this,stateStrings[STATE_OFF],port_state));
-		addPort(new SlaveStatePort(this,stateStrings[STATE_SUMMER_MODE],port_season));
+		StatePort statePort = new StatePort(port_state,stateStrings);
+		addPort(statePort);
+		addPort(new SlaveStatePort(stateStrings[STATE_CHRONO],statePort));
+		addPort(new SlaveStatePort(stateStrings[STATE_MANUAL],statePort));
+		addPort(new SlaveStatePort(stateStrings[STATE_OFF],statePort));
 
-		addPort(new TriggerPort(this,stateStrings[STATE_TEMP_ANTIFREEZE]));
-		addPort(new TriggerPort(this,stateStrings[STATE_TEMP_SETPOINT_MINUS]));
-		addPort(new TriggerPort(this,stateStrings[STATE_TEMP_SETPOINT_PLUS]));
-		addPort(new TriggerPort(this,stateStrings[STATE_TEMP_T1]));
-		addPort(new TriggerPort(this,stateStrings[STATE_TEMP_T2]));
-		addPort(new TriggerPort(this,stateStrings[STATE_TEMP_T3]));
-		
-		addPort(new SlaveStatePort(this,stateStrings[STATE_WINTER_MODE],port_season));		
-	}
-	
-	public void addPort(String portId, String portName) {
-		logger.fatal("Id porta scorretto: "+portId);
+		SeasonPort seasonPort = new SeasonPort(port_season); 
+		addPort(seasonPort);
+		addPort(new SlaveStatePort(stateStrings[STATE_SUMMER_MODE],seasonPort));
+		addPort(new SlaveStatePort(stateStrings[STATE_WINTER_MODE],seasonPort));		
+
+		addPort(new TriggerPort(stateStrings[STATE_TEMP_ANTIFREEZE]));
+		addPort(new TriggerPort(stateStrings[STATE_TEMP_SETPOINT_MINUS]));
+		addPort(new TriggerPort(stateStrings[STATE_TEMP_SETPOINT_PLUS]));
+		addPort(new TriggerPort(stateStrings[STATE_TEMP_T1]));
+		addPort(new TriggerPort(stateStrings[STATE_TEMP_T2]));
+		addPort(new TriggerPort(stateStrings[STATE_TEMP_T3]));
+
 	}
 	
 	/* (non-Javadoc)
@@ -339,11 +337,11 @@ public class BMCChronoTerm extends BMC {
 	}
 	*/
 
-	public int getOutPortsNumber() {
+	protected int getDigitalOutputPortsNumber() {
 		return 0;
 	}
 	
-	public int getInPortsNumber() {
+	protected int getDigitalInputPortsNumber() {
 		return 0;
 	}
 	

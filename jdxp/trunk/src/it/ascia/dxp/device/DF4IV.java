@@ -4,6 +4,7 @@ import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.Message;
+import it.ascia.ais.port.DigitalVirtualPort;
 import it.ascia.dxp.DXPMessage;
 import it.ascia.dxp.msg.ComandoUsciteMessage;
 import it.ascia.dxp.msg.RichiestaStatoUsciteMessage;
@@ -16,21 +17,15 @@ public class DF4IV extends DF4I {
 	}
 	
 	public DF4IV(Connector connector, String address) throws AISException {
-		super(connector, address);
+		super(connector,address);
 		int intAddress = new Integer(address).intValue();
 		for (int j = getNumInputs() ; j < getNumInputs() + getNumVirtuals(); j++) {
 			connector.addDeviceAlias((new Integer(intAddress + j)).toString(), this);
 			for (int i = 1; i <= 4; i++) {
-				addPort("v"+(intAddress+j)+"."+new Integer(i).toString());
+				addPort(new DigitalVirtualPort("v"+(intAddress+j)+"."+new Integer(i).toString()));
 			}
 		}
 	}
-	/*
-	public String getInfo() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	*/
 
 	public long updatePort(String portId) throws AISException {
 		int i = portId.indexOf(".");

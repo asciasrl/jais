@@ -4,7 +4,6 @@
 package it.ascia.eds.device;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Connector;
 import it.ascia.eds.msg.EDSMessage;
 import it.ascia.eds.msg.RispostaStatoMessage;
 
@@ -33,8 +32,8 @@ public class BMCIntIR extends BMC {
 	 * @param model numero del modello
 	 * @throws AISException 
 	 */
-	public BMCIntIR(Connector connector, String address, int model, String name) throws AISException {
-		super(connector, address, model, name);
+	public BMCIntIR(String address, int model, String name) throws AISException {
+		super(address, model, name);
 		if (model != 131) {
 			logger.error("Errore: modello di BMC Int IR sconosciuto:" + 
 					model);
@@ -113,11 +112,11 @@ public class BMCIntIR extends BMC {
 		return 0;
 	}
 
-	public int getOutPortsNumber() {
+	public int getDigitalOutputPortsNumber() {
 		return 0;
 	}
 
-	public int getInPortsNumber() {
+	public int getDigitalInputPortsNumber() {
 		return 0;
 	}
 

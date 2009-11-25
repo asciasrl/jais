@@ -3,7 +3,6 @@
  */
 package it.ascia.ais;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Vector;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -47,11 +46,6 @@ public abstract class Connector {
 	protected Semaphore transportSemaphore;
 
 	/**
-	 * Controller che ha instanziato il Connector
-	 */
-	private Controller controller;
-
-	/**
      * Il nostro logger.
      */
     protected Logger logger;
@@ -64,18 +58,18 @@ public abstract class Connector {
 	/**
 	 * L'elenco degli indirizzi - primari o alias - dei dispositivi.
 	 */
-    private LinkedHashMap devicesAlias;
+    private LinkedHashMap<String, Device> devicesAlias;
 
     /**
      * 
      * @param name Nome del connettore
-     * @param controller Controller del sistema
+     * @param module Module that instantiate this connector
      * 
      * TODO Sostituire Controller con ControllerModule
      */
-    public Connector(String name, Controller controller) {
+    public Connector(String name, ControllerModule module) {
 		this.name = name;
-		this.setController(controller);
+		this.module = module;
         devices = new LinkedHashMap();
         devicesAlias = new LinkedHashMap();
 		logger = Logger.getLogger(getClass());
@@ -93,16 +87,13 @@ public abstract class Connector {
      * @param addr l'indirizzo da cercare.
      * @return Elenco devices (eventualmente vuoto)
      */
-    public Collection<Device> getDevices(Address addr) {
-    	if (addr.getDevice() == null) {
-    		return devices.values();
-    	}
+    public Vector<Device> getDevices(Address addr) {
     	Vector<Device> res = new Vector<Device>();
     	Device device1 = getDevice(addr);
     	if (device1 != null) {
     		res.add(device1);
     	} else {
-			for (Device device : devices.values()) {
+			for (Device device : devicesAlias.values()) {
 				if (addr.matches(device.getFullAddress())) {
 					res.add(device);
 				}
@@ -117,13 +108,14 @@ public abstract class Connector {
      * @param device
      * @throws AISException
      */
-    void addDevice(Device device) throws AISException {
-    	String address = device.getAddress();
+    public void addDevice(Device device) throws AISException {    	
+    	String address = device.getSimpleAddress();
     	if (devices.containsKey(address)) {
     		throw(new AISException("Dispositivo duplicato con indirizzo "+address+" connettore "+getName()));
     	}
     	devices.put(address, device);
     	addDeviceAlias(address, device);
+    	device.setConnector(this);
     }
     
     /**
@@ -137,20 +129,24 @@ public abstract class Connector {
     }
         
     /**
-     * Ottiene il device con il nome specificato, o null se non esiste
+     * Ottiene il device con l'indirizzo specificato, o null se non esiste
      * Usa l'elenco degli indirizzi alias 
      * @param address Indirizzo o alias del device
      * @return null se nessun device ha l'indirizzo
      */
     public Device getDevice(String address) {
-    	return (Device) devicesAlias.get(address);
+    	return devicesAlias.get(address);
     }
 
     public Device getDevice(Address address) {
-    	return (Device) devicesAlias.get(address.getDeviceAddress());
+    	return devicesAlias.get(address.getDeviceAddress());
     }
 
-    public LinkedHashMap getDevices() {
+    /**
+     * 
+     * @return all devices belonging to connector
+     */
+    public LinkedHashMap<String, Device> getDevices() {
 		return devices;
     }
         
@@ -194,13 +190,6 @@ public abstract class Connector {
 		}
 	}
     
-	/**
-	 * Propaga l'evento al controller
-	 */
-	public void fireDevicePortChangeEvent(DevicePortChangeEvent evt) {
-		module.fireDevicePortChangeEvent(evt);
-	}
-
 	/**
      * Associa il Transport al Connector
      * @param transport Il Transport associato
@@ -254,20 +243,6 @@ public abstract class Connector {
 		}
 	}
 	
-    /**
-	 * @param controller the controller to set
-	 */
-	public void setController(Controller controller) {
-		this.controller = controller;
-	}
-
-	/**
-	 * @return the controller
-	 */
-	public Controller getController() {
-		return controller;
-	}
-
     private class UpdatingThread extends Thread {
         
     	public void run() {
@@ -291,15 +266,6 @@ public abstract class Connector {
 			logger.debug("Stop.");
     	}
     }
-
-
-	/**
-	 * @param Set the Controller Module to which connector belongs
-	 * TODO cambiare il costruttore in modo che venga fornito il ControllerModule invece del Controller ed eliminare setModule
-	 */
-	public void setModule(ControllerModule module) {
-		this.module = module;
-	}
 
 	/**
 	 * @return Get the Controller Module to which connector belongs

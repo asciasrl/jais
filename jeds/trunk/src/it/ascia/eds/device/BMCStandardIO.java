@@ -4,11 +4,8 @@
 package it.ascia.eds.device;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Connector;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.port.BlindPort;
-import it.ascia.ais.port.DigitalInputPort;
-import it.ascia.ais.port.DigitalOutputPort;
 import it.ascia.eds.msg.AcknowledgeMessage;
 import it.ascia.eds.msg.ComandoBroadcastMessage;
 import it.ascia.eds.msg.ComandoUscitaMessage;
@@ -48,27 +45,27 @@ public class BMCStandardIO extends BMC {
 	 * renderlo un BMC simulato bisogna chiamare il metodo 
 	 * {@link #makeSimulated}.
 	 * </p>
-	 * @param connector 
-	 * 
 	 * @param bmcAddress
 	 *            indirizzo del BMC
 	 * @param model
 	 *            numero del modello
 	 * @throws AISException 
 	 */
-	public BMCStandardIO(Connector connector, String bmcAddress, int model, String name) throws AISException {
-		super(connector, bmcAddress, model, name);
+	public BMCStandardIO(String bmcAddress, int model, String name) throws AISException {
+		super(bmcAddress, model, name);
 	}
 
+	/*
 	public void addPort(String portId, String portName) {
 		if (portId.startsWith("Inp")) {
-			ports.put(portId, new DigitalInputPort(this, portId, portName));
+			addPort(new DigitalInputPort(this, portId, portName));
 		} else if (portId.startsWith("Out")) {
-			ports.put(portId, new DigitalOutputPort(this, portId, portName));		
+			addPort(new DigitalOutputPort(this, portId, portName));		
 		} else {
 			throw(new AISException("Id porta scorretto: "+portId));
 		}
 	}
+	*/
 
 	/**
 	 * @throws AISException 
@@ -159,7 +156,7 @@ public class BMCStandardIO extends BMC {
 				// ...dobbiamo rispondere!
 				RichiestaStatoMessage question = (RichiestaStatoMessage) m;
 				// rispondiamo sempre tutti OFF
-				RispostaStatoMessage answer = new RispostaStatoMessage(question, new boolean[getOutPortsNumber()], new boolean[getInPortsNumber()]);
+				RispostaStatoMessage answer = new RispostaStatoMessage(question, new boolean[getDigitalOutputPortsNumber()], new boolean[getDigitalInputPortsNumber()]);
 				getConnector().sendMessage(answer);
 			}
 			break;
@@ -193,12 +190,12 @@ public class BMCStandardIO extends BMC {
 				int i;
 				String portId;
 				temp = r.getInputs();
-				for (i = 0; i < getInPortsNumber(); i++) {
+				for (i = 0; i < getDigitalInputPortsNumber(); i++) {
 					portId = getInputPortId(i); 
 					setPortValue(portId, new Boolean(temp[i]));
 				}
 				temp = r.getOutputs();
-				for (i = 0; i < getOutPortsNumber(); i++) {
+				for (i = 0; i < getDigitalOutputPortsNumber(); i++) {
 					portId = getOutputPortId(i); 
 					DevicePort p = getPort(portId);
 					Boolean newValue = new Boolean(temp[i]);
@@ -250,7 +247,7 @@ public class BMCStandardIO extends BMC {
 				}
 				break;
 			case EDSMessage.MSG_VARIAZIONE_INGRESSO:
-				for (i = 0; i < getInPortsNumber(); i++) {
+				for (i = 0; i < getDigitalInputPortsNumber(); i++) {
 					getPort(getInputPortId(i)).invalidate();
 				}
 				break;
@@ -291,15 +288,14 @@ public class BMCStandardIO extends BMC {
 		if (! havePort(blindPortId)) {
 			String openPortId = "Out" + (uscita + 1);
 			String closePortId = "Out" + (uscita - 2 * shift + 2);
-			BlindPort blindPort = new BlindPort(this,blindPortId,closePortId,openPortId);
-			addPort(blindPort);							
+			addPort(new BlindPort(blindPortId,getPort(closePortId),getPort(openPortId)));							
 			logger.info("Aggiunta porta virtuale "+blindPortId+": open="+openPortId+" close="+closePortId);
 		}
 	}
 
 	public String getInfo() {
 		return getName() + ": BMC Standard I/O (modello " + model + ") con "
-				+ getInPortsNumber() + " ingressi e " + getOutPortsNumber()
+				+ getDigitalInputPortsNumber() + " ingressi e " + getDigitalOutputPortsNumber()
 				+ " uscite digitali";
 	}
 
@@ -311,7 +307,7 @@ public class BMCStandardIO extends BMC {
 		int i;
 		System.out.print("Ingressi: ");
 		Boolean x;
-		for (i = 0; i < getInPortsNumber(); i++) {
+		for (i = 0; i < getDigitalInputPortsNumber(); i++) {
 			x = (Boolean) getPortValue(getInputPortId(i));
 			if (x == null) {
 				System.out.print("?");
@@ -321,7 +317,7 @@ public class BMCStandardIO extends BMC {
 		}
 		System.out.println();
 		System.out.print("Uscite:   ");
-		for (i = 0; i < getOutPortsNumber(); i++) {
+		for (i = 0; i < getDigitalOutputPortsNumber(); i++) {
 			x = (Boolean) getPortValue(getOutputPortId(i));
 			if (x == null) {
 				System.out.print("?");
@@ -351,7 +347,7 @@ public class BMCStandardIO extends BMC {
 	/**
 	 * Ritorna il numero di ingressi digitali, a partire dal modello.
 	 */
-	public int getInPortsNumber() {
+	public int getDigitalInputPortsNumber() {
 		switch (model) {
 		case 2:
 		case 4:
@@ -382,7 +378,7 @@ public class BMCStandardIO extends BMC {
 	/**
 	 * Ritorna il numero di uscite digitali a partire dal modello.
 	 */
-	public int getOutPortsNumber() {
+	public int getDigitalOutputPortsNumber() {
 		switch (model) {
 		case 2:
 		case 22:

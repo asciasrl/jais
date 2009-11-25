@@ -2,7 +2,7 @@ package it.ascia.dxp;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
-import it.ascia.ais.Controller;
+import it.ascia.ais.ControllerModule;
 import it.ascia.ais.Message;
 import it.ascia.dxp.device.*;
 
@@ -14,8 +14,8 @@ public class DXPConnector extends Connector {
 	protected DXPMessageParser mp;
 	private DXPRequestMessage messageToBeAnswered;
 	
-	public DXPConnector(String name, Controller controller) {
-		super(name, controller);
+	public DXPConnector(String name, ControllerModule module) {
+		super(name, module);
 		mp = new DXPMessageParser();
 	}
 
@@ -110,7 +110,7 @@ public class DXPConnector extends Connector {
 		
 	}
 
-	public void addModule(String model, String address) throws AISException {
+	public void addDevice(String model, String address) throws AISException {
 		DominoDevice d = null;
 		if (model.equals("DF4I")) {
 			d = new DF4I(this, address);
@@ -119,21 +119,21 @@ public class DXPConnector extends Connector {
 		} else if (model.equals("DF8IL")) {
 			d = new DF8IL(this, address);
 		} else if (model.equals("DFIR")) {
-			d = new DFIR(this, address);
+			d = new DFIR(address);
 		} else if (model.equals("DF4R")) {
-			d = new DF4R(this, address);
+			d = new DF4R(address);
 		} else if (model.equals("DFTA")) {
-			d = new DFTA(this, address);
+			d = new DFTA(address);
 		} else if (model.equals("DFTP")) {
-			d = new DFTP(this, address);
+			d = new DFTP(address);
 		} else if (model.equals("DFCT")) {
 			d = new DFCT(this, address);
 		} else if (model.equals("DFGSM2")) {
-			d = new DFGSM2(this, address);
+			d = new DFGSM2(address);
 		} else if (model.equals("DFDM")) {
-			d = new DFDM(this, address);
+			d = new DFDM(address);
 		} else if (model.equals("DFTA")) {
-			d = new DFTA(this, address);
+			d = new DFTA(address);
 		} else {
 			logger.error("Modello sconosciuto: "+model);
 		}

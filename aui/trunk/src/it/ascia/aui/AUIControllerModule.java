@@ -318,15 +318,15 @@ public class AUIControllerModule extends ControllerModule {
 		}
 		Iterator iterator = params.entrySet().iterator();
 		Entry entry = (Entry) iterator.next();
-		String fullAddress = (String) entry.getKey();
-		if (fullAddress == null) {
+		Address address = new Address((String) entry.getKey());
+		if (address == null) {
 			throw(new AISException("Parametro 'address' richiesto"));
 		}
 		String value = (String) entry.getValue();				
 		if (value == null) {
 			throw(new AISException("Parametro 'value' richiesto"));
 		}
-		DevicePort p = controller.getDevicePort(fullAddress);
+		DevicePort p = controller.getDevicePort(address);
 		if (p == null) {
 			throw(new AISException("Port not found"));
 		}			
@@ -359,7 +359,7 @@ public class AUIControllerModule extends ControllerModule {
 			HierarchicalConfiguration controlConfig = (HierarchicalConfiguration) ic.next();
 			List addresses = controlConfig.configurationsAt("address");
 			for (int i = 0; i < addresses.size(); i++) {
-				String address = (String) ((SubnodeConfiguration) addresses.get(i)).getRoot().getValue();
+				Address address = new Address((String) ((SubnodeConfiguration) addresses.get(i)).getRoot().getValue());
 				DevicePort p = controller.getDevicePort(address);
 				if (p != null) {
 					ports.add(p);
@@ -372,5 +372,5 @@ public class AUIControllerModule extends ControllerModule {
 	public String getImagesPath() {
 		return getConfiguration().getString("images","/images/");
 	}
-	
+
 }

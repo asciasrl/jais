@@ -3,21 +3,14 @@
  */
 package it.ascia.ais.port;
 
-import it.ascia.ais.Device;
-
-
 /**
  * @author Sergio
  *
  */
 public class DigitalOutputPort extends BooleanPort {
 
-	public DigitalOutputPort(Device device, String portId) {
-		this(device, portId,null);
-	}
-
-	public DigitalOutputPort(Device device, String portId, String portName) {
-		super(device, portId, portName);
+	public DigitalOutputPort(String portId) {
+		super(portId);
 	}
 
 	public boolean writeValue(Object newValue) throws IllegalArgumentException {

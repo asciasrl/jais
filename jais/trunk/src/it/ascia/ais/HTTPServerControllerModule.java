@@ -21,7 +21,7 @@ public class HTTPServerControllerModule extends ControllerModule {
 	 */
 	private Server server;
 	
-	public void start() throws Exception {
+	public void start() {
 		//logger = Logger.getLogger(getClass());
 		logger.info("Avvio server HTTP...");
 		HierarchicalConfiguration config = getConfiguration();
@@ -83,7 +83,7 @@ public class HTTPServerControllerModule extends ControllerModule {
 			logger.info("Avviato server HTTP");
 		} catch (Exception e) {
 			logger.fatal("Errore avvio server HTTP: ",e);
-			throw(e);
+			return;
 		}		
 		super.start();
 	}

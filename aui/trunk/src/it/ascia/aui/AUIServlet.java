@@ -7,7 +7,6 @@ import it.ascia.ais.AISException;
 import it.ascia.ais.Controller;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.DevicePortChangeEvent;
-import it.ascia.ais.randomUUID;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -16,7 +15,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -211,7 +209,7 @@ public class AUIServlet extends JSONRPCServlet {
 					JSONObject obj=new JSONObject();
 					Object value = p.getCachedValue();  
 					if (value == null) {
-						logger.trace("Non invio valore null");
+						logger.trace("Non invio valore null di "+p.getFullAddress());
 					} else {
 						obj.put("A",p.getFullAddress());
 						obj.put("V",value.toString());

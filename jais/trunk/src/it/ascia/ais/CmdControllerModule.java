@@ -101,7 +101,7 @@ public class CmdControllerModule extends ControllerModule {
 		public void run() {
 		 	// La palla all'utente
 			Stdio stdio = new Stdio();
-			while (running) {
+			while (isRunning()) {
 				System.out.println("JAIS Server");
 				String dest = stdio.inputString("Indirizzo dispositivo (<n>|stop|restart):");
 				if (dest == null) {
@@ -140,19 +140,18 @@ public class CmdControllerModule extends ControllerModule {
 		 			if (portId.equals("")) {
 		 				d = null;
 		 			} else {
-		 				String pn = null;
+		 				DevicePort p = null;
 		 				try {
-				 			pn = d.getPortName(portId);								
+				 			p = d.getPort(portId);								
 						} catch (AISException e) {								
 						}
-			 			if (pn == null) {
+			 			if (p == null) {
 			 				System.out.println("Il device "+d.getFullAddress()+" hon ha la porta "+portId);
 			 			} else {
 			 				String newValue = "";
-			 				newValue = stdio.inputString("Nuovo valore per "+pn+" (invio per non variare): ");
+			 				newValue = stdio.inputString("Nuovo valore per "+p.getAddress()+" (invio per non variare): ");
 				 			if (! newValue.equals("")) {
-				 				d.writePortValue(portId,newValue);
-				 				//p.writeValue(newValue);
+				 				p.writeValue(newValue);
 				 			}
 			 			}
 		 			}

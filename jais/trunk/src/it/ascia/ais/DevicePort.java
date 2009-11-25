@@ -25,7 +25,7 @@ public abstract class DevicePort {
 		return device;
 	}
 
-	private String portName;
+	private String description;
 	
 	private String[] tags = null;
 
@@ -51,8 +51,10 @@ public abstract class DevicePort {
 
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		this.pcs.addPropertyChangeListener(listener);
+		/*
 		logger.trace(pcs.getPropertyChangeListeners().length
 				+ " (+) PCL's for " + getFullAddress());
+		*/
 	}
 
 	public void removePropertyChangeListener(PropertyChangeListener listener) {
@@ -96,26 +98,19 @@ public abstract class DevicePort {
 		setCacheRetention(DEFAULT_CACHE_RETENTION);
 	}
 
-	public DevicePort(Device device, String portId) {
-		this(device, portId, null);
+	public DevicePort(String portId, String portName) {
+		this(portId);
+		setDescription(portName);
 	}
 
 	/**
 	 * @param device
 	 * @param portId
-	 * @param portName
 	 *            se null il default e' connector.address:portId
 	 */
-	public DevicePort(Device device, String portId, String portName) {
+	public DevicePort(String portId) {
 		logger = Logger.getLogger(getClass());
-		this.device = device;
 		this.portId = portId;
-		if (portName == null) {
-			//this.portName = device.getFullAddress() + ":" + portId;
-			this.portName = getFullAddress();
-		} else {
-			this.portName = portName;
-		}
 		timeStamp = 0;
 		expiration = 0;
 	}
@@ -124,7 +119,6 @@ public abstract class DevicePort {
 		HashMap m = new HashMap();
 		m.put("A",getFullAddress());
 		m.put("C",getClass().getSimpleName());
-		m.put("N",getName());
 		Object value = getCachedValue();
 		if (value == null) {
 			m.put("V",value);			
@@ -138,12 +132,12 @@ public abstract class DevicePort {
 	 * 
 	 * @return Name of the port (default = full address)
 	 */
-	public String getName() {
-		return portName;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setName(String portName) {
-		this.portName = portName;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	/**
@@ -205,8 +199,10 @@ public abstract class DevicePort {
 	 */
 	public void setValue(Object newValue) {
 		Object oldValue = getCachedValue();
+		boolean changed = false; 
 		if (isDirty() || oldValue == null || !oldValue.equals(newValue)) {
 			timeStamp = System.currentTimeMillis();
+			changed = true;
 		}
 		synchronized (this) {
 			expiration = System.currentTimeMillis() + cacheRetention;
@@ -215,8 +211,10 @@ public abstract class DevicePort {
 			// sveglia getValue()
 			notify();
 		}
-		// inviare sempre l'evento, in quanto potrebbe esserci stata una doppia variazione
-		fireDevicePortChangeEvent(new DevicePortChangeEvent(this, oldValue,newValue));
+		if (changed) {
+			DevicePortChangeEvent evt = new DevicePortChangeEvent(this, oldValue,newValue);
+			fireDevicePortChangeEvent(evt);
+		}
 	}
 
 	/**
@@ -267,8 +265,8 @@ public abstract class DevicePort {
 	 * @param evt
 	 */
 	public void fireDevicePortChangeEvent(DevicePortChangeEvent evt) {
-		this.pcs.firePropertyChange(evt);
-		device.fireDevicePortChangeEvent(evt);
+		logger.info(evt);
+		pcs.firePropertyChange(evt);
 	}
 
 	/**
@@ -314,9 +312,16 @@ public abstract class DevicePort {
 
 	/**
 	 * @return indirizzo completo della porta
+	 * @deprecated use getAddress()
 	 */
 	public String getFullAddress() {
-		return device.getFullAddress() + ":" + portId;
+		return getAddress().getFullAddress();
+	}
+	
+	public Address getAddress() {
+		Address a = device.getAddress();
+		a.setPortId(portId);
+		return a;
 	}
 
 	/**
@@ -330,7 +335,7 @@ public abstract class DevicePort {
 	public void setDuration(long i) {
 		if (i > 0) {
 			expiration = Math.min(expiration, System.currentTimeMillis() + i);
-			logger.trace(getFullAddress() + " set duration " + i + "mS");
+			logger.trace(getAddress() + " set duration " + i + "mS");
 		}
 	}
 
@@ -401,6 +406,10 @@ public abstract class DevicePort {
 
 	public boolean isQueuedForUpdate() {
 		return queuedForUpdate;
+	}
+
+	public void setDevice(Device device) {
+		this.device = device;		
 	}
 
 }

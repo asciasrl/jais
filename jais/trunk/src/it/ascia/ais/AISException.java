@@ -9,6 +9,7 @@ package it.ascia.ais;
  * @author arrigo
  *
  */
+@SuppressWarnings("serial")
 public class AISException extends RuntimeException {
 	/**
 	 * Costruttore.

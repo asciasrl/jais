@@ -19,7 +19,7 @@ if (!AUI.Logger) {
 			this.level = 2;
 			break;		
 		}
-	}
+	};
 	
 	AUI.Logger.debug = function(e) {
 		if (this.level <= 0) {
@@ -27,7 +27,7 @@ if (!AUI.Logger) {
 				console.log(this.getTS() + e);
 			} catch(e) {}
 		}
-	}
+	};
 	
 	AUI.Logger.log = AUI.Logger.debug;
 
@@ -37,7 +37,7 @@ if (!AUI.Logger) {
 				console.info(this.getTS() + e);
 			} catch(e) {}
 		}
-	}
+	};
 
 	AUI.Logger.error = function(e) {
 		if (this.level <= 2) {
@@ -45,12 +45,12 @@ if (!AUI.Logger) {
 				console.error(this.getTS() + e);
 			} catch(e) {}
 		}
-	}
+	};
 	
 	AUI.Logger.getTS = function() {
 		var d = new Date();
 		return d.valueOf() / 1000.0 + " ";
 
-	}
+	};
 	
 }

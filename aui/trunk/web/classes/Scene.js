@@ -2,13 +2,13 @@ if (!AUI.Scene) {
 	
 	AUI.Scene = function(id) {
 		this.id = id;
-	}
+	};
 	
 	AUI.Scene.prototype = new AUI.Device();
 	
 	AUI.Scene.prototype.setPortValue = function(port,newValue) {
 		this.value = newValue;
-	}
+	};
 	
 	AUI.Scene.prototype.onTouchStart = function(event) {
 		if (event.preventDefault) {
@@ -22,6 +22,6 @@ if (!AUI.Scene) {
 			window.event.cancelBubble = true;
 		} 
 		AUI.SetRequest.set(this,"true","default");
-	}
+	};
 	
 }

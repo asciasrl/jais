@@ -59,5 +59,5 @@ if (!AUI.Upload) {
 				i.onComplete(res);
 			}
 		}	 
-	}
+	};
 }

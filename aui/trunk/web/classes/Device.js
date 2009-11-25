@@ -9,14 +9,14 @@ if (!AUI.Device) {
 	
 	AUI.Device.prototype.getControl = function() {
 		return AUI.Controls.getControl(this.id);
-	}
+	};
 	
 	AUI.Device.prototype.getElement = function() {
 		if (this.element == null) {
 			this.element = document.getElementById(this.id); 
 		}
 		return this.element;
-	}
+	};
 	
 	AUI.Device.prototype.getLabel = function() {
 		var label = this.label;
@@ -29,7 +29,7 @@ if (!AUI.Device) {
 			}
 		}
 		return label;
-	}
+	};
 
 	AUI.Device.prototype.getImg = function() {
 		var img = this.img;
@@ -42,7 +42,7 @@ if (!AUI.Device) {
 			}
 		}
 		return img;
-	}
+	};
 	
 	AUI.Device.prototype.setStatus = function(newStatus) {
 		if (newStatus != null && (this.status == null || newStatus != this.status)) {
@@ -57,24 +57,24 @@ if (!AUI.Device) {
 				AUI.Logger.error("Stato non valido per "+this.id+" :"+newStatus);
 			}
 		}
-	}
+	};
 	
 	AUI.Device.prototype.setPortValue = function(port,newValue) {
 		this.value = newValue;
 		this.setStatus(newValue);
-	}
+	};
 	
 	AUI.Device.prototype.setLabelValue = function(text) {
 		var label = this.getLabel();
-	}
+	};
 	
 	AUI.Device.prototype.onTouchStart = function(event) {
 		return;
-	}
+	};
 
 	AUI.Device.prototype.onMouseDown = function(event) {
 		this.onTouchStart(event);
-	}
+	};
 	
 	
 }

@@ -2,7 +2,7 @@ if (!AUI.Blind) {
 	
 	AUI.Blind = function(id) {
 		this.id = id;
-	}
+	};
 	
 	AUI.Blind.prototype = new AUI.Device();
 	
@@ -52,7 +52,7 @@ if (!AUI.Blind) {
 			var control = this.getControl();
 			AUI.SetRequest.set(control.address,command);
 		}		
-	}
+	};
 
 	
 }

@@ -43,7 +43,7 @@ if (!AUI.StreamRequest) {
 		//AUI.Logger.info("Start: done send()");		
 		self.streamStart = 0;
 		self.eventCounter = 0;
-		self.timeoutFunction = function() { return self.onTimer() };
+		self.timeoutFunction = function() { return self.onTimer(); };
 		self.timeoutTimer = setTimeout(self.timeoutFunction,self.sendTimeout);
 		AUI.Logger.info("Aperto stream c="+self.requestCounter);		
 	};
@@ -58,7 +58,7 @@ if (!AUI.StreamRequest) {
 				self.start();
 			}
 		}
-	}
+	};
 
 	AUI.StreamRequest.stop = function() {
 		var self = AUI.StreamRequest;
@@ -71,7 +71,7 @@ if (!AUI.StreamRequest) {
 		if (self.streamReq >= 1) {
 			self.streamReq.abort();
 		}
-	}
+	};
 
 	AUI.StreamRequest.onReadyStateChange = function() {
 		var self = AUI.StreamRequest;
@@ -122,6 +122,6 @@ if (!AUI.StreamRequest) {
 				self.failCounter++;
 			}
 		}
-	}
+	};
 	
 };

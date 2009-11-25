@@ -17,7 +17,7 @@ if (!AUI.Controls) {
 		} else {
 			AUI.Logger.error("Non trovato device: "+id);
 		}
-	}
+	};
 
 	AUI.Controls.onMouseDown = function(id,event) {
 		if (event.preventDefault) {

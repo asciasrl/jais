@@ -2,7 +2,7 @@ if (!AUI.Light) {
 	
 	AUI.Light = function(id) {
 		this.id = id;
-	}
+	};
 	
 	AUI.Light.prototype = new AUI.Device();
 	
@@ -13,7 +13,7 @@ if (!AUI.Light) {
 		} else if (newValue == false || newValue == "false" ||newValue == "off") {
 			this.setStatus("off");
 		}		
-	}
+	};
 	
 	AUI.Light.prototype.onTouchStart = function(event) {
 		if (event.preventDefault) {
@@ -33,7 +33,7 @@ if (!AUI.Light) {
 		} else {
 			newstatus = "on";
 		}
-		AUI.SetRequest.set(this,newstatus)
-	}
+		AUI.SetRequest.set(this,newstatus);
+	};
 	
 }

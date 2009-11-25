@@ -4,7 +4,7 @@ if (!AUI.Blind) {
 		this.id = id;
 		this.expanded = false;
 		this.fadetime = 3000;
-	}
+	};
 	
 	AUI.Blind.prototype = new AUI.Device();
 	
@@ -34,20 +34,20 @@ if (!AUI.Blind) {
 		var self = this;
 		
 		this.openButton = document.getElementById(this.id+'-open');
-		this.touchStartOpen = function(e) { return self.onTouchStartOpen(e) };
+		this.touchStartOpen = function(e) { return self.onTouchStartOpen(e); };
 		//this.openButton.addEventListener('touchstart', this.touchStartOpen, false);
-		this.mouseDownOpen = function(e) { return self.onMouseDownOpen(e) };
+		this.mouseDownOpen = function(e) { return self.onMouseDownOpen(e); };
 		this.openButton.addEventListener('mousedown', this.mouseDownOpen, false);
 		this.openButton.style.display = 'block';
 
 		this.closeButton = document.getElementById(this.id+'-close');
-		this.touchStartClose = function(e) { return self.onTouchStartClose(e) };
+		this.touchStartClose = function(e) { return self.onTouchStartClose(e); };
 		//this.closeButton.addEventListener('touchstart', this.touchStartClose, false);
-		this.mouseDownClose = function(e) { return self.onMouseDownClose(e) };
+		this.mouseDownClose = function(e) { return self.onMouseDownClose(e); };
 		this.closeButton.addEventListener('mousedown', this.mouseDownClose, false);
 		this.closeButton.style.display = 'block';
 		
-		this.timeout = setTimeout(function() { return self.collapse() },this.fadetime);		
+		this.timeout = setTimeout(function() { return self.collapse(); },this.fadetime);		
 	};
 	
 	AUI.Blind.prototype.collapse = function() {
@@ -70,7 +70,7 @@ if (!AUI.Blind) {
 
 	AUI.Blind.prototype.onMouseDownOpen = function() {
 		this.open();
-	}
+	};
 	
 	AUI.Blind.prototype.open = function() {
 		var control = this.getControl();		

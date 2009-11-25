@@ -2,7 +2,7 @@ if (!AUI.Webcam) {
 	
 	AUI.Webcam = function(id) {
 		this.id = id;
-	}
+	};
 	
 	AUI.Webcam.prototype = new AUI.Device();
 	
@@ -24,15 +24,15 @@ if (!AUI.Webcam) {
 		} else {
 			this.setStatus("play");
 			var self = this;
-			this.showVideoFunction = function() { return self.showVideo() };
+			this.showVideoFunction = function() { return self.showVideo(); };
 			setTimeout(self.showVideoFunction,1000);
 			
 		}		
-	}
+	};
 	
 	AUI.Webcam.prototype.showVideo = function() {
 		(this.getImg()).src = (this.getControl()).video;		
-	}
+	};
 	
 	
 }

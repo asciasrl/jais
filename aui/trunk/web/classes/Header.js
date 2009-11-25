@@ -29,7 +29,7 @@ if (!AUI.Header) {
 			}
 			this.timestamp = new Date().getTime();
 			var self = this;
-			this.fadeTimer = setTimeout(function() { return self.fade() },this.fadeInterval);
+			this.fadeTimer = setTimeout(function() { return self.fade(); },this.fadeInterval);
 		},
 
 		fade : function() {
@@ -42,7 +42,7 @@ if (!AUI.Header) {
 				this.out.style.left = AUI.getScrollX() + "px";
 				this.out.style.top = AUI.getScrollY() + "px";
 				var self = this;
-				this.fadeTimer = setTimeout(function() { return self.fade() },this.fadeInterval);
+				this.fadeTimer = setTimeout(function() { return self.fade(); },this.fadeInterval);
 			}
 		}
 	};

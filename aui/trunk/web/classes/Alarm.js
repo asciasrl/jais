@@ -4,7 +4,7 @@ if (!AUI.Alarm) {
 		this.id = id;
 		this.pin = "";
 		this.rpc = null;
-	}
+	};
 	
 	AUI.Alarm.prototype = new AUI.Light();
 
@@ -13,5 +13,5 @@ if (!AUI.Alarm) {
 		event.preventDefault();
 		//event.stop();
 		AUI.Keypad.show();
-	}
+	};
 }

@@ -2,7 +2,7 @@ if (!AUI.Thermo) {
 	
 	AUI.Thermo = function(id) {
 		this.id = id;
-	}
+	};
 	
 	AUI.Thermo.prototype = new AUI.Device();
 	
@@ -17,7 +17,7 @@ if (!AUI.Thermo) {
 			}
 			(this.getLabel()).innerHTML = s + "°C";
 		}
-	}
+	};
 	
 	AUI.Thermo.prototype.onMouseDown = function(event) {
 		if (event.preventDefault) {
@@ -36,6 +36,6 @@ if (!AUI.Thermo) {
 			// non funziona con Safari
 			("eds.regt.jsp?address="+control.address+"&page="+AUI.Pages.getCurrentName()).toUri.go();
 		}
-	}
+	};
 
 }

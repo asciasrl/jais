@@ -8,7 +8,7 @@ if (!AUI) {
     	init : function(page) {
     	 	AUI.Logger.info("init AUI");
     	 	AUI.Layers.init();
-    	 	window.setTimeout(function() { AUI.Pages.init() }, 1000);
+    	 	window.setTimeout(function() { AUI.Pages.init(); }, 1000);
      	},
      	
      	getScrollX : function() {

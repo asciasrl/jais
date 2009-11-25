@@ -266,11 +266,11 @@ if (AUI.Regt == undefined) {
 			AUI.Regt.updateBar(id,value);
 			// registra listener
 			var self = this;
-			this.mouseUpCursor = function(e) { return self.onMouseUpCursor(e) };
+			this.mouseUpCursor = function(e) { return self.onMouseUpCursor(e); };
 			cursor.addEventListener('mouseup', this.mouseUpCursor, false);					
-			this.mouseOutCursor = function(e) { return self.onMouseUpCursor(e) };
+			this.mouseOutCursor = function(e) { return self.onMouseUpCursor(e); };
 			cursor.addEventListener('mouseout', this.mouseOutCursor, false);
-			this.mouseMoveCursor = function(e) { return self.onMouseMoveCursor(e) };
+			this.mouseMoveCursor = function(e) { return self.onMouseMoveCursor(e); };
 			cursor.addEventListener('mousemove', this.mouseMoveCursor, false);					
 		},
 		
@@ -305,7 +305,7 @@ if (AUI.Regt == undefined) {
 					if (this.retryTimer) {
 						clearTimeout(this.retryTimer);
 					}
-					this.retryTimer = setTimeout(function() { return self.onCursorStop() },50);				
+					this.retryTimer = setTimeout(function() { return self.onCursorStop(); },50);				
 				}
 			}
 		},

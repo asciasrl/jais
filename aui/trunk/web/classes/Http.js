@@ -21,5 +21,5 @@ if (!AUI.Http) {
   			}
   		}
   		return null;
-  	}
+  	};
 }

@@ -3,7 +3,7 @@ if (!AUI.Prealarm) {
 	AUI.Prealarm = function(id) {
 		this.id = id;
 		this.rpc = new JSONRpcClient("/aui/rpc"); 
-	}
+	};
 	
 	AUI.Prealarm.prototype = new AUI.Device();
 
@@ -15,5 +15,5 @@ if (!AUI.Prealarm) {
 				AUI.Keypad.show();
 			}
 		}
-	}	
+	};	
 }

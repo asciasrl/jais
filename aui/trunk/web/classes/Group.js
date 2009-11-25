@@ -2,7 +2,7 @@ if (!AUI.Group) {
 	
 	AUI.Group = function(id) {
 		this.id = id;
-	}
+	};
 	
 	AUI.Group.prototype = new AUI.Scene();
 
@@ -21,6 +21,6 @@ if (!AUI.Group) {
 		var address = control.address;
 		var value = control.value;
 		AUI.SetRequest.send(address,value);
-	}
+	};
 
 }

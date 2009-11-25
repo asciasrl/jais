@@ -145,7 +145,7 @@ if (!AUI.Config) {
 				if (res) {
 					this.loginHide();
 				} else {
-					err.innerHTML = "Nome utente o password non corretti"
+					err.innerHTML = "Nome utente o password non corretti";
 				}
 			} catch(e) {
 				if (typeof(console) != 'undefined') console.error(e);
@@ -355,7 +355,7 @@ if (!AUI.Config) {
 				this.deactivatePage(this.currentPageIndex);
 			}
 			// TODO usare metodo specifico di mootools
-			var item = document.getElementById("page-"+i);
+			var item = $("page-"+i);
 			item.addClass("pageItemSelected");
 			var pos = item.getPosition(this.pagesElement);
 			this.pagesElement.scrollTo(0,this.pagesElement.getScroll().y + pos.y - 20);
@@ -367,7 +367,7 @@ if (!AUI.Config) {
 		loadPage : function(i) {	
 			try {
 				var pageId = this.pages[i].id;
-				var pageControls = this.jsonrpc.AUI.getPageControls(pageId)
+				var pageControls = this.jsonrpc.AUI.getPageControls(pageId);
 				this.pages[i].controls = new Hash(pageControls.map);
 				this.pages[i].areas = this.jsonrpc.AUI.getPageAreas(pageId);
 			} catch(e) {
@@ -681,7 +681,7 @@ if (!AUI.Config) {
 			if (this.layers.contains(layerName)) {
 				this.layers.erase(layerName);				
 			} else {
-				this.layers.include(layerName)
+				this.layers.include(layerName);
 			}
 			this.refreshPage();
 		},
@@ -775,6 +775,10 @@ if (!AUI.Config) {
 		cmdChangeControlIcon : function() {
 			alert("Non implementato");
 		},
+		
+		cmdChangeControlAddress : function() {
+			alert("Non implementato");
+		},		
 		
 		cmdRenameControl : function() {
 			alert("Non implementato");

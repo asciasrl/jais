@@ -28,7 +28,7 @@ if (!AUI.Pages) {
 			throw("Pagina '"+toPageId+"' non trovata");
 		}
 		if (this.currentPage != null) {
-			this.currentPage.style.display = 'none'
+			this.currentPage.style.display = 'none';
 		}
 		newPage.style.display = 'block';
 		window.scroll(0,0);
@@ -165,7 +165,7 @@ if (!AUI.Pages) {
 		var pageId = this.getCurrentPageId();
 		var layers = this.pageLayers[pageId];
 		return layers[layer];
-	}
+	};
 	
 	AUI.Pages.showLayer = function(layer) {
 		var pageId = this.getCurrentPageId();
@@ -181,11 +181,11 @@ if (!AUI.Pages) {
 			}
 		}
 		this.currentLayer = layer;
-	}
+	};
 
 	AUI.Pages.hideLayer = function(layer) {
 		this.setLayerVisibility(layer,false);		
-	}
+	};
 
 	AUI.Pages.setLayerVisibility = function(layer,status) {
 		var controls = this.getLayerControls(layer);
@@ -211,6 +211,6 @@ if (!AUI.Pages) {
 				}
 			}
 		}
-	}
+	};
 
 };

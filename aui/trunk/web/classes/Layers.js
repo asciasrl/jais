@@ -30,8 +30,8 @@ if (!AUI.Layers) {
 			
 			// FIXME su iPod non funziona se usato come webapp dalla home
 			var self = this;
-			this.scrollFunction = function(e) { return self.onScroll(e) };
-			this.resizeFunction = function(e) { return self.onScroll(e) };
+			this.scrollFunction = function(e) { return self.onScroll(e); };
+			this.resizeFunction = function(e) { return self.onScroll(e); };
 			if (window.addEventListener) {
 				window.addEventListener('scroll', this.scrollFunction, false);
 				window.addEventListener('resize', this.resizeFunction, false);
@@ -204,7 +204,7 @@ if (!AUI.Layers) {
 			this.update();
 			if (Math.abs(this.speed) > 0) {
 				var self = this;
-				this.timer = setTimeout(function() { return self.onTimer() },this.updateInterval);
+				this.timer = setTimeout(function() { return self.onTimer(); },this.updateInterval);
 				//AUI.Logger.debug("elapsed="+((new Date().getTime()) - t));
 			} else {
 				this.layer = this.layers[Math.round(this.position)].layer;

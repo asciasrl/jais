@@ -2,7 +2,7 @@ if (!AUI.Pushbutton) {
 	
 	AUI.Pushbutton = function(id) {
 		this.id = id;
-	}
+	};
 	
 	AUI.Pushbutton.prototype = new AUI.Device();
 	
@@ -13,32 +13,32 @@ if (!AUI.Pushbutton) {
 		} else if (newValue == false || newValue == "false" ||newValue == "off") {
 			this.setStatus("off");
 		}		
-	}
+	};
 	
 	AUI.Pushbutton.prototype.onTouchStart = function(event) {
 		event.preventDefault();
 		event.stopPropagation();
 		var self = this;
-		this.touchEnd = function(e) { return self.onTouchEnd(e) };
+		this.touchEnd = function(e) { return self.onTouchEnd(e); };
 		this.element.addEventListener('touchend', this.touchEnd, false);
 		this.onStart();
 		return false;
-	}
+	};
 
 	AUI.Pushbutton.prototype.onMouseDown = function(event) {
 		event.preventDefault();
 		event.stopPropagation();
 		var self = this;
-		this.mouseUp = function(e) { return self.onMouseUp(e) }
+		this.mouseUp = function(e) { return self.onMouseUp(e); };
 		this.element.addEventListener('mouseup', this.mouseUp, false);					
 		this.onStart();
 		return false;
-	}
+	};
 
 	AUI.Pushbutton.prototype.onStart = function() {		
 		var control = this.getControl();
 		AUI.SetRequest.set(this,"on");
-	}
+	};
 
 	AUI.Pushbutton.prototype.onTouchEnd = function(event) {
 		event.preventDefault();
@@ -46,7 +46,7 @@ if (!AUI.Pushbutton) {
 	    this.element.removeEventListener('touchend', this.touchEnd, false);			
 		this.onStop();
 		return false;
-	}
+	};
 
 	AUI.Pushbutton.prototype.onMouseUp = function(event) {
 		event.preventDefault();
@@ -54,7 +54,7 @@ if (!AUI.Pushbutton) {
 		this.element.removeEventListener('mouseup', this.mouseUp, false);
 		this.onStop();
 		return false;
-	}
+	};
 
 	AUI.Pushbutton.prototype.onStop = function() {		
 		var control = this.getControl();
@@ -63,9 +63,9 @@ if (!AUI.Pushbutton) {
 			if (this.retryTimer) {
 				clearTimeout(this.retryTimer);
 			}
-			this.retryTimer = setTimeout(function() { return self.onStop() },100);
+			this.retryTimer = setTimeout(function() { return self.onStop(); },100);
 			AUI.Logger.debug("Will retry Pushbutton.onStop()");
 		}
-	}
+	};
 
 }

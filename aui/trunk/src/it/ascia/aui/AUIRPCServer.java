@@ -121,15 +121,7 @@ public class AUIRPCServer implements Serializable {
 	}
 
 	public void save(HttpSession session) throws ConfigurationException, FileNotFoundException {
-		SubnodeConfiguration auiConfig = (SubnodeConfiguration) session.getAttribute("AUI.config");
-		if (auiConfig == null) {
-			logger.debug("No configuration to save");
-			return;
-		}
-		AUIControllerModule aui = (AUIControllerModule) controller.getModule("AUI");
-		aui.setConfiguration(auiConfig);
-		aui.saveConfiguration();
-		logger.info("Saved configuration to: "+aui.getConfigurationFilename());
+		saveAs(session,aui.getConfigurationFilename(),true);
 	}
 
 	public void saveAs(HttpSession session, String filename, boolean overwrite) throws ConfigurationException, FileNotFoundException {
@@ -139,7 +131,27 @@ public class AUIRPCServer implements Serializable {
 			return;
 		}
 		AUIControllerModule aui = (AUIControllerModule) controller.getModule("AUI");
-		aui.saveConfigurationAs(auiConfig,filename, overwrite);	
+		if (!overwrite) {
+			File f = new File(filename);
+			if (f.exists()) {
+				throw(new FileNotFoundException("File already exists: "+filename));
+			}
+		}
+		XMLConfiguration xmlConfiguration = new XMLConfiguration();
+		xmlConfiguration.setExpressionEngine(new XPathExpressionEngine());
+		xmlConfiguration.setRootElementName("jais:configuration");
+		xmlConfiguration.addProperty("/ @version", Controller.CONFIGURATION_VERSION);
+		Collection<ConfigurationNode> c = new Vector<ConfigurationNode>();
+		c.add(auiConfig.getRootNode());
+		xmlConfiguration.addNodes(null, c);
+		xmlConfiguration.setFileName(filename);
+		try {
+			logger.info("Saving configuration to '"+filename+"'");
+			xmlConfiguration.save();
+		} catch (ConfigurationException e) {
+			logger.error("Unable to save configuration to '"+filename+"': ",e);
+			throw (new AISException("Unable to save configuration to '"+filename+"'"));
+		}
 		logger.info("Saved config to: "+filename);
 	}
 	

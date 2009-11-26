@@ -85,66 +85,6 @@ public abstract class ControllerModule {
 	}
 	
 	/**
-	 * Save module configuration to another file 
-	 * @param filename
-	 * @param overwrite
-	 * @return True on success
-	 * @throws FileNotFoundException
-	 */
-	public boolean saveConfigurationAs(String filename, boolean overwrite) throws FileNotFoundException {
-		return saveConfigurationAs(configuration, filename, overwrite);
-	}
-
-	/**
-	 * save given configuration into a specific file
-	 * @param configuration Configuration to save
-	 * @param filename Where to save configuration
-	 * @param overwrite Overwrite existing file
-	 * @return True on success
-	 * @throws FileNotFoundException If file exists and overwrite == false
-	 */
-	public boolean saveConfigurationAs(HierarchicalConfiguration configuration, String filename, boolean overwrite) throws FileNotFoundException {
-		if (!overwrite) {
-			File f = new File(filename);
-			if (f.exists()) {
-				throw(new FileNotFoundException("File already exists: "+filename));
-			}
-		}
-		XMLConfiguration xmlConfiguration = new XMLConfiguration();
-		xmlConfiguration.setExpressionEngine(new XPathExpressionEngine());
-		xmlConfiguration.setRootElementName("jais:configuration");
-		xmlConfiguration.addProperty("/ @version", Controller.CONFIGURATION_VERSION);
-		Collection<ConfigurationNode> c = new Vector<ConfigurationNode>();
-		c.add(configuration.getRootNode());
-		xmlConfiguration.addNodes(null, c);
-		xmlConfiguration.setFileName(filename);
-		try {
-			xmlConfiguration.save();
-		} catch (ConfigurationException e) {
-			logger.error("Unable to save configuration to '"+filename+"': ",e);
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * Save current configuration to module configuration file 
-	 * @return True on success, false if module don't have a configuration file
-	 */
-	public boolean saveConfiguration() {
-		if (this.configurationFilename != null) {
-			try {
-				return saveConfigurationAs(configurationFilename, true);
-			} catch (FileNotFoundException e) {
-				logger.error("Unexpected exception: ",e);
-			}
-		} else {
-			logger.error("Module don't have a configuration file.");
-		}
-		return false;
-	}
-
-	/**
 	 * @param name the name to set
 	 */
 	public void setName(String name) {

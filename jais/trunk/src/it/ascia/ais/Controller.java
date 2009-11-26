@@ -98,6 +98,7 @@ public class Controller {
 	 * @param name Nome del comando, deve essere unico
 	 * @param commandInterface
 	 * @throws KeyAlreadyExistsException
+	 * @deprecated Use commands inside module
 	 */
 	public void registerCommand(String name, CommandInterface commandInterface) throws KeyAlreadyExistsException {
 		if (commands.containsKey(name)) {
@@ -114,6 +115,7 @@ public class Controller {
 	 * @param params Paramtri per il comando
 	 * @return Risultato della esecuzione del comando, viene inviata come testo al richiedente
 	 * @throws AISException Comando non registrato
+	 * @deprecated Use commands inside module
 	 */
 	public String doCommand(String name, HashMap params) throws AISException {
 		CommandInterface commandInterface = (CommandInterface) commands.get(name);
@@ -139,6 +141,7 @@ public class Controller {
 	 * @param className Classe che implementa il modulo
 	 * @param configName 
 	 * @throws AISException 
+	 * @deprecated Use module factory
 	 */
 	private void loadModule(String name, String className, String configName) throws AISException {
 		if (modules.containsKey(name)) {
@@ -159,6 +162,7 @@ public class Controller {
 				module.setConfiguration(moduleConfig);
 				logger.info("Caricata configurazione modulo '"+name+"' da "+configName);		
 		    }
+		    // FIXME Use registerModule()
 			modules.put(name,module);
 			logger.info("Caricato modulo '"+name+"'");
 		} catch (ClassNotFoundException e) {
@@ -398,6 +402,7 @@ public class Controller {
 	 * @param message Codice del messaggio
 	 * @param value Valore da inviare con il messaggio
 	 * @return true se l'invio non ha avuto errori
+	 * @deprecated Use commands inside module
 	 */
 	public boolean sendMessage(String message, Object value) {
 		logger.info("sendMessage:"+message+" Value:"+value);

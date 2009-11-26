@@ -64,10 +64,20 @@ public abstract class Message implements Comparable {
 		return s.reverse().toString();
 	}
 	
+	/**
+	 * 
+	 * @return
+	 * @deprecated Never used
+	 */
 	public int getPriority() {
 		return priority;
 	}
 
+	/**
+	 * 
+	 * @param priority
+	 * @deprecated Never used
+	 */
 	public void setPriority(int priority) {
 		this.priority = priority;
 	}

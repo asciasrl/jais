@@ -138,13 +138,9 @@ public class DXPConnector extends Connector {
 			logger.error("Modello sconosciuto: "+model);
 		}
 		if (d != null) {
+			super.addDevice(d);
 			logger.info("Aggiunto modulo "+model+" "+d.getFullAddress());
 		}
-	}
-
-	public boolean sendMessage(String messageCode, Object value) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 }

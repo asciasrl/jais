@@ -394,27 +394,5 @@ public class Controller {
 		}
 	}
 
-	/**
-	 * Invia un messaggio al sistema nel suo complesso
-	 * Il codice del messaggio deve essere composto come un indirizzo di dispositivo, 
-	 * cioe' e' composto da una prima parte che specifica il connettore da usare, 
-	 * la seconda parte e' interpretata dal connettore. 
-	 * @param message Codice del messaggio
-	 * @param value Valore da inviare con il messaggio
-	 * @return true se l'invio non ha avuto errori
-	 * @deprecated Use commands inside module
-	 */
-	public boolean sendMessage(String message, Object value) {
-		logger.info("sendMessage:"+message+" Value:"+value);
-		for (Iterator it = connectors.keySet().iterator(); it.hasNext(); ) {
-			String connectorName = (String)it.next();
-			if (message.indexOf(connectorName + ".") == 0) {
-				Connector connector = (Connector)connectors.get(connectorName);
-				return connector.sendMessage(message.substring(connectorName.length() + 1), value);
-			}
-		}
-		throw new AISException("Gateway path unaivalable: " + message );
-	}
-	
 }
 

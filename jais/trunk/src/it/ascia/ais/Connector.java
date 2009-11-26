@@ -161,16 +161,6 @@ public abstract class Connector {
     public abstract boolean sendMessage(Message m);
     
     /**
-     * Invia un messaggio e attende una risposta dal destinatario, se il
-     * messaggio lo richiede.
-     * 
-     * @return true se il messaggio di risposta e' arrivato, o se l'invio e'
-     * andato a buon fine.
-     * @throws AISException 
-     */
-    public abstract boolean sendMessage(String messageCode, Object value);
-
-    /**
      * Aggiunge un porta alla coda delle porte da aggiornare
      * @param m
      */

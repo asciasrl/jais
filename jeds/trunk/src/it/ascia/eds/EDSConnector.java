@@ -97,7 +97,10 @@ public class EDSConnector extends Connector {
     public EDSConnector(String name, ControllerModule module, int myAddress) {
     	super(name,module);
 		this.myAddress = myAddress; 		
-		mp = new EDSMessageParser();		
+		mp = new EDSMessageParser();
+		for (int i = 1; i <= 31; i++) {
+			addDevice(new EDSGroup("Group"+i));
+		}
     }
 
     /**
@@ -118,7 +121,7 @@ public class EDSConnector extends Connector {
 		mp.push(b);
 		setGuardtime(messageTransmitTime());
 		if (mp.isValid()) {
-			EDSMessage m = (EDSMessage) mp.getMessage();
+			Message m = mp.getMessage();
 			if (m != null) {
 				//receiveQueue.offer(m);
 		    	logger.debug("Dispatching: " + m);
@@ -438,6 +441,11 @@ public class EDSConnector extends Connector {
     	sendMessage(new RichiestaModelloMessage(address,getMyAddress()));
     }
 
+    /**
+     * Load configuration from EDSConfig
+     * @param EDSConfigFileName
+     * @return
+     */
 	public boolean loadConfig(String EDSConfigFileName) {
 		XMLConfiguration EDSConfig;
 		try {
@@ -499,6 +507,7 @@ public class EDSConnector extends Connector {
 				    }
 				    iOutput++;
 				}
+				addDevice(bmc);
 				// TODO verificare che non si abbiano duplicazioni sulle associazioni uscite
 				bmc.discover();
 		    }
@@ -506,38 +515,6 @@ public class EDSConnector extends Connector {
 		return true;
 	}
 
-	public boolean sendMessage(String messageCode, Object value) {
-		if (messageCode.startsWith("Group")) {
-			try {
-				// Per EDS il value non conta
-				int colon = messageCode.indexOf(":");
-				if (colon <= 5) {
-					throw(new IllegalArgumentException("Invalid messsage code: "+messageCode));
-				}
-				int group = Integer.parseInt(messageCode.substring(5,colon));
-				if (group < 0 && group > 31) {
-					throw(new IllegalArgumentException("Invalid group: "+messageCode));
-				}
-				String mode = messageCode.substring(colon+1);				
-				boolean v;
-				if (mode.startsWith("A")) {
-					v = true;
-				} else if (mode.startsWith("D")) {
-					v = false;
-				} else {
-					throw new IllegalArgumentException("Invalid mode: "+messageCode);					
-				}				
-				sendMessage(new ComandoBroadcastMessage(group,v));
-				return true;
-			} catch (NumberFormatException e) {
-				logger.error("Numero gruppo scorretto",e);
-			}
-		} else {
-			logger.error("Invalid message code:"+messageCode);
-		}
-		return false;
-	}
-	
 	public BMC addBmc(String modelName, String address) throws AISException {
 		int model;
 		if (modelName.startsWith("REG-T-22")) {

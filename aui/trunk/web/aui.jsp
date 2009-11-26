@@ -31,7 +31,7 @@ AUIControllerModule auiControllerModule = (AUIControllerModule) c.getModule("AUI
 if (auiControllerModule == null) {
 	logger.fatal("Modulo AUI non caricato");
 }
-SubnodeConfiguration auiConfig = auiControllerModule.getConfiguration();
+HierarchicalConfiguration auiConfig = auiControllerModule.getConfiguration();
 String skin = auiConfig.getString("skin","");
 %>
 <?xml version="1.0" encoding="iso-8859-1"?>

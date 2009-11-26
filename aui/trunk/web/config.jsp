@@ -78,9 +78,9 @@ var myMenu =
 	],
 	[null, 'Modifica', null, null, null,
 		['<img src="'+themeImages+'new.gif" />','Nuova pagina...', 'javascript: AUI.Config.cmdNewPage();', null, null],
+		[null,'Rinomina pagina...', 'javascript: AUI.Config.cmdRenamePage();', null, null],
 		[null,'Carica nuovo sfondo...', 'javascript: AUI.Config.cmdUploadBackground();', null, null],
 		[null,'Cambia sfondo...', 'javascript: AUI.Config.cmdChangeBackground();', null, null],
-		[null,'Rinomina pagina...', 'javascript: AUI.Config.cmdRenamePage();', null, null],
 		[null,'Elimina pagina', 'javascript: AUI.Config.cmdDeletePage();', null, null],
 		_cmSplit,
 		['<img src="'+themeImages+'new.gif" />','Nuovo controllo', null, null, null,
@@ -88,11 +88,14 @@ var myMenu =
 			[null,'Scenario...','javascript: AUI.Config.cmdNewControl("Scene");',null,null],
 			[null,'Luce...','javascript: AUI.Config.cmdNewControl("Light");',null,null],
 			[null,'Dimmer...','javascript: AUI.Config.cmdNewControl("Dimmer");',null,null],
+			[null,'Tapparella...','javascript: AUI.Config.cmdNewControl("Blind");',null,null],
 			[null,'Telecamera...','javascript: AUI.Config.cmdNewControl("Camera");',null,null],
 			[null,'Speaker...','javascript: AUI.Config.cmdNewControl("Speaker");',null,null],
 			[null,'Termostato...','javascript: AUI.Config.cmdNewControl("Temperature");',null,null],
 			[null,'Presa...','javascript: AUI.Config.cmdNewControl("Power");',null,null]
 		],
+		[null,'Rinomina controllo...', 'javascript: AUI.Config.cmdRenameControl();', null, null],
+		[null,'Cambia indirizzo...', 'javascript: AUI.Config.cmdChangeControlAddress();', null, null],
 		[null,'Cambia layer...', null, null, null,
 			[null,'Ogni layer','javascript: AUI.Config.cmdChangeControlLayer(null);',null,null],
 			_cmSplit,
@@ -107,7 +110,6 @@ var myMenu =
 		],
 		[null,'Cambia tipo...', 'javascript: AUI.Config.cmdChangeControlType();', null, null],
 		[null,'Cambia icona...', 'javascript: AUI.Config.cmdChangeControlIcon();', null, null],
-		[null,'Rinomina controllo...', 'javascript: AUI.Config.cmdRenameControl();', null, null],
 		[null,'Elimina controllo', 'javascript: AUI.Config.cmdDeleteControl();', null, null]
 	], 
 	[null,'Visualizza', null, null, null,
@@ -142,7 +144,8 @@ var myMenu =
    
 ];
 cmDraw ('mainmenu', myMenu, 'hbr', cmThemeOffice2003);
---></script>
+-->
+</script>
 
 <div id="login" class="popup">
 	<form action="http://null/" onsubmit="return false;">

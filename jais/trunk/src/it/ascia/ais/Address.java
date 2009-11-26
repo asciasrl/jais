@@ -54,9 +54,9 @@ public class Address implements Comparable<Object> {
 			if (connector.contains(":")) {
 				throw(new IllegalArgumentException("Connector name can't contians colons (:)"));
 			}
-		}
-		if (connector.equals("*")) {
-			connector = null;
+			if (connector.equals("*")) {
+				connector = null;
+			}
 		}
 		this.connector = connector;
 	}
@@ -74,9 +74,9 @@ public class Address implements Comparable<Object> {
 			if (device.contains(":")) {
 				throw(new IllegalArgumentException("Device name can't contians colons (:)"));
 			}
-		}
-		if (device.equals("*")) {
-			device = null;
+			if (device.equals("*")) {
+				device = null;
+			}
 		}
 		this.device = device;		
 	}
@@ -90,7 +90,7 @@ public class Address implements Comparable<Object> {
 		if (this.port != null) {
 			throw(new IllegalArgumentException("Port already set"));
 		}
-		if (port.equals("*")) {
+		if (port != null && port.equals("*")) {
 			port = null;
 		}
 		this.port = port;		

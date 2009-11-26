@@ -67,16 +67,6 @@ public abstract class BMC extends Device {
 	protected Set broadcastBindingsByPort[];
 
 	/**
-	 * Questo BMC e' fisicamente presente sul transport?
-	 * 
-	 * <p>
-	 * Se questo attributo e' false, allora bisogna simulare l'esistenza di
-	 * questo BMC.
-	 * </p>
-	 */
-	protected boolean isReal = true;
-
-	/**
 	 * Il nostro logger.
 	 */
 	protected Logger logger;

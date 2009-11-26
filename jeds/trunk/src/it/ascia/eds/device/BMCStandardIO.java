@@ -78,16 +78,9 @@ public class BMCStandardIO extends BMC {
 			String portId = getOutputPortId(cmd.getOutputPortNumber());
 			Boolean newValue = new Boolean(cmd.isActivation());
 			// TODO gestire configurazione delle uscite tapparelle, con timer, ecc.
-			if (isReal) {
-				// L'attuazione viene richiesta, non sappiamo se sara'
-				// effettuata. Quindi non aggiorniamo il timestamp.
-				invalidate(portId);
-			} else {
-				// Siamo noi che decidiamo: avvisiamo il listener e mandiamo
-				// l'ack
-				setPortValue(portId, newValue);
-				getConnector().sendMessage(new AcknowledgeMessage(cmd));
-			}
+			// L'attuazione viene richiesta, non sappiamo se sara'
+			// effettuata. Quindi non aggiorniamo il timestamp.
+			invalidate(portId);
 			break;
 		case EDSMessage.MSG_COMANDO_BROADCAST:
 			// Messaggio broadcast: potrebbe interessare alcune porte.
@@ -95,13 +88,7 @@ public class BMCStandardIO extends BMC {
 			int ports[] = getBoundOutputs(bmsg.getCommandNumber());
 			if (ports.length > 0) {
 				for (int i = 0; i < ports.length; i++) {
-					if (isReal) {
-						// Non sappiamo bene che succede
-						invalidate(getOutputPortId(ports[i]));
-					} else {
-						// Decidiamo noi che cosa succede
-						setPortValue(getOutputPortId(i), new Boolean(bmsg.isActivation()));
-					}
+					invalidate(getOutputPortId(ports[i]));
 				} // cicla sulle porte interessate
 			} // if ports.length > 0
 			break;
@@ -109,61 +96,9 @@ public class BMCStandardIO extends BMC {
 			// Qualcuno ha premuto un interruttore, e la cosa ci interessa.
 			VariazioneIngressoMessage vmsg = (VariazioneIngressoMessage) m;
 			int port = vmsg.getOutputNumber();
-			if (isReal) {
-				// Non sappiamo che succede. Ipotizziamo un toggle e non 
-				// aggiorniamo il timestamp.
-				invalidate(getOutputPortId(vmsg.getOutputNumber()));
-			} else {
-				// Decidiamo noi cosa succede
-				setPortValue(getOutputPortId(port), new Boolean(vmsg.isActivation()));
-			}
-			break;
-		case EDSMessage.MSG_RICHIESTA_MODELLO:
-			// Ci chiedono chi siamo...
-			if (!isReal) {
-				// ...dobbiamo rispondere!
-				RispostaModelloMessage answer;
-				answer = new RispostaModelloMessage(m.getSender(),
-						getIntAddress(), model, 1);
-				getConnector().sendMessage(answer);
-			}
-			break;
-		case EDSMessage.MSG_RICHIESTA_ASSOCIAZIONE_BROADCAST:
-			// Ci chiedono se abbiamo uscite associate a comandi broadcast...
-			if (!isReal) {
-				// ...dobbiamo rispondere!
-				RichiestaAssociazioneUscitaMessage question;
-				RispostaAssociazioneUscitaMessage answer;
-				int messages[], message, casella;
-				question = (RichiestaAssociazioneUscitaMessage) m;
-				messages = getBoundMessages(question.getUscita());
-				// Usiamo la casella come indice dell'array
-				casella = question.getCasella();
-				if (casella < messages.length) {
-					message = messages[casella];
-				} else { // Diciamo che non c'e' binding
-					message = 0;
-				}
-				// FIXME: diciamo sempre che sono attivazioni.
-				answer = new RispostaAssociazioneUscitaMessage(question, 0,
-						true, message);
-				getConnector().sendMessage(answer);
-			}
-			break;
-		case EDSMessage.MSG_RICHIESTA_STATO:
-			// Ci chiedono il nostro stato...
-			if (!isReal) {
-				// ...dobbiamo rispondere!
-				RichiestaStatoMessage question = (RichiestaStatoMessage) m;
-				// rispondiamo sempre tutti OFF
-				RispostaStatoMessage answer = new RispostaStatoMessage(question, new boolean[getDigitalOutputPortsNumber()], new boolean[getDigitalInputPortsNumber()]);
-				getConnector().sendMessage(answer);
-			}
-			break;
-		case EDSMessage.MSG_RICHIESTA_USCITA:
-			if (!isReal) {
-				logger.error("Gestione "+m.getMessageDescription() + " non implementata.");
-			}
+			// Non sappiamo che succede. Ipotizziamo un toggle e non 
+			// aggiorniamo il timestamp.
+			invalidate(getOutputPortId(vmsg.getOutputNumber()));
 			break;
 		default:
 			super.messageReceived(m);			
@@ -176,10 +111,7 @@ public class BMCStandardIO extends BMC {
 	 * @throws AISException 
 	 */
 	public void messageSent(EDSMessage m) throws AISException {
-		// Il messaggio inviato ci interessa solo se non siamo stati noi a
-		// generarlo, cioe' se il BMC e' reale.
-		if (isReal) {
-			switch (m.getMessageType()) {
+		switch (m.getMessageType()) {
 			case EDSMessage.MSG_RISPOSTA_STATO:
 				updating = true;
 				RispostaStatoMessage r;
@@ -256,8 +188,7 @@ public class BMCStandardIO extends BMC {
 				break;
 			default:
 				super.messageSent(m);
-			}
-		} // if isReal
+		}
 	}
 
 	
@@ -407,20 +338,6 @@ public class BMCStandardIO extends BMC {
 	}
 
 
-	/**
-	 * Cambia la modalita' di funzionamento del BMC in "simulazione".
-	 * 
-	 * <p>
-	 * Dopo la chiamata di questo metodo, il BMC si comportera' come un BMC
-	 * simulato, cioe' rispondera' "di propria iniziativa" ai messaggi che
-	 * riceve.
-	 * </p>
-	 * 
-	 */
-	public void makeSimulated() {
-		isReal = false;
-	}
-
 	public long updatePort(String portId) throws AISException {
 		if (portId.startsWith("Blind")) {
 			getPortValue(portId);
@@ -436,27 +353,18 @@ public class BMCStandardIO extends BMC {
 	 */
 	public boolean sendPortValue(String portId, Object newValue) throws AISException {
 		DevicePort p = getPort(portId);
-		if (isReal) {
-			int intValue = 0;
-			if (Boolean.class.isInstance(newValue)) {
-				intValue = ((Boolean)newValue).booleanValue() ? 1 : 0;
-			} else {
-				throw new AISException(getFullAddress() + " tipo valore non valido: " + newValue.getClass().getCanonicalName());
-			}
-			int portNumber = getOutputNumberFromPortId(portId);
-			if (portNumber == -1) {
-				throw new AISException("Porta non valida: " + portId);
-			}
-			ComandoUscitaMessage m = new ComandoUscitaMessage(getIntAddress(), getBMCComputerAddress(), 0, portNumber, 0, intValue);
-			if (getConnector().sendMessage(m)) {
-				p.invalidate(); // FIXME non necessario, lo fa gia' DevicePort.writeValue()
-				return true;
-			}
+		int intValue = 0;
+		if (Boolean.class.isInstance(newValue)) {
+			intValue = ((Boolean)newValue).booleanValue() ? 1 : 0;
 		} else {
-			p.setValue(newValue);
-			return true;
+			throw new AISException(getFullAddress() + " tipo valore non valido: " + newValue.getClass().getCanonicalName());
 		}
-		return false;
+		int portNumber = getOutputNumberFromPortId(portId);
+		if (portNumber == -1) {
+			throw new AISException("Porta non valida: " + portId);
+		}
+		ComandoUscitaMessage m = new ComandoUscitaMessage(getIntAddress(), getBMCComputerAddress(), 0, portNumber, 0, intValue);
+		return getConnector().sendMessage(m);
 	}
 
 }

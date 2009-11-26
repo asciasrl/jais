@@ -33,9 +33,7 @@ public class AlarmControllerModule extends ControllerModule implements PropertyC
 
 	private Thread alarmThread;
 	
-	public void start() {
-		super.start();
-		
+	public void start() {		
 		alarmArmedPortId = getConfiguration().getString("alarmArmedPortId",null);
 		alarmArmedPort = controller.getDevicePort(new Address(alarmArmedPortId));
 		alarmArmedPort.addPropertyChangeListener(this);
@@ -57,6 +55,7 @@ public class AlarmControllerModule extends ControllerModule implements PropertyC
 		alarmDuration *= 1000;
 
 		JSONRPCBridge.getGlobalBridge().registerObject("Alarm", new AlarmRPCServer(this));
+		super.start();
 	}
 	
 	/**

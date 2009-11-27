@@ -84,7 +84,7 @@ if (!AUI.Config) {
 		load : function() {
 			this.clear();
 			
-			this.skin = this.jsonrpc.AUI.getSkin();
+			this.skin = this.jsonrpc.AUIConfig.getSkin();
 			this.skinImages =  this.skin + 'images/';
 			
 			this.loadPages();
@@ -162,6 +162,7 @@ if (!AUI.Config) {
 			try {
 				if (this.jsonrpc.AUI.login(username,password)) {
 					this.statusMessage("Login effettuato da: "+username);
+					this.jsonrpc = new JSONRpcClient("/aui/rpc");
 					this.load();
 					return true;
 				} else {
@@ -208,7 +209,7 @@ if (!AUI.Config) {
 			var popup = document.getElementById("changeBackground"); 
 			popup.style.visibility = 'visible';
 			
-			var images = this.jsonrpc.AUI.getImagesList().list;
+			var images = this.jsonrpc.AUIConfig.getImagesList().list;
 			var div = popup.getElement('div');
 			div.empty();
 			if (typeof(console) != 'undefined') console.log("Immagini:"+images);
@@ -242,7 +243,7 @@ if (!AUI.Config) {
 			var i = this.currentPageIndex;
 			var p = this.pages[this.currentPageIndex];
 			try {
-				this.jsonrpc.AUI.setPageSrc(p.id,src);
+				this.jsonrpc.AUIConfig.setPageSrc(p.id,src);
 				p.src = src;
 				this.refreshPages();
 				this.refreshPage();
@@ -316,7 +317,7 @@ if (!AUI.Config) {
 			var title = form.title.value;
 			try {
 				var p = this.pages[this.currentPageIndex];
-				var res = this.jsonrpc.AUI.setPageTitle(p.id,title);
+				var res = this.jsonrpc.AUIConfig.setPageTitle(p.id,title);
 				this.pages[this.currentPageIndex].title = title;
 				this.hideMask();
 				this.refreshPages();
@@ -367,9 +368,9 @@ if (!AUI.Config) {
 		loadPage : function(i) {	
 			try {
 				var pageId = this.pages[i].id;
-				var pageControls = this.jsonrpc.AUI.getPageControls(pageId);
+				var pageControls = this.jsonrpc.AUIConfig.getPageControls(pageId);
 				this.pages[i].controls = new Hash(pageControls.map);
-				this.pages[i].areas = this.jsonrpc.AUI.getPageAreas(pageId);
+				this.pages[i].areas = this.jsonrpc.AUIConfig.getPageAreas(pageId);
 			} catch(e) {
 				alert(e.msg || e);
 			}
@@ -468,7 +469,7 @@ if (!AUI.Config) {
 		
 		setControlLayer : function(id,layerName) {
 			try {
-				this.jsonrpc.AUI.setPageControl(id,{"javaClass":"java.util.Map","map":{"layer": layerName}});
+				this.jsonrpc.AUIConfig.setPageControls(id,{"javaClass":"java.util.Map","map":{"layer": layerName}});
 				this.reloadPage();
 			} catch(e) {
 				alert(e.msg || e);
@@ -496,7 +497,7 @@ if (!AUI.Config) {
 			if (typeof(console) != 'undefined') console.log(id+" left="+left+" top="+top);			
 			var control = this.pages[this.currentPageIndex].controls.get(id);
 			try {
-				this.jsonrpc.AUI.setPageControl(id,{"javaClass":"java.util.Map","map":{"top": top, "left": left}});
+				this.jsonrpc.AUIConfig.setPageControls(id,{"javaClass":"java.util.Map","map":{"top": top, "left": left}});
 			} catch(e) {
 				alert(e.msg || e);
 			}
@@ -536,11 +537,11 @@ if (!AUI.Config) {
 		
 		newPage : function() {			
 			var id = this.getNewPageId();
-			title = this.newPageTitle + " " + id;
-			src = null;
+			var src = null;
+			var title = this.newPageTitle + " " + id;
 			try {
-				this.jsonrpc.AUI.newPage(id,title,src);		
-				this.addPage(id,title,src);
+				this.jsonrpc.AUIConfig.newPage(id,src,title);		
+				this.addPage(id,src,title);
 				this.refreshPages();
 				this.activatePage(this.pages.length-1);
 				this.renamePageShow();
@@ -551,7 +552,7 @@ if (!AUI.Config) {
 			
 		loadPages : function() {
 			try {
-				var pages = this.jsonrpc.AUI.getPages().list;
+				var pages = this.jsonrpc.AUIConfig.getPages().list;
 			} catch(e) {
 				this.statusMessage(e.msg);
 				alert(e.msg || e);
@@ -561,7 +562,7 @@ if (!AUI.Config) {
 				var id = pages[i].map.id;
 				var src = pages[i].map.src;
 				var title = pages[i].map.title;
-				this.addPage(id,title,src);
+				this.addPage(id,src,title);
 			}
 			this.refreshPages();
 			if (this.pages.length > 0) {
@@ -569,7 +570,7 @@ if (!AUI.Config) {
 			}
 		},
 		
-		addPage : function(id,title,src) {
+		addPage : function(id,src,title) {
 			var i = this.pages.length;			
 			var page = new Array();
 			page['id'] = id;
@@ -631,11 +632,11 @@ if (!AUI.Config) {
 		},
 		
 		loadControls : function() {
-			var ports = this.jsonrpc.AUI.getPorts().list;
+			var ports = this.jsonrpc.AUIConfig.getPorts().list;
 			for (var i=0; i < ports.length; i++) {
 				var cl = ports[i].map.Class;
 				var addr = ports[i].map.Address;
-				var name = ports[i].map.Name;
+				var name = ports[i].map.Description;
 				if (cl == "DigitalOutputPort") {
 					this.addControl('Luce','light_on.png',addr,name);
 				} else if (cl == "DimmerPort") {
@@ -646,6 +647,14 @@ if (!AUI.Config) {
 					this.addControl('Scenario','scene-generic.png',addr,name);
 				} else if (cl == "TemperaturePort") {
 					this.addControl('Termostato','thermo_display.png',addr,name);
+				} else if (cl == "TriggerPort") {
+					if (addr.match("Attivazione")) {
+						this.addControl('Button','pushbutton_blue-on.png',addr,name);
+					} else if (addr.match("Disattivazione")) {
+						this.addControl('Button','pushbutton_blue-off.png',addr,name);
+					} else {
+						this.addControl('Button','pushbutton_yellow-on.png',addr,name);
+					}
 				}  					
 			}
 		},
@@ -655,7 +664,7 @@ if (!AUI.Config) {
 			var descr = "["+p.id+"] "+p.title;
 			if (window.confirm("Rimuovere la pagina "+descr+" ?")) {
 				try {
-					this.jsonrpc.AUI.deletePage(p.id);
+					this.jsonrpc.AUIConfig.deletePage(p.id);
 				} catch(e) {
 					alert(e.msg || e);
 					return;
@@ -688,7 +697,7 @@ if (!AUI.Config) {
 
 		save : function() {
 			try {
-				this.jsonrpc.AUI.save();
+				this.jsonrpc.AUIConfig.save();
 			} catch(e) {
 				alert(e.msg || e);
 			}

@@ -4,12 +4,13 @@ if (!AUI.SetRequest) {
 			request: AUI.Http.getRequest(),
 			sending: false,
 			device: null,
+			rpc: new JSONRpcClient("/aui/rpc"),
 			status: "default"
 	};
 	
 	// TODO unificare queste 3 funzioni
 	
-	AUI.SetRequest.set = function(device, value, status) {
+	AUI.SetRequest.set_old = function(device, value, status) {
 		if (this.sending) {
 			AUI.Header.show("Richiesta in corso.");
 			return false;
@@ -35,7 +36,33 @@ if (!AUI.SetRequest) {
 		};
 		return true;
 	};
-	
+
+	AUI.SetRequest.set = function(device, value, status) {
+		if (this.sending) {
+			AUI.Header.show("Richiesta in corso.");
+			return false;
+		}
+		try {
+			if (status == undefined) {
+				status = value;
+			}
+			var control = device.getControl();
+			var address = control.address;
+			AUI.Logger.info("writePort: "+address+"="+value);
+			if (this.rpc.AUI.writePortValue(address,value)) {
+				device.setStatus(status);
+				device = null;
+			} else {
+				AUI.Header.show("Errore di collegamento");				
+			}
+		} catch(e) {
+			this.sending = false;
+			AUI.Header.show(e);				
+			throw(e);
+		};
+		return true;
+	};
+
 	AUI.SetRequest.setValue = function(address, value) {
 		if (this.sending) {
 			AUI.Header.show("Richiesta in corso.");

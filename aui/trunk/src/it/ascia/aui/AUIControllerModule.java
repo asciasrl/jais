@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Map.Entry;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
@@ -27,20 +29,21 @@ import it.ascia.ais.DevicePort;
 public class AUIControllerModule extends ControllerModule {
 	
 	public static ResourceBundle messages = ResourceBundle.getBundle("it.ascia.aui.messages");
-		
+
+	private static final String SESSION_ATTRIBUTE_USERNAME = "AUI.username";
+	
+	private static final String SESSION_ATTRIBUTE_ISLOGGED = "AUI.isLogged";
+
 	public AUIControllerModule() {
 		super();
 	}
-	
+
 	public void start() {
 		super.start();
 		Controller c = Controller.getController();
 		// TODO registrazione automatica comandi
 		c.registerCommand("get", new getCommand());
 		c.registerCommand("getAll", new getAllCommand());
-		//c.registerCommand("getPages", new getPagesCommand());
-		//c.registerCommand("getPorts", new getPortsCommand());
-		c.registerCommand("send", new sendCommand());
 		c.registerCommand("set", new setCommand());
 
 		// FIXME JSONRPCBridge.getGlobalBridge().registerCallback(new AUIInvocationCallback(), HttpServletRequest.class);
@@ -214,24 +217,6 @@ public class AUIControllerModule extends ControllerModule {
 		return ja.toJSONString();
 	}
 
-	
-	class sendCommand implements CommandInterface {
-		public String execute(HashMap params) {
-			if (params.size() == 0) {
-				throw(new AISException("mancano parametri"));
-			}
-			Iterator iterator = params.entrySet().iterator();
-			Entry entry = (Entry) iterator.next();
-			String message = (String) entry.getKey();
-			String value = (String) entry.getValue();
-			if (controller.sendMessage(message,value)) {
-				return "OK";
-			} else {
-				return "ERROR";
-			}
-		}
-	}
-
 	class getCommand implements CommandInterface {
 		public String execute(HashMap params) {
 			// Comando "get"
@@ -269,48 +254,6 @@ public class AUIControllerModule extends ControllerModule {
 		return h;
 	}
 	
-	/**
-	 * @deprecated
-	 */
-	class getPagesCommand implements CommandInterface {
-		public String execute(HashMap params) {
-			JSONObject j = new JSONObject();
-			j.putAll(getPages());
-			return j.toJSONString();
-		}		
-	}
-	
-	/*
-	public String getPorts() {
-		JSONArray ja = new JSONArray();
-		Device devices[] = controller.findDevices("*");
-		for (int i = 0; i < devices.length; i++) {
-			Device d = devices[i];
-			DevicePort[] ports = d.getPorts();
-			for (int j = 0; j < ports.length; j++) {
-				LinkedHashMap m = new LinkedHashMap();
-				DevicePort p = ports[j];
-				m.put("Address",p.getFullAddress());
-				m.put("Class",p.getClass().getSimpleName());
-				//m.put("DeviceClass",d.getClass().getSimpleName());
-				//m.put("DeviceInfo",d.getInfo());
-				m.put("Name",p.getName());						
-				ja.add(m);						
-			}
-			
-		}			
-		return ja.toString();
-	}
-	*/
-	
-	/*
-	class getPortsCommand implements CommandInterface {
-		public String execute(HashMap params) {
-			return getPorts();
-		} 
-	}
-	*/
-
 	public String set(HashMap params) {
 		// Comando "set"
 		if (params.size() == 0) {
@@ -348,16 +291,16 @@ public class AUIControllerModule extends ControllerModule {
 	 * @param page id della pagina
 	 * @return Elenco delle porte presenti nella pagina
 	 */
-	public List getPagePorts(String page) {
-		List ports = new ArrayList();
+	public List<DevicePort> getPagePorts(String page) {
+		List<DevicePort> ports = new ArrayList<DevicePort>();
 		Controller controller = Controller.getController();
 		HierarchicalConfiguration auiConfig = getConfiguration();
 		auiConfig.setExpressionEngine(new XPathExpressionEngine());
 		HierarchicalConfiguration pageConfig = auiConfig.configurationAt("pages/page[@id='"+page+"']");
-		List controls = pageConfig.configurationsAt("control");
-		for (Iterator ic = controls.iterator(); ic.hasNext(); ) {
-			HierarchicalConfiguration controlConfig = (HierarchicalConfiguration) ic.next();
-			List addresses = controlConfig.configurationsAt("address");
+		List<HierarchicalConfiguration> controls = pageConfig.configurationsAt("control");
+		for (Iterator<HierarchicalConfiguration> ic = controls.iterator(); ic.hasNext(); ) {
+			HierarchicalConfiguration controlConfig = ic.next();
+			List<HierarchicalConfiguration> addresses = controlConfig.configurationsAt("address");
 			for (int i = 0; i < addresses.size(); i++) {
 				Address address = new Address((String) ((SubnodeConfiguration) addresses.get(i)).getRoot().getValue());
 				DevicePort p = controller.getDevicePort(address);
@@ -369,8 +312,46 @@ public class AUIControllerModule extends ControllerModule {
 		return ports;
 	}
 
+	/**
+	 * Get the path where images resides
+	 * @return path relative to web root
+	 */
 	public String getImagesPath() {
 		return getConfiguration().getString("images","/images/");
+	}
+
+	/**
+	 * Check user credential
+	 * @param username
+	 * @param password
+	 * @return True if credentials match
+	 */
+	public boolean login(HttpSession session, String username, String password) {		
+		HierarchicalConfiguration auiConfig = getConfiguration();
+		auiConfig.setExpressionEngine(new XPathExpressionEngine());
+		if (password.equals(auiConfig.getString("//users/user[username='"+username+"']/password"))) {
+			session.setAttribute(SESSION_ATTRIBUTE_USERNAME,username);
+			session.setAttribute(SESSION_ATTRIBUTE_ISLOGGED,new Boolean(true));
+			logger.info("Autenticated, username '"+username+"'");			
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Check if user is logged (use session)
+	 * @param session
+	 * @return
+	 */
+	public boolean isLogged(HttpSession session) {
+		String username = (String) session.getAttribute(SESSION_ATTRIBUTE_USERNAME);
+		Boolean logged = (Boolean) session.getAttribute(SESSION_ATTRIBUTE_ISLOGGED);
+		if (username != null && logged != null && logged.booleanValue()) {
+			logger.debug("Session "+session.getId()+" Authenticated user '"+username+"'");
+			return true;
+		}
+		logger.debug("Session "+session.getId()+" Not authenticated"); 
+		return false;
 	}
 
 }

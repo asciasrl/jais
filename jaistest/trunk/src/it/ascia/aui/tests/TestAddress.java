@@ -3,6 +3,7 @@ package it.ascia.aui.tests;
 import java.util.Random;
 
 import it.ascia.ais.Address;
+import it.ascia.ais.Connector;
 import junit.framework.TestCase;
 
 public class TestAddress extends TestCase {
@@ -57,7 +58,52 @@ public class TestAddress extends TestCase {
 		Address a = new Address(null,"b","c");
 		assertTrue(a.toString().equals("*.b:c"));
 	}
-	
+
+	public void testAppend1() {
+		Address a = new Address("a",null,null);
+		try {
+			a.setConnectorName("b");
+			fail("Should raise an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+		}
+	}
+
+	public void testAppend1a() {
+		Address a = new Address((Connector)null,null,null);
+		a.setConnectorName("a");
+		assertTrue(a.toString().equals("a.*:*"));
+	}
+
+	public void testAppend2() {
+		Address a = new Address("a","b",null);
+		try {
+			a.setDeviceAddress("b");
+			fail("Should raise an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+		}
+	}
+
+	public void testAppend2a() {
+		Address a = new Address("a",null,null);
+		a.setDeviceAddress("b");
+		assertTrue(a.toString().equals("a.b:*"));
+	}
+
+	public void testAppend3() {
+		Address a = new Address("a","b","c");
+		try {
+			a.setPortId("c");
+			fail("Should raise an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+		}
+	}
+
+	public void testAppend3a() {
+		Address a = new Address("a","b",null);
+		a.setPortId("c");
+		assertTrue(a.toString().equals("a.b:c"));
+	}
+
 	public void testParse() {
 		Address a = new Address("a.b:c");
 		assertTrue(a.toString().equals("a.b:c"));		

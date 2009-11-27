@@ -1,14 +1,12 @@
 package it.ascia.aui.tests;
 
-import javax.servlet.http.HttpSession;
-
-import org.apache.log4j.Logger;
+import java.io.FileNotFoundException;
 
 import it.ascia.ais.Controller;
-import it.ascia.ais.SerialTransport;
-import it.ascia.eds.EDSConnector;
-import it.ascia.eds.msg.EDSMessage;
-import it.ascia.eds.msg.RichiestaModelloMessage;
+import it.ascia.aui.AUIControllerModule;
+
+import javax.servlet.http.HttpSession;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -29,7 +27,15 @@ public class TestAUIRPCServer extends TestCase {
 		return new AuiTestSetup(ts);
 	}
 
-	public void test00_1_RichiestaModelloMessage_Bus1_aDEST() {
-    	//assertEquals(1, );				
+	public void testSaveAs() {
+    	AUIControllerModule aui = (AUIControllerModule) Controller.getController().getModule("AUI");
+    	/*
+    	try {
+			aui.saveConfigurationAs(aui.getConfiguration(),"test.xml", true);
+			assertTrue(true);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		*/
 	}
 }

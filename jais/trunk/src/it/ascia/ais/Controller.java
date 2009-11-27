@@ -47,12 +47,6 @@ public class Controller {
 	private LinkedHashMap<String, Connector> connectors = new LinkedHashMap<String,Connector>();
 
 	/**
-	 * Comandi registrati.
-	 * 
-	 */
-	private Map commands = new LinkedHashMap();
-
-	/**
 	 * Moduli del controllore
 	 */
 	private Map modules = new LinkedHashMap();
@@ -90,39 +84,6 @@ public class Controller {
 			throw(new KeyAlreadyExistsException("Connector name duplicated: "+connector.getName()));
 		}
 		connectors.put(connector.getName(), connector);
-	}
-	
-	/**
-	 * Registra un comando per la successiva esecuzione tramite doCommand
-	 * 
-	 * @param name Nome del comando, deve essere unico
-	 * @param commandInterface
-	 * @throws KeyAlreadyExistsException
-	 * @deprecated Use commands inside module
-	 */
-	public void registerCommand(String name, CommandInterface commandInterface) throws KeyAlreadyExistsException {
-		if (commands.containsKey(name)) {
-			throw(new KeyAlreadyExistsException("CommandInterface name duplicated: "+name));
-		}
-		commands.put(name, commandInterface);
-		logger.debug("Registered command '"+name+"' "+commandInterface.getClass());
-	}
-	
-	/**
-	 * Esegue un comando registrato
-	 * 
-	 * @param name Nome del comando da eseguire
-	 * @param params Paramtri per il comando
-	 * @return Risultato della esecuzione del comando, viene inviata come testo al richiedente
-	 * @throws AISException Comando non registrato
-	 * @deprecated Use commands inside module
-	 */
-	public String doCommand(String name, HashMap params) throws AISException {
-		CommandInterface commandInterface = (CommandInterface) commands.get(name);
-		if (commandInterface == null) {
-			throw(new AISException("CommandInterface "+name+" not registered."));
-		}
-		return commandInterface.execute(params);
 	}
 	
 	/**

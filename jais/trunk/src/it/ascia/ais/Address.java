@@ -37,7 +37,19 @@ public class Address implements Comparable<Object> {
 		setDeviceAddress(device);
 		setPortId(port);
 	}
-	
+
+	public Address(Connector connector, Device device, DevicePort port) {
+		if (connector != null) {
+			setConnectorName(connector.getName());
+		}
+		if (device != null) {
+			setDeviceAddress(device.getSimpleAddress());
+		}
+		if (port != null) {
+			setPortId(port.getPortId());
+		}
+	}
+
 	/**
 	 * Set connector part of the address 
 	 * @param connector Name of connector

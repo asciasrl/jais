@@ -333,6 +333,9 @@ public abstract class BMC extends Device {
 		switch (m.getMessageType()) {
 			case EDSMessage.MSG_RICHIESTA_MODELLO:
 			case EDSMessage.MSG_ACKNOWLEDGE:
+			case EDSMessage.MSG_RICHIESTA_USCITA:				
+			case EDSMessage.MSG_RICHIESTA_ASSOCIAZIONE_BROADCAST:
+			case EDSMessage.MSG_RICHIESTA_STATO:				
 				// ignorato
 				break;
 			default:
@@ -430,7 +433,7 @@ public abstract class BMC extends Device {
 	 * @throws AISException 
 	 */
 	public void setInputName(int number, String name) throws AISException {
-		setPortName(getInputPortId(number), name);
+		setPortDescription(getInputPortId(number), name);
 	}
 	
 	/**
@@ -441,7 +444,7 @@ public abstract class BMC extends Device {
 	 * @throws AISException
 	 */
 	public void setOutputName(int number, String portName) throws AISException {
-		setPortName(getOutputPortId(number), portName);
+		setPortDescription(getOutputPortId(number), portName);
 	}
 
 	/**

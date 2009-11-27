@@ -5,19 +5,5 @@
     <root>../aui/web</root>
     <debug>false</debug>
     <verbose>false</verbose>
-    <servlets>
-      <servlet>
-        <class>it.ascia.aui.AUIStreamingServlet</class>
-        <context>/stream</context>
-      </servlet>
-      <servlet>
-        <class>it.ascia.aui.AUICommandServlet</class>
-        <context>/jais</context>
-      </servlet>
-      <servlet>
-        <class>it.ascia.aui.AUIServlet</class>
-        <context>/aui</context>
-      </servlet>
-     </servlets>
   </HTTPServer>
 </jais:configuration>

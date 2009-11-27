@@ -1,7 +1,6 @@
 package it.ascia.aui;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -14,17 +13,20 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
+import org.apache.jasper.servlet.JspServlet;
 import org.jabsorb.JSONRPCBridge;
 // TODO Eliminare riferimenti a jsonsimple (usare org.json di jabsorb)
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.mortbay.jetty.servlet.ServletHolder;
+
 import it.ascia.ais.AISException;
 import it.ascia.ais.Address;
 import it.ascia.ais.CommandInterface;
 import it.ascia.ais.Controller;
 import it.ascia.ais.ControllerModule;
-import it.ascia.ais.Device;
 import it.ascia.ais.DevicePort;
+import it.ascia.ais.HTTPServerControllerModule;
 
 public class AUIControllerModule extends ControllerModule {
 	
@@ -40,13 +42,9 @@ public class AUIControllerModule extends ControllerModule {
 
 	public void start() {
 		super.start();
-		Controller c = Controller.getController();
-		// TODO registrazione automatica comandi
-		c.registerCommand("get", new getCommand());
-		c.registerCommand("getAll", new getAllCommand());
-		c.registerCommand("set", new setCommand());
-
-		// FIXME JSONRPCBridge.getGlobalBridge().registerCallback(new AUIInvocationCallback(), HttpServletRequest.class);
+		HTTPServerControllerModule h = (HTTPServerControllerModule) Controller.getController().getModule("HTTPServer");
+		h.addServlet(new AUIStreamingServlet(),"/stream/*");
+		h.addServlet(new AUIServlet(),"/aui/*");
 		JSONRPCBridge.getGlobalBridge().registerObject("AUI", new AUIRPCServer(this));
 	}
 	
@@ -193,10 +191,13 @@ public class AUIControllerModule extends ControllerModule {
 		return j.toJSONString();
 	}
 	
+	/*
 	public String getAll() {
 		return get("*.*:*");
 	}
+	*/
 
+	/*
 	public String get(String fullAddress) {
 		JSONArray ja = new JSONArray();
 		try {
@@ -216,7 +217,9 @@ public class AUIControllerModule extends ControllerModule {
 		}
 		return ja.toJSONString();
 	}
+	*/
 
+	/*
 	class getCommand implements CommandInterface {
 		public String execute(HashMap params) {
 			// Comando "get"
@@ -227,12 +230,15 @@ public class AUIControllerModule extends ControllerModule {
 			return get(fullAddress);
 		}
 	}
+	*/
 	
+	/*
 	class getAllCommand implements CommandInterface {
 		public String execute(HashMap params) {
 			return getAll();
 		} 
 	}
+	*/
 
 	/**
 	 * @deprecated

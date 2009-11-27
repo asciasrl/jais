@@ -1,7 +1,5 @@
 package it.ascia.ais;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
 
 import javax.servlet.http.HttpServlet;
@@ -21,13 +19,12 @@ public class HTTPServerControllerModule extends ControllerModule {
 	 */
 	private Server server;
 	
+	private Context rootContext;
+	
 	public void start() {
-		//logger = Logger.getLogger(getClass());
-		logger.info("Avvio server HTTP...");
 		HierarchicalConfiguration config = getConfiguration();
 		int port = config.getInt("port",80);
-		String root = config.getString("root","../aui");
-		logger.info("Porta="+port+" Root="+root);
+		String root = config.getString("root","web");
 		// configurazione livelli di log di Jetty e Jasper
 		if (config.getBoolean("debug", false)) {
 			logger.info("Jetty Debug");
@@ -41,44 +38,14 @@ public class HTTPServerControllerModule extends ControllerModule {
 		server.setSessionIdManager(new HashSessionIdManager(new Random()));
 		ContextHandlerCollection contexts = new ContextHandlerCollection();
 		server.setHandler(contexts);
-		Context rootContext = new Context(contexts, "/", Context.SESSIONS);
+		rootContext = new Context(contexts, "/", Context.SESSIONS);
 		rootContext.setResourceBase(root);
-		// contesto servito da jspservlet
-		JspServlet jspServlet = new JspServlet();
-		ServletHolder jspHolder = new ServletHolder(jspServlet);
-		rootContext.addServlet(jspHolder, "*.jsp");
 		
-		// configurazione delle servlet 
-		List servlets = config.configurationsAt("servlets.servlet");
-		for (Iterator si = servlets.iterator(); si.hasNext();)
-		{
-			try {
-			    HierarchicalConfiguration sub = (HierarchicalConfiguration) si.next();
-			    String className = sub.getString("class");
-			    String context = sub.getString("context");
-				logger.debug("Caricamento servlet '"+context+"' da '"+className+"'");
-				ClassLoader moduleLoader = ControllerModule.class.getClassLoader();
-			    Class servletClass = moduleLoader.loadClass(className);
-			    HttpServlet servlet = (HttpServlet) servletClass.newInstance();
-				Context servletContext = new Context(contexts, context, Context.SESSIONS);
-				servletContext.setResourceBase(root);
-				ServletHolder servletHolder = new ServletHolder(servlet);
-				servletContext.addServlet(servletHolder, "/*");
-				logger.info("Caricata servlet '"+context+"'");
-			} catch (ClassNotFoundException e) {
-				logger.fatal("Classe non trovata:",e);
-			} catch (InstantiationException e) {
-				logger.fatal("Classe non instanziata:",e);
-			} catch (IllegalAccessException e) {
-				logger.fatal("Classe non accessibile:",e);
-			}
-		}		
-		
-		// La fileServlet e il suo contesto
-		HttpServlet defaultServlet = new DefaultServlet();
-		ServletHolder defaultHolder = new ServletHolder(defaultServlet);
-		rootContext.addServlet(defaultHolder, "/");
+		addServlet(new DefaultServlet(), "/");
+		addServlet(new JspServlet(), "*.jsp");
+
 		try {
+			logger.info("Starting HTTP server: Port="+port+" Root="+root);
 			server.start();
 			logger.info("Avviato server HTTP");
 		} catch (Exception e) {
@@ -86,6 +53,11 @@ public class HTTPServerControllerModule extends ControllerModule {
 			return;
 		}		
 		super.start();
+	}
+
+	public void addServlet(HttpServlet servlet, String path) {
+		rootContext.addServlet(new ServletHolder(servlet), path);
+		logger.info("Added servlet "+servlet.getClass().getCanonicalName()+", path '"+path+"'");		
 	}
 
 	public void stop() {
@@ -99,5 +71,4 @@ public class HTTPServerControllerModule extends ControllerModule {
 		}	
 	}
 	
-
 }

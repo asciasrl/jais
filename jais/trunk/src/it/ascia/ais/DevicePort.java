@@ -170,7 +170,13 @@ public abstract class DevicePort {
 	 */
 	public Object readValue() {
 		long start = System.currentTimeMillis();
-		long timeToWait = device.updatePort(portId);
+		long timeToWait;
+		if (isQueuedForUpdate()) {
+			logger.trace("Port already queued for update");
+			timeToWait = 300;
+		} else {
+			timeToWait = device.updatePort(portId);
+		}
 		if (timeToWait > 0) {
 			synchronized (this) {
 				if (isDirty() || isExpired()) {
@@ -312,7 +318,7 @@ public abstract class DevicePort {
 
 	/**
 	 * @return indirizzo completo della porta
-	 * @deprecated use getAddress()
+	 * @deprecated use getAddress() and implicit toString()
 	 */
 	public String getFullAddress() {
 		return getAddress().getFullAddress();
@@ -408,6 +414,10 @@ public abstract class DevicePort {
 		return queuedForUpdate;
 	}
 
+	/**
+	 * Used by Device.addPort() to set the device to which belong
+	 * @param device
+	 */
 	public void setDevice(Device device) {
 		this.device = device;		
 	}

@@ -19,8 +19,7 @@ if (!AUI.Group) {
 		} 
 		var control = this.getControl();
 		var address = control.address;
-		var value = control.value;
-		AUI.SetRequest.send(address,value);
+		AUI.SetRequest.setValue(address,true);
 	};
 
 }

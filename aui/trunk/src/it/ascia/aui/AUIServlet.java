@@ -30,7 +30,6 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
 import org.apache.log4j.Logger;
 import org.jabsorb.JSONRPCServlet;
-import org.jabsorb.callback.InvocationCallback;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,8 +53,6 @@ public class AUIServlet extends JSONRPCServlet {
 
 	protected AUIControllerModule aui;
 	
-    private static InvocationCallback cb = new AUIInvocationCallback();
-	
 	public AUIServlet() {
 		logger = Logger.getLogger(getClass());
 		aui = (AUIControllerModule) Controller.getController().getModule(AUIModuleName);
@@ -75,16 +72,6 @@ public class AUIServlet extends JSONRPCServlet {
 		logger.info("Comando '"+command+"'");
 		
 		if (command.equals("rpc")) {
-			/*
-			JSONRPCBridge bridge = (JSONRPCBridge) session.getAttribute("JSONRPCBridge");
-			if (bridge == null)
-			{
-			  bridge = new JSONRPCBridge();
-			  bridge.registerCallback(cb, HttpServletRequest.class);
-			  session.setAttribute("JSONRPCBridge", bridge);
-			  logger.debug("Instantiated session JSONRPCBridge");
-			}
-			*/
 			super.service(request, response);
 		} else if (command.equals("stream")) {
 			doStream(request, response);
@@ -279,20 +266,7 @@ public class AUIServlet extends JSONRPCServlet {
 	 * FIXME Metodo duplicato in AUIRPCServer
 	 */
 	private boolean isLogged(HttpSession session) {
-		if (session == null) {
-			logger.warn("No session");
-			return false;
-		}
-		String username = (String) session.getAttribute("AUI.username");
-		Boolean logged = (Boolean) session.getAttribute("AUI.logged");
-		if (username != null && logged != null && logged.booleanValue()) {
-			logger.debug("Session "+session.getId()+" "+session.getServletContext()+": Authenticated user '"+username+"'");
-			return true;
-		}
-		logger.debug("Session "+session.getId()+": Not authenticated"); 
-		return false;
+		return ((AUIControllerModule) Controller.getController().getModule(AUIModuleName)).isLogged(session);
 	}
-
-
 
 }

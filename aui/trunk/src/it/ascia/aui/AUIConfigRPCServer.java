@@ -372,15 +372,11 @@ public class AUIConfigRPCServer implements Serializable {
 	}
 	
 	public Vector<HashMap<String, String>> getPorts(String search) {
-		Address address = new Address(search);
-		Collection<Device> devices = Controller.getController().getDevices(address);
 		Vector<HashMap<String, String>> ports = new Vector<HashMap<String, String>>();
-		for (Device d : devices) {
-			DevicePort[] devicePorts = d.getPorts();
-			for (int j = 0; j < devicePorts.length; j++) {
-				DevicePort devicePort = devicePorts[j];
+		for (Device d : Controller.getController().getDevices(new Address(search))) {
+			for (DevicePort devicePort : d.getPorts()) {
 				HashMap<String, String> p = new HashMap<String, String>();
-				p.put("Address",devicePort.getFullAddress());
+				p.put("Address",devicePort.getAddress().toString());
 				p.put("Class",devicePort.getClass().getSimpleName());
 				p.put("Description",devicePort.getDescription());						
 				ports.add(p);

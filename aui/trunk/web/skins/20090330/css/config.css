@@ -234,6 +234,10 @@ div.controlSelected {
 	z-index: 90;
 }
 
+div.page {
+	border: 1px solid white;
+}
+
 div.caption {
 	position: relative;
 	top: 0px;

@@ -100,9 +100,7 @@ public abstract class BUSControllerModule extends ControllerModule {
 								if (device.isUnreachable()) {
 									break;
 								}
-								DevicePort[] deviceports = device.getPorts();
-								for (int i = 0; i < deviceports.length; i++) {
-									DevicePort devicePort = deviceports[i];
+								for (DevicePort devicePort : device.getPorts()) {
 									if (devicePort.isDirty() || devicePort.isExpired()) {
 										if (!devicePort.hasListeners()) {
 											// TODO Experimental

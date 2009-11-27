@@ -1,8 +1,11 @@
 package it.ascia.ais;
 
 import java.io.BufferedReader;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.channels.Channels;
 import java.util.Collection;
 import java.util.Vector;
 
@@ -10,8 +13,6 @@ public class CmdControllerModule extends ControllerModule {
 
 	protected CmdConsole cmd = null;
 
-	private BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));;
-	
 	public void start() {
  		cmd = new CmdConsole();
  		cmd.setName("CmdConsole");
@@ -24,7 +25,7 @@ public class CmdControllerModule extends ControllerModule {
 		if (cmd != null) {
 			cmd.interrupt();
 			try {
-				cmd.join(1000);
+				cmd.join();
 			} catch (InterruptedException e) {
 			}
 		}
@@ -40,6 +41,17 @@ public class CmdControllerModule extends ControllerModule {
 	 */
 	public class Stdio {
 
+		private BufferedReader stdin;
+		
+		public Stdio() {
+			//stdin = new BufferedReader(new InputStreamReader(System.in));
+			stdin = new BufferedReader(
+		            new InputStreamReader(
+		                    Channels.newInputStream(
+		                    (new FileInputStream(FileDescriptor.in)).getChannel())));
+
+		}
+		
 		/**
 		 * Richiede un intero.
 		 * 
@@ -91,20 +103,30 @@ public class CmdControllerModule extends ControllerModule {
 			try {
 				return stdin.readLine();
 			} catch (Exception e) {
-				return "";
+				logger.warn("exception:",e);
+				return null;
 			}
 		}
 	}
 	
 	private class CmdConsole extends Thread {
 		
+		private boolean running;
+
+		public void interrupt() {
+			running = false;
+			logger.debug("Interrupting");
+			super.interrupt();
+		}
+		
 		public void run() {
 		 	// La palla all'utente
 			Stdio stdio = new Stdio();
-			while (isRunning()) {
+			running = true;
+			while (running) {
 				System.out.println("JAIS Server");
 				String dest = stdio.inputString("Indirizzo dispositivo (<n>|stop|restart):");
-				if (dest == null) {
+				if (dest == null || dest.length() == 0) {
 					continue;
 				}
 				if (dest.equals("restart")) {
@@ -135,7 +157,7 @@ public class CmdControllerModule extends ControllerModule {
 				Device d = (Device) devices.toArray()[0];
 				while (d != null) {
 		 			System.out.println(d.getInfo());
-		 			System.out.println(d.getStatus());
+		 			System.out.println(getStatus(d));
 					String portId = stdio.inputString("Porta di "+d.getFullAddress()+" (invio per cambiare device): ");
 		 			if (portId.equals("")) {
 		 				d = null;
@@ -158,6 +180,19 @@ public class CmdControllerModule extends ControllerModule {
 				}
 			}
 		}
+
+		private String getStatus(Device d) {
+			StringBuffer s = new StringBuffer();
+			for (DevicePort devicePort : d.getPorts()) {
+				s.append(" "+devicePort.getAddress());
+				s.append(" ("+devicePort.getClass().getSimpleName()+")");
+				s.append("="+devicePort.getValue());
+				s.append('\n');
+			}
+			return s.toString();
+		}
 	}
+	
+	
 
 }

@@ -3,9 +3,8 @@
  */
 package it.ascia.ais;
 
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -112,7 +111,7 @@ public abstract class Device {
 	 * @return Device address (port part of address is undefined)
 	 */
 	public Address getAddress() {
-		return new Address(connector.getName(),address,null);
+		return new Address(connector,this,null);
 	}
 	
 	/**
@@ -127,58 +126,6 @@ public abstract class Device {
 	 */
 	public String getInfo() {
 		return getAddress() + " " + getClass().getSimpleName() + " " + getDescription();
-	}
-
-	/**
-	 * Ritorna lo stato del device cambiato rispetto a un certo istante,
-	 * in formato utile per AUI.
-	 * 
-	 * <p>Lo stato deve essere aggiornato.</p>
-	 * 
-	 * @return lo stato del device che e' cambiato al timestamp specificato, 
-	 * oppure piu' tardi.
-	 * 
-	 * @param portId il nome della porta da restituire, o "*" per indicarle
-	 * tutte.
-	 * 
-	 * @param timestamp il timestamp che "screma" i cambiamenti dello stato
-	 * che ci interessano, nella forma ritornata da System.currentTimeMillis().
-	 * Se posto a 0, richiede l'intero stato del sistema.
-	 * @throws AISException 
-	 */
-	public Map getStatus(String portId, long timestamp) throws AISException {
-		if (portId.equals("*")) {
-			return getStatus(timestamp);
-		} else {
-			DevicePort p = getPort(portId);
-			Map m = new LinkedHashMap();
-			m.put(p.getPortId(),p.getStatus());
-			return m;
-		}
-	}
-
-	/**
-	 * Restituisce lo stato di tutte le porte del Device che sono state aggiornate dopo il timestamp
-	 * @param timestamp
-	 * @return Una Array con un elemento per porta 
-	 * @throws AISException
-	 */
-	public Map getStatus(long timestamp) throws AISException {
-		Map m = new LinkedHashMap();
-		for (Iterator i = ports.values().iterator(); i.hasNext(); ) {
-			DevicePort p = (DevicePort) i.next();				
-			m.put(p.getPortId(),p.getStatus());
-		}
-		return m;
-	}
-
-	/**
-	 * Restituisce lo stato di tutte le porte del Device
-	 * @return Righe di testo nel formato: porta=valore
-	 * @throws AISException
-	 */
-	public Map getStatus() throws AISException {
-		return getStatus(0);
 	}
 
 	/**
@@ -212,8 +159,8 @@ public abstract class Device {
 	 * 
 	 * @return Tutte le DevicePort del Device
 	 */
-	public DevicePort[] getPorts() {
-		return (DevicePort[]) ports.values().toArray(new DevicePort[ports.size()]);
+	public Collection<DevicePort> getPorts() {
+		return ports.values();
 	}
 	
 	/**
@@ -223,7 +170,7 @@ public abstract class Device {
 	 * @param portName Nuovo nome per la porra
 	 * @throws AISException Se la porta non esiste 
 	 */
-	public void setPortName(String portId, String portName) throws AISException {
+	public void setPortDescription(String portId, String portName) throws AISException {
 		DevicePort p = getPort(portId);
 		p.setDescription(portName);
 	}
@@ -303,7 +250,7 @@ public abstract class Device {
 	 * 
 	 * @throws un'eccezione se qualcosa va male.
 	 */	
-	public Object getPortValue(String portId) throws AISException {
+	protected Object getPortValue(String portId) throws AISException {
 		DevicePort p = getPort(portId);
 		return p.getValue();
 	}
@@ -315,7 +262,7 @@ public abstract class Device {
 	 * 
 	 * @throws un'eccezione se qualcosa va male.
 	 */	
-	public Object getPortCachedValue(String portId) throws AISException {
+	protected Object getPortCachedValue(String portId) throws AISException {
 		DevicePort p = getPort(portId);
 		return p.getCachedValue();
 	}
@@ -325,7 +272,7 @@ public abstract class Device {
 	 * @param portId
 	 * @return TimeStamp in mS
 	 */
-	public long getPortTimestamp(String portId) {
+	protected long getPortTimestamp(String portId) {
 		DevicePort p = (DevicePort) ports.get(portId);			
 		return p.getTimeStamp();
 	}
@@ -374,10 +321,12 @@ public abstract class Device {
 		reachErrors = 0;
 	}
 
+	/**
+	 * Used by Connector to set belonfing connector
+	 * @param connector
+	 */
 	public void setConnector(Connector connector) {
 		this.connector = connector;		
 	}
-
-
 	
 }

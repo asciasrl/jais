@@ -21,9 +21,9 @@ public class DXPControllerModule extends BUSControllerModule {
 		 		conn = new DXPConnector(sub.getString("name"),this);
 			 	Transport transport = Transport.createTransport(sub);		 		
 		 		// associa transport e connector 
-		 		conn.bindTransport(transport);
+		 		conn.addTransport(transport);
 			 	// registra il connector
-				controller.registerConnector(conn);		
+				controller.addConnector(conn);		
 				myConnectors.add(conn);
 				// aggiunta devices
 				List devices = sub.configurationsAt("devices.device");

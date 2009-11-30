@@ -24,7 +24,7 @@ public class EDSControllerModule extends BUSControllerModule {
 		 		eds = new EDSConnector(sub.getString("name"),this,sub.getInt("computer",250));
 			 	Transport transport = Transport.createTransport(sub);		 		
 		 		// associa transport e connector 
-		 		eds.bindTransport(transport);
+		 		eds.addTransport(transport);
 			 	// effettua il discovery
 			 	List discover = sub.getList("discover",null);
 			 	if (discover == null) {
@@ -44,7 +44,7 @@ public class EDSControllerModule extends BUSControllerModule {
 			 		eds.loadConfig(configFileName);
 			 	}				
 			 	// registra il connector
-				controller.registerConnector(eds);		
+				controller.addConnector(eds);		
 				myConnectors.add(eds);
 				List devices = sub.configurationsAt("devices.device");
 				for (Iterator d = devices.iterator(); d.hasNext();)

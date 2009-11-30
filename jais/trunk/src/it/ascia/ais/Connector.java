@@ -184,8 +184,11 @@ public abstract class Connector {
      * Associa il Transport al Connector
      * @param transport Il Transport associato
      */
-    public void bindTransport(Transport transport) {
+    public void addTransport(Transport transport) {
     	logger.info("Using transport: "+transport.getInfo());
+    	if (this.transport != null) {
+			throw(new UnsupportedOperationException("Connector can have only one transport"));    		
+    	}
     	this.transport = transport;
     	transport.connector = this;
     }

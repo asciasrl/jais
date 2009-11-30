@@ -25,7 +25,7 @@ public class RichiestaStatoIngressiMessage extends DXPRequestMessage {
 	public boolean isAnsweredBy(DXPMessage m) {
 		if (DXPResponseMessage.class.isInstance(m)
 				&& m.getMessageType() == RISPOSTA_STATO_INGRESSO
-				&& m.getSource().equals(getDestination())) {
+				&& ((DXPResponseMessage) m).getSource().equals(getDestination())) {
 			return true;
 		} else {
 			return false;

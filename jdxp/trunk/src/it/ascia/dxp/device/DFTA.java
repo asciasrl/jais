@@ -33,12 +33,12 @@ public class DFTA extends DominoDevice {
 		return false;
 	}
 
-	public void messageReceived(Message m) {
+	public void messageReceived(DXPMessage m) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void messageSent(Message m) {
+	public void messageSent(DXPMessage m) {
 		switch (m.getMessageType()) {
 			case DXPMessage.RISPOSTA_STATO_INGRESSO:
 				RispostaStatoIngressiMessage r = (RispostaStatoIngressiMessage) m;

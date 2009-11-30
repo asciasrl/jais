@@ -6,6 +6,7 @@ import it.ascia.ais.DevicePort;
 import it.ascia.ais.Message;
 import it.ascia.ais.port.TemperaturePort;
 import it.ascia.dxp.DXPMessage;
+import it.ascia.dxp.DXPResponseMessage;
 import it.ascia.dxp.DominoDevice;
 import it.ascia.dxp.msg.RichiestaStatoIngressiMessage;
 import it.ascia.dxp.msg.RispostaStatoIngressiMessage;
@@ -42,16 +43,16 @@ public class DFCT extends DominoDevice {
 		return false;
 	}
 
-	public void messageReceived(Message m) {
+	public void messageReceived(DXPMessage m) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void messageSent(Message m) {
+	public void messageSent(DXPMessage m) {
 		switch (m.getMessageType()) {
 			case DXPMessage.RISPOSTA_STATO_INGRESSO:
 				RispostaStatoIngressiMessage r = (RispostaStatoIngressiMessage) m;
-				int intAddress = (new Integer(m.getSource())).intValue();
+				int intAddress = (new Integer(((DXPResponseMessage) m).getSource())).intValue();
 				int myAddress = (new Integer(getSimpleAddress())).intValue();
 				if (intAddress == (myAddress + 1)) {
 					DevicePort p = getPort("temp");

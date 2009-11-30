@@ -11,8 +11,8 @@ public abstract class DominoDevice extends Device {
 		super(address);
 	}
 	
-	public abstract void messageReceived(Message m);
+	public abstract void messageReceived(DXPMessage m);
 
-	public abstract void messageSent(Message m);
-	
+	public abstract void messageSent(DXPMessage m);
+
 }

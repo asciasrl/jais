@@ -6,6 +6,7 @@ import it.ascia.ais.DevicePort;
 import it.ascia.ais.Message;
 import it.ascia.ais.port.DigitalVirtualPort;
 import it.ascia.dxp.DXPMessage;
+import it.ascia.dxp.DXPResponseMessage;
 import it.ascia.dxp.msg.ComandoUsciteMessage;
 import it.ascia.dxp.msg.RichiestaStatoUsciteMessage;
 import it.ascia.dxp.msg.RispostaStatoUsciteMessage;
@@ -73,12 +74,12 @@ public class DF4IV extends DF4I {
 		
 	}
 	*/
-	public void messageSent(Message m) {
+	public void messageSent(DXPMessage m) {
 		switch (m.getMessageType()) {
 			case DXPMessage.RISPOSTA_STATO_USCITE:
 				RispostaStatoUsciteMessage r = (RispostaStatoUsciteMessage) m;
 				for (int i = 1; i <= 4; i++) {
-					DevicePort p = getPort("v"+m.getSource()+"."+i);
+					DevicePort p = getPort("v"+((DXPResponseMessage) m).getSource()+"."+i);
 					p.setCacheRetention(1000);
 					p.setValue(new Boolean(r.getExitStatus(i)));
 					logger.trace("messageSent setValue "+p.getFullAddress());

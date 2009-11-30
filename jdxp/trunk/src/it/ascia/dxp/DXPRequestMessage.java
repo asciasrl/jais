@@ -22,10 +22,6 @@ public abstract class DXPRequestMessage extends DXPMessage {
 		return (new Integer(indirizzo)).toString();
 	}
 
-	public String getSource() {
-		return null;
-	}
-
 	public abstract boolean isAnsweredBy(DXPMessage m);
 
 }

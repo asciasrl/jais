@@ -2,6 +2,7 @@ package it.ascia.dxp.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Message;
+import it.ascia.dxp.DXPMessage;
 import it.ascia.dxp.DominoDevice;
 
 public class DFIR extends DominoDevice {
@@ -27,12 +28,12 @@ public class DFIR extends DominoDevice {
 		return false;
 	}
 
-	public void messageReceived(Message m) {
+	public void messageReceived(DXPMessage m) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void messageSent(Message m) {
+	public void messageSent(DXPMessage m) {
 		// TODO Auto-generated method stub
 		
 	}

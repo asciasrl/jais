@@ -4,6 +4,7 @@ import it.ascia.ais.AISException;
 import it.ascia.ais.Message;
 import it.ascia.ais.port.DigitalInputPort;
 
+import it.ascia.dxp.DXPMessage;
 import it.ascia.dxp.DominoDevice;
 
 public class DFGSM2 extends DominoDevice {
@@ -35,12 +36,12 @@ public class DFGSM2 extends DominoDevice {
 		return false;
 	}
 
-	public void messageReceived(Message m) {
+	public void messageReceived(DXPMessage m) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void messageSent(Message m) {
+	public void messageSent(DXPMessage m) {
 		// TODO Auto-generated method stub
 		
 	}

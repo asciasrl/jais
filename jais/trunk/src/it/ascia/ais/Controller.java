@@ -79,7 +79,7 @@ public class Controller {
 	 * @param connector il connector da aggiungere.
 	 * @throws KeyAlreadyExistsException if a connector with the same name is already registered 
 	 */
-	public void registerConnector(Connector connector) throws KeyAlreadyExistsException {
+	public void addConnector(Connector connector) throws KeyAlreadyExistsException {
 		if (connectors.containsKey(connector.getName())) {
 			throw(new KeyAlreadyExistsException("Connector name duplicated: "+connector.getName()));
 		}

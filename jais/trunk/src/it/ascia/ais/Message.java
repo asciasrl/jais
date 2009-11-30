@@ -26,15 +26,6 @@ public abstract class Message implements Comparable {
 	public abstract byte[] getBytesMessage();
 
 	/**
-	 * Ritorna il codice del tipo di messaggio.
-	 */
-	public abstract int getMessageType();
-	
-	public abstract String getSource();
-	
-	public abstract String getDestination();
-	
-	/**
 	 * Funzione di utilita': restituisce la rappresentazione esadecimale
 	 * di un byte con 2 cifre e preceduta da "0x"
 	 */

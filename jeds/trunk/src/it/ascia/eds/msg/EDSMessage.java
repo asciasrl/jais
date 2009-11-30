@@ -280,6 +280,11 @@ public abstract class EDSMessage extends Message implements Comparable {
 	public abstract String getMessageDescription();
 
 	/**
+	 * Ritorna il codice del tipo di messaggio.
+	 */
+	public abstract int getMessageType();
+	
+	/**
 	 * Ritorna una descrizione testuale che interpreta i campi del messaggio.
 	 */
 	public String toString()

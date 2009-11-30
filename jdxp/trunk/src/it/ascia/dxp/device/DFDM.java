@@ -24,7 +24,7 @@ public class DFDM extends DominoDevice {
 		addPort(new DimmerPort("o"+address+".1"));
 	}
 
-	public void messageReceived(Message m) {
+	public void messageReceived(DXPMessage m) {
 		// TODO Auto-generated method stub
 
 	}
@@ -32,7 +32,7 @@ public class DFDM extends DominoDevice {
 	/* (non-Javadoc)
 	 * @see it.ascia.dxp.DominoDevice#messageSent(it.ascia.ais.Message)
 	 */
-	public void messageSent(Message m) {
+	public void messageSent(DXPMessage m) {
 		switch (m.getMessageType()) {
 			case DXPMessage.RISPOSTA_STATO_USCITE:
 				RispostaStatoUsciteMessage r = (RispostaStatoUsciteMessage) m;

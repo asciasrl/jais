@@ -93,7 +93,7 @@ public class DXPConnector extends Connector {
 			// Al mittente 
 			DominoDevice d = (DominoDevice)getDevice(((DXPResponseMessage)m).getSource());
 			if (d != null) {
-				d.messageSent(m);
+				d.messageSent((DXPRequestMessage)m);
 			} else {
 				logger.warn("Non trovato device sender "+((DXPResponseMessage)m).getSource());
 			}
@@ -102,7 +102,7 @@ public class DXPConnector extends Connector {
 			// Al destinatario 
     		DominoDevice d = (DominoDevice)getDevice(((DXPRequestMessage)m).getDestination());
 			if (d != null) {
-				d.messageReceived(m);
+				d.messageReceived((DXPRequestMessage)m);
 			} else {
 				logger.warn("Non trovato device receiver "+((DXPRequestMessage)m).getDestination());
 			}

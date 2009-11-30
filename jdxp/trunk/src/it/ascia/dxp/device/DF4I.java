@@ -6,6 +6,7 @@ import it.ascia.ais.DevicePort;
 import it.ascia.ais.Message;
 import it.ascia.ais.port.DigitalInputPort;
 import it.ascia.dxp.DXPMessage;
+import it.ascia.dxp.DXPResponseMessage;
 import it.ascia.dxp.DominoDevice;
 import it.ascia.dxp.msg.RichiestaStatoIngressiMessage;
 import it.ascia.dxp.msg.RispostaStatoIngressiMessage;
@@ -46,17 +47,17 @@ public class DF4I extends DominoDevice {
 		throw(new AISException("Gli ingressi non possono essere variati"));
 	}
 
-	public void messageReceived(Message m) {
+	public void messageReceived(DXPMessage m) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void messageSent(Message m) {
+	public void messageSent(DXPMessage m) {
 		switch (m.getMessageType()) {
 			case DXPMessage.RISPOSTA_STATO_INGRESSO:
 				RispostaStatoIngressiMessage r = (RispostaStatoIngressiMessage) m;
 				for (int i = 1; i <= 4; i++) {
-					DevicePort p = getPort("i"+m.getSource()+"."+i);
+					DevicePort p = getPort("i"+((DXPResponseMessage)m).getSource()+"."+i);
 					p.setCacheRetention(1000);
 					p.setValue(new Boolean(r.getInputStatus(i)));
 				}

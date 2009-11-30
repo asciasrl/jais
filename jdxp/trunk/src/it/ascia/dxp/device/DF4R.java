@@ -52,12 +52,12 @@ public class DF4R extends DominoDevice {
 		return false;
 	}
 
-	public void messageReceived(Message m) {
+	public void messageReceived(DXPMessage m) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void messageSent(Message m) {
+	public void messageSent(DXPMessage m) {
 		switch (m.getMessageType()) {
 			case DXPMessage.RISPOSTA_STATO_USCITE:
 				RispostaStatoUsciteMessage r = (RispostaStatoUsciteMessage) m;

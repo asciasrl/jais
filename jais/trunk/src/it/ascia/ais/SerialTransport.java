@@ -12,10 +12,7 @@ import java.util.TooManyListenersException;
 import gnu.io.*;
 
 /**
- * Gestisce la comunicazione con il bus EDS attraverso una porta seriale locale.
- * 
- * Tutti i messaggi che passano vengono smistati all'oggetto BMCComputer 
- * passato al costruttore.
+ * Gestisce la comunicazione attraverso una porta seriale locale.
  * 
  * @author sergio, arrigo
  */
@@ -175,6 +172,7 @@ public class SerialTransport extends Transport {
 		    }
 		    
 		} catch (UnsupportedCommOperationException e) {
+			logger.error("",e);
 			throw new AISException("Unable to configure port: " + e.getMessage());
 		}
 		

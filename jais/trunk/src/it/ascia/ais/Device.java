@@ -322,7 +322,7 @@ public abstract class Device {
 	}
 
 	/**
-	 * Used by Connector to set belonfing connector
+	 * Used by Connector to set belonging connector
 	 * @param connector
 	 */
 	public void setConnector(Connector connector) {

@@ -34,4 +34,12 @@ public class BooleanPort extends DevicePort {
 		return writeValue(new Boolean(v));
 	}
 
+	public boolean writeValue(Object value) throws IllegalArgumentException {
+		if (value instanceof String) {
+			return writeValue((String)value);
+		} else {
+			return super.writeValue(value);
+		}
+	}
+
 }

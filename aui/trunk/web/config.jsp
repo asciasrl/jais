@@ -30,7 +30,7 @@
 
 <div id="pages">Nessuna pagina</div>
 
-<div id="controls">Nessun controllo</div>
+<div id="ports">Nessuna porta</div>
 
 <div id="page">Selezionare la pagina da modificare</div>
 
@@ -44,13 +44,13 @@
 
 function resize() {
 	var wp = $("pages").getSize().x;
-	var wc = $("controls").getSize().x;
+	var wc = $("ports").getSize().x;
 	var h = (window.innerHeight - 21 - 20 - 1 - 20 - 20 - 1 - 17) + "px";
 	var w = (window.innerWidth - wp - wc - 20 - 20) + "px";
 	document.getElementById("pages").style.height = h;
 	document.getElementById("page").style.height = h;
 	document.getElementById("page").style.width = w;
-	document.getElementById("controls").style.height = h;
+	document.getElementById("ports").style.height = h;
 }
 
 resize();
@@ -84,15 +84,15 @@ var myMenu =
 		[null,'Elimina pagina', 'javascript: AUI.Config.cmdDeletePage();', null, null],
 		_cmSplit,
 		['<img src="'+themeImages+'new.gif" />','Nuovo controllo', null, null, null,
-			[null,'Cambio pagina...','javascript: AUI.Config.cmdNewControl("Page");',null,null],
-			[null,'Scenario...','javascript: AUI.Config.cmdNewControl("Scene");',null,null],
-			[null,'Luce...','javascript: AUI.Config.cmdNewControl("Light");',null,null],
-			[null,'Dimmer...','javascript: AUI.Config.cmdNewControl("Dimmer");',null,null],
-			[null,'Tapparella...','javascript: AUI.Config.cmdNewControl("Blind");',null,null],
-			[null,'Telecamera...','javascript: AUI.Config.cmdNewControl("Camera");',null,null],
-			[null,'Speaker...','javascript: AUI.Config.cmdNewControl("Speaker");',null,null],
-			[null,'Termostato...','javascript: AUI.Config.cmdNewControl("Temperature");',null,null],
-			[null,'Presa...','javascript: AUI.Config.cmdNewControl("Power");',null,null]
+			[null,'Cambio pagina...','javascript: AUI.Config.cmdNewControl("page");',null,null],
+			[null,'Scenario...','javascript: AUI.Config.cmdNewControl("scene");',null,null],
+			[null,'Luce...','javascript: AUI.Config.cmdNewControl("light");',null,null],
+			[null,'Dimmer...','javascript: AUI.Config.cmdNewControl("dimmer");',null,null],
+			[null,'Tapparella...','javascript: AUI.Config.cmdNewControl("blind");',null,null],
+			[null,'Telecamera...','javascript: AUI.Config.cmdNewControl("camera");',null,null],
+			[null,'Speaker...','javascript: AUI.Config.cmdNewControl("speaker");',null,null],
+			[null,'Termostato...','javascript: AUI.Config.cmdNewControl("temperature");',null,null],
+			[null,'Presa...','javascript: AUI.Config.cmdNewControl("power");',null,null]
 		],
 		[null,'Rinomina controllo...', 'javascript: AUI.Config.cmdRenameControl();', null, null],
 		[null,'Cambia indirizzo...', 'javascript: AUI.Config.cmdChangeControlAddress();', null, null],
@@ -174,12 +174,25 @@ cmDraw ('mainmenu', myMenu, 'hbr', cmThemeOffice2003);
 	</form>
 </div>
 
-<div id="renamePage" class="popup">
+<div id="editPage" class="popup">
 	<form action="http://null/" onsubmit="return false;">
-		<h3>Rinomina pagina</h3>
-		<p>Immettere il titolo della pagina corrente:</p>
-		<input type="text" size="100" name="title">
-		<button type="submit" onclick="AUI.Config.renamePageSubmit(this.form);">Aggiorna</button>
+		<h3>Modifica pagina</h3>
+		<label>Identificatore:</label><input type="text" size="100" name="id">
+		<label>Titolo:</label><input type="text" size="100" name="title">
+		<button type="submit" onclick="AUI.Config.editPageSubmit(this.form);">Aggiorna</button>
+	</form>
+</div>
+
+<div id="editControl" class="popup">
+	<form action="http://null/" onsubmit="return false;">
+		<h3>Modifica controllo</h3>
+		<label>Titolo:</label><input type="text" size="100" name="title">
+		<label>Identificatore:</label><input type="text" size="100" name="id">
+		<label>Tipo:</label><input type="text" size="100" name="type">
+		<label>Indirizzo:</label><input type="text" size="100" name="address">
+		<label>Pagina:</label><input type="text" size="100" name="page">
+		<label>Layer:</label><input type="text" size="100" name="layer">
+		<button type="submit" onclick="AUI.Config.editControlSubmit(this.form);">Aggiorna</button>
 	</form>
 </div>
 

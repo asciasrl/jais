@@ -159,6 +159,27 @@ public class AUIConfigRPCServer implements Serializable {
 	}
 	
 	/**
+	 * Change page id
+	 * Don't update references
+	 * @param session
+	 * @param pageId
+	 * @param newId
+	 */
+	public void changePageId(HttpSession session, String pageId, String newId) {
+		if (pageId.equals(newId)) {
+			logger.warn("Ignored identity page id change");
+			return;
+		}
+		HierarchicalConfiguration auiConfig = getConfiguration(session);
+		if (auiConfig.containsKey("pages/page[@id='"+newId+"']/title")) {
+			throw(new AISException("Duplicated page id="+newId));
+		}		
+		HierarchicalConfiguration pageConfig = auiConfig.configurationAt("//pages/page[@id='"+pageId+"']", true);
+		pageConfig.setProperty("[@id]", newId);
+		logger.info("Page "+pageId+", change id: "+newId);
+	}
+	
+	/**
 	 * Change the title of an existing page
 	 * @param session
 	 * @param pageId
@@ -270,12 +291,12 @@ public class AUIConfigRPCServer implements Serializable {
 	 * @param pageId
 	 * @return
 	 */
-	public Map<String, HashMap<String, Object>> getPageControls(HttpSession session, String pageId) {
+	public Vector<HashMap<String, Object>> getPageControls(HttpSession session, String pageId) {
 		HierarchicalConfiguration auiConfig = getConfiguration(session);
 		//auiConfig.setExpressionEngine(new XPathExpressionEngine());
 		HierarchicalConfiguration pageConfig = auiConfig.configurationAt("//pages/page[@id='"+pageId+"']");
 		List controls = pageConfig.configurationsAt("control");
-		Map<String, HashMap<String, Object>> pageControls = new HashMap<String, HashMap<String, Object>>();
+		Vector<HashMap<String, Object>> pageControls = new Vector<HashMap<String, Object>>();
 		for (Iterator ic = controls.iterator(); ic.hasNext(); ) {
 			HierarchicalConfiguration controlConfig = (HierarchicalConfiguration) ic.next();
 			String type = controlConfig.getString("type");
@@ -293,18 +314,72 @@ public class AUIConfigRPCServer implements Serializable {
 				String k = (String) ip.next();
 				controlMap.put(k, controlConfig.getProperty(k));
 			}
-			pageControls.put(controlId, controlMap);
+			pageControls.add(controlMap);
 		}
 		return pageControls;
 	}
+
+	/**
+	 * Add a new control to a page
+	 * @param session
+	 * @param pageId
+	 * @param controlId
+	 * @param title
+	 */
+	public void newPageControl(HttpSession session, String pageId, String controlId, String type, String title) {
+		HierarchicalConfiguration auiConfig = getConfiguration(session);
+		if (auiConfig.containsKey("pages/page[@id='"+pageId+"']/control[@id='"+controlId+"']/type")) {
+			throw(new AISException("Duplicated control id="+controlId+" on page "+pageId));
+		}
+		if (!auiConfig.containsKey("controls/"+type+"/default")) {
+			throw(new AISException("Control type not defined: "+type));
+		}		
+		auiConfig.addProperty("pages/page[@id='"+pageId+"'] control@id", controlId);
+		auiConfig.addProperty("pages/page[@id='"+pageId+"']/control[@id='"+controlId+"'] type",type);
+		auiConfig.addProperty("pages/page[@id='"+pageId+"']/control[@id='"+controlId+"'] title",title);
+		auiConfig.addProperty("pages/page[@id='"+pageId+"']/control[@id='"+controlId+"'] top",0);
+		auiConfig.addProperty("pages/page[@id='"+pageId+"']/control[@id='"+controlId+"'] left",0);
+		logger.info("Added control "+controlId+" on page "+pageId+": "+title);
+	}
+
+	/**
+	 * Delete a page control
+	 * @param session
+	 * @param fullControlId
+	 */
+	public void deletePageControl(HttpSession session, String fullControlId) {
+		String[] parts = fullControlId.split("-",3);
+		logger.debug("fullControlId="+fullControlId);
+		if (!parts[0].equals("control")) {
+			throw( new AISException("fullControlId must start with 'control'"));
+		}
+		if (parts.length != 3) {
+			throw( new AISException("fullControlId must have 3 parts"));
+		}
+		String pageId = parts[1];
+		String controlId = parts[2];
+		deletePageControl(session, pageId, controlId);
+	}
 	
+	/**
+	 * Delete a page control
+	 * @param session
+	 * @param pageId
+	 * @param controlId
+	 */
+	public void deletePageControl(HttpSession session, String pageId, String controlId) {
+		HierarchicalConfiguration auiConfig = getConfiguration(session);		
+		auiConfig.clearTree("pages/page[@id='"+pageId+"']/control[@id='"+controlId+"']");
+		logger.info("Removed control "+pageId+" / "+controlId);		
+	}
+
 	/**
 	 * Set arbitrary parameters of the control
 	 * @param session
 	 * @param fullControlId
 	 * @param properties
 	 */
-	public void setPageControls(HttpSession session, String fullControlId, Map properties) {
+	public void setPageControlProperties(HttpSession session, String fullControlId, Map properties) {
 		String[] parts = fullControlId.split("-",3);
 		logger.debug("fullControlId="+fullControlId);
 		if (!parts[0].equals("control")) {
@@ -315,17 +390,19 @@ public class AUIConfigRPCServer implements Serializable {
 		}
 		String pageId = parts[1];
 		String controlId = parts[2];
+		setPageControlProperties(session, pageId, controlId, properties);
+	}
+		
+	public void setPageControlProperties(HttpSession session, String pageId, String controlId, Map properties) {
 		for (Iterator keys = properties.keySet().iterator(); keys.hasNext();) {
 			String key = (String) keys.next();
 			Object value = properties.get(key);
-			setPageControl(session, pageId, controlId, key, value);
+			setPageControlProperty(session, pageId, controlId, key, value);
 		}
 	}
 	
-	/*
-	public void setPageControls(HttpSession session, String fullControlId, Map properties) {
-		HierarchicalConfiguration auiConfig = getConfiguration(session);
-		auiConfig.setExpressionEngine(new XPathExpressionEngine());
+
+	public void setPageControlProperty(HttpSession session, String fullControlId, String key, Object value) {
 		String[] parts = fullControlId.split("-",3);
 		logger.debug("fullControlId="+fullControlId);
 		if (!parts[0].equals("control")) {
@@ -336,35 +413,47 @@ public class AUIConfigRPCServer implements Serializable {
 		}
 		String pageId = parts[1];
 		String controlId = parts[2];
-		HierarchicalConfiguration controlConfig = auiConfig.configurationAt("//pages/page[@id='"+pageId+"']/control[@id='"+controlId+"']", true);
-		for (Iterator keys = properties.keySet().iterator(); keys.hasNext();) {
-			String key = (String) keys.next();
-			Object value = properties.get(key);
-			if (controlConfig.containsKey(key)) {
-				Object oldValue = controlConfig.getProperty(key);				
-				controlConfig.setProperty(key, (Object) value);
-				logger.debug(fullControlId + ", "+key+" ("+Object.class.getSimpleName()+") : "+oldValue+" -> "+value);
-			} else {
-				controlConfig.addProperty(key, value);
-				logger.debug(fullControlId + ", "+key+": "+value);
-			}		
-		}
+		setPageControlProperty(session, pageId, controlId, key, value);
 	}
-	*/
 
-	public void setPageControl(HttpSession session, String pageId, String controlId, String key, Object value) {
+	public void setPageControlProperty(HttpSession session, String pageId, String controlId, String key, Object value) {
 		HierarchicalConfiguration auiConfig = getConfiguration(session);
-		//logger.debug("expressionEngine:"+auiConfig.getExpressionEngine());
-		//auiConfig.setExpressionEngine(new XPathExpressionEngine());
 		HierarchicalConfiguration controlConfig = auiConfig.configurationAt("//pages/page[@id='"+pageId+"']/control[@id='"+controlId+"']", true);
+		Object oldValue = null;
 		if (controlConfig.containsKey(key)) {
-			Object oldValue = controlConfig.getProperty(key);				
 			controlConfig.setProperty(key, (Object) value);
-			logger.debug(pageId + "/" + controlId + ", "+key+" ("+Object.class.getSimpleName()+") : "+oldValue+" -> "+value);
 		} else {
 			controlConfig.addProperty(key, value);
-			logger.debug(pageId + "/" + controlId + ", "+key+": "+value);
 		}		
+		logger.debug(pageId + "/" + controlId + ", "+key+" ("+Object.class.getSimpleName()+") : "+oldValue+" -> "+value);
+	}
+	
+	public void changePageControlId(HttpSession session, String fullControlId, String newId) {
+		String[] parts = fullControlId.split("-",3);
+		logger.debug("fullControlId="+fullControlId);
+		if (!parts[0].equals("control")) {
+			throw( new AISException("fullControlId must start with 'control'"));
+		}
+		if (parts.length != 3) {
+			throw( new AISException("fullControlId must have 3 parts"));
+		}
+		String pageId = parts[1];
+		String controlId = parts[2];
+		changePageControlId(session, pageId, controlId, newId);
+	}
+	
+	public void changePageControlId(HttpSession session, String pageId, String controlId, String newId) {
+		if (controlId.equals(newId)) {
+			logger.warn("Ignored identity page control id change");
+			return;
+		}
+		HierarchicalConfiguration auiConfig = getConfiguration(session);
+		if (auiConfig.containsKey("pages/page[@id='"+pageId+"']/control[@id='"+newId+"']/type")) {
+			throw(new AISException("Duplicated control id="+newId+" on page "+pageId));
+		}		
+		HierarchicalConfiguration controlConfig = auiConfig.configurationAt("//pages/page[@id='"+pageId+"']/control[@id='"+controlId+"']", true);
+		controlConfig.setProperty("[@id]", newId);
+		logger.debug(pageId + "/" + controlId + ", change id: "+newId);
 	}
 	
 	public Vector<HashMap<String, String>> getPorts() {

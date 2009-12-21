@@ -5,6 +5,7 @@ if (!AUI.Config) {
 		pagesElement : null,
 		pagesEmptyMessage : "Nessuna pagina. Aggiungere una nuova pagina dal menu.",
 		newPageTitle : "Nuova pagina",
+		newControlTitle : "Nuovo controllo",
 		skinConfigImages : "skins/20090330/config.images/",
 		skin : "",
 		skinImage : "",
@@ -17,18 +18,15 @@ if (!AUI.Config) {
 		
 		layers: ['all'],
 
-		controlsElement : null,
-		controlsEmptyMessage : "Nessun controllo.",
-		controls : new Array(),
-		currentControlIndex : null,
-		onControlClickHandler: null,
-		
-		controlSelected : null,
+		portsElement : null,
+		portsEmptyMessage : "Nessuna porta.",
+		ports : new Array(),
 		
 		onMaskClickHandler: null,
 
 		pageElement : null,
 		pageEmptyMessage : "Selezionare la pagina da modificare.",
+		currentControlIndex : null,
 
 		/**
 		 * Inizializza la procedura di configurazione
@@ -41,7 +39,7 @@ if (!AUI.Config) {
 			//this.onPageClickHandler = function(e) { self.onPageClick(e); };
 			//this.pagesElement.addEventListener('click', this.onPageClickHandler, false);
 
-			this.controlsElement = document.getElementById("controls");
+			this.portsElement = document.getElementById("ports");
 			//this.onControlClickHandler = function(e) { self.onControlClick(e); };
 			//this.controlsElement.addEventListener('click', this.onControlClickHandler, false);
 
@@ -72,8 +70,8 @@ if (!AUI.Config) {
 		clear : function() {
 			this.pagesElement.innerHTML = this.pagesEmptyMessage;			
 			this.pages = new Array(),		
-			this.controlsElement.innerHTML = this.controlsEmptyMessage;
-			this.controls = new Array(),		
+			this.portsElement.innerHTML = this.portsEmptyMessage;
+			this.ports = new Array(),		
 			this.pageElement.innerHTML = this.pageEmptyMessage;
 			this.currentPageIndex = null;
 		},
@@ -93,7 +91,7 @@ if (!AUI.Config) {
 				this.newPage();
 			}
 		
-			this.loadControls();
+			this.loadPorts();
 			this.statusMessage("Configurazione caricata dal server");
 		},
 		
@@ -191,6 +189,7 @@ if (!AUI.Config) {
 			mask.style.visibility = 'visible';
 			this.onMaskClickHandler = handler;
 			mask.addEventListener('click', AUI.Config.hideMask, false);
+			//return mask.getStyle("z-index").toInt();
 		},
 		
 		hideMask : function() {
@@ -298,27 +297,41 @@ if (!AUI.Config) {
 			}
 		},
 		
-		renamePageShow : function() {
-			this.showMask(this.renamePageHide);
-			var popup = document.getElementById("renamePage"); 
+		editPageShow : function() {
+			this.showMask(this.editPageHide);
+			var popup = document.getElementById("editPage"); 
 			popup.style.visibility = 'visible';
 			
-			var input = popup.getElement('input');
-			if (typeof(console) != 'undefined') console.log(input);			
-			input.setProperty('value',this.pages[this.currentPageIndex].title);						
+			var page = this.pages[this.currentPageIndex];
+			var inputs = popup.getElements('input');
+			if (typeof(console) != 'undefined') console.log(inputs);
+			for (var i=0; i < inputs.length; i++) {
+				var input = inputs[i];
+				if (typeof(console) != 'undefined') console.log(input);
+				var name = input.getProperty("name");
+				input.setProperty('value',page[name]);
+			}
+		
 		},
 		
-		renamePageHide : function() {
-			var popup = document.getElementById("renamePage"); 
+		editPageHide : function() {
+			var popup = document.getElementById("editPage"); 
 			popup.style.visibility = 'hidden';			
 		},
 		
-		renamePageSubmit : function(form) {
-			var title = form.title.value;
+		editPageSubmit : function(form) {
 			try {
 				var p = this.pages[this.currentPageIndex];
-				var res = this.jsonrpc.AUIConfig.setPageTitle(p.id,title);
-				this.pages[this.currentPageIndex].title = title;
+				var title = form.title.value;
+				if (title != p.title) {
+					var res = this.jsonrpc.AUIConfig.setPageTitle(p.id,title);
+					this.pages[this.currentPageIndex].title = title;
+				}
+				var newId = form.id.value;
+				if (newId != p.id) {
+					this.jsonrpc.AUIConfig.changePageId(p.id,newId);
+					this.pages[this.currentPageIndex].id = newId;
+				}
 				this.hideMask();
 				this.refreshPages();
 			} catch(e) {
@@ -368,9 +381,10 @@ if (!AUI.Config) {
 		loadPage : function(i) {	
 			try {
 				var pageId = this.pages[i].id;
-				var pageControls = this.jsonrpc.AUIConfig.getPageControls(pageId);
-				this.pages[i].controls = new Hash(pageControls.map);
-				this.pages[i].areas = this.jsonrpc.AUIConfig.getPageAreas(pageId);
+				var controls = this.jsonrpc.AUIConfig.getPageControls(pageId);
+				this.pages[i].controls = controls.list;
+				var areas = this.jsonrpc.AUIConfig.getPageAreas(pageId);
+				this.pages[i].areas = areas.list;
 			} catch(e) {
 				alert(e.msg || e);
 			}
@@ -396,12 +410,13 @@ if (!AUI.Config) {
 			var container = document.getElementById("page");	
 			container.empty();
 			container.grab(content);
-			var controls = page.controls.getValues();
-			for (var j=0; j < controls.length; j++) {
-				var c = controls[j];
+			this.currentControlIndex = null;
+			for (var j=0; j < page.controls.length; j++) {
+				var c = page.controls[j];
 				var layer = c.map['layer'];
-				var id = 'control-' + page.id + '-' + c.map['[@id]'];
-				
+				//var id = 'control-' + page.id + '-' + c.map['[@id]'];
+				var id = 'control-' + j;
+								
 				// if (typeof(console) != 'undefined') console.log(c);
 
 				var control = new Element('div', {'id': id});
@@ -410,7 +425,7 @@ if (!AUI.Config) {
 				control.setStyle('top',c.map['top']+'px');
 				control.setStyle('left',c.map['left']+'px');
 				if (typeof(console) != 'undefined') console.log("Control"+id+" Layer="+layer);
-				if (this.layers.contains('all') || this.layers.contains(layer) || typeof(layer) == 'undefined') {
+				if (this.layers.contains('all') || this.layers.contains(layer) || typeof(layer) == 'undefined' || layer == undefined || layer == 'undefined') {
 					control.setStyle('display','block');
 				}
 				
@@ -420,22 +435,23 @@ if (!AUI.Config) {
 
 				var caption = new Element('div', {'class': 'caption'} );
 				caption.innerHTML = c.map['title'];
+				var self = this;
 				control.grab(caption);
 
 				var info = new Element('div', {'class': 'info'} );
+				info.addEventListener('click',function(e) { self.editControlShow(e); },false);
 				
-				info.grab(new Element('label').appendText("Id: "));
+				info.grab(new Element('label').appendText("Identifier: "));
 				info.appendText(c.map['[@id]']);
 				info.grab(new Element('br'));
 				info.grab(new Element('label').appendText("Type: "));
 				info.appendText(c.map['type']);
 				info.grab(new Element('br'));
-				info.grab(new Element('label').appendText("Addr: "));
+				info.grab(new Element('label').appendText("Address: "));
 				info.appendText(c.map['address']);
 				info.grab(new Element('br'));
 				info.grab(new Element('label').appendText("Layer: "));
 				info.appendText(c.map['layer']);
-				
 				control.grab(info);
 
 				control.makeDraggable({'onDrop': AUI.Config.onDropControl});
@@ -447,35 +463,110 @@ if (!AUI.Config) {
 		
 		onClickControl : function(event) {
 			if (typeof(console) != 'undefined') console.log("click control "+this.id);
-			AUI.Config.activateControl(this.id);
+			var i = this.id.substring(8);
+			AUI.Config.activateControl(i);
 		},
 		
-		activateControl : function(id) {
-			if (this.controlSelected) {
-				this.deactivateControl(this.controlSelected.id);
-				this.controlSelected = null;
+		activateControl : function(i) {
+			if (this.currentControlIndex) {
+				this.deactivateControl(this.currentControlIndex);
+				this.currentControlIndex = null;
 			}
-			var c = document.getElementById(id);
-			c.addClass('controlSelected');
-			this.controlSelected = c;
-		},
-		
-		deactivateControl : function(id) {
 			try {
-				$(id).removeClass('controlSelected');
+				$('control-'+i).addClass('controlSelected');
 			} catch(e) {
+				alert("Unable to activate control "+i+":" + e);
+			}			
+			this.currentControlIndex = i;			
+			if (typeof(console) != 'undefined') console.log("activated control "+i);
+		},
+		
+		deactivateControl : function(i) {
+			try {
+				$('control-'+i).removeClass('controlSelected');
+				if (typeof(console) != 'undefined') console.log("deactivated control "+i);
+			} catch(e) {
+				alert("Unable to deactivate control "+i+":" + e);
 			}
 		},
 		
-		setControlLayer : function(id,layerName) {
+		getNewControlId : function(type) {
+			var page = this.pages[this.currentPageIndex];
+			var controls = page.controls; 
+			if (controls.length == 0) {
+				return type + '1';
+			}
+			var id = controls.length+1;
+			var ok = true;
+			do {
+				ok = true;
+				for (var i=0; i < controls.length; i++) {					
+					if (controls[i] == null) {
+						continue;
+					}
+					if (controls[i].map['[@id]'] == type + id) {
+						ok = false;
+						break;						
+					}
+				}
+				if (ok == false) {
+					id += 1;
+				}
+			} while (! ok);			
+			return type + id;
+		},
+		
+		newControl : function(type) {
+			var pageId = this.pages[this.currentPageIndex].id;
+			var id = this.getNewControlId(type);
+			var title = this.newControlTitle+" "+id;
 			try {
-				this.jsonrpc.AUIConfig.setPageControls(id,{"javaClass":"java.util.Map","map":{"layer": layerName}});
+				this.jsonrpc.AUIConfig.newPageControl(pageId,id,type,title);
+				if (typeof(console) != 'undefined') console.log("added control "+id+" on page "+pageId);
+				this.reloadPage();
+				this.activateControl(this.pages[this.currentPageIndex].controls.length - 1);
+				this.editControlShow();
+			} catch(e) {
+				alert(e.msg || e);
+			}
+		},
+
+		setControlLayer : function(layerName) {
+			try {
+				var page = this.pages[this.currentPageIndex];
+				var control = page.controls[this.currentControlIndex];
+				var id = 'control-' + page.id + '-' + control.map['[@id]'];
+				this.jsonrpc.AUIConfig.setPageControlProperty(id,"layer",layerName);
 				this.reloadPage();
 			} catch(e) {
 				alert(e.msg || e);
 			}			
 		},
-		
+
+		deleteControl : function(iPage,iControl) {
+			if (typeof(console) != 'undefined') console.log("delete control "+iControl+" on page "+iPage);
+			var page = this.pages[iPage];
+			var control = page.controls[iControl];
+			var id = 'control-' + page.id + '-' + control.map['[@id]'];
+			var title = control.map['title'];
+			if (title == undefined || title == "") {
+				title = control.map['address'];
+			}
+			if (title == undefined || title == "") {
+				title = control.map['type'];
+			}				
+			var descr = "["+page.id+"/" + control.map['[@id]'] + "] "+title;
+			if (window.confirm("Rimuovere il controllo "+descr+" ?")) {
+				try {
+					this.jsonrpc.AUIConfig.deletePageControl(id);
+				} catch(e) {
+					alert(e.msg || e);
+					return;
+				}
+				this.reloadPage();
+			}
+		},
+
 		onTouchControl : function() {
 			if (typeof(console) != 'undefined') console.info('Touch: ' + this.id);
 		},
@@ -487,22 +578,92 @@ if (!AUI.Config) {
 		onDropControl : function(element, droppable, event) {
 			var top = element.getStyle('top').toInt();
 			var left = element.getStyle('left').toInt();
-			AUI.Config.moveControl(element.id,left,top);					
+			var i = element.id.substring(8);
+			AUI.Config.moveControl(i,left,top);					
 		},
 		
-		moveControl : function(id,left,top) {
+		moveControl : function(i,left,top) {
 			left = Math.round(left / this.snapGrid) * this.snapGrid;
 			top = Math.round(top / this.snapGrid) * this.snapGrid;
-			$(id).setStyles({'left': left + 'px', 'top': top + 'px'});
+			$('control-'+i).setStyles({'left': left + 'px', 'top': top + 'px'});
+			var page = this.pages[this.currentPageIndex];
+			var control = page.controls[i];
+			var id = 'control-' + page.id + '-' + control.map['[@id]'];
 			if (typeof(console) != 'undefined') console.log(id+" left="+left+" top="+top);			
-			var control = this.pages[this.currentPageIndex].controls.get(id);
 			try {
-				this.jsonrpc.AUIConfig.setPageControls(id,{"javaClass":"java.util.Map","map":{"top": top, "left": left}});
+				this.jsonrpc.AUIConfig.setPageControlProperties(id,{"javaClass":"java.util.Map","map":{"top": top, "left": left}});
 			} catch(e) {
 				alert(e.msg || e);
 			}
 		},
 		
+		editControlShow : function(event) {
+			/*
+			if (typeof(console) != 'undefined') console.log("editControl: " + event);
+			event.preventDefault();
+			event.stopPropagation();
+			*/
+			this.showMask(this.editControlHide);
+			var popup = document.getElementById("editControl"); 
+			popup.style.visibility = 'visible';
+						
+			var controlMap = this.pages[this.currentPageIndex].controls[this.currentControlIndex];
+			var inputs = popup.getElements('input');
+			if (typeof(console) != 'undefined') console.log(inputs);
+			for (var i=0; i < inputs.length; i++) {
+				var input = inputs[i];
+				if (typeof(console) != 'undefined') console.log(input);
+				var name = input.getProperty("name");
+				if (name == 'id') {
+					name = '[@id]';
+				}
+				input.setProperty('value',controlMap.map[name]);
+			}
+		},
+		
+		editControlHide : function() {
+			var popup = document.getElementById("editControl"); 
+			popup.style.visibility = 'hidden';			
+		},
+
+		editControlSubmit : function(form) {
+			try {				
+				var page = this.pages[this.currentPageIndex];
+				var control = page.controls[this.currentControlIndex];
+				var id = 'control-' + page.id + '-' + control.map['[@id]'];
+				
+				var props = new Hash();
+				//var map = new Hash();
+				
+				//map.set('title',form.title.value);
+				props['title'] = form.title.value;
+				//props['id'] = form.id.value;
+				props['type'] = form.type.value;
+				props['address'] = form.address.value;
+				props['page'] = form.page.value;
+				props['layer'] = form.layer.value;
+
+				//delete(data.$family);
+				
+				props['$family'] = null;
+				
+				//this.jsonrpc.AUIConfig.setPageControls(id,props);
+				this.jsonrpc.AUIConfig.setPageControlProperties(id,{"javaClass":"java.util.Map","map":props});
+				
+				var newId = form.id.value;
+				if (id != newId) {
+					this.jsonrpc.AUIConfig.changePageControlId(id,newId);
+				}
+
+				this.hideMask();
+				this.reloadPage();
+			} catch(e) {
+				if (typeof(console) != 'undefined') console.error(e);
+				alert(e.msg || e);
+			}
+			
+		},
+
 		deactivatePage : function(i) {
 			var el = document.getElementById("page-"+i);
 			el.removeClass("pageItemSelected");
@@ -544,7 +705,7 @@ if (!AUI.Config) {
 				this.addPage(id,src,title);
 				this.refreshPages();
 				this.activatePage(this.pages.length-1);
-				this.renamePageShow();
+				this.editPageShow();
 			} catch(e) {
 				alert(e.msg || e);
 			}
@@ -595,13 +756,13 @@ if (!AUI.Config) {
 			}
 		},
 
-		addControl : function(type, src, address, name) {
-			if (this.controlsElement.innerHTML == this.controlsEmptyMessage) {
-				this.controlsElement.innerHTML = "";
+		addPort : function(type, src, address, name) {
+			if (this.portsElement.innerHTML == this.portsEmptyMessage) {
+				this.portsElement.innerHTML = "";
 			}
 			
-			var i = this.controls.length;
-			var c = new Element('div',{'id': "control-"+i, 'class': 'controlItem'});
+			var i = this.ports.length;
+			var c = new Element('div',{'id': "port-"+i, 'class': 'portItem'});
 			c.grab(new Element('img', {'src': this.skinImages + src}));
 			var p = new Element('p');
 			/*
@@ -619,41 +780,41 @@ if (!AUI.Config) {
 				p.appendText(name);
 			}
 			c.grab(p);
-			this.controlsElement.grab(c);
+			this.portsElement.grab(c);
 						
-			var control = new Array();
-			control['id'] = "control-" + address;
-			control['address'] = address;
-			control['name'] = name;
-			this.controls.include(control);
-			this.statusMessage("Aggiunto controllo ["+address+"] :"+name);
+			var port = new Array();
+			port['id'] = "port-" + address;
+			port['address'] = address;
+			port['name'] = name;
+			this.ports.include(port);
+			this.statusMessage("Aggiunta porta ["+address+"] :"+name);
 			return true;
 
 		},
 		
-		loadControls : function() {
+		loadPorts : function() {
 			var ports = this.jsonrpc.AUIConfig.getPorts().list;
 			for (var i=0; i < ports.length; i++) {
 				var cl = ports[i].map.Class;
 				var addr = ports[i].map.Address;
 				var name = ports[i].map.Description;
 				if (cl == "DigitalOutputPort") {
-					this.addControl('Luce','light_on.png',addr,name);
+					this.addPort('Luce','light_on.png',addr,name);
 				} else if (cl == "DimmerPort") {
-					this.addControl('Dimmer','light_dimming.png',addr,name);
+					this.addPort('Dimmer','light_dimming.png',addr,name);
 				} else if (cl == "BlindPort") {
-					this.addControl('Serramento','blind_stopped.png',addr,name);
+					this.addPort('Serramento','blind_stopped.png',addr,name);
 				} else if (cl == "ScenePort") {
-					this.addControl('Scenario','scene-generic.png',addr,name);
+					this.addPort('Scenario','scene-generic.png',addr,name);
 				} else if (cl == "TemperaturePort") {
-					this.addControl('Termostato','thermo_display.png',addr,name);
+					this.addPort('Termostato','thermo_display.png',addr,name);
 				} else if (cl == "TriggerPort") {
 					if (addr.match("Attivazione")) {
-						this.addControl('Button','pushbutton_blue-on.png',addr,name);
+						this.addPort('Button','pushbutton_blue-on.png',addr,name);
 					} else if (addr.match("Disattivazione")) {
-						this.addControl('Button','pushbutton_blue-off.png',addr,name);
+						this.addPort('Button','pushbutton_blue-off.png',addr,name);
 					} else {
-						this.addControl('Button','pushbutton_yellow-on.png',addr,name);
+						this.addPort('Button','pushbutton_yellow-on.png',addr,name);
 					}
 				}  					
 			}
@@ -753,32 +914,40 @@ if (!AUI.Config) {
 			if (this.currentPageIndex == null) {
 				alert("Selezionare prima la pagina di cui si vuole modificare il nome");
 			} else {
-				this.renamePageShow();
+				this.editPageShow();
 			}
 		},
 		
 		cmdDeletePage : function() {
 			if (this.currentPageIndex == null) {
-				alert("Selezionare prima la pagina di cui si vuole eliminare");
+				alert("Selezionare prima la pagina che si vuole eliminare");
 			} else {
 				this.deletePage(this.currentPageIndex);
 			}
 		},
 		
-		cmdNewControl : function() {
-			alert("Non implementato");
+		cmdNewControl : function(type) {
+			if (this.currentPageIndex == null) {
+				alert("Selezionare prima la pagina su cui aggiungere il controllo");
+			} else {
+				this.newControl(type);
+			}
 		},
 		
 		cmdChangeControlLayer : function(layerName) {
-			if (this.controlSelected) {
-				this.setControlLayer(this.controlSelected.id,layerName);
+			if (this.currentControlIndex) {
+				this.setControlLayer(layerName);
 			} else {
 				alert("Selezionare prima il controllo da modificare");				
 			}
 		}, 
 		
 		cmdChangeControlType : function() {
-			alert("Non implementato");
+			if (this.currentControlIndex) {
+				this.editControlShow();
+			} else {
+				alert("Selezionare prima il controllo da modificare");				
+			}
 		},
 		
 		cmdChangeControlIcon : function() {
@@ -786,15 +955,27 @@ if (!AUI.Config) {
 		},
 		
 		cmdChangeControlAddress : function() {
-			alert("Non implementato");
+			if (this.currentControlIndex) {
+				this.editControlShow();
+			} else {
+				alert("Selezionare prima il controllo da modificare");				
+			}
 		},		
 		
 		cmdRenameControl : function() {
-			alert("Non implementato");
+			if (this.currentControlIndex) {
+				this.editControlShow();
+			} else {
+				alert("Selezionare prima il controllo da modificare");				
+			}
 		},
 		
 		cmdDeleteControl : function() {
-			alert("Non implementato");
+			if (this.currentPageIndex == null) {
+				alert("Selezionare prima la pagina di cui si vuole eliminare");
+			} else {
+				this.deleteControl(this.currentPageIndex, this.currentControlIndex);
+			}
 		},
 				
 		cmdShowAllLayers : function() {

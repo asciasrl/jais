@@ -13,12 +13,10 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
-import org.apache.jasper.servlet.JspServlet;
 import org.jabsorb.JSONRPCBridge;
 // TODO Eliminare riferimenti a jsonsimple (usare org.json di jabsorb)
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.mortbay.jetty.servlet.ServletHolder;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Address;

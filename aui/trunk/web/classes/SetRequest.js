@@ -20,7 +20,7 @@ if (!AUI.SetRequest) {
 				return false;
 			}
 		} catch(e) {
-			AUI.Header.show(e);				
+			AUI.Header.show(e.msg);				
 			throw(e);
 		};
 	};
@@ -30,7 +30,7 @@ if (!AUI.SetRequest) {
 			AUI.Logger.info("writePort: "+address+"="+value);
 			return this.rpc.AUI.writePortValue(address,value);
 		} catch(e) {
-			AUI.Header.show(e);				
+			AUI.Header.show(e.msg);				
 			throw(e);
 		};
 	};

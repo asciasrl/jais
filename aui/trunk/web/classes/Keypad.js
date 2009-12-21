@@ -111,7 +111,9 @@ AUI.Keypad.key = function(ev) {
 			this.hide();
 			break;
 		case 'ok':
-			if (this.rpc.Alarm.pin(this.pin)) {
+			if (this.rpc.Alarm == undefined) {
+				alert("Server error");
+			} else if (this.rpc.Alarm.pin(this.pin)) {
 				this.rpc.Alarm.toggle();
 				/*
 				if (this.rpc.Alarm.isArmed()) {

@@ -8,9 +8,6 @@ import java.util.LinkedList;
 import org.apache.log4j.Logger;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Connector;
-import it.ascia.ais.Device;
-import it.ascia.ais.DeviceEvent;
 
 /**
  * Centralina Bentel KYO8.
@@ -20,7 +17,7 @@ import it.ascia.ais.DeviceEvent;
  * 
  * @author arrigo
  */
-public class JBisKyoDevice extends Device {
+public class JBisKyoDevice {
 	/**
 	 * Dimensione massima del registro interno alla centralina (n. di eventi).
 	 */
@@ -217,15 +214,15 @@ public class JBisKyoDevice extends Device {
 		for (i = 0; i < 8; i++) {
 			int b = 1 << i;
 			if ((oldAlarms & b) != (newAlarms & b)) {
-				DeviceEvent event;
+				//DeviceEvent event;
 				String newValue;
 				if ((newAlarms & b) != 0) {
 					newValue = "ON";
 				} else {
 					newValue = "OFF";
 				}
-				event = new DeviceEvent(this, portNames[i], newValue);
-				connector.onDeviceEvent(event);
+				//event = new DeviceEvent(this, portNames[i], newValue);
+				//connector.onDeviceEvent(event);
 			}
 		}
 	}
@@ -385,6 +382,25 @@ public class JBisKyoDevice extends Device {
 		connector.sendCommand(0x383, null);
 	}
 	
+	public void readRealtimeStatus() throws JBisException {
+		connector.sendCommand(0x304, null);
+	}
+
+	public void readStatus() throws JBisException {
+		connector.sendCommand(0x305, null);
+	}
+
+	public void readZonesDescriptions() throws JBisException {
+		connector.sendCommand(0x302, null);
+	}
+	
+	public void partition(byte mask,byte type) throws JBisException {
+		byte[] data = new byte[2];
+		data[0] = mask;
+		data[1] = type;
+		connector.sendCommand(0x382, data);
+	}
+
 	/**
 	 * Verifica la presenza di un allarme in un'area.
 	 * 
@@ -500,13 +516,6 @@ public class JBisKyoDevice extends Device {
 		return "0";
 	}
 
-	/* (non-Javadoc)
-	 * @see it.ascia.ais.Device#getConnector()
-	 */
-	public Connector getConnector() {
-		return connector;
-	}
-
 	/**
 	 * Ritorna il valore di una o piu' porte, basandosi sui bit di stato.
 	 * 
@@ -518,7 +527,8 @@ public class JBisKyoDevice extends Device {
 	 */
 	private String getPort(String portName, byte status, String portNames[]) {
 		String retval = "";
-		String compactName = connector.getName() + "." + getAddress();
+		//String compactName = connector.getName() + "." + getAddress();
+		String compactName = "jbis.test";
 		int i;
 		for (i = 0; i < portNames.length; i++) {
 			String thisPort = portNames[i];
@@ -562,21 +572,13 @@ public class JBisKyoDevice extends Device {
 		return retval;
 	}
 
-	/* (non-Javadoc)
-	 * @see it.ascia.ais.Device#setPort(java.lang.String, java.lang.String)
-	 */
-	public void poke(String port, String value) throws AISException {
-		throw new AISException("Unsupported.");
-	}
-
-	public String peek(String portId) throws AISException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	protected void generateEvent(String port, String value) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public void readPartitionsDescription() {
+		connector.sendCommand(0x303, null);		
 	}
 
 }

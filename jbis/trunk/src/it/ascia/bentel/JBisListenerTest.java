@@ -5,8 +5,6 @@ package it.ascia.bentel;
 
 import java.io.IOException;
 
-import org.apache.log4j.PropertyConfigurator;
-
 /**
  * Test per JBisListener.
  * 
@@ -22,7 +20,7 @@ public class JBisListenerTest {
 		String defaultPort = "COM1";
 		JBisListener centralina;
 	    // Inizializzazione logger
-	    PropertyConfigurator.configure("conf/log4j.conf");
+	    //PropertyConfigurator.configure("conf/log4j.conf");
 	 	if (args.length > 0) {
 		    defaultPort = args[0];
 		}

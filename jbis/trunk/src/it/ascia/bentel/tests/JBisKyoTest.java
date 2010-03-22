@@ -1,9 +1,11 @@
 /**
  * Copyright (C) 2008 ASCIA S.r.l.
  */
-package it.ascia.bentel;
+package it.ascia.bentel.tests;
 
-import it.ascia.ais.DeviceEvent;
+import it.ascia.bentel.JBisException;
+import it.ascia.bentel.JBisKyoDevice;
+import it.ascia.bentel.JBisKyoUnit;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -75,8 +77,8 @@ public class JBisKyoTest {
 		PropertyConfigurator.configure("conf/log4j.conf");
 		stdin = new BufferedReader(new InputStreamReader(System.in));
 		try {
-			b = new JBisKyoUnit(1,4,"0025", "jbis");
-			d = (JBisKyoDevice)(b.getDevices("0")[0]);
+			b = new JBisKyoUnit(1,4,"0025", "jbis");			
+			d = (JBisKyoDevice)(b.getDevice());
 			/*b.updateStatus();
 			if (b.hasAlarms()) {
 				System.out.println("Allarmi:");
@@ -136,9 +138,11 @@ public class JBisKyoTest {
 		}
 	}
 
+	/*
 	public void statusChanged(DeviceEvent event) {
 		System.err.println(event.getInfo());		
 	}
+	*/
 
 	
 }

@@ -3,10 +3,12 @@
  */
 package it.ascia.bentel;
 
-import it.ascia.ais.AISException;
-
 import org.apache.log4j.Logger;
 
+import it.ascia.ais.AISException;
+import it.ascia.ais.Connector;
+import it.ascia.ais.Device;
+import it.ascia.ais.Message;
 /**
  * Interfaccia di comunicazione con la centralina Bentel Kyo8.
  * 
@@ -84,10 +86,12 @@ public class JBisKyoUnit implements  Runnable {
 	 * @param s Numero porta seriale (1 - COM1 ... 4 - COM4)
 	 * @param t Numero di ritentativi in caso di errore di comunicazione (result = 3)
 	 * @param p PIN di accesso alle funzioni con password
+	 * @throws AISException 
 	 */
 	public JBisKyoUnit(int s, int t, String p, String connectorName) 
 	throws AISException
 	{
+		super(connectorName, null);
 	    logger = Logger.getLogger(getClass());
 	    logger.info("Bentel GW (C) Ascia S.r.l. 2007-2008");
 		seriale = (byte)s;
@@ -245,4 +249,17 @@ public class JBisKyoUnit implements  Runnable {
 	}
 	*/
 
+	public String getName() {
+		return name;
+	}
+
+	public boolean sendMessage(Message m) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void received(byte b) {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -1,18 +1,9 @@
 package it.ascia.ais;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Vector;
 
 import org.apache.commons.configuration.AbstractHierarchicalFileConfiguration;
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
-import org.apache.commons.configuration.SubnodeConfiguration;
-import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.commons.configuration.tree.ConfigurationNode;
-import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.apache.log4j.Logger;
 
 /**
@@ -29,7 +20,9 @@ public abstract class ControllerModule {
     protected Logger logger;
     
     private HierarchicalConfiguration configuration;
-    
+
+	private Vector<Connector> myConnectors = new Vector<Connector>();
+	
 	private String configurationFilename;
 
 	private boolean running;
@@ -53,10 +46,30 @@ public abstract class ControllerModule {
 	};
 	
 	/**
+	 * Add a connector to this module
+	 * Also call Connector.setModule(this)
+	 * @param connector
+	 */
+	protected void addConnector(Connector connector) {
+		connector.setModule(this);
+		myConnectors.add(connector);
+	}
+	
+	protected Vector<Connector> getConnectors() {
+		return myConnectors;
+	}
+	
+	/**
 	 * Stop module and reset running
+	 * Close all connectors
 	 * In subclasses super.stop() must be the first instruction
 	 */
 	public void stop() {
+		for (Connector connector : myConnectors) {
+			logger.debug("Closing connector: "+connector.getName());
+			connector.close();
+			logger.trace("Closed connector: "+connector.getName());
+		}
 		running = false;		
 	};
 

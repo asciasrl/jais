@@ -3,13 +3,9 @@ package it.ascia.ais;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
 
 public abstract class BUSControllerModule extends ControllerModule {
 
-	protected List myConnectors = new Vector();
-	
 	protected AutoUpdater autoUpdater = null;
 	
 	public void start() {
@@ -31,13 +27,6 @@ public abstract class BUSControllerModule extends ControllerModule {
 			} catch (InterruptedException e) {
 				logger.debug("Interrotto:",e);
 			}
-		}
-		for (Iterator c = myConnectors.iterator(); c.hasNext();)
-		{
-			Connector connector = (Connector) c.next(); 
-			logger.debug("Chiusura connettore "+connector.getName());
-			connector.close();
-			logger.trace("Chiuso connettore "+connector.getName());
 		}
 		super.stop();
 	}
@@ -91,7 +80,7 @@ public abstract class BUSControllerModule extends ControllerModule {
 							wait(autoupdate);							
 						}
 						//logger.trace("Autoupdate");
-						for (Iterator c = myConnectors.iterator(); c.hasNext();)
+						for (Iterator c = getConnectors().iterator(); c.hasNext();)
 						{
 							Connector connector = (Connector) c.next();
 							HashMap devices = connector.getDevices();

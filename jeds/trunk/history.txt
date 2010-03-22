@@ -7,7 +7,7 @@ Revision History EDS
 
 TODO
 ----
- + Comandi di gruppo
+ + Comandi di gruppo: EDSConnector.getDevice() ritorna un EDSGroupDevice 
  # Deprecato Connector.queueMessage (serviva per il discover, ora in Thread separato)
  # BMC.updateStatus non dovrebbe ritornare un tempo di attesa: bisogna modificare EDSConnector.dispatchMessage in modo che faccia il dispatch PRIMA di messageToBeAnswered.notify()
  ! La richiesta RTCC di BMCRegT che si fa in 3 messaggi deve modificare atomicamente la porta dopo la ricezione dell'ultimo dei 3 entro un tempo basso (es. 1 secondo)

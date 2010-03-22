@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<jais:configuration version="1.4">
+  <BentelKyo>
+    <autoupdate>5000</autoupdate>
+    <connectors>
+      <connector>
+        <name>ro</name>
+        <transport>
+          <type>serial</type>
+          <speed>9600</speed>
+          <port>COM9</port>
+          <parity>2</parity>
+        </transport>
+      </connector>
+      <connector>
+        <name>rw</name>
+        <transport>
+          <type>serial</type>
+          <speed>9600</speed>
+          <port>COM6</port>
+          <parity>2</parity>
+        </transport>
+      </connector>
+<!--       
+-->      
+    </connectors> 
+  </BentelKyo>
+</jais:configuration>

@@ -91,7 +91,7 @@ public class JBisKyoUnit implements  Runnable {
 	public JBisKyoUnit(int s, int t, String p, String connectorName) 
 	throws AISException
 	{
-		super(connectorName, null);
+		// FIXME super(connectorName, null);
 	    logger = Logger.getLogger(getClass());
 	    logger.info("Bentel GW (C) Ascia S.r.l. 2007-2008");
 		seriale = (byte)s;

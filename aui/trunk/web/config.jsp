@@ -35,7 +35,7 @@
 <div id="page">Selezionare la pagina da modificare</div>
 
 <div id="footer">
-&copy; 2009 <a href="http://www.ascia.it/" target="_blank">ASCIA S.r.l. </a>
+&copy; 2009-2010 <a href="http://www.ascia.it/" target="_blank">ASCIA S.r.l. </a>
 </div>
 
 <div id="mask"></div>

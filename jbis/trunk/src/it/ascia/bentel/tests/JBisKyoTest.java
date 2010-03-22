@@ -3,7 +3,7 @@
  */
 package it.ascia.bentel.tests;
 
-import it.ascia.bentel.JBisException;
+import it.ascia.ais.AISException;
 import it.ascia.bentel.JBisKyoDevice;
 import it.ascia.bentel.JBisKyoUnit;
 
@@ -54,7 +54,7 @@ public class JBisKyoTest {
 				System.out.print("On ");
 				try {
 					d.setOutput(port, true);
-				} catch (JBisException e1) {
+				} catch (AISException e1) {
 					System.err.println(e1.getMessage());
 				}
 				try {
@@ -65,7 +65,7 @@ public class JBisKyoTest {
 				System.out.print(" Off");
 				try {
 					d.setOutput(port, false);
-				} catch (JBisException e) {
+				} catch (AISException e) {
 					System.err.println(e.getMessage());
 				}
 				System.out.println(d.getStatus("*", 0));
@@ -132,7 +132,7 @@ public class JBisKyoTest {
 			b.start();
 			testSetOutput();
 			b.stop();
-		} catch (JBisException e) {
+		} catch (AISException e) {
 			System.err.println(e.getMessage());
 			System.exit(-1);
 		}

@@ -3,6 +3,8 @@
  */
 package it.ascia.bentel;
 
+import it.ascia.ais.AISException;
+
 import java.io.IOException;
 
 /**
@@ -32,7 +34,7 @@ public class JBisListenerTest {
 	 	} catch (IOException e) {
 	 		System.err.println(e.getMessage());
 	 		System.exit(-1);
-	 	} catch (JBisException e) {
+	 	} catch (AISException e) {
 	 		System.err.println(e.getMessage());
 	 		System.exit(-1);
 	 	}

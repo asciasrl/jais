@@ -3,11 +3,11 @@
  */
 package it.ascia.bentel;
 
+import it.ascia.ais.AISException;
+
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
-
-import it.ascia.ais.AISException;
 
 /**
  * Centralina Bentel KYO8.
@@ -236,7 +236,7 @@ public class JBisKyoDevice {
 	 *
 	 * <p>Se lo stato cambia, vengono generati gli eventi corrispondenti.</p>
 	 */
-	public void updateStatus() throws JBisException {
+	public void updateStatus() throws AISException {
 		byte[] data = connector.sendCommand(0x304, null);
 		byte oldValue;
 		oldValue = zoneAlarms;
@@ -378,23 +378,23 @@ public class JBisKyoDevice {
 	/**
 	 * Invia un comando di reset allarmi.
 	 */
-	public void resetAlarm() throws JBisException {
+	public void resetAlarm() throws AISException {
 		connector.sendCommand(0x383, null);
 	}
 	
-	public void readRealtimeStatus() throws JBisException {
+	public void readRealtimeStatus() throws AISException {
 		connector.sendCommand(0x304, null);
 	}
 
-	public void readStatus() throws JBisException {
+	public void readStatus() throws AISException {
 		connector.sendCommand(0x305, null);
 	}
 
-	public void readZonesDescriptions() throws JBisException {
+	public void readZonesDescriptions() throws AISException {
 		connector.sendCommand(0x302, null);
 	}
 	
-	public void partition(byte mask,byte type) throws JBisException {
+	public void partition(byte mask,byte type) throws AISException {
 		byte[] data = new byte[2];
 		data[0] = mask;
 		data[1] = type;
@@ -450,9 +450,9 @@ public class JBisKyoDevice {
 	 * <p>Richiede il registro degli ultimi eventi alla centralina e (ri)crea
 	 * il registro interno di questa classe.</p>
 	 * 
-	 * @throws JBisException in caso di errore di accesso alla centralina.
+	 * @throws AISException in caso di errore di accesso alla centralina.
 	 */
-	public void updateLog() throws JBisException {
+	public void updateLog() throws AISException {
 		logger.debug("Lettura log centralina...");
 		byte[] data = connector.sendCommand(0x30d, null);
 		int eventsNumber, firstEvent, event, eventAddress;
@@ -493,9 +493,9 @@ public class JBisKyoDevice {
 	 * @param port numero dell'uscita
 	 * @param value true per attivare, false per disattivare
 	 * 
-	 * @throws JBisException in caso di errore
+	 * @throws AISException in caso di errore
 	 */
-	public void setOutput(int port, boolean value) throws JBisException {
+	public void setOutput(int port, boolean value) throws AISException {
 		int command;
 		byte data[] = new byte[1];
 		data[0] = (byte)(port & 0xff);

@@ -32,6 +32,12 @@ public class AlarmRPCServer implements Serializable {
 		module = controllerModule;
 	}
 	
+	/**
+	 * Check PIN and save in the session
+	 * @param session
+	 * @param pin
+	 * @return
+	 */
 	public boolean pin(HttpSession session, String pin) {
 		if (module.checkPin(pin)) {
 			session.setAttribute(ATTRIBUTE_PIN,pin);

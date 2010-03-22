@@ -1,3 +1,4 @@
+
 package it.ascia.alarm;
 
 import java.beans.PropertyChangeEvent;
@@ -9,6 +10,12 @@ import it.ascia.ais.Address;
 import it.ascia.ais.ControllerModule;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.DevicePortChangeEvent;
+
+/**
+ * Allarme antintrusione software
+ * @author Sergio
+ * (C) 2009-2010 Ascia S.r.l.
+ */
 
 public class AlarmControllerModule extends ControllerModule implements PropertyChangeListener {
 
@@ -33,6 +40,9 @@ public class AlarmControllerModule extends ControllerModule implements PropertyC
 
 	private Thread alarmThread;
 	
+	/**
+	 * Read configuration parameters and register alarm RPC server
+	 */
 	public void start() {		
 		alarmArmedPortId = getConfiguration().getString("alarmArmedPortId",null);
 		alarmArmedPort = controller.getDevicePort(new Address(alarmArmedPortId));
@@ -59,13 +69,16 @@ public class AlarmControllerModule extends ControllerModule implements PropertyC
 	}
 	
 	/**
-	 * 
+	 * Check if alarm is armed or not (disarmed)
 	 * @return value of alarmArmedPort
 	 */
 	public boolean isArmed() {
 		return ((Boolean) (alarmArmedPort.getValue())).booleanValue();
 	}
 	
+	/**
+	 * Handle sensor events and alarm cancellation
+	 */
 	public void propertyChange(PropertyChangeEvent evt) {
 		if (DevicePortChangeEvent.class.isInstance(evt)) {
 			String address = ((DevicePortChangeEvent)evt).getFullAddress();
@@ -76,6 +89,7 @@ public class AlarmControllerModule extends ControllerModule implements PropertyC
 			}
 			if (!Boolean.class.isInstance(value)) {
 				logger.error("Port "+address+" must be Boolean, not "+value.getClass().getSimpleName());
+				return;
 			}
 			boolean bValue = ((Boolean)value).booleanValue(); 
 			logger.debug("Ricevuto: "+address+"="+value);
@@ -112,7 +126,10 @@ public class AlarmControllerModule extends ControllerModule implements PropertyC
 		}
 	}
 
-	class AlarmThread extends Thread {
+	/**
+	 * Perform an alarm cycle
+	 */
+	private class AlarmThread extends Thread {
 		public void run() {
 			try {
 				logger.info("Start entering delay "+enterDelay/1000+"sec");
@@ -132,11 +149,21 @@ public class AlarmControllerModule extends ControllerModule implements PropertyC
 		}
 	}
 
+	/**
+	 * Check user code
+	 * @param pin
+	 * @return true if pin is valid
+	 */
 	public boolean checkPin(String pin) {
 		String pin1 = getConfiguration().getString("PIN",null);
 		return pin.equals(pin1);
 	}
 	
+	/**
+	 * arm (enable) alarm
+	 * @param pin
+	 * @return true if pin is valid and successfully armed
+	 */
 	public boolean arm(String pin) {
 		if (checkPin(pin)) {
 			if (alarmArmedPort.writeValue(new Boolean(true))) {
@@ -147,6 +174,11 @@ public class AlarmControllerModule extends ControllerModule implements PropertyC
 		return false;
 	}
 	
+	/**
+	 * disarm (disable) alarm
+	 * @param pin
+	 * @return true if pin is valid and successfully disarmed
+	 */
 	public boolean disarm(String pin) {
 		if (checkPin(pin)) {
 			if (alarmArmedPort.writeValue(new Boolean(false))) {
@@ -157,6 +189,11 @@ public class AlarmControllerModule extends ControllerModule implements PropertyC
 		return false;
 	}
 
+	/**
+	 * Toggle (arm/disarm) status
+	 * @param pin
+	 * @return true if pin is valid and successfully armed or disarmed
+	 */
 	public boolean toggle(String pin) {
 		if (isArmed()) {
 			return disarm(pin);

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<jais:configuration>
+<jais:configuration version="1.4">
 <AUI>
+<webroot>../aui/web</webroot>
 <startPage>Hbox</startPage>
 <title>ASCIA HomeInTheBox [AUI 0.1]</title>
 <skin>skins/20090330/</skin>
@@ -133,7 +134,7 @@
 </area>
 </page>
 <page id="piani">
-<title>Piani</title>
+<title>Selezione Piani</title>
 <src>images/assonometria320x370.png</src>
 <control id="back">
 <title>Screensaver</title>
@@ -159,14 +160,17 @@
 </area>
 </page>
 <page id="test">
-<src>images/piani-all.png</src>
+<src>/images/piani-all.png</src>
 <control id="back">
 <title>Torna alla selezione dei piani</title>
 <type>page</type>
 <page>piani</page>
 <left>0</left>
 <top>0</top>
+<address/>
+<layer/>
 </control>
+<title>Edifici</title>
 </page>
 <page id="pianoT">
 <title>Mappa piano terra</title>
@@ -214,36 +218,40 @@
 <title>Luce scale</title>
 <type>dimmer</type>
 <layer>light</layer>
-<left>100</left>
-<top>300</top>
+<left>170</left>
+<top>350</top>
 <address>2.5:Out1</address>
 </control>
 </page>
 <page id="Hbox">
 <title>Home in The Box</title>
-<src>/images/test2-HIRES.png</src>
+<src>/images/HBox.jpg</src>
 <control id="back">
-<title>Torna alla selezione dei piani</title>
+<title>Torna alla selezione dei piani dell'edificio</title>
 <type>page</type>
 <page>piani</page>
 <left>30</left>
 <top>180</top>
+<address/>
+<layer/>
 </control>
 <control id="l1">
 <title>Luce scale</title>
 <type>light</type>
 <layer>light</layer>
-<top>145</top>
-<left>105</left>
+<top>150</top>
+<left>100</left>
 <address>2.3:Out5</address>
+<page/>
 </control>
 <control id="l1a">
 <title>Luce bis</title>
 <type>light</type>
 <layer>light</layer>
-<top>145</top>
-<left>165</left>
+<top>150</top>
+<left>160</left>
 <address>2.3:Out5</address>
+<page/>
 </control>
 <control id="l2">
 <title>Luce ingresso</title>
@@ -252,6 +260,7 @@
 <top>225</top>
 <left>495</left>
 <address>2.5:Out1</address>
+<page/>
 </control>
 <control id="porta">
 <title>Apriporta</title>
@@ -325,18 +334,14 @@
 <top>300</top>
 <left>10</left>
 <address>2.7:temp</address>
-<address>2.7:season</address>
-<address>2.7:state</address>
-<up_address>2.7:stp_up</up_address>
-<dn_address>2.7:stp_up</dn_address>
 </control>
 <control id="c2">
 <title>Cronotermostato WDB</title>
 <type>thermo</type>
 <model>eds.regt</model>
 <layer>thermo</layer>
-<top>0</top>
-<left>500</left>
+<top>50</top>
+<left>190</left>
 <address>1.255:temp</address>
 </control>
 <control id="p1">
@@ -401,6 +406,15 @@
 <address>2.6:Scene4</address>
 <default>images/scene-relax.png</default>
 </control>
+<control id="light21">
+<type>light</type>
+<title>Nuovo controllo light21</title>
+<top>310</top>
+<left>200</left>
+<address/>
+<page/>
+<layer>light</layer>
+</control>
 </page>
 <page id="chrono_c1">
 <title>Test crono</title>
@@ -428,6 +442,55 @@
 <manual_address>2.7:manual</manual_address>
 <off_address>2.7:manual</off_address>
 <temp_t0_address>2.7:manual</temp_t0_address>
+</control>
+</page>
+<page id="test2">
+<title>Test</title>
+<src>/images/edskit5.jpg</src>
+<control id="page1">
+<type>page</type>
+<title>Nuovo controllo page1</title>
+<top>0</top>
+<left>0</left>
+<address/>
+<page>screensaver</page>
+<layer/>
+</control>
+<control id="light2">
+<type>light</type>
+<title>Nuovo controllo light2</title>
+<top>330</top>
+<left>90</left>
+<address>2.3:Out5</address>
+<page/>
+<layer>light</layer>
+</control>
+<control id="light3">
+<type>light</type>
+<title>Nuovo controllo light3</title>
+<top>290</top>
+<left>240</left>
+<layer>light</layer>
+<address>2.3:Out7</address>
+<page/>
+</control>
+<control id="dimmer4">
+<type>dimmer</type>
+<title>Nuovo controllo dimmer4</title>
+<top>200</top>
+<left>150</left>
+<address>2.5:Out1</address>
+<page/>
+<layer>light</layer>
+</control>
+<control id="blind5">
+<type>blind</type>
+<title>Nuovo controllo blind5</title>
+<top>20</top>
+<left>150</left>
+<address>2.3:Blind1</address>
+<page/>
+<layer/>
 </control>
 </page>
 </pages>

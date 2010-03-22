@@ -17,6 +17,7 @@ import org.jabsorb.JSONRPCBridge;
 // TODO Eliminare riferimenti a jsonsimple (usare org.json di jabsorb)
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.mortbay.jetty.servlet.Context;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Address;
@@ -41,8 +42,19 @@ public class AUIControllerModule extends ControllerModule {
 	public void start() {
 		super.start();
 		HTTPServerControllerModule h = (HTTPServerControllerModule) Controller.getController().getModule("HTTPServer");
-		h.addServlet(new AUIStreamingServlet(),"/stream/*");
-		h.addServlet(new AUIServlet(),"/aui/*");
+
+		HierarchicalConfiguration config = getConfiguration();
+		String webroot = config.getString("webroot","web");
+		logger.info("AUI web root is: "+webroot);
+		
+		h.addContext("/", webroot);
+
+		Context aui = h.addContext("/aui");
+		h.addServlet(new AUIServlet(),aui,"/*");
+
+		Context stream = h.addContext("/stream");
+		h.addServlet(new AUIStreamingServlet(),stream,"/*");
+
 		JSONRPCBridge.getGlobalBridge().registerObject("AUI", new AUIRPCServer(this));
 	}
 	

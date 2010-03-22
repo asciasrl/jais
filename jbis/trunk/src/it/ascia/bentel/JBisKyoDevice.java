@@ -195,10 +195,10 @@ public class JBisKyoDevice {
 	private Logger logger;
 	
 	public JBisKyoDevice(JBisKyoUnit connector) throws AISException {
-		super(connector);
 		logger = Logger.getLogger(getClass());
 		eventLog = new LinkedList();
 		statusTime = 0;
+		this.connector = connector;
 	}
 	
 	/**
@@ -222,8 +222,8 @@ public class JBisKyoDevice {
 				} else {
 					newValue = "OFF";
 				}
-				event = new DevicePortChangeEvent(this, portNames[i], newValue);
-				connector.onDevicePortChangeEvent(event);
+				// FIXME event = new DevicePortChangeEvent(this, portNames[i], newValue);
+				// FIXME connector.onDevicePortChangeEvent(event);
 			}
 		}
 	}
@@ -573,7 +573,6 @@ public class JBisKyoDevice {
 		return retval;
 	}
 
-<<<<<<< .mine
 	protected void generateEvent(String port, String value) {
 		// TODO Auto-generated method stub
 		
@@ -584,8 +583,6 @@ public class JBisKyoDevice {
 		return 0;		
 	}
 
-=======
->>>>>>> .r869
 	public void writePort(String portId, Object newValue) throws AISException {
 		// TODO Auto-generated method stub
 		
@@ -594,5 +591,4 @@ public class JBisKyoDevice {
 	public void readPartitionsDescription() {
 		connector.sendCommand(0x303, null);		
 	}
-
 }

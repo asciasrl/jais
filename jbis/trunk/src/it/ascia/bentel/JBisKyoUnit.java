@@ -5,16 +5,12 @@ package it.ascia.bentel;
 
 import org.apache.log4j.Logger;
 
-import it.ascia.ais.Connector;
-import it.ascia.ais.Device;
-import it.ascia.ais.MessageInterface;
-
 /**
  * Interfaccia di comunicazione con la centralina Bentel Kyo8.
  * 
  * @author sergio, arrigo
  */
-public class JBisKyoUnit extends Connector implements  Runnable {
+public class JBisKyoUnit implements  Runnable {
 	/**
 	 * Attesa tra due polling dello stato [msec].
 	 */
@@ -96,6 +92,7 @@ public class JBisKyoUnit extends Connector implements  Runnable {
 		tentativi = (byte)t;
 		PIN = p;
 		name = connectorName;
+        System.loadLibrary("JBisKyoUnit");
 		if (!openLibrary()) {
 			throw new JBisException("Impossibile aprire la DLL");
 		}
@@ -153,10 +150,12 @@ public class JBisKyoUnit extends Connector implements  Runnable {
 	
 	
 
+	/*
     static
     {
         System.loadLibrary("JBisKyoUnit");
     }
+    */
 
     /**
      * Comunicazione con la centralina attraverso la seriale.
@@ -227,6 +226,11 @@ public class JBisKyoUnit extends Connector implements  Runnable {
 		}
 	}
 
+	public JBisKyoDevice getDevice() {
+		return device;
+	}
+
+	/*
 	public Device[] getDevices(String address) {
 		Device retval[];
 		if (address.equals("0") || address.equals("*")) {
@@ -237,19 +241,6 @@ public class JBisKyoUnit extends Connector implements  Runnable {
 		}
 		return retval;
 	}
+	*/
 
-	public String getName() {
-		return name;
-	}
-
-	public void readData() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public boolean sendMessage(MessageInterface m) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
 }

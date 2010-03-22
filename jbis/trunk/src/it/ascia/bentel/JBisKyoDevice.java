@@ -3,11 +3,12 @@
  */
 package it.ascia.bentel;
 
-import it.ascia.ais.AISException;
-
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
+
+import it.ascia.ais.AISException;
+import it.ascia.ais.DevicePortChangeEvent;
 
 /**
  * Centralina Bentel KYO8.
@@ -193,10 +194,10 @@ public class JBisKyoDevice {
 	 */
 	private Logger logger;
 	
-	public JBisKyoDevice(JBisKyoUnit connector) {
+	public JBisKyoDevice(JBisKyoUnit connector) throws AISException {
+		super(connector);
 		logger = Logger.getLogger(getClass());
 		eventLog = new LinkedList();
-		this.connector = connector;
 		statusTime = 0;
 	}
 	
@@ -214,15 +215,15 @@ public class JBisKyoDevice {
 		for (i = 0; i < 8; i++) {
 			int b = 1 << i;
 			if ((oldAlarms & b) != (newAlarms & b)) {
-				//DeviceEvent event;
+				DevicePortChangeEvent event;
 				String newValue;
 				if ((newAlarms & b) != 0) {
 					newValue = "ON";
 				} else {
 					newValue = "OFF";
 				}
-				//event = new DeviceEvent(this, portNames[i], newValue);
-				//connector.onDeviceEvent(event);
+				event = new DevicePortChangeEvent(this, portNames[i], newValue);
+				connector.onDevicePortChangeEvent(event);
 			}
 		}
 	}
@@ -572,7 +573,20 @@ public class JBisKyoDevice {
 		return retval;
 	}
 
+<<<<<<< .mine
 	protected void generateEvent(String port, String value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public long updatePort(String portId) {
+		// TODO Auto-generated method stub
+		return 0;		
+	}
+
+=======
+>>>>>>> .r869
+	public void writePort(String portId, Object newValue) throws AISException {
 		// TODO Auto-generated method stub
 		
 	}

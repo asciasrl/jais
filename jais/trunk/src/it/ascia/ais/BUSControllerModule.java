@@ -3,9 +3,18 @@ package it.ascia.ais;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
+/**
+ * Modulo che ha dei connettori ed effettua un aggiornamento automatico dei relativi devices
+ * @author Sergio
+ *
+ */
 public abstract class BUSControllerModule extends ControllerModule {
 
+	protected List<Connector> myConnectors = new Vector<Connector>();
+	
 	protected AutoUpdater autoUpdater = null;
 	
 	public void start() {
@@ -28,6 +37,13 @@ public abstract class BUSControllerModule extends ControllerModule {
 				logger.debug("Interrotto:",e);
 			}
 		}
+		for (Iterator<Connector> c = myConnectors.iterator(); c.hasNext();)
+		{
+			Connector connector = (Connector) c.next(); 
+			logger.debug("Chiusura connettore "+connector.getName());
+			connector.close();
+			logger.trace("Chiuso connettore "+connector.getName());
+		}
 		super.stop();
 	}
 
@@ -38,7 +54,10 @@ public abstract class BUSControllerModule extends ControllerModule {
 	 */
 	public class AutoUpdater extends Thread {
 		
-		long autoupdate = 0;
+		/**
+		 * Default autoupdate scan time
+		 */
+		long autoupdate = 1000;
 		
 		private boolean running = false;
 		
@@ -80,12 +99,12 @@ public abstract class BUSControllerModule extends ControllerModule {
 							wait(autoupdate);							
 						}
 						//logger.trace("Autoupdate");
-						for (Iterator c = getConnectors().iterator(); c.hasNext();)
+						for (Iterator<Connector> c = myConnectors.iterator(); c.hasNext();)
 						{
 							Connector connector = (Connector) c.next();
-							HashMap devices = connector.getDevices();
-							for (Iterator iterator = devices.values().iterator(); iterator.hasNext();) {
-								Device device = (Device) iterator.next();
+							HashMap<String, Device> devices = connector.getDevices();
+							for (Iterator<Device> iterator = devices.values().iterator(); iterator.hasNext();) {
+								Device device = iterator.next();
 								if (device.isUnreachable()) {
 									break;
 								}

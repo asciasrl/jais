@@ -1,6 +1,8 @@
 package it.ascia.ais;
 
 import java.util.List;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
@@ -32,12 +34,14 @@ public abstract class Transport {
      */
     protected Connector connector;
     
+	protected Semaphore semaphore;
+
     /**
      * Costruttore.
-     * @param connector Il connettore associato
      */
     public Transport() {
 		logger = Logger.getLogger(getClass());
+		semaphore = new Semaphore(1,true);
     }
 
     public String toString()
@@ -95,6 +99,22 @@ public abstract class Transport {
 			throw(new AISException("Transport "+type+" non riconosciuto"));
 		}
  		return transport;
+	}
+
+	public boolean tryAcquire() {
+		try {
+			return semaphore.tryAcquire(0, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			return false;
+		}
+	}
+
+	public void acquire() throws InterruptedException {
+		semaphore.acquire();		
+	}
+
+	public void release() {
+		semaphore.release();
 	}
 
     

@@ -130,6 +130,7 @@ public abstract class Device {
 
 	/**
 	 * Aggiunge una porta al device
+	 * Also call DevicePort.setDevice(this)
 	 * @param port
 	 */
 	public void addPort(DevicePort port) {

@@ -3,6 +3,8 @@
  */
 package it.ascia.bentel;
 
+import it.ascia.ais.AISException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
@@ -138,7 +140,7 @@ public class JBisListener implements SerialPortEventListener {
 	 * @param portName nome della porta seriale (ad es. "COM1")
 	 */
 	public JBisListener(String portName/*, AlarmReceiver ar FIXME */) 
-	throws JBisException {
+	throws AISException {
 		boolean portFound = false;
 		Enumeration	portList;
 		logger = Logger.getLogger(getClass());
@@ -159,28 +161,28 @@ public class JBisListener implements SerialPortEventListener {
     	    }
     	} 
     	if (!portFound) {
-    	    throw new JBisException("porta " + portName + " non trovata.");
+    	    throw new AISException("porta " + portName + " non trovata.");
     	} 
 
     	logger.info("Connessione a " + portName); 
     	try {
     		serialPort = (SerialPort) portId.open("SerialTransport", 2000);
     	} catch (PortInUseException e) {
-	    	throw new JBisException("Porta in uso: " + e.toString());
+	    	throw new AISException("Porta in uso: " + e.toString());
     	}
 
 		try {
 		    inputStream = serialPort.getInputStream();
 		    // outputStream = serialPort.getOutputStream();
 		} catch (IOException e) {
-			throw new JBisException("Impossibile ottenere gli stream: " + 
+			throw new AISException("Impossibile ottenere gli stream: " + 
 					e.getMessage());
 		}
 		
 		try {
 		    serialPort.addEventListener(this);
 		} catch (TooManyListenersException e) {
-			throw new JBisException("Troppi listeners sulla porta:" + 
+			throw new AISException("Troppi listeners sulla porta:" + 
 					e.getMessage());
 		}
 
@@ -191,7 +193,7 @@ public class JBisListener implements SerialPortEventListener {
 						   SerialPort.STOPBITS_1, 
 						   SerialPort.PARITY_EVEN);
 		} catch (UnsupportedCommOperationException e) {
-			throw new JBisException("Errore durante l'impostazione dei " +
+			throw new AISException("Errore durante l'impostazione dei " +
 					"parametri:" + e.getMessage());
 		}
 	}

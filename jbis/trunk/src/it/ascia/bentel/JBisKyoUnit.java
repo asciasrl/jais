@@ -3,6 +3,8 @@
  */
 package it.ascia.bentel;
 
+import it.ascia.ais.AISException;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -84,7 +86,7 @@ public class JBisKyoUnit implements  Runnable {
 	 * @param p PIN di accesso alle funzioni con password
 	 */
 	public JBisKyoUnit(int s, int t, String p, String connectorName) 
-	throws JBisException
+	throws AISException
 	{
 	    logger = Logger.getLogger(getClass());
 	    logger.info("Bentel GW (C) Ascia S.r.l. 2007-2008");
@@ -94,7 +96,7 @@ public class JBisKyoUnit implements  Runnable {
 		name = connectorName;
         System.loadLibrary("JBisKyoUnit");
 		if (!openLibrary()) {
-			throw new JBisException("Impossibile aprire la DLL");
+			throw new AISException("Impossibile aprire la DLL");
 		}
 		dllReady = true;
 		device = new JBisKyoDevice(this);
@@ -126,11 +128,11 @@ public class JBisKyoUnit implements  Runnable {
 	 * @return l'array data popolata con i dati ritornati (o una nuova array se
 	 * data == null)
 	 * 
-	 * @throws JBisException in caso di errore.
+	 * @throws AISException in caso di errore.
 	 */
-	protected byte[] sendCommand(int command, byte data[]) throws JBisException {
+	protected byte[] sendCommand(int command, byte data[]) throws AISException {
     	if (!dllReady) {
-    		throw new JBisException("DLL Chiusa.");
+    		throw new AISException("DLL Chiusa.");
     	}
 		Integer[] res1 = new Integer[1];
 		res1[0] = Integer.valueOf(command);
@@ -141,7 +143,7 @@ public class JBisKyoUnit implements  Runnable {
     	if (result != 0) {
     		Byte[] res = new Byte[1];
     		res[0] = Byte.valueOf(result);
-    		throw new JBisException("Errore " + result + "(" + strerror(result) +
+    		throw new AISException("Errore " + result + "(" + strerror(result) +
     			")");
     		//data = new byte[0];
     	}
@@ -217,7 +219,7 @@ public class JBisKyoUnit implements  Runnable {
 				Thread.sleep(POLL_PERIOD);
 				try {
 					device.updateStatus();
-				} catch (JBisException e) {
+				} catch (AISException e) {
 					logger.warn("Errore durante il polling: " +	e.getMessage());
 				}
 			} // While !exiting

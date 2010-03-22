@@ -21,10 +21,11 @@ public class EDSControllerModule extends BUSControllerModule {
 		    HierarchicalConfiguration sub = (HierarchicalConfiguration) c.next();
 		 	EDSConnector eds = null;
 		 	try {
-		 		eds = new EDSConnector(sub.getString("name"),this,sub.getInt("computer",250));
+		 		eds = new EDSConnector(sub.getString("name"),sub.getInt("computer",250));
 			 	Transport transport = Transport.createTransport(sub);		 		
 		 		// associa transport e connector 
 		 		eds.addTransport(transport);
+		 		myConnectors.add(eds);
 			 	// effettua il discovery
 			 	List discover = sub.getList("discover",null);
 			 	if (discover == null) {
@@ -45,7 +46,6 @@ public class EDSControllerModule extends BUSControllerModule {
 			 	}				
 			 	// registra il connector
 				controller.addConnector(eds);		
-				myConnectors.add(eds);
 				List devices = sub.configurationsAt("devices.device");
 				for (Iterator d = devices.iterator(); d.hasNext();)
 				{

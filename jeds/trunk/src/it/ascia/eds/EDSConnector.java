@@ -15,7 +15,6 @@ import org.apache.commons.configuration.tree.ConfigurationNode;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
-import it.ascia.ais.ControllerModule;
 import it.ascia.ais.Message;
 import it.ascia.eds.device.*;
 import it.ascia.eds.msg.*;
@@ -94,8 +93,8 @@ public class EDSConnector extends Connector {
      * @param address 
      * @param edsControllerModule 
      */
-    public EDSConnector(String name, ControllerModule module, int myAddress) {
-    	super(name,module);
+    public EDSConnector(String name, int myAddress) {
+    	super(name);
 		this.myAddress = myAddress; 		
 		mp = new EDSMessageParser();
 		for (int i = 1; i <= 31; i++) {
@@ -248,10 +247,6 @@ public class EDSConnector extends Connector {
 	}
 
 	private void setGuardtime(long dt) {
-		// windows ho uno scheduler che non garantisce i tempi bassi 
-		if (dt > 0 && dt < 50) {
-			//dt += 30;
-		}
 		setGuardtimeEnd(dt + System.currentTimeMillis());
 		if (dt == 0) {
 			synchronized (this) {
@@ -273,11 +268,17 @@ public class EDSConnector extends Connector {
 	 * @return the time in millisecond to wait beacuse connector is in guard time
 	 */
 	private long getGuardtime() {
+		long dt = 0;
 		if (guardtimeEnd > 0 && guardtimeEnd >= System.currentTimeMillis()) {
-			return guardtimeEnd - System.currentTimeMillis();
-		} else {
-			return 0;
+			dt = guardtimeEnd - System.currentTimeMillis();
 		}
+		// windows ho uno scheduler che non garantisce i tempi bassi 
+		if (dt > 0 && dt < 30) {
+			if (System.getProperty("os.name").startsWith("Windows")) {
+			  dt += 30;
+			}
+		}
+		return dt;
 	}
 
 
@@ -309,9 +310,9 @@ public class EDSConnector extends Connector {
 				logger.trace("End guard time of "+guardtime+"mS");
 				guardtime = getGuardtime();
 			}			
-			if (!transportSemaphore.tryAcquire()) {
+			if (!transport.tryAcquire()) {
 				logger.trace("Start waiting for transport semaphore ...");
-				transportSemaphore.acquire();
+				transport.acquire();
 				logger.trace("Done waiting for transport semaphore.");
 			}
 			if (BroadcastMessage.class.isInstance(m)) {
@@ -330,7 +331,7 @@ public class EDSConnector extends Connector {
 		} catch (Exception e) {
 			logger.error("Exception:",e);
 		}
-		transportSemaphore.release();
+		transport.release();
 		return retval;
 	}
 

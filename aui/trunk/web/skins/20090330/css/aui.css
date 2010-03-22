@@ -223,6 +223,7 @@ div.webcam {
 	overflow: hidden; 
 	position: absolute;
 	bottom: 0px;
+	z-index: 100;
 }
 
 div.layer {

@@ -206,10 +206,10 @@ for (int iLayer = 0;  iLayer < (5 + nLayers); iLayer++) {
 	<img id="slider-cursor" src="<%= skin %>/images/slider-cursor.png" width="128" height="130" />
 </div>
 
-<script language="javascript" src="classes/mootools-1.2.3-core-nc.js"></script>
-<script language="javascript" src="classes/mootools-1.2.3.1-more.js"></script>
+<script type="text/javascript" language="javascript" src="classes/mootools-1.2.3-core-nc.js"></script>
+<script type="text/javascript" language="javascript" src="classes/mootools-1.2.3.1-more.js"></script>
 
-<script language="javascript" src="classes/jsonrpc.js"></script>
+<script type="text/javascript" language="javascript" src="classes/jsonrpc.js"></script>
 
 <script type="text/javascript" language="javascript" src="classes/AUI.js"></script>
 <script type="text/javascript" language="javascript" src="classes/Logger.js"></script>
@@ -235,7 +235,7 @@ for (int iLayer = 0;  iLayer < (5 + nLayers); iLayer++) {
 <script type="text/javascript" language="javascript" src="classes/Keypad.js"></script>
 <script type="text/javascript" language="javascript" src="classes/Prealarm.js"></script>
 
-<script language="javascript">
+<script language="javascript" type="text/javascript">
 AUI.Controls.controls = <%= auiControllerModule.getControls() %>;
 AUI.Controls.addresses = <%= auiControllerModule.getAddresses() %>;
 AUI.Pages.pageLayers = <%= auiControllerModule.getPageLayerControls() %>;
@@ -244,13 +244,13 @@ var skin = '<%= skin %>';
 </script>
 
 <% if (debug) { %>
-<script language="javascript">
+<script language="javascript" type="text/javascript">
 AUI.Logger.setLevel(<%= debugLevel %>);
 var debug = true;
 </script>
 <% } %>
 
-<script language="javascript">
+<script language="javascript" type="text/javascript">
 AUI.Pages.setCurrentPageId("page-<%= startPage %>");
 </script>
 

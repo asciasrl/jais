@@ -3,10 +3,6 @@
 	<logger file="conf/log4j.xml" configurator="DOMConfigurator" />
 	<locale language="it" country="IT" />
   <modules>
-    <module name="HTTPServer">
-      <class>it.ascia.ais.HTTPServerControllerModule</class>
-      <config>conf/HTTPServer.xml</config>
-    </module>
     <module name="EDS">
       <class>it.ascia.eds.EDSControllerModule</class>
       <config>conf/EDS.xml</config>
@@ -16,17 +12,29 @@
       <class>it.ascia.dxp.DXPControllerModule</class>
       <config>conf/DXP.xml</config>
     </module>
+-->    
+<!--    
+    <module name="Cmd">
+      <class>it.ascia.ais.CmdControllerModule</class>
+    </module>
+-->
+    <module name="Alarm">
+      <class>it.ascia.alarm.AlarmControllerModule</class>
+      <config>conf/Alarm.xml</config>
+    </module>
+<!--     
+    <module name="BentelKyo">
+      <class>it.ascia.bentel.BentelKyoControllerModule</class>
+      <config>conf/BentelKyo.xml</config>
+    </module>
 -->
     <module name="AUI">
       <class>it.ascia.aui.AUIControllerModule</class>
       <config>conf/AUI.xml</config>
     </module>
-    <module name="Cmd">
-      <class>it.ascia.ais.CmdControllerModule</class>
-    </module>
-    <module name="Alarm">
-      <class>it.ascia.alarm.AlarmControllerModule</class>
-      <config>conf/Alarm.xml</config>
+    <module name="HTTPServer">
+      <class>it.ascia.ais.HTTPServerControllerModule</class>
+      <config>conf/HTTPServer.xml</config>
     </module>
   </modules>
 </jais:configuration>

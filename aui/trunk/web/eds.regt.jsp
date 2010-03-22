@@ -33,7 +33,7 @@ String layer = request.getParameter("layer");
 
 Controller c = Controller.getController(); 
 AUIControllerModule auiControllerModule = (AUIControllerModule) c.getModule("AUI");
-SubnodeConfiguration auiConfig = auiControllerModule.getConfiguration();
+HierarchicalConfiguration auiConfig = auiControllerModule.getConfiguration();
 String skin = auiConfig.getString("skin","");
 
 %>

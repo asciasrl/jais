@@ -43,8 +43,6 @@ public abstract class Connector {
 	 */
 	protected Transport transport;
 	
-	protected Semaphore transportSemaphore;
-
 	/**
      * Il nostro logger.
      */
@@ -65,15 +63,12 @@ public abstract class Connector {
      * @param name Nome del connettore
      * @param module Module that instantiate this connector
      * 
-     * TODO Sostituire Controller con ControllerModule
      */
-    public Connector(String name, ControllerModule module) {
+    public Connector(String name) {
 		this.name = name;
-		this.module = module;
         devices = new LinkedHashMap();
         devicesAlias = new LinkedHashMap();
 		logger = Logger.getLogger(getClass());
-		transportSemaphore = new Semaphore(1,true);
 		running = true;
 		updateQueue = new LinkedBlockingQueue();
 		updatingThread = new UpdatingThread();
@@ -166,22 +161,23 @@ public abstract class Connector {
      */
 	public void queueUpdate(DevicePort p) {
 		if (p.isQueuedForUpdate()) {
-			logger.trace("Port already queued for update: "+p.getFullAddress());			
+			logger.trace("Port already queued for update: "+p);			
 		}
 		if (updateQueue.contains(p)) {
-			logger.warn("Port already in update queue: "+p.getFullAddress());
+			logger.warn("Port already in update queue: "+p);
 		} else {
 			if (updateQueue.offer(p)) {
 				p.setQueuedForUpdate();
-				logger.trace("Port queued for update: "+p.getFullAddress());
+				logger.trace("Port queued for update: "+p);
 			} else {
-				logger.error("Queue full queuing for update: "+p.getFullAddress());
+				logger.error("Queue full queuing for update: "+p);
 			}
 		}
 	}
     
 	/**
      * Associa il Transport al Connector
+     * Questa implementazione permette di associare un solo transport per connector
      * @param transport Il Transport associato
      */
     public void addTransport(Transport transport) {
@@ -195,7 +191,7 @@ public abstract class Connector {
 
 
     /**
-     * Resituisce il nome del controllore, come specificato alla creazione
+     * Restituisce il nome del controllore, come specificato alla creazione
      * @return Nome
      */
 	public String getName() {
@@ -239,6 +235,7 @@ public abstract class Connector {
     private class UpdatingThread extends Thread {
         
     	public void run() {
+			logger.debug("Start.");
     		while (running) {
     			DevicePort p;
 				try {
@@ -264,12 +261,19 @@ public abstract class Connector {
 	 * @return Get the Controller Module to which connector belongs
 	 */
 	public ControllerModule getModule() {
+		if (module == null) {
+			throw(new IllegalStateException("Connector " + getName() + " not assigned to a module"));
+		}
 		return module;
 	}
 	
 	
 	public HierarchicalConfiguration getConfiguration() {		
 		return getModule().getConfiguration();
+	}
+
+	public void setModule(ControllerModule controllerModule) {
+		this.module = controllerModule;		
 	}
 
 }

@@ -3,7 +3,6 @@
  */
 package it.ascia.ais;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -49,7 +48,7 @@ public class Controller {
 	/**
 	 * Moduli del controllore
 	 */
-	private Map modules = new LinkedHashMap();
+	private Map<String, ControllerModule> modules = new LinkedHashMap<String, ControllerModule>();
 	
 	private Logger logger;
 		
@@ -94,49 +93,7 @@ public class Controller {
 	public ControllerModule getModule(String name) {
 		return (ControllerModule) modules.get(name);
 	}
-	
-	
-	/**
-	 * Carica il modulo, lo instanzia, ne imposta la configurazione. 
-	 * @param name Nome (unico) del modulo
-	 * @param className Classe che implementa il modulo
-	 * @param configName 
-	 * @throws AISException 
-	 * @deprecated Use module factory
-	 */
-	private void loadModule(String name, String className, String configName) throws AISException {
-		if (modules.containsKey(name)) {
-			throw(new AISException("Nome modulo duplicato: '"+name+"'"));
-		}
-		ClassLoader moduleLoader = ControllerModule.class.getClassLoader();
-		ControllerModule module = null;
-		try {
-			logger.debug("Caricamento modulo '"+name+"' da '"+className+"'");
-			Class moduleClass = moduleLoader.loadClass(className);
-			module = (ControllerModule) moduleClass.newInstance();
-			module.setName(name);
-		    if (configName == null) {		    	
-				module.setConfiguration(config);
-		    } else {
-				XMLConfiguration moduleConfig = new XMLConfiguration(configName);
-				moduleConfig.setReloadingStrategy(new FileChangedReloadingStrategy());
-				module.setConfiguration(moduleConfig);
-				logger.info("Caricata configurazione modulo '"+name+"' da "+configName);		
-		    }
-		    // FIXME Use registerModule()
-			modules.put(name,module);
-			logger.info("Caricato modulo '"+name+"'");
-		} catch (ClassNotFoundException e) {
-			logger.fatal("Fallito caricamento modulo '"+name+"': non trovata classe '"+className+"'");
-		} catch (InstantiationException e) {
-			logger.fatal("Fallito caricamento modulo '"+name+"': errore instanzazione classe '"+className+"'");
-		} catch (IllegalAccessException e) {
-			logger.fatal("Fallito caricamento modulo '"+name+"': accesso negato alla classe '"+className+"'");
-		} catch (ConfigurationException e) {
-			logger.fatal("Fallito caricamento modulo '"+name+"': Errore nel file di configurazione:",e);
-		}
-	}
-	
+
 	/**
 	 * 
 	 * @param name Name of connector
@@ -223,17 +180,42 @@ public class Controller {
 		logger.info("Default locale: " + Locale.getDefault());
 		
 		// caricamento moduli
-		List modules = config.configurationsAt("modules.module");
-		for(Iterator it = modules.iterator(); it.hasNext();)
+		List<HierarchicalConfiguration> modulesConfig = config.configurationsAt("modules.module");
+		for(Iterator<HierarchicalConfiguration> it = modulesConfig.iterator(); it.hasNext();)
 		{
 		    HierarchicalConfiguration sub = (HierarchicalConfiguration) it.next();
 		    String name = (String) sub.getProperty("[@name]");
 		    String className = sub.getString("class");
 		    String configName = sub.getString("config",null);
 		    try {
-				loadModule(name, className, configName);
-			} catch (AISException e) {
-				logger.fatal("Errore caricamento modulo:",e);
+				if (modules.containsKey(name)) {
+					throw(new AISException("Nome modulo duplicato: '"+name+"'"));
+				}
+				ClassLoader moduleLoader = ControllerModule.class.getClassLoader();
+				ControllerModule module = null;
+				logger.debug("Caricamento modulo '"+name+"' da '"+className+"'");
+				Class<?> moduleClass = moduleLoader.loadClass(className);
+				module = (ControllerModule) moduleClass.newInstance();
+				module.setName(name);
+			    if (configName == null) {		    	
+					module.setConfiguration(config);
+			    } else {
+					XMLConfiguration moduleConfig = new XMLConfiguration(configName);
+					moduleConfig.setReloadingStrategy(new FileChangedReloadingStrategy());
+					module.setConfiguration(moduleConfig);
+					logger.info("Caricata configurazione modulo '"+name+"' da "+configName);		
+			    }
+			    // FIXME Use registerModule()
+				modules.put(name,module);
+				logger.info("Caricato modulo '"+name+"'");
+			} catch (ClassNotFoundException e) {
+				logger.fatal("Fallito caricamento modulo '"+name+"': non trovata classe '"+className+"'");
+			} catch (InstantiationException e) {
+				logger.fatal("Fallito caricamento modulo '"+name+"': errore instanzazione classe '"+className+"'");
+			} catch (IllegalAccessException e) {
+				logger.fatal("Fallito caricamento modulo '"+name+"': accesso negato alla classe '"+className+"'");
+			} catch (ConfigurationException e) {
+				logger.fatal("Fallito caricamento modulo '"+name+"': Errore nel file di configurazione:",e);
 			}
 		}		
 		logger.info("Configurato controller.");
@@ -268,7 +250,7 @@ public class Controller {
 	 * @see ControllerModule.start
 	 */
 	public void start() throws AISException {
-		Iterator i = modules.keySet().iterator();
+		Iterator<String> i = modules.keySet().iterator();
 		logger.info("Avvio di "+modules.size()+" moduli");
 		long start = System.currentTimeMillis();
 		try {
@@ -296,7 +278,7 @@ public class Controller {
 	 * Ferma tutti i moduli
 	 */
 	public void stop() {
-		Iterator i = modules.keySet().iterator();
+		Iterator<String> i = modules.keySet().iterator();
 		logger.info("Arresto di "+modules.size()+" moduli");
 		while (i.hasNext()) {
 			String moduleName = (String) i.next();

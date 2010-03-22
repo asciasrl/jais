@@ -15,7 +15,7 @@ public class DXPConnector extends Connector {
 	private DXPRequestMessage messageToBeAnswered;
 	
 	public DXPConnector(String name, ControllerModule module) {
-		super(name, module);
+		super(name);
 		mp = new DXPMessageParser();
 	}
 
@@ -34,9 +34,9 @@ public class DXPConnector extends Connector {
 			return sendRequestMessage((DXPRequestMessage)m);
 		} else {
 			try {
-				transportSemaphore.acquire();
+				transport.acquire();
 				transport.write(m.getBytesMessage());
-				transportSemaphore.release();
+				transport.release();
 				return true;
 			} catch (InterruptedException e) {
 				logger.error("Interrupted:",e);
@@ -51,7 +51,7 @@ public class DXPConnector extends Connector {
 			// FIXME
 		}
 		try {
-			transportSemaphore.acquire();
+			transport.acquire();
 			if (messageToBeAnswered != null) {
 				logger.error("messageToBeAnswered non nullo: "+messageToBeAnswered);
 				logger.error("Messaggio in attesa :"+m);
@@ -69,7 +69,7 @@ public class DXPConnector extends Connector {
 		    	received = m.isAnswered();
 		    	messageToBeAnswered = null;
 	    	}
-			transportSemaphore.release();
+			transport.release();
 		} catch (InterruptedException e) {
 			logger.error("Interrupted:",e);
 		}

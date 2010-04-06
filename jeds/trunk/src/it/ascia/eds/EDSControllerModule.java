@@ -26,6 +26,7 @@ public class EDSControllerModule extends BUSControllerModule {
 		 		// associa transport e connector 
 		 		eds.addTransport(transport);
 		 		myConnectors.add(eds);
+		 		eds.setModule(this);
 			 	// effettua il discovery
 			 	List discover = sub.getList("discover",null);
 			 	if (discover == null) {

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<jais:configuration version="1.4">
+  <AVS>
+    <connectors>
+      <connector>
+        <name>advance88</name>
+        <interfaccia>EasyLink</interfaccia>
+        <centrale>Advance88</centrale>
+        <transport>
+          <type>serial</type>
+          <speed>57600</speed>
+          <port>COM6</port>
+        </transport>
+      </connector>
+    </connectors> 
+  </AVS>
+</jais:configuration>

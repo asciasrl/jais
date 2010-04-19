@@ -1,0 +1,14 @@
+Formato messaggi easylink:
+
+ 1 = lunghezza messaggio (n)
+ 2 = SYNC (0x36)
+ 3 = numero sequenziale
+ 4 .. n - 5 = dati
+ n -1 = parte alta CRC
+ n = parte bassa CRC
+ 
+Formato dei dati: 
+ 1 = comando
+ 2 = selettore
+ 3 = formato
+ 4 .. n = parametri

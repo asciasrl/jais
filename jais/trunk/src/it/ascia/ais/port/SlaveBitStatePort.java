@@ -24,7 +24,6 @@ public class SlaveBitStatePort extends StatePort implements PropertyChangeListen
 		port.addPropertyChangeListener(this);
 	}
 
-	@Override
 	public void propertyChange(PropertyChangeEvent arg0) {
 		getValue(true);
 	}

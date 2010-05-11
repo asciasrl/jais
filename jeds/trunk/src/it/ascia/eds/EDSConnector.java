@@ -303,11 +303,12 @@ public class EDSConnector extends Connector {
 		try {
 			long guardtime = getGuardtime();
 			while (guardtime > 0) {
-				logger.debug("BUS is in guard time, waiting "+guardtime+"mS");											
+				logger.debug("BUS is in guard time, waiting "+guardtime+"mS");
+				long start = System.currentTimeMillis();
 				synchronized (this) {
 					wait(guardtime);							
 				}
-				logger.trace("End guard time of "+guardtime+"mS");
+				logger.trace("End guard time of "+guardtime+"mS (actually " + (System.currentTimeMillis() - start)+")");
 				guardtime = getGuardtime();
 			}			
 			if (!transport.tryAcquire()) {
@@ -389,6 +390,8 @@ public class EDSConnector extends Connector {
 	    			}
 	    			logger.trace("Try "+tries+" of "+m.getMaxSendTries()+" : "+m.toString());
 	    			setGuardtime();
+	    			// FIXME Tentativo di evitare doppio messaggio per richiesta stato
+	    			//Thread.sleep(50);
 	    			transport.write(m.getBytesMessage());
 	    			if (!m.isAnswered()) {
 		    			// si mette in attesa, ma se nel frattempo arriva la risposta viene avvisato
@@ -400,6 +403,9 @@ public class EDSConnector extends Connector {
 	    			}
 	    			if (m.isAnswered()) {
 		    			setGuardtime(0);
+		    			if (tries > 1) {
+		    	    		logger.warn("Message aswered after "+tries+" tries: "+m);		    				
+		    			}
 	    				break;
 	    			}
 	    		}

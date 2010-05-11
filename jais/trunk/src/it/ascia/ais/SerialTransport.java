@@ -3,6 +3,7 @@ package it.ascia.ais;
 import it.ascia.ais.Transport;
 import it.ascia.ais.AISException;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -18,7 +19,7 @@ import gnu.io.*;
  */
 public class SerialTransport extends Transport {
     
-    public static final boolean DEBUG = false;
+    public static boolean DEBUG = false;
 	/**
      * Dove scrivere i messaggi.
      */
@@ -41,6 +42,9 @@ public class SerialTransport extends Transport {
 	private int receiveThreshold;
 	private int receiveFraming;
 	private int receiveTimeout;
+	
+	private static boolean rxtxLoaded = false;
+	
 	private static int INPUT_BUFFER_SIZE = 1024;
 	private static int OUTPUT_BUFFER_SIZE = 1024;
 	private static int RECEIVE_THRESHOLD = 8;
@@ -61,33 +65,12 @@ public class SerialTransport extends Transport {
    
     public String getInfo() {
     	if (serialPort == null) {
-    		return getClass().getSimpleName() + " Disconnected";
+    		return getClass().getSimpleName() + " " + name + ": Disconnected";
     	} else {
-    		return getClass().getSimpleName() + " " + serialPort.getName()+" "+serialPort.getBaudRate()+" "+serialPort.getDataBits() +
+    		return getClass().getSimpleName() + " " + name + ": " + serialPort.getName()+" "+serialPort.getBaudRate()+" "+serialPort.getDataBits() +
     			(serialPort.getParity() == 0 ? "N" : "E") + 
     			serialPort.getStopBits();
     	}
-    }
-
-
-    public String autoPortName() {
-    	Enumeration portList = CommPortIdentifier.getPortIdentifiers();
-    	while (portList.hasMoreElements()) {
-    		CommPortIdentifier portId = (CommPortIdentifier) portList.nextElement();
-    	    if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-    	    	String portName = portId.getName();
-	    	    logger.debug("Detected serial port: " + portName);
-	        	try {
-	        		SerialPort serialPort = (SerialPort) portId.open("SerialTransport", 1000);
-	        		serialPort.close();
-	        		return portName;
-	        	} catch (PortInUseException e) {
-	    	    	logger.debug("Porta "+portName+" in uso: " + e.toString());
-	        	}
-    	    }
-    	}
-    	logger.error("No available serial port");
-		return null;
     }
 
     /**
@@ -110,6 +93,7 @@ public class SerialTransport extends Transport {
      * @throws un'Exception se incontra un errore
      */    
     public SerialTransport(String portName, int portSpeed, int databits, int parity, int stopbits, int inputBufferSize, int outputBufferSize, int receiveThreshold, int receiveFraming, int receiveTimeout) throws AISException {
+        name = portName;
     	this.portName = portName;
     	this.portSpeed = portSpeed;
     	this.databits = databits;
@@ -120,27 +104,101 @@ public class SerialTransport extends Transport {
     	this.receiveThreshold = receiveThreshold;
     	this.receiveFraming = receiveFraming;
     	this.receiveTimeout = receiveTimeout;
+    	loadLibrary();
     	open();
     }
     
-	private void open() {
-    	if (portName.toLowerCase().equals("auto")) {
-    		portName = autoPortName();
-    	}
-        name = portName;
-    	logger.debug("Connecting to '" + portName + "'");    	
-    	CommPortIdentifier portId;
-		try {
-			portId = CommPortIdentifier.getPortIdentifier(portName);
-		} catch (NoSuchPortException e) {
-	    	throw new AISException("Port "+portName+" not found: " + e.toString());
+	private void loadLibrary() {
+		
+		if (rxtxLoaded) {
+			return;
 		}
-    	try {
-    		serialPort = (SerialPort) portId.open("SerialTransport", 2000);
-    	} catch (PortInUseException e) {
-	    	throw new AISException("Port '"+portName+"' already in use: " + e.toString());
+		String oSName = System.getProperty("os.name");
+		String oSVersion = System.getProperty("os.version");
+		String oSArch = System.getProperty("os.arch");
+		String osLibPath = null;
+		if (oSName.startsWith("W")) {
+			if (oSArch.contains("64")) {
+				osLibPath = "win64";
+			} else {
+				osLibPath = "win32";
+			}
+		} else if (oSName.startsWith("L")) {
+			if (oSArch.contains("64")) {
+				osLibPath = "x86_64-unknown-linux-gnu";
+			} else {
+				osLibPath = "i686-pc-linux-gnu";
+			}			
+		} else if (oSName.startsWith("M")) {
+			osLibPath = "mac-10.5";
+		} else if (oSName.startsWith("S")) {
+			if (oSArch.contains("64")) {
+				osLibPath = "sparc-sun-solaris2.10-64";
+			} else {
+				osLibPath = "sparc-sun-solaris2.10-32";
+			}			
+		}
+		
+		if (osLibPath == null) {
+			throw(new AISException("Operating system unsupported by rxtx: "+oSName+" / " + oSVersion+" / " + oSArch));		
+		} else {
+			logger.debug("Loading rxtx for "+oSName+" / " + oSVersion+" / " + oSArch+" path="+osLibPath);
+		}
+		
+		// determinare combinazioni OSname / OSarch e di conseguenza il nomi della DLL
+		// modificare "java.library.path" NON funziona (viene letta all'avvio della JVM)
+		// terminare il path assoluto usando come base "java.library.path" ed aggiungere la subdir di rxtx
+		// modificare rxtx-2.2pre2.jar in modo che NON carichi la libreria in ogni classe
+		
+		String libPath = System.getProperty("java.library.path").split(System.getProperty("path.separator"))[0];
+		
+		String fs = System.getProperty("file.separator");
+		
+		File f = new File(libPath + fs + "rxtx-2.2pre2-bins"+fs+osLibPath+fs+System.mapLibraryName("rxtxSerial"));
+		
+		if (f.exists()) {
+			String path = f.getAbsolutePath();
+			logger.debug("Loading rxtx library from: "+path);			
+			System.load(path);
+		} else {
+			throw(new AISException("Library rxtx not found in:"+f.getPath()));
+		}
+		
+		rxtxLoaded = true;
+	}
+
+	private void open() {
+    	logger.debug("Opening serial port '" + portName + "'");    	
+    	if (portName.toLowerCase().equals("auto")) {						
+	    	Enumeration portList = CommPortIdentifier.getPortIdentifiers();
+	    	while (portList.hasMoreElements()) {
+	    		CommPortIdentifier portId = (CommPortIdentifier) portList.nextElement();
+	    	    if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
+					String autoPortName = portId.getName();
+		    	    logger.trace("Detected serial port: " + autoPortName);
+		        	try {
+		        		serialPort = (SerialPort) portId.open("SerialTransport", 1000);
+		            	logger.debug("Opening autodetected serial port '" + autoPortName + "'");
+		            	name = autoPortName + " (auto)";
+		        		break;
+		        	} catch (PortInUseException e) {
+		    	    	logger.trace("Port " + autoPortName + " in use: " + e.toString());
+		        	}
+	    	    }
+	    	}
+	    	if (serialPort == null) {
+	    		throw new AISException("Cannot find one available serial port");
+	    	}
+    	} else {
+    		try {
+    			CommPortIdentifier portId = CommPortIdentifier.getPortIdentifier(portName);
+	    		serialPort = (SerialPort) portId.open("SerialTransport", 2000);
+    		} catch (NoSuchPortException e) {
+    			throw new AISException("Port "+portName+" not found: " + e.toString());
+	    	} catch (PortInUseException e) {
+		    	throw new AISException("Port '"+portName+"' already in use: " + e.toString());
+	    	}
     	}
-    	
 		try {
 		    serialPort.setSerialPortParams(portSpeed, databits, stopbits, parity);
 		    logger.trace("Input buffer: "+serialPort.getInputBufferSize()+" bytes -> "+inputBufferSize);
@@ -190,7 +248,7 @@ public class SerialTransport extends Transport {
 		}
 		
 		try {
-			serialPort.addEventListener(new SerialListener(portName));
+			serialPort.addEventListener(new SerialListener(serialPort.getName()));
 		} catch (TooManyListenersException e) {
 			throw new AISException("Troppi listeners sulla porta:" + e.getMessage());
 		}
@@ -200,6 +258,9 @@ public class SerialTransport extends Transport {
         closed = false;
     }
 
+	/**
+	 * Try to reopen connection
+	 */
     private void reopen() {
     	if (closed) {
     		logger.warn("Cannot reopen closed transport");
@@ -258,6 +319,7 @@ public class SerialTransport extends Transport {
     	logger.trace("About to close() serialPort");
     	serialPort.close();
     	logger.debug("SerialTransport closed.");
+    	serialPort = null;
     }
 
 	private class SerialListener implements SerialPortEventListener {
@@ -300,8 +362,6 @@ public class SerialTransport extends Transport {
 							}
 						}
 					}
-        		} catch (NullPointerException e) {
-        			logger.fatal("Input stream not available:",e);
 				} catch (IOException e) {
 	    			logger.fatal("Read error: ",e);
 	    			// Non fare il reopen qui, perche' provoca dead lock
@@ -319,5 +379,3 @@ public class SerialTransport extends Transport {
 	}
 
 }
-
-

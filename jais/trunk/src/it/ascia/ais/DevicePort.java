@@ -271,7 +271,11 @@ public abstract class DevicePort {
 	 * @param evt
 	 */
 	public void fireDevicePortChangeEvent(DevicePortChangeEvent evt) {
-		logger.info(evt);
+		if (evt.getOldValue() == null || evt.getNewValue() == null || !evt.getNewValue().equals(evt.getOldValue())) {
+			logger.info(evt);
+		} else {
+			logger.trace(evt);
+		}
 		pcs.firePropertyChange(evt);
 	}
 
@@ -396,6 +400,10 @@ public abstract class DevicePort {
 		if (!isQueuedForUpdate()) {
 			device.getConnector().queueUpdate(this);
 		}
+	}
+	
+	public String toString() {
+		return getClass().getSimpleName() + " " + getAddress();
 	}
 
 	public long update() {

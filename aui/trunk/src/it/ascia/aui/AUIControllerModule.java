@@ -14,6 +14,7 @@ import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.jabsorb.JSONRPCBridge;
+import org.jabsorb.JSONRPCServlet;
 // TODO Eliminare riferimenti a jsonsimple (usare org.json di jabsorb)
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -47,13 +48,13 @@ public class AUIControllerModule extends ControllerModule {
 		String webroot = config.getString("webroot","web");
 		logger.info("AUI web root is: "+webroot);
 		
-		h.addContext("/", webroot);
+		Context root = h.addContext("/", webroot);
 
-		Context aui = h.addContext("/aui");
-		h.addServlet(new AUIServlet(),aui,"/*");
+		h.addServlet(new JSONRPCServlet(),root,"/aui/*");
 
-		Context stream = h.addContext("/stream");
-		h.addServlet(new AUIStreamingServlet(),stream,"/*");
+		h.addServlet(new UploadServlet(),root,"/aui/upload/*");
+
+		h.addServlet(new AUIStreamingServlet(),root,"/aui/stream/*");
 
 		JSONRPCBridge.getGlobalBridge().registerObject("AUI", new AUIRPCServer(this));
 	}
@@ -360,6 +361,10 @@ public class AUIControllerModule extends ControllerModule {
 	 * @return
 	 */
 	public boolean isLogged(HttpSession session) {
+		if (session == null) {
+			logger.warn("Session not available");
+			return false;
+		}
 		String username = (String) session.getAttribute(SESSION_ATTRIBUTE_USERNAME);
 		Boolean logged = (Boolean) session.getAttribute(SESSION_ATTRIBUTE_ISLOGGED);
 		if (username != null && logged != null && logged.booleanValue()) {

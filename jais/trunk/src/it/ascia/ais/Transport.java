@@ -11,8 +11,17 @@ import org.apache.log4j.Logger;
 /**
  * Mezzo di trasporto dei messaggi (seriale, tcp, ...) 
  * 
+ * Il transport può essere usato da un solo thread per volta, che deve acquisirne il permesso e rilasciarlo alla fine.
+ * <pre>
+ *   transport.acquire();
+ *   ... use transport ...
+ *   transport.release();
+ * </pre>
+ * 
  * 
  * TODO Gestire riconnessioni: metodo Transport.connect(), metodo Connector.getTransport() effettua tentativi riconnessione
+ * TODO Modificare il metodo di creazione in modo che possa creare anche altri transport
+ * TODO Gestire più transport con una priorità
  * 
  * @author Sergio
  *
@@ -34,6 +43,9 @@ public abstract class Transport {
      */
     protected Connector connector;
     
+    /**
+     * Il semaforo associato al transport
+     */
 	protected Semaphore semaphore;
 
     /**
@@ -55,6 +67,10 @@ public abstract class Transport {
      */
     public abstract int getSpeed();
     
+    /**
+     * 
+     * @return Information about the transport (class, name, status) 
+     */
     public abstract String getInfo();
 
 	/**
@@ -72,7 +88,8 @@ public abstract class Transport {
     public abstract void close();
 
     /**
-     * Create transport
+     * Transport creator method
+     * Implements serial and tpcip transport
      * @param sub Transport sub configuration
      * @return a new Transport
      */
@@ -82,6 +99,9 @@ public abstract class Transport {
  		if (transports.size() == 0) {
  			throw(new AISException("Trasport not defined"));
  		}
+ 		if (transports.size() > 1) {
+ 			throw(new AISException("Current implementation can use only one transport"));
+ 		} 		
 		SubnodeConfiguration transportConfig = (SubnodeConfiguration) transports.get(0);
  		String type = transportConfig.getString("type");
  		if (type.equals("serial")) {
@@ -101,6 +121,10 @@ public abstract class Transport {
  		return transport;
 	}
 
+	/**
+	 * Try to Acquires the permit of the transport. 
+	 * @return true if the permit was acquired, false otherwise
+	 */
 	public boolean tryAcquire() {
 		try {
 			return semaphore.tryAcquire(0, TimeUnit.SECONDS);
@@ -109,13 +133,21 @@ public abstract class Transport {
 		}
 	}
 
+	/**
+	 * Try to Acquires the permit of the transport.  Wait until one become available. 
+	 * Return when the permit is acquired, or throw the exception if interrupted. 
+	 * @throws InterruptedException
+	 */
 	public void acquire() throws InterruptedException {
 		semaphore.acquire();		
 	}
 
+	/**
+	 * Release the permit of the transport.
+	 * If any threads are trying to acquire the permit, then one is selected and given the permit that was just released. 
+	 */
 	public void release() {
 		semaphore.release();
 	}
-
     
 }

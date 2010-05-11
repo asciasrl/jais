@@ -80,9 +80,8 @@ public class HTTPServerControllerModule extends ControllerModule {
 			logger.fatal("HTTP server not stopped: cannot add new context!");
 			return null;
 		}
-		logger.debug("Adding context path '"+contextPath+"'");
 		Context context = new Context(contexts, contextPath, Context.SESSIONS);		
-		logger.info("Added context '"+context.getContextPath()+"', path '"+contextPath+"'");
+		logger.trace("Added context '"+context.getContextPath()+"'");
 		return context;
 	}
 

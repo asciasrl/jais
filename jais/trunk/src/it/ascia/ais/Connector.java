@@ -32,6 +32,7 @@ public abstract class Connector {
 	private Thread updatingThread;
 	private boolean running = false;
 	private ControllerModule module = null;
+	protected MessageParser mp;
 	
     /**
      * Il nostro nome secondo AUI.
@@ -202,7 +203,17 @@ public abstract class Connector {
 	 * Questo metodo viene chiamato dal Transport per ogni byte che viene ricevuto 
 	 * @param b Dato ricevuto
 	 */
-	public abstract void received(int b);
+	public void received(int b) {
+		mp.push(b);
+		if (mp.isValid()) {
+			Message m = mp.getMessage();
+			if (m != null) {
+		    	logger.debug("Dispatching: " + m);
+				dispatchMessage(m);
+			}
+		}
+	}
+
 
     /**
      * Invia il messaggio alle istanze di dispositivo di questo connettore.

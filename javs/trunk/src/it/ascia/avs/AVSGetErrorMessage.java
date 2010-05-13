@@ -1,9 +1,10 @@
 package it.ascia.avs;
 
-public class EL88ErrorMessage extends EL88Message {
 
-	public EL88ErrorMessage(int selector, int format, int[] data) {
-		super(GET_ERROR, selector, format, data);
+public class AVSGetErrorMessage extends AVSMessage {
+
+	public AVSGetErrorMessage(int seqNumber, Code code, int format, int[] data) {
+		super(seqNumber, code, format, data);
 	}
 
 	public String toString() {
@@ -12,7 +13,7 @@ public class EL88ErrorMessage extends EL88Message {
 	
 	public String getErrorDescription() {
 		String s = "";
-		switch(selector) {         
+		switch(getSelector()) {         
 			case(SEL_BYPASS_ZONE):
 				s += "ERROR SEL_BYPASS_ZONE";
 				break;
@@ -89,7 +90,7 @@ public class EL88ErrorMessage extends EL88Message {
 				}
 				break;
 			default:
-				s += "Unknow selector="+b2h(selector);
+				s += "Unknow selector="+b2h(getSelector());
 				break;			
 		} // fine switch(selector)	
 		return s;

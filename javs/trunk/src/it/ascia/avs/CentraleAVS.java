@@ -1,16 +1,15 @@
 package it.ascia.avs;
 
-import org.apache.log4j.Logger;
 
-import it.ascia.ais.Connector;
+import org.apache.log4j.Logger;
 
 public abstract class CentraleAVS {
 	
-	protected Connector connector;
+	protected AVSConnector connector;
 	
     protected Logger logger;
 
-	public CentraleAVS(Connector connector) {
+	public CentraleAVS(AVSConnector connector) {
 		logger = Logger.getLogger(getClass());
 		this.connector = connector;
 	}
@@ -19,6 +18,6 @@ public abstract class CentraleAVS {
 	 * Gestisce le informazioni ricevute dalla centrale
 	 * @param m Messaggio ricevuto dalla centrale
 	 */
-	abstract void processMessage(EL88Message m);
+	abstract void processMessage(AVSMessage m);
 
 }

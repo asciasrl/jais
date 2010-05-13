@@ -52,45 +52,45 @@ public class EasyLinkMessageTestCase extends TestCase {
 	public void testCrc_2_0() {
 		int crc = 0xFFFF;
 		int b = 0x00;
-		crc = EL88Message.calcCRC(crc, b);
+		crc = AVSMessage.calcCRC(crc, b);
 		assertEquals(0xE1F0, crc);
 	}
 	
 	public void testCrc_2_1() {
 		int crc = 0xFFFF;
 		int b = 0x37;
-		crc = EL88Message.calcCRC(crc, b);
+		crc = AVSMessage.calcCRC(crc, b);
 		assertEquals(0xA744, crc);
 	}
 
 	public void testCrc_2_2() {
 		int crc = 0xFFFF;
 		int b = 0xFF;
-		crc = EL88Message.calcCRC(crc, b);
+		crc = AVSMessage.calcCRC(crc, b);
 		assertEquals(0xFF00, crc);
 	}
 
 	public void testCrc_2_3() {
 		int crc = 0xFFFF;
-		crc = EL88Message.calcCRC(crc, 0x00);
-		crc = EL88Message.calcCRC(crc, 0x00);
+		crc = AVSMessage.calcCRC(crc, 0x00);
+		crc = AVSMessage.calcCRC(crc, 0x00);
 		assertEquals(0x1D0F, crc);
 	}
 
 	public void testCrc_2_4() {
 		int crc = 0xFFFF;
-		crc = EL88Message.calcCRC(crc, 0x00);
-		crc = EL88Message.calcCRC(crc, 0x00);
-		crc = EL88Message.calcCRC(crc, 0x00);
-		crc = EL88Message.calcCRC(crc, 0x00);
-		crc = EL88Message.calcCRC(crc, 0x00);
-		crc = EL88Message.calcCRC(crc, 0x00);
+		crc = AVSMessage.calcCRC(crc, 0x00);
+		crc = AVSMessage.calcCRC(crc, 0x00);
+		crc = AVSMessage.calcCRC(crc, 0x00);
+		crc = AVSMessage.calcCRC(crc, 0x00);
+		crc = AVSMessage.calcCRC(crc, 0x00);
+		crc = AVSMessage.calcCRC(crc, 0x00);
 		assertEquals(0x0e10, crc);
 	}
 
 	public void testCrc_3_1() {
 		int crc = 0x2404;
-		crc = EL88Message.calcCRC(crc, 0x00);
+		crc = AVSMessage.calcCRC(crc, 0x00);
 		assertEquals(0x0e10, crc);
 	}
 

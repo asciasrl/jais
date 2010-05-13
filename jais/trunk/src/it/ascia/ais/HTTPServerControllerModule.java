@@ -70,7 +70,7 @@ public class HTTPServerControllerModule extends ControllerModule {
 	}
 
 	/**
-	 * add a context with session handling1
+	 * Add a context with a new session handler
 	 * Context can be added only before starting jetty
 	 * @param contextPath
 	 * @return the new context

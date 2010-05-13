@@ -1,27 +1,29 @@
 package it.ascia.avs;
 
+import it.ascia.ais.AISException;
 import it.ascia.ais.Message;
 import it.ascia.ais.MessageParser;
+import it.ascia.avs.AVSMessage.Code;
 
 public class EL88MessageParser extends MessageParser {
 
-	private int iBuff = 255;
-	private int[] buff = new int[iBuff+1]; // max message size
+	private int iBuff = 0;
+	private int[] buff = new int[256]; // max message size
 	private int messageLength;
 
 	//EL88Message m = null;
 		
 	//int test = 0;
 	
-	private EasyLinkConnector connector;
-	public EL88MessageParser(EasyLinkConnector connector) {
+	private AVSConnector connector;
+	
+	public EL88MessageParser(AVSConnector connector) {
 		this.connector = connector;
 		clear(); 
 	}
 	
 	@Override
 	public String dumpBuffer() {
-		// TODO Auto-generated method stub
 		StringBuffer sb = new StringBuffer();
 		sb.append(iBuff + " bytes:");
 		for (int i = 0; i < iBuff; i++) {
@@ -69,7 +71,7 @@ public class EL88MessageParser extends MessageParser {
 			int j;
 			for (j = 2; j < iBuff; j++) {
 				// cerca un SYNC successivo
-				if (buff[j] == EL88Message.SYNC) {
+				if (buff[j] == AVSMessage.SYNC) {
 					break;
 				}
 			}			
@@ -89,7 +91,7 @@ public class EL88MessageParser extends MessageParser {
 			valid = false;
 		}
 		if (iBuff == 2) {
-			if (b == EL88Message.SYNC) {
+			if (b == AVSMessage.SYNC) {
 				messageLength = buff[0] + 1; 
 			} else {
 				logger.trace("Not sync: " + Integer.toHexString(b));
@@ -114,18 +116,27 @@ public class EL88MessageParser extends MessageParser {
 		int CRC = 0xFFFF;
 		for (int i = 0; i < iBuff - 2; i++) {
 			//CRC = EasyLinkMessage.updateCRC(CRC, buff[i]);
-			CRC = EL88Message.calcCRC(CRC, buff[i]);
+			CRC = AVSMessage.calcCRC(CRC, buff[i]);
 		}		
 		return CRC;
 	}
 
-	private EL88Message createMessage() {
-		int packetLength = buff[0] + 1;
+	private AVSMessage createMessage() {
+		int messageLength = buff[0] + 1;
 		int seqNumber =  buff[2];
+		connector.setSeqNumber(seqNumber);
 		int command = buff[3];
+		@SuppressWarnings("unused")
+		int session = buff[4]; // Non usato
 		int selector = buff[5];
+		Code code =  null;
+		try {
+			code = Code.get(command, selector);
+		} catch (AISException e) {
+			logger.error(e);
+		}
 		int format = buff[6];
-		int dataLength = packetLength - 7 - 2;
+		int dataLength = messageLength - 7 - 2;
 		int[] data = new int[dataLength];
 		//String dataString = new String();
 		StringBuffer sb = new StringBuffer();
@@ -136,13 +147,13 @@ public class EL88MessageParser extends MessageParser {
 			//sbS.append((char)data[i]);
 		}
 		//dataString = sbS.toString();
-		logger.debug("Length="+packetLength+" Seq="+seqNumber+" Command="+command+","+EL88Message.commands[command]+" Selector="+selector+","+EL88Message.selectors[command][selector]+" Format="+format+" Data="+dataLength+","+sb.toString());
+		//String sn = ((seqNumber >> 4) & 0x0F) + "/" + (seqNumber & 0x0F);  
+		//logger.debug("Length="+messageLength+" Seq="+sn+" Command="+command+","+AVSMessage.commands[command]+" Selector="+selector+","+AVSMessage.selectors[command][selector]+" Format="+format+" Data="+dataLength+","+sb.toString());
 		
-		switch (command) {
-			case EL88Message.GET_ERROR:
-				return new EL88ErrorMessage(selector, format, data);
-			default:
-				return new EL88Message(command, selector, format, data);
+		if (AVSMessage.Code.GET_ERROR.match(command)) { 
+			return new AVSGetErrorMessage(seqNumber,code, format, data);
+		} else {
+			return new AVSMessage(seqNumber,code, format, data);
 		}
 		
 		

@@ -31,9 +31,7 @@ public abstract class Message implements Comparable {
 	 */
 	public static String b2h(int i)
 	{
-		if ((i > 0xff) || (i < 0)) {
-			return "0x--";
-		}
+		i = i & 0xFF;
 		String s = "0x";
 		if (i < 16) {
 			s += "0";

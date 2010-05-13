@@ -50,11 +50,11 @@ public class AUIControllerModule extends ControllerModule {
 		
 		Context root = h.addContext("/", webroot);
 
-		h.addServlet(new JSONRPCServlet(),root,"/aui/*");
+		h.addServlet(new JSONRPCServlet(),root,"/aui/rpc");
 
-		h.addServlet(new UploadServlet(),root,"/aui/upload/*");
+		h.addServlet(new UploadServlet(),root,"/aui/upload");
 
-		h.addServlet(new AUIStreamingServlet(),root,"/aui/stream/*");
+		h.addServlet(new AUIStreamingServlet(),root,"/stream/*");
 
 		JSONRPCBridge.getGlobalBridge().registerObject("AUI", new AUIRPCServer(this));
 	}

@@ -6,7 +6,6 @@ package it.ascia.ais;
 import java.util.LinkedHashMap;
 import java.util.Vector;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.Semaphore;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.log4j.Logger;
@@ -28,7 +27,7 @@ import org.apache.log4j.Logger;
 public abstract class Connector {
 
 	public static final boolean DEGUG = false;
-	protected LinkedBlockingQueue updateQueue;
+	protected LinkedBlockingQueue<DevicePort> updateQueue;
 	private Thread updatingThread;
 	private boolean running = false;
 	private ControllerModule module = null;
@@ -62,16 +61,14 @@ public abstract class Connector {
     /**
      * 
      * @param name Nome del connettore
-     * @param module Module that instantiate this connector
-     * 
      */
     public Connector(String name) {
 		this.name = name;
-        devices = new LinkedHashMap();
-        devicesAlias = new LinkedHashMap();
+        devices = new LinkedHashMap<String, Device>();
+        devicesAlias = new LinkedHashMap<String, Device>();
 		logger = Logger.getLogger(getClass());
 		running = true;
-		updateQueue = new LinkedBlockingQueue();
+		updateQueue = new LinkedBlockingQueue<DevicePort>();
 		updatingThread = new UpdatingThread();
 		updatingThread.setName("Updating-"+getClass().getSimpleName()+"-"+getName());
 		updatingThread.start();
@@ -90,7 +87,7 @@ public abstract class Connector {
     		res.add(device1);
     	} else {
 			for (Device device : devicesAlias.values()) {
-				if (addr.matches(device.getFullAddress())) {
+				if (addr.matches(device.getAddress())) {
 					res.add(device);
 				}
 			}
@@ -252,10 +249,10 @@ public abstract class Connector {
 				try {
 					p = (DevicePort) updateQueue.take();
 			    	if (p.isDirty() || p.isExpired()) {
-				    	logger.trace("Updating (+"+updateQueue.size()+"): " + p.getFullAddress());
+				    	logger.trace("Updating (+"+updateQueue.size()+"): " + p.getAddress());
 			    		p.update();
 			    	} else {
-			    		if (DEGUG) logger.trace("Port already updated: "+p.getFullAddress());
+			    		if (DEGUG) logger.trace("Port already updated: "+p.getAddress());
 			    	}
 			    	p.resetQueuedForUpdate();
 				} catch (InterruptedException e) {

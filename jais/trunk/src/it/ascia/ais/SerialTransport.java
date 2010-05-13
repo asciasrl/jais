@@ -362,7 +362,7 @@ public class SerialTransport extends Transport {
 							}
 						}
 					}
-				} catch (IOException e) {
+				} catch (Exception e) {
 	    			logger.fatal("Read error: ",e);
 	    			// Non fare il reopen qui, perche' provoca dead lock
 	    			//reopen();

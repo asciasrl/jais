@@ -29,6 +29,8 @@ public abstract class Connector {
 	public static final boolean DEGUG = false;
 	protected LinkedBlockingQueue<DevicePort> updateQueue;
 	private Thread updatingThread;
+	protected LinkedBlockingQueue<Message> dispatchQueue;
+	private Thread dispatchingThread;
 	private boolean running = false;
 	private ControllerModule module = null;
 	protected MessageParser mp;
@@ -72,6 +74,10 @@ public abstract class Connector {
 		updatingThread = new UpdatingThread();
 		updatingThread.setName("Updating-"+getClass().getSimpleName()+"-"+getName());
 		updatingThread.start();
+		dispatchQueue = new LinkedBlockingQueue<Message>();
+		dispatchingThread = new DispatchingThread();
+		dispatchingThread.setName("Dispatching-"+getClass().getSimpleName()+"-"+getName());
+		dispatchingThread.start();
 	}
 
 	/**
@@ -197,7 +203,8 @@ public abstract class Connector {
 	}
 
 	/**
-	 * Questo metodo viene chiamato dal Transport per ogni byte che viene ricevuto 
+	 * Questo metodo viene chiamato dal Transport per ogni byte che viene ricevuto
+	 * Se il MessageParser ho ottenuto un messaggio valido, viene aggiunto alla coda di dispacciamento
 	 * @param b Dato ricevuto
 	 */
 	public void received(int b) {
@@ -205,8 +212,8 @@ public abstract class Connector {
 		if (mp.isValid()) {
 			Message m = mp.getMessage();
 			if (m != null) {
-		    	logger.debug("Dispatching: " + m);
-				dispatchMessage(m);
+		    	logger.trace("Received: " + m);
+		    	dispatchQueue.offer(m);
 			}
 		}
 	}
@@ -240,6 +247,11 @@ public abstract class Connector {
 		}
 	}
 	
+	/**
+	 * Questo thread esegue l'aggiornamento delle porte che sono state messe nella apposita coda.
+	 * Esegue il metodo DevicePort.update()
+	 * @author Sergio
+	 */
     private class UpdatingThread extends Thread {
         
     	public void run() {
@@ -255,6 +267,32 @@ public abstract class Connector {
 			    		if (DEGUG) logger.trace("Port already updated: "+p.getAddress());
 			    	}
 			    	p.resetQueuedForUpdate();
+				} catch (InterruptedException e) {
+					logger.debug("Interrotto.");
+				} catch (Exception e) {
+					logger.fatal("Errore:",e);
+				}
+    		}
+			logger.debug("Stop.");
+    	}
+    }
+
+	/**
+	 * Questo thread esegue il dispacciamento dei messaggi ricevuti che sono stati messi nella apposita coda
+	 * Esegue il metodo Connector.dispatchMessage()
+	 * @author Sergio
+	 * @since 20100513
+	 */
+    private class DispatchingThread extends Thread {
+        
+    	public void run() {
+			logger.debug("Start.");
+    		while (running) {
+    			Message m;
+				try {
+					m = dispatchQueue.take();
+					if (DEGUG) logger.trace("Dispatching: " + m);
+					dispatchMessage(m);
 				} catch (InterruptedException e) {
 					logger.debug("Interrotto.");
 				} catch (Exception e) {

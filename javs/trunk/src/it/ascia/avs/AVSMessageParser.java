@@ -5,20 +5,13 @@ import it.ascia.ais.Message;
 import it.ascia.ais.MessageParser;
 import it.ascia.avs.AVSMessage.Code;
 
-public class EL88MessageParser extends MessageParser {
+public class AVSMessageParser extends MessageParser {
 
 	private int iBuff = 0;
 	private int[] buff = new int[256]; // max message size
 	private int messageLength;
 
-	//EL88Message m = null;
-		
-	//int test = 0;
-	
-	private AVSConnector connector;
-	
-	public EL88MessageParser(AVSConnector connector) {
-		this.connector = connector;
+	public AVSMessageParser() {
 		clear(); 
 	}
 	
@@ -34,16 +27,10 @@ public class EL88MessageParser extends MessageParser {
 
 	@Override
 	public boolean isBusy() {
-		// TODO Auto-generated method stub
-		return false;
+		return iBuff > 0;
 	}
 	
 	private void clear() {
-		/*
-		for (int i = 1; i <= iBuff; i++) {
-			buff[i - 1] = -1;
-		}	
-		*/			
 		iBuff = 0;
 	}
 
@@ -66,6 +53,9 @@ public class EL88MessageParser extends MessageParser {
 		iBuff -= n;
 	}
 	
+	/**
+	 * Shift buffer to skip erroneous bytes
+	 */
 	private void shift() {
 		if (iBuff >= 2) {
 			int j;
@@ -74,7 +64,8 @@ public class EL88MessageParser extends MessageParser {
 				if (buff[j] == AVSMessage.SYNC) {
 					break;
 				}
-			}			
+			}
+			// porta il SYNC in posizione 2
 			shift(j - 1);
 			logger.trace("After shift: "+dumpBuffer());
 		} else {
@@ -124,7 +115,6 @@ public class EL88MessageParser extends MessageParser {
 	private AVSMessage createMessage() {
 		int messageLength = buff[0] + 1;
 		int seqNumber =  buff[2];
-		connector.setSeqNumber(seqNumber);
 		int command = buff[3];
 		@SuppressWarnings("unused")
 		int session = buff[4]; // Non usato

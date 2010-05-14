@@ -1,7 +1,5 @@
 package it.ascia.avs;
 
-import java.util.concurrent.LinkedBlockingQueue;
-
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.Message;
@@ -12,12 +10,8 @@ class AVSConnector extends Connector {
 
 	private int peerSeqNumber;
 
-	private boolean sentReply;	
+	//private boolean sentReply;	
 
-	//private int mySeqNumber = 0;
-
-	//private LinkedBlockingQueue<Message> sendQueue = new LinkedBlockingQueue<Message>();
-	
 	/**
 	 * 
 	 * @param name Nome del connettore
@@ -26,15 +20,14 @@ class AVSConnector extends Connector {
 	 */
 	AVSConnector(String name, String interfaccia, String modello) {
 		super(name);		
+		mp = new AVSMessageParser();
  		if (interfaccia.equals("EasyLink")) {
- 			mp = new EL88MessageParser(this);
  			if (modello.equals("Advance88")) {
  				centrale = new Advance88(this);
  			} else {
  				throw(new AISException("Control unit '"+modello+"' cannot be connected to interface '"+interfaccia+"'"));
  			}
  		} else if (interfaccia.equals("XLink")) {
- 			mp = new X640MessageParser(this);
  			if (modello.equals("Xtream640")) {
  				centrale = new Xtream640(this);
  			} else {
@@ -46,20 +39,21 @@ class AVSConnector extends Connector {
 	}
 
 	@Override
-	protected void dispatchMessage(Message m) throws AISException {
+	protected void dispatchMessage(Message m) {
 		if (!AVSMessage.class.isInstance(m)) {
 			logger.error("Cannot dispatch message of class "+m.getClass().getName());
-			return;
+		} else {
+			dispatchMessage((AVSMessage) m);
 		}
+	}
 		
-		sentReply = false;
-		
-		centrale.processMessage((AVSMessage) m);
-		
-		if (! sentReply) {
-			sendMessage(new AVSIdleMessage());
-		}
-		
+	/**
+	 * Dispatch AVSMessage to the "centrale" connected
+	 * @param m
+	 */
+	private void dispatchMessage(AVSMessage m) {
+		peerSeqNumber = m.getSeqNumber();
+		centrale.processMessage(m);		
 	}
 
 	@Override
@@ -73,42 +67,18 @@ class AVSConnector extends Connector {
 	}
 	
 	public boolean sendMessage(AVSMessage m) {
+		/*
 		if (sentReply) {
 			logger.error("Reply message already sent in this roundtrip, cannot send "+m);
 			return false;
 		}
-		m.setSeqNumber(getSeqNumber());
+		*/
+		m.setSeqNumber(((peerSeqNumber & 0x0F) << 4 ) + ((peerSeqNumber & 0xF0) >> 4) + 1);
 		logger.trace("Sending: "+m.dump());
 		transport.write(m.getBytesMessage());
 		logger.debug("Sent message: "+m);
-		this.sentReply = true;
+		//this.sentReply = true;
 		return true;
 	}
 	
-	/*
-	public boolean queueMessage(Message m) {
-		return sendQueue.offer(m);
-	}
-	*/
-	
-
-	/**
-	 * Set sequence number received from interface
-	 * @param seqNumber
-	 */
-	void setSeqNumber(int seqNumber) {
-		this.peerSeqNumber = seqNumber;		
-	}
-	
-	/**
-	 * Calculate sequence number to be used for message to send to interface
-	 * @return
-	 */
-	private int getSeqNumber() {
-		//mySeqNumber = (mySeqNumber + 1 ) & 0x0F; 
-		int n = ((peerSeqNumber & 0x0F) << 4 ) + ((peerSeqNumber & 0xF0) >> 4) + 1;  
-		logger.trace("SeqNumber: peer="+Message.b2h(peerSeqNumber)+" new="+Message.b2h(n));
-		return n;
-	}
-
 }

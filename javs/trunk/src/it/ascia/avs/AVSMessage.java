@@ -1,7 +1,5 @@
 package it.ascia.avs;
 
-import java.util.EnumSet;
-
 import it.ascia.ais.AISException;
 import it.ascia.ais.Message;
 
@@ -336,22 +334,6 @@ public class AVSMessage extends Message {
 		return CRC;
 	}
 
-	/**
-	static int updateCRC(int crc, int b) {
-		return updateCRC(crc,b,CCITT_CRC_POLY);
-	}
-	
-	static int updateCRC(int crc, int b, int polynomial) {
-		 for (int i = 0; i < 8; i++) {
-             boolean bit = ((b   >> (7-i) & 1) == 1);
-             boolean c15 = ((crc >> 15    & 1) == 1);
-             crc <<= 1;
-             if (c15 ^ bit) crc ^= polynomial;
-         }
-		 return crc & 0xFFFF;
-	}
-	**/
-	
 	@Override
 	public byte[] getBytesMessage() {
 		int l = data.length + 7 + 2;
@@ -434,6 +416,10 @@ public class AVSMessage extends Message {
 			sb.append(" "+Message.b2h(m[i]));
 		}
 		return sb.toString();
+	}
+
+	public int getSeqNumber() {
+		return this.seqNumber;
 	}
 
 }

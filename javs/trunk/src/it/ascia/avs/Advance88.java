@@ -5,31 +5,36 @@ import java.util.List;
 
 import it.ascia.avs.AVSMessage.Code;
 
-
 public class Advance88 extends CentraleAVS {
 
-	private int test = 0;
-	private boolean protocolSelected = false;
-	private boolean loginOk = false;
+	//private int test = 0;
+	//private boolean protocolSelected = false;
+	//private boolean loginOk = false;
 
 	private static int PROTOCOL_MAJOR = 0x01;
 	private static int PROTOCOL_MINOR = 0x01;
 	
 	public Advance88(AVSConnector connector) {
 		super(connector);
+		for (int z = 1; z <= 88; z++) {
+			connector.addDevice(new ZoneDevice("Zone" + z));
+		}
 	}
 
 	/**
 	 * Ripristina le variabili di stato per iniziare una nuova comunicazione
 	 */
+	/*
 	public void reset() {
 		protocolSelected = false;
 		loginOk = false;
 	}
+	*/
 	
 	@Override
 	void processMessage(AVSMessage m) {
 		
+		/*
 		test++;
 		
 		if (test > 20) {
@@ -44,9 +49,9 @@ public class Advance88 extends CentraleAVS {
 		}
 
 		if (test == 11) {
-			connector.sendMessage(new AVSAskStatoZoneDigMessage());
 			return;
 		}
+		*/
 
 		Code c = m.getCode();
 		if (AVSMessage.Code.GET_PROT_VERS.equals(c)) {
@@ -59,33 +64,35 @@ public class Advance88 extends CentraleAVS {
 			logger.info("Protocols: in use="+data[0]+"."+data[1]+" supported="+p.toString());
 			// Il protocollo usato è quello richiesto, al prossimo poll effettua login
 			if (data[0] == PROTOCOL_MAJOR && data[1] == PROTOCOL_MINOR) {
-				protocolSelected = true;
+				//protocolSelected = true;
 				logger.info("Protocol selected: "+data[0]+"."+data[1]);
 				doLogin();
+				return;
 			} else {
 				selectProtocol();
+				return;
 			}
 			
 		} else if (AVSMessage.Code.GET_LOGIN.match(c)) {
 			logger.info("Login OK");
-			loginOk = true;
+			//loginOk = true;
 		} else if (AVSMessage.Code.GET_ERROR.match(c)) {
 			logger.error(((AVSGetErrorMessage) m).getErrorDescription());
 			doLogout();
-		} else {
-			logger.debug("Nothing to do");
-		}
-
-		// Richiede alla interfaccia di attivare il protocollo ed effettua il login
+			return;
 		/*
-		if (! protocolSelected ) {
-			selectProtocol();
-		} else if (! loginOk  ) {
-			doLogin();
-		} else {
-			connector.sendMessage(new AVSIdleMessage());
-		}
+		} else if (AVSMessage.Code.GET_IDLE.match(c)) {
+			connector.sendMessage(new AVSAskStatoZoneDigMessage());
+			return;
 		*/
+		} else if (AVSMessage.Code.GET_STATO_ZONE_DIG.match(c)) {
+			logger.error(m);
+			// TODO Modifica stati delle zone
+		} else {
+			//clear();
+		}
+		
+		connector.sendMessage(new AVSIdleMessage());
 
 	}
 

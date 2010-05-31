@@ -5,11 +5,12 @@ import java.util.List;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
 
-import it.ascia.ais.BUSControllerModule;
+import it.ascia.ais.ControllerModule;
 import it.ascia.ais.Transport;
 
-public class AVSControllerModule extends BUSControllerModule {
+public class AVSControllerModule extends ControllerModule {
 
+	@SuppressWarnings("unchecked")
 	public void start() {
 		super.start();
 		List<HierarchicalConfiguration> connectors = getConfiguration().configurationsAt("connectors.connector");

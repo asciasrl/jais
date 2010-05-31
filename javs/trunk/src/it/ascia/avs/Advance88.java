@@ -1,8 +1,15 @@
 package it.ascia.avs;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
+
+import it.ascia.ais.Connector;
+import it.ascia.ais.port.DigitalOutputPort;
+import it.ascia.ais.port.StatePort;
 import it.ascia.avs.AVSMessage.Code;
 
 public class Advance88 extends CentraleAVS {
@@ -14,45 +21,54 @@ public class Advance88 extends CentraleAVS {
 	private static int PROTOCOL_MAJOR = 0x01;
 	private static int PROTOCOL_MINOR = 0x01;
 	
-	public Advance88(AVSConnector connector) {
-		super(connector);
-		for (int z = 1; z <= 88; z++) {
-			connector.addDevice(new ZoneDevice("Zone" + z));
+	private static final int NUM_ZONE_DIG = 88;
+
+	private static final int NUM_OC_DIG = 40;
+	private static final int NUM_RELAYS = 5;
+	private static final int NUM_SECTORS = 4;
+	private static final String[] SectorStatus = new String[]{"OFF","ON","HOME","AREA","PERIMETER"};
+	private static final int NUM_SIRENS = 4;
+	
+	private boolean loginOk = false;
+	
+	/**
+	 * Add the device "Advance88" with ports and add zones to connector
+	 */
+	public Advance88() {
+		super("Advance88");
+		for (int z = 1; z <= NUM_OC_DIG; z++) {
+			addPort(new DigitalOutputPort("Oc"+z));
 		}
+		// anche settore 0
+		for (int z = 0; z <= NUM_SECTORS; z++) {
+			addPort(new StatePort("Sector"+z,SectorStatus));
+		}
+		for (int z = 1; z <= NUM_RELAYS; z++) {
+			addPort(new DigitalOutputPort("Relay"+z));
+		}
+		for (int z = 1; z <= NUM_SIRENS; z++) {
+			addPort(new DigitalOutputPort("Siren"+z));
+		}
+		addPort(new DigitalOutputPort("Tamper"));
+		// TODO: SETT, RELE, SIRENE, TAMPER, ZONE_AN, OC_DIG, OC_AN
+
+	}
+	
+	void addZones() {
+		Connector connector = getConnector();
+		for (int z = 1; z <= NUM_ZONE_DIG; z++) {
+			connector.addDevice(new AVSZoneDigDevice("Zone" + z));
+		}
+		/*
+		for (int z = 1; z <= NUM_ZONE_AN; z++) {
+			connector.addDevice(new AVSZoneAnDevice("Zone" + z));
+		}
+		*/
 	}
 
-	/**
-	 * Ripristina le variabili di stato per iniziare una nuova comunicazione
-	 */
-	/*
-	public void reset() {
-		protocolSelected = false;
-		loginOk = false;
-	}
-	*/
-	
 	@Override
 	void processMessage(AVSMessage m) {
 		
-		/*
-		test++;
-		
-		if (test > 20) {
-			test = 0;
-		}
-
-		logger.debug("processMessage test="+test);
-
-		if (test == 8) {
-			connector.sendMessage(new AVSMessage(AVSMessage.Code.ASK_STATO_BYPASS_ZONE,AVSMessage.FORMAT_0));
-			return;
-		}
-
-		if (test == 11) {
-			return;
-		}
-		*/
-
 		Code c = m.getCode();
 		if (AVSMessage.Code.GET_PROT_VERS.equals(c)) {
 			int[] data = m.getData();
@@ -67,64 +83,94 @@ public class Advance88 extends CentraleAVS {
 				//protocolSelected = true;
 				logger.info("Protocol selected: "+data[0]+"."+data[1]);
 				doLogin();
-				return;
 			} else {
 				selectProtocol();
-				return;
+			}			
+		} else if (AVSMessage.Code.GET_LOGIN.equals(c)) {
+			AVSGetLoginMessage glm = new AVSGetLoginMessage(m);
+			if (glm.isDisconnected()) {
+				logger.info("Login: disconnected.");
+				loginOk = false;
+				sendIdle();
+			} else {
+				logger.info("Login: OK, User="+glm.getUser()+" Sectors="+glm.getSectors());
+				loginOk = true;
+				getConnector().sendMessage(new AVSAskStatoZoneDigMessage());
 			}
 			
-		} else if (AVSMessage.Code.GET_LOGIN.match(c)) {
-			logger.info("Login OK");
-			//loginOk = true;
+		} else if (AVSMessage.Code.GET_ERROR_GENERIC.equals(c)) {
+			logger.warn(new AVSGetErrorMessage(m).getErrorDescription());
+			sendIdle();
+		} else if (AVSMessage.Code.GET_ERROR_LOGIN.equals(c)) {
+			logger.error(new AVSGetErrorMessage(m).getErrorDescription());
+			sendIdle();			
 		} else if (AVSMessage.Code.GET_ERROR.match(c)) {
-			logger.error(((AVSGetErrorMessage) m).getErrorDescription());
+			logger.error(new AVSGetErrorMessage(m).getErrorDescription());
 			doLogout();
-			return;
-		/*
-		} else if (AVSMessage.Code.GET_IDLE.match(c)) {
-			connector.sendMessage(new AVSAskStatoZoneDigMessage());
-			return;
-		*/
 		} else if (AVSMessage.Code.GET_STATO_ZONE_DIG.match(c)) {
-			logger.error(m);
-			// TODO Modifica stati delle zone
+			setStatoZoneDig(m.decodeData(NUM_ZONE_DIG));
+			sendIdle();
+		} else if (AVSMessage.Code.GET_TAMPER_ZONE.match(c)) {
+			setTamperZoneDig(m.decodeData(NUM_ZONE_DIG));
+			sendIdle();
+		} else if (AVSMessage.Code.GET_BYPASS_ZONE.match(c)) {
+			setBypassZoneDig(m.decodeData(NUM_ZONE_DIG));
+			sendIdle();
+		} else if (AVSMessage.Code.GET_USCITA_OC_DIG.match(c)) {
+			setUscitaOcDig(m.decodeData(NUM_OC_DIG));
+			sendIdle();
+		} else if (AVSMessage.Code.GET_USCITA_RELE.match(c)) {
+			setUscitaRele(m.decodeData(NUM_RELAYS));
+			sendIdle();
+		} else if (AVSMessage.Code.GET_USCITA_SIRENE.match(c)) {
+			setUscitaSirene(m.decodeData(NUM_SIRENS));
+			sendIdle();
+		} else if (AVSMessage.Code.GET_USCITA_TAMPER.match(c)) {
+			setUscitaTamper(m.decodeData(1));
+			sendIdle();
+		} else if (AVSMessage.Code.GET_STATO_SETT.match(c)) {
+			setSectors(m.data);
+			sendIdle();
+		} else if (AVSMessage.Code.GET_IDLE.match(c)) {
+			if (!loginOk) {
+				logger.info("Closing pending session.");
+				doLogout();
+			}
+			// do nothing, but is OK
+			// TODO aggiornare expiration di tutte le porte con valore non nullo
 		} else {
-			//clear();
-		}
+			logger.warn("Unhandled message: "+m);
+		}		
 		
-		connector.sendMessage(new AVSIdleMessage());
+	}
 
+	private void sendIdle() {
+		getConnector().sendMessage(new AVSIdleMessage());		
 	}
 
 	/**
 	 * Invia messaggio per selezione protocollo
 	 */
 	private void selectProtocol() {
-		logger.info("Select protocol");
+		logger.info("Select protocol "+PROTOCOL_MAJOR+"."+PROTOCOL_MINOR);
 		int[] data = new int[2];
 		data[0] = PROTOCOL_MAJOR;
 		data[1] = PROTOCOL_MINOR;
-		connector.sendMessage(new AVSMessage(AVSMessage.Code.SET_PROT_VERS,AVSMessage.FORMAT_0,data));		
+		getConnector().sendMessage(new AVSMessage(AVSMessage.Code.SET_PROT_VERS,AVSMessage.FORMAT_0,data));		
 	}
 
 	/**
 	 * Effettua il login
 	 */
+	@SuppressWarnings("unchecked")
 	private void doLogin() {
 		logger.info("Do login");
-		int[] data = new int[7];
-		
-		// FIXME rendere parametrico (da file di configurazione)
-		data[0] = 0x00;
-		data[1] = 0x00;
-		data[2] = 0x00;
-		data[3] = 0x00;
-		data[4] = 0x01;
-		data[5] = 0x00;
-		
-		data[6] = 0x1E; // settori (bit0 = settore 0, bit1= settore 1, ecc.)
-		
-		connector.sendMessage(new AVSMessage(AVSMessage.Code.SET_LOGIN,AVSMessage.FORMAT_0,data));		
+		Connector connector = getConnector();
+		HierarchicalConfiguration config = getConnector().getConfiguration();
+		config.setExpressionEngine(new XPathExpressionEngine());
+		String pin = config.getString("connectors/connector[name='"+connector.getName()+"']/pin","000010");
+		List sectors = config.getList("connectors/connector[name='"+connector.getName()+"']/sectors", Arrays.asList("1","2","3","4"));
+		getConnector().sendMessage(new AVSSetLoginMessage(pin,sectors));
 	}
 
 	/**
@@ -132,19 +178,15 @@ public class Advance88 extends CentraleAVS {
 	 */
 	private void doLogout() {
 		logger.info("Do logout");
-		int[] data = new int[7];
-		
-		// Per logout il codice utente non importa
-		data[0] = 0x00;
-		data[1] = 0x00;
-		data[2] = 0x00;
-		data[3] = 0x00;
-		data[4] = 0x00;
-		data[5] = 0x00;
-		
-		data[6] = 0x00; // tutti i settori a 0
-		
-		connector.sendMessage(new AVSMessage(AVSMessage.Code.SET_LOGIN,AVSMessage.FORMAT_0,data));		
+		getConnector().sendMessage(new AVSSetLoginMessage("",new ArrayList<String>()));
+	}
+
+	@Override
+	protected boolean sendSectorValue(Integer sector, Integer accensione) {
+		int[] data = new int[2];
+		data[0] = sector;
+		data[1] = accensione;
+		return getConnector().sendMessage(new AVSMessage(AVSMessage.Code.SET_STATO_SETT,AVSMessage.FORMAT_0,data));				
 	}
 
 

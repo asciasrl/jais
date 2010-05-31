@@ -22,7 +22,7 @@ public class BooleanPort extends DevicePort {
 	/**
 	 * Imposta il valore della porta convertendo il testo fornito in valore Boolean 
 	 */	
-	public boolean writeValue(String text) throws IllegalArgumentException {
+	private Boolean normalize(String text) throws IllegalArgumentException {
 		boolean v = false;
 		if (text.equals("1") || text.toLowerCase().equals("on") || text.toLowerCase().equals("true")) {
 			v = true;
@@ -31,14 +31,16 @@ public class BooleanPort extends DevicePort {
 		} else {
 			throw new IllegalArgumentException(getFullAddress() + " valore non valido: '"+text+"'");
 		}
-		return writeValue(new Boolean(v));
+		return new Boolean(v);
 	}
 
-	public boolean writeValue(Object value) throws IllegalArgumentException {
+	public Object normalize(Object value) {
 		if (value instanceof String) {
-			return writeValue((String)value);
+			return normalize((String)value);
+		} else if (value instanceof Boolean) {
+			return value;
 		} else {
-			return super.writeValue(value);
+			return super.normalize(value);
 		}
 	}
 

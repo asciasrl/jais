@@ -27,10 +27,8 @@ public abstract class DevicePort {
 
 	private String description;
 	
-	private String[] tags = null;
-
 	/**
-	 * Tempo di ultimo aggiornamento del valore
+	 * Momento di ultima variazione del valore
 	 */
 	private long timeStamp;
 
@@ -212,13 +210,13 @@ public abstract class DevicePort {
 		}
 		synchronized (this) {
 			expiration = System.currentTimeMillis() + cacheRetention;
-			cachedValue = newValue;
+			setCachedValue(newValue);
 			dirty = false;
 			// sveglia getValue()
 			notify();
 		}
 		if (changed) {
-			DevicePortChangeEvent evt = new DevicePortChangeEvent(this, oldValue,newValue);
+			DevicePortChangeEvent evt = new DevicePortChangeEvent(this, oldValue,getCachedValue());
 			fireDevicePortChangeEvent(evt);
 		}
 	}
@@ -238,7 +236,7 @@ public abstract class DevicePort {
 
 	/**
 	 * Scrive un nuovo valore sulla porta del device cui appartiene Questa
-	 * implementazione richiama {@link #Device.writePort()} dopo aver invalidato
+	 * implementazione richiama {@link #Device.sendPortValue()} quindi invalida
 	 * il valore in cache Se la porta e' virtuale, la sottoclasse deve gestire
 	 * la richiesta di scrittura in maniera specifica
 	 * 
@@ -247,7 +245,7 @@ public abstract class DevicePort {
 	 * @throws AISException
 	 */
 	public boolean writeValue(Object newValue) {
-		if (device.sendPortValue(portId, newValue)) {
+		if (device.sendPortValue(portId, normalize(newValue))) {
 			invalidate();
 			return true;
 		} else {
@@ -256,14 +254,14 @@ public abstract class DevicePort {
 	}
 
 	/**
-	 * Imposta il valore della porta analizzando il testo fornito
-	 * Delega l'interpretazione del testo del nuovo valore al device
+	 * Subclasses should ovveride this method to normalize and check values
+	 * @param newValue
+	 * @return Normalized (converted) value
 	 */
-	public boolean writeValue(String newValue)
-	throws IllegalArgumentException {
-		return writeValue((Object) newValue);
+	protected Object normalize(Object newValue) throws IllegalArgumentException {
+		return newValue;
 	}
-
+	
 	/**
 	 * Propaga l'evento di modifica a tutti i listener registrati ed al device
 	 * cui appartiene
@@ -291,8 +289,8 @@ public abstract class DevicePort {
 		queueUpdate();
 	}
 
-	public void setCachedValue(Object newValue) {
-		cachedValue = newValue;
+	private void setCachedValue(Object newValue) {
+		cachedValue = normalize(newValue);
 	}
 
 	/**
@@ -365,37 +363,6 @@ public abstract class DevicePort {
 		return getValue().toString();
 	}
 
-	/**
-	 * Ritorna l'indice del tag che corrisponde al valore
-	 */
-	public Integer getTagIndex() {
-		String tag = getAsText();
-		if (tags == null) {
-			return null;
-		}
-		for(int i=0; i < tags.length; i++) {
-			if (tags[i].equalsIgnoreCase(tag)) {
-				return new Integer(i);
-			}
-		}
-		throw(new AISException("Internal mode is invalid: " + tag));
-	}
-
-	/**
-	 * Se il valore deve essere uno dei valori di un insieme, questo metodo ne
-	 * fornisce l'elenco
-	 */
-	public String[] getTags() {
-		return this.tags;
-	}
-
-	/**
-	 * @param tags the tags to set
-	 */
-	public void setTags(String[] tags) {
-		this.tags = tags;
-	}
-
 	public void queueUpdate() {
 		if (!isQueuedForUpdate()) {
 			device.getConnector().queueUpdate(this);
@@ -406,6 +373,10 @@ public abstract class DevicePort {
 		return getClass().getSimpleName() + " " + getAddress();
 	}
 
+	/**
+	 * Aggiorna il valore della porta, delegando al device
+	 * @return
+	 */
 	public long update() {
 		return device.updatePort(portId);		
 	}

@@ -16,7 +16,7 @@ if (!AUI.SetRequest) {
 				device.setStatus(status);
 				return true;
 			} else {
-				AUI.Header.show("Errore di collegamento");				
+				AUI.Header.show("Errore di comunicazione, riprovare.");				
 				return false;
 			}
 		} catch(e) {

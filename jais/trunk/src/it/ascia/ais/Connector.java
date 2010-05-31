@@ -6,6 +6,7 @@ package it.ascia.ais;
 import java.util.LinkedHashMap;
 import java.util.Vector;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.log4j.Logger;
@@ -27,6 +28,7 @@ import org.apache.log4j.Logger;
 public abstract class Connector {
 
 	public static final boolean DEGUG = false;
+	private static final long DEFAULT_DISPATCH_TIMEOUT = 60;
 	protected LinkedBlockingQueue<DevicePort> updateQueue;
 	private Thread updatingThread;
 	protected LinkedBlockingQueue<Message> dispatchQueue;
@@ -75,9 +77,17 @@ public abstract class Connector {
 		updatingThread.setName("Updating-"+getClass().getSimpleName()+"-"+getName());
 		updatingThread.start();
 		dispatchQueue = new LinkedBlockingQueue<Message>();
-		dispatchingThread = new DispatchingThread();
+		dispatchingThread = new DispatchingThread(getDispatchingTimeout());
 		dispatchingThread.setName("Dispatching-"+getClass().getSimpleName()+"-"+getName());
 		dispatchingThread.start();
+	}
+
+    /**
+     * How many time to wait for a message received before issuing a warning
+     * @return time in seconds
+     */
+	protected long getDispatchingTimeout() {
+		return DEFAULT_DISPATCH_TIMEOUT;
 	}
 
 	/**
@@ -212,8 +222,11 @@ public abstract class Connector {
 		if (mp.isValid()) {
 			Message m = mp.getMessage();
 			if (m != null) {
-		    	logger.trace("Received: " + m);
-		    	dispatchQueue.offer(m);
+		    	if (dispatchQueue.offer(m)) {
+			    	logger.debug("Received: " + m);
+		    	} else {
+		    		logger.error("Queue full for messagge: " + m);
+		    	}
 			}
 		}
 	}
@@ -285,14 +298,24 @@ public abstract class Connector {
 	 */
     private class DispatchingThread extends Thread {
         
-    	public void run() {
+    	long timeout = DEFAULT_DISPATCH_TIMEOUT;
+        
+		public DispatchingThread(long dispatchingTimeout) {
+			timeout = dispatchingTimeout;
+		}
+
+		public void run() {
 			logger.debug("Start.");
     		while (running) {
     			Message m;
 				try {
-					m = dispatchQueue.take();
-					if (DEGUG) logger.trace("Dispatching: " + m);
-					dispatchMessage(m);
+					m = dispatchQueue.poll(timeout,TimeUnit.SECONDS);
+					if (m == null) {
+						logger.warn("No message received in "+timeout+" seconds.");
+					} else {
+						if (DEGUG) logger.trace("Dispatching: " + m);
+						dispatchMessage(m);
+					}
 				} catch (InterruptedException e) {
 					logger.debug("Interrotto.");
 				} catch (Exception e) {

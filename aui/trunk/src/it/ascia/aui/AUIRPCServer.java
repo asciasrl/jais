@@ -6,9 +6,13 @@ package it.ascia.aui;
 import it.ascia.ais.AISException;
 import it.ascia.ais.Address;
 import it.ascia.ais.Controller;
+import it.ascia.ais.Device;
 import it.ascia.ais.DevicePort;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
 
 import javax.servlet.http.HttpSession;
 
@@ -94,6 +98,27 @@ public class AUIRPCServer implements Serializable {
 			throw(new AISException("Porta non trovata: "+fullAddress));
 		}
 		return p.getValue();
+	}
+
+	/**
+	 * Search for ports matching address and return values
+	 * @param session
+	 * @param fullAddress Address of ports to find
+	 * @return
+	 */
+	public Map<String,Object> getPortsValue(HttpSession session,String fullAddress) {
+		Address addr = new Address(fullAddress);
+		Vector<Device> devices = controller.getDevices(addr);
+		if (devices.size() == 0) {
+			throw(new AISException("Nessun device trovato: "+fullAddress));
+		}		
+		HashMap<String,Object> res = new HashMap<String,Object>();
+		for (Device device : devices) {
+			for (DevicePort p : device.getPorts()) {
+				res.put(p.getAddress().toString(),p.getCachedValue());			
+			}
+		}
+		return res;
 	}
 
 	/**

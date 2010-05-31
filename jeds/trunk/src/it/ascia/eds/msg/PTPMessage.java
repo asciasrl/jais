@@ -61,6 +61,16 @@ public abstract class PTPMessage extends EDSMessage {
 	public boolean isAnswered() {
 		return isAnswered;
 	}
+
+
+	/**
+	 * Time to wait for answer because of elaboration time by device
+	 * @return milliseconds
+	 * @since 20100514
+	 */
+	public double getRetryTimeout() {
+		return 0;
+	}
 	
 	
 }

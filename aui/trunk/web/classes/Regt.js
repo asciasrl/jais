@@ -5,7 +5,7 @@ if (AUI.Regt == undefined) {
 		init : function(address) {
 			this.step = 0.5; // regulation step
 			this.factor = 4; // pixels per step
-			this.minT = 15; // minimum value
+			this.minT = 5; // minimum value
 			this.maxT = 30; // minimum value
 			this.request = AUI.Http.getRequest();
 			this.jsonrpc = new JSONRpcClient("/aui/rpc");
@@ -15,7 +15,8 @@ if (AUI.Regt == undefined) {
 			this.id = null;
 			this.cursor = null;
 			this.value = null;
-			this.address = address; 
+			this.address = address;
+			this.on = true;
 			this.get();
 			// autologin
 			AUI.Logger.setLevel(2);
@@ -34,12 +35,19 @@ if (AUI.Regt == undefined) {
 		},
 
 		updateSetPoints : function() {
-			this.request.open('GET', 'jais/get?address='+this.address+':*', true);
-			var self = this;
-			this.request.onreadystatechange = AUI.Regt.stateChange;
-			this.timeout = window.setTimeout(self.timeoutExpired, 3000);
-			this.request.send(null);
-			this.sending = true;
+			var res = this.jsonrpc.AUI.getPortsValue(this.address+':*');
+			var portsValue = res.map;
+			for (var stagione = 0; stagione <= 1; stagione++) {
+				for (var giorno = 0; giorno <= 6; giorno++) {
+					for (var ora = 0; ora <= 23; ora++) {
+						// setPoint-1-2-3
+						var id = stagione + "-" + giorno+"-"+ora;
+						var value = portsValue[this.address+":setPoint-"+id];
+						AUI.Logger.debug("id="+id+" value="+value);
+						AUI.Regt.updateBar(id,value);
+					};
+				};
+			};
 		},
 		
 		updateTemp : function() {
@@ -55,6 +63,10 @@ if (AUI.Regt == undefined) {
 
 		updateMode : function() {
 			var mode = this.jsonrpc.AUI.getPortValue(this.address+':mode');
+			this.updateModeButton(mode.toLowerCase());
+		},
+		
+		updateModeButton : function(mode) {
 			if (mode == "manual") {
 				var src = $("mode-manual").src;
 				src = src.replace("off.","on.");
@@ -74,27 +86,33 @@ if (AUI.Regt == undefined) {
 				$("mode-chrono").src = src;				
 			}
 			if (mode == "off") {
-				var src = $("mode-off").src;
-				src = src.replace("off.","on.");
-				$("mode-off").src = src;
-			} else {
+				this.on = false;
 				var src = $("mode-off").src;
 				src = src.replace("on.","off.");
+				$("mode-off").src = src;
+			} else {
+				this.on = true;
+				var src = $("mode-off").src;
+				src = src.replace("off.","on.");
 				$("mode-off").src = src;				
 			}
 		},
 
 		updateSeason : function() {
 			var season = this.jsonrpc.AUI.getPortValue(this.address+':season');
+			this.updateSeasonButton(season.toLowerCase());
+		},
+		
+		updateSeasonButton : function(season) {
 			var src = $("season-winter").src;
-			if (season == "WINTER") {
+			if (season == "winter" && this.on) {
 				src = src.replace("off.","on.");
 			} else {
 				src = src.replace("on.","off.");
 			}
 			$("season-winter").src = src;
 			src = $("season-summer").src;
-			if (season == "SUMMER") {
+			if (season == "summer" && this.on) {
 				src = src.replace("off.","on.");
 			} else {
 				src = src.replace("on.","off.");
@@ -113,66 +131,6 @@ if (AUI.Regt == undefined) {
 			$("setPoint").innerHTML = s + "°C";
 		},
 		
-		updatePreset : function() {
-			var setPoint = this.jsonrpc.AUI.getPortValue(this.address+':setPoint');
-			var stagione = this.jsonrpc.AUI.getPortValue(this.address+':season');
-			if (mode == "manual") {
-				var src = $("mode-manual").src;
-				src = src.replace("off.","on.");
-				$("mode-manual").src = src;
-			} else {
-				var src = $("mode-manual").src;
-				src = src.replace("on.","off.");
-				$("mode-manual").src = src;				
-			}
-			if (mode == "chrono") {
-				var src = $("mode-chrono").src;
-				src = src.replace("off.","on.");
-				$("mode-chrono").src = src;
-			} else {
-				var src = $("mode-chrono").src;
-				src = src.replace("on.","off.");
-				$("mode-chrono").src = src;				
-			}
-			if (mode == "off") {
-				var src = $("mode-off").src;
-				src = src.replace("off.","on.");
-				$("mode-off").src = src;
-			} else {
-				var src = $("mode-off").src;
-				src = src.replace("on.","off.");
-				$("mode-off").src = src;				
-			}
-		},
-
-		stateChange : function() {
-			var request = AUI.Regt.request; 
-			if (request.readyState == 4) {
-				AUI.Logger.debug("status="+request.status);
-				clearInterval(AUI.Regt.timeout);
-				if (request.status == 200) {
-					if (request.responseText.indexOf("ERROR") == 0) {
-						AUI.Header.show(request.responseText);
-					} else {
-						AUI.Logger.info("request.status:"+request.status);
-						//AUI.Logger.debug("Response:"+request.responseText);
-						var tmp;
-						eval("tmp="+request.responseText+";");
-						AUI.Regt.update(tmp);
-					}
-				} else {
-					if (request.status == 500) {
-						AUI.Header.show("Errore del server.");
-					} else if (request.status == 400) {
-						AUI.Header.show("Errore di comunicazione.");
-					} else {
-						AUI.Header.show("Errore di collegamento ("+request.status+")");
-					}
-				}
-				AUI.Regt.sending = false;
-				AUI.Logger.setLevel(0);
-			}		
-		},
 		
 		update : function(newData) {
 			this.data = newData;
@@ -330,15 +288,18 @@ if (AUI.Regt == undefined) {
 		setSeason : function(season) {
 			this.jsonrpc.AUI.writePortValue(this.address+':season',season);
 			var self = this;
+			self.updateSeasonButton(season);
+			setTimeout(function() { self.updateSetPoint(); },500);;
 			setTimeout(function() { self.updateSeason(); },500);;
-			setTimeout(function() { self.updateSetPoint(); },1500);;
 		},
 
 		setMode : function(mode) {
 			this.jsonrpc.AUI.writePortValue(this.address+':mode',mode);
 			var self = this;
+			self.updateModeButton(mode);
 			setTimeout(function() { self.updateMode(); },500);;
-			setTimeout(function() { self.updateSetPoint(); },500);;
+			setTimeout(function() { self.updateSeason(); },600);;
+			setTimeout(function() { self.updateSetPoint(); },700);;
 		},
 
 		setPointUp : function() {
@@ -346,7 +307,7 @@ if (AUI.Regt == undefined) {
 			this.jsonrpc.AUI.writePortValue(this.address+':setPoint',t+0.5);
 			var self = this;
 			setTimeout(function() { self.updateSetPoint(); },500);;
-			setTimeout(function() { self.updateMode(); },500);;
+			setTimeout(function() { self.updateMode(); },600);;
 		},
 		
 		setPointDown : function() {
@@ -354,7 +315,7 @@ if (AUI.Regt == undefined) {
 			this.jsonrpc.AUI.writePortValue(this.address+':setPoint',t-0.5);
 			var self = this;
 			setTimeout(function() { self.updateSetPoint(); },500);;
-			setTimeout(function() { self.updateMode(); },500);;
+			setTimeout(function() { self.updateMode(); },600);;
 		},
 		
 		clearSeason : function(which) {

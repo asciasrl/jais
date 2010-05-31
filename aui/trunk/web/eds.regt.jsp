@@ -47,14 +47,14 @@ String skin = auiConfig.getString("skin","");
 	<div class="control control-thermo" style="display: inline; width: 120px; height: 70px; float: left; position: relative;">
 	 	<div style="position: relative;"><img src="<%=skin%>images/thermo_display.png"></div>
 		<div id="temp" class="thermo-display">--,-°C</div>
-		<div class="caption">Temperatura misurata</div>
+		<div class="caption">Misura</div>
 	</div>
 	<div style="display: inline; float: left;">
-	 	<img id="season-winter" src="<%=skin%>images/eds.regt.season-winter-off.png" onclick="AUI.Regt.setSeason('winter');" title="Attiva modo invernale">
-	 	<img id="season-summer" src="<%=skin%>images/eds.regt.season-summer-off.png" onclick="AUI.Regt.setSeason('summer');" title="Attiva modo estivo">
 	 	<img id="mode-off" src="<%=skin%>images/eds.regt.off.png" onclick="AUI.Regt.setMode('off');" title="Spegne il cronotermostato">
 	 	<img id="mode-chrono" src="<%=skin%>images/eds.regt.chrono-off.png" onclick="AUI.Regt.setMode('chrono');" title="Attiva il modo cronotermostato">
 	 	<img id="mode-manual" src="<%=skin%>images/eds.regt.manual-off.png" onclick="AUI.Regt.setMode('manual');" title="Attiva il modo manuale">
+	 	<img id="season-winter" src="<%=skin%>images/eds.regt.season-winter-off.png" onclick="AUI.Regt.setSeason('winter');" title="Attiva modo invernale">
+	 	<img id="season-summer" src="<%=skin%>images/eds.regt.season-summer-off.png" onclick="AUI.Regt.setSeason('summer');" title="Attiva modo estivo">
  	</div>
  	<!--
 	<div class="control" style="display: inline; width: 60px; float: left; position: relative;" onclick="AUI.Regt.activatePreset('T0');">
@@ -79,7 +79,7 @@ String skin = auiConfig.getString("skin","");
 		<div class="control control-thermo" style="display: inline; width: 120px; float: left; position: relative;">
 		 	<div style="position: relative;"><img src="<%=skin%>images/thermo_display.png"></div>
 			<div id="setPoint" class="thermo-display">--,-°C</div>
-			<div class="caption">Set point attuale</div>
+			<div class="caption">Setpoint</div>
 		</div>
 		<div class="control" style="display: inline; position: relative; float: left;"><img src="<%=skin%>images/thermo_dn.png" onclick="AUI.Regt.setPointDown();"></div>
 	</div>

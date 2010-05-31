@@ -13,8 +13,12 @@ if (!AUI.Pages) {
 	};
 
 	AUI.Pages.init = function() {
+		startLayer = this.currentLayer;
 		if (this.currentPageId != null) {
 			this.changeTo(this.currentPageId);
+		}
+		if (startLayer != null) {
+			AUI.Layers.changeTo(startLayer);
 		}
 		var self = this;
 		this.pageMouseMove = function(e) { return self.onPageMouseMove(e); };
@@ -149,6 +153,10 @@ if (!AUI.Pages) {
 		this.currentPageId = pageId;
 	};
 
+	AUI.Pages.setCurrentLayer = function(layer) {
+		this.currentLayer = layer;
+	};
+
 	AUI.Pages.getCurrentPageId = function() {
 		if (this.currentPage != null) {
 			return this.currentPage.id;
@@ -160,6 +168,10 @@ if (!AUI.Pages) {
 	AUI.Pages.getCurrentName = function() {
 		return this.currentPageId.substring(5);		
 	};
+	
+	AUI.Pages.getCurrentLayer = function() {
+		return this.currentLayer;
+	};
 
 	AUI.Pages.getLayerControls = function(layer) {
 		var pageId = this.getCurrentPageId();
@@ -168,6 +180,7 @@ if (!AUI.Pages) {
 	};
 	
 	AUI.Pages.showLayer = function(layer) {
+		AUI.Logger.debug("Richiesto layer "+layer);
 		var pageId = this.getCurrentPageId();
 		var layers = this.pageLayers[pageId];
 		for (i in layers) {
@@ -175,6 +188,7 @@ if (!AUI.Pages) {
 				continue;
 			}
 			if (i == layer) {
+				AUI.Logger.debug("Impostato visibile layer "+layer);
 				this.setLayerVisibility(i,true);
 			} else {
 				this.setLayerVisibility(i,false);

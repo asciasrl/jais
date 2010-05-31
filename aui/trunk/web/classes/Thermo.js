@@ -33,8 +33,7 @@ if (!AUI.Thermo) {
 		var self = this;
 		var control = this.getControl();
 		if (control.model != undefined && control.model == "eds.regt") {
-			// non funziona con Safari
-			("eds.regt.jsp?address="+control.address+"&page="+AUI.Pages.getCurrentName()).toUri.go();
+			window.location.href="eds.regt.jsp?address="+control.address+"&page="+AUI.Pages.getCurrentName()+"&layer="+AUI.Pages.getCurrentLayer();
 		}
 	};
 

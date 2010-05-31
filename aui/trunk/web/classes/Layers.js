@@ -222,6 +222,22 @@ if (!AUI.Layers) {
 				p -= l - 5;
 			}
 			return p;
+		},
+		
+		changeTo : function(layer) {
+			AUI.Logger.debug("changeTo layer: "+layer);
+			if (this.layers == null) {
+				return false;
+			}
+			for (i = 0; i < this.layers.length; i++) {
+				if (this.layers[i].layer == layer) {
+					this.target = i;
+					this.startTimer();
+					AUI.Logger.debug("changing to layer: "+i);
+					return true;
+				}
+			}
+			return false;
 		}
 				
 	};

@@ -250,8 +250,12 @@ var debug = true;
 </script>
 <% } %>
 
+<%
+String startLayer = request.getParameter("layer");
+%>
 <script language="javascript" type="text/javascript">
 AUI.Pages.setCurrentPageId("page-<%= startPage %>");
+AUI.Pages.setCurrentLayer("<%= startLayer %>");
 </script>
 
 </body>

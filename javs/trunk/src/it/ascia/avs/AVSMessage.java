@@ -1,5 +1,7 @@
 package it.ascia.avs;
 
+import java.util.HashMap;
+
 import it.ascia.ais.AISException;
 import it.ascia.ais.Message;
 
@@ -13,6 +15,7 @@ public class AVSMessage extends Message {
 		/**
 		 * Comunicazione stato da centrale ad host
 		 */
+		GET_INFO(3,-1),
 		GET_STATO_ZONE_DIG(1,1), 
 		GET_TAMPER_ZONE(1,2),
 		GET_BYPASS_ZONE(1,3), 
@@ -57,6 +60,7 @@ public class AVSMessage extends Message {
 		 * Richiesta stato da host a centrale
 		 */
 		ASK_STATO_ZONE_DIG(6,1,true),
+		ASK_STATO_ZONE_AN(6,10,true),
 		ASK_STATO_BYPASS_ZONE(6,3,true),
 		
 		/**
@@ -120,7 +124,7 @@ public class AVSMessage extends Message {
 		 * @return
 		 */
 		public boolean match(int command) {
-			return match (command,false);
+			return match(command,false);
 		}
 
 		/**
@@ -130,7 +134,7 @@ public class AVSMessage extends Message {
 		 * @return
 		 */
 		public boolean match(int command, boolean host) {
-			return this.command == command && this.host == host;
+			return this.command == command && this.selector == -1 && this.host == host;
 		}
 		
 		public boolean match(Code arg) {
@@ -172,76 +176,16 @@ public class AVSMessage extends Message {
 			}
 			throw(new AISException("Unknow code: "+command+"/"+selector+"/"+host));
 		}
+
+		public boolean match(int command, int selector) {
+			return match(command,selector,false);
+		}
+
+		public boolean isHost() {
+			return host;
+		}
 	}
-	
-	/*
-	static final String[] commands = {null,"GET_STATO","SET_STATO","GET_ERROR",null,null,"ASK_STATO","GET_INFO"}; 
-
-	*/
-	
-	static final int SEL_STATO_ZONE_DIG = 1;
-	static final int SEL_TAMPER_ZONE = 2;
-	static final int SEL_BYPASS_ZONE = 3;
-	static final int SEL_ANOMALIA_ZONE_RADIO = 4; // non implementato ?
-	static final int SEL_STATO_SETT = 5;
-	static final int SEL_USCITA_OC_DIG = 6;
-	static final int SEL_USCITA_RELE = 7;
-	static final int SEL_USCITA_SIRENE = 8;
-	static final int SEL_USCITA_TAMPER = 9;
-	static final int SEL_STATO_ZONE_AN = 10;
-	static final int SEL_STATO_TAMPER = 11;  // non implementato ?
-	static final int SEL_USCITA_OC_AN = 12;
-	static final int SEL_STATO_USER = 13;  // non implementato ?
-	static final int SEL_LOGIN = 20;
-	static final int SEL_GROUP = 21; // non implementato ?
-	static final int SEL_GENERIC = 21;
-	/*
-	static final String[] selectors_stato = {null,"SEL_STATO_ZONE_DIG","SEL_TAMPER_ZONE","SEL_BYPASS_ZONE","SEL_ANOMALIA_ZONE_RADIO","SEL_STATO_SETT","SEL_USCITA_OC_DIG","SEL_USCITA_RELE","SEL_USCITA_SIRENE","SEL_USCITA_TAMPER",
-				"SEL_STATO_ZONE_AN",null,"SEL_USCITA_OC_AN",null,null,null,null,null,null,null,
-				"SEL_LOGIN","SEL_GENERIC"};	
-
-	static final int SEL_STATO_SPENTO = 0x00;
-	static final int SEL_STATO_ACCESO = 0x01;
-	static final int SEL_STATO_ACCESO_HOME = 0x02;
-	static final int SEL_STATO_ACCESO_AREA = 0x03;
-	static final int SEL_STATO_ACCESO_PERIMETER = 0x04;
-
-	static final int SEL_IDLE  = 0x00;
-	public static final int SEL_PROT_VERS = 0x01;
-	
-	static final String[] selectors_info = {"SEL_IDLE","SEL_PROT_VERS"};
-	
-	static final String[][] selectors = {null,selectors_stato, selectors_stato, selectors_stato, null, null, selectors_stato, selectors_info};
-	*/
-
-	static final int ERRORCODE_SELSTATO_UTENTE_NON_ABILIT = 0x80;
-	static final int ERRORCODE_SELSTATO_ACCENSIONE_FORZATA = 0x81;
-	static final int ERRORCODE_SELSTATO_ERR_AUTOTEST = 0x82;
-	static final int ERRORCODE_SELSTATO_PROGR_ORARIO_ATTIVO = 0x83;
-
-	static final int ERRORCODE_SEL_LOGIN_ERR_VALIDAZ = 0x80;
-	static final int ERRORCODE_SEL_LOGIN_CADUTA_CONN_OVERFLOW = 0x81;
-	/**
-	 * caduta connessione per mancata risposta host
-	 */
-	static final int ERRORCODE_SEL_LOGIN_CADUTA_CONN_MANCATA_RISP = 0x82;
-	/**
-	 * Caduta connessione per errore handshake (DTR)
-	 */
-	static final int ERRORCODE_SEL_LOGIN_CADUTA_CONN_ERR_HNDS = 0x83;
-	static final int ERRORCODE_SEL_LOGIN_CADUTA_CONN_PROT_NON_DEF = 0x84;
-
-	/**
-	 * busy (sistema impegnato)
-	 */
-	static final int ERRORCODE_SEL_GENERIC_BUSY = 0x90;
-	/**
-	 * overflow (coda verso host piena)
-	 */
-	static final int ERRORCODE_SEL_GENERIC_OVERFLOW = 0x91;
-
-	//static final int ERROR_DISPLAY_TIMEOUT = 500;                                          
-	
+		
 	static final int FORMAT_0 = 0;   //formato speciale
 	static final int FORMAT_1 = 1;   //elenco differ.  istanza/valore
 	static final int FORMAT_2 = 2;   //elenco completo valori a partire dalla prima istanza 
@@ -254,36 +198,84 @@ public class AVSMessage extends Message {
 	
 	
 	private int seqNumber;
+	private int session;
+
 	private int format;
 	
 	protected int[] data;
 
 	private Code code;
 
-	public AVSMessage(int seqNumber, Code code, int format, int[] data) {
+	public AVSMessage(int seqNumber, int session, Code code, int format, int[] data) {
 		if (code == null) {
 			throw(new AISException("Code cannot be null"));
 		}
 		this.seqNumber = seqNumber;
+		this.session = session;
 		this.code = code;
 		this.format = format;
 		this.data = data;
 	}
 
+	public AVSMessage(AVSMessage m) {
+		this(m.getSeqNumber(),m.getSession(),m.getCode(),m.getFormat(),m.getData());
+	}
+
+	int getFormat() {
+		return this.format;
+	}
+
 	public AVSMessage(Code code, int format) {
-		this(0, code, format, new int[0]);
+		this(0, 0, code, format, new int[0]);
 	}
 
 	public AVSMessage(Code code, int format, int[] data) {
-		this(0, code, format, data);
+		this(0, 0, code, format, data);
+	}
+
+	int getSeqNumber() {
+		return this.seqNumber;
+	}
+
+	/**
+	 * @return the command
+	 */
+	int getCommand() {
+		return code.getCommand();
+	}
+
+	/**
+	 * @return the selector
+	 */
+	int getSelector() {
+		return code.getSelector();
+	}
+	
+	Code getCode() {
+		return code;
+	}
+
+	/**
+	 * @return the data
+	 */
+	int[] getData() {
+		return data;
 	}
 
 	/**
 	 * Must be called by the Connector before getBytesMessage()
 	 * @param seqNumber
 	 */
-	public void setSeqNumber(int seqNumber) {
+	void setSeqNumber(int seqNumber) {
 		this.seqNumber = seqNumber;
+	}
+
+	int getSession() {
+		return this.session;		
+	}
+
+	void setData(int[] data) {
+		this.data = data;
 	}
 
 	/**
@@ -314,7 +306,7 @@ public class AVSMessage extends Message {
 	 <------ CRC ------>   <---- input bits---->
 	</pre>
 	*/
-	public static int calcCRC(int CRC, int d) {		
+	protected static int calcCRC(int CRC, int d) {		
 		for (int i=0; i < 8; i++) {
 			if ((CRC & 0x8000) == 0x8000) { 
 				CRC = (CRC << 1) & 0xFFFF;  //shift in the next message bit
@@ -370,9 +362,7 @@ public class AVSMessage extends Message {
 	public String toString() {
 		String s = getMessageDescription() 
 			+ " Sequence="+((seqNumber >> 4) & 0x0F) + "/" + (seqNumber & 0x0F)  
-			//+ " Command="+command+","+commands[command]
-			//+ " Selector="+getSelector()+","+selectors[command][getSelector()]
-			+ " Code=" + code
+			+ " Code=" + code + " ("+code.getCommand()+"/"+code.getSelector()+"/"+(code.isHost()?"host":"interface")+")"
             + " Format=" + format;
 		if (data.length > 0) {
 			s += " Data="+data.length;			
@@ -383,32 +373,7 @@ public class AVSMessage extends Message {
 		return s;
 	}
 
-	/**
-	 * @return the command
-	 */
-	public int getCommand() {
-		return code.getCommand();
-	}
-
-	/**
-	 * @return the selector
-	 */
-	public int getSelector() {
-		return code.getSelector();
-	}
-	
-	public Code getCode() {
-		return code;
-	}
-
-	/**
-	 * @return the data
-	 */
-	public int[] getData() {
-		return data;
-	}
-
-	public String dump() {
+	String dump() {
 		StringBuffer sb = new StringBuffer();
 		byte[] m = getBytesMessage(); 
 		sb.append(m.length + " bytes:");
@@ -417,9 +382,56 @@ public class AVSMessage extends Message {
 		}
 		return sb.toString();
 	}
-
-	public int getSeqNumber() {
-		return this.seqNumber;
+	
+	/**
+	 * 
+	 * If full == true, create a full list with the specified number of items, all items not specified in data have status negated
+	 * 
+	 * @param full Data contains full list of items
+	 * @param status Status of listed items
+	 * @param numItems Number of items
+	 * @param bitmap Data is bitmap 
+	 * @param data 
+	 * @return
+	 */
+	HashMap<Integer,Integer> decodeData(int numItems) {
+		HashMap<Integer,Integer> res = new HashMap<Integer,Integer>(numItems);
+		
+		if (format == 2 || format == 3 || format == 4 || format == 5) {
+			// elenco completo
+			for (int z = 1; z <= numItems; z++) {
+				res.put(z,0);
+			}
+		}
+		for (int i = 0; i < data.length; i++) {
+			if (format == 1 || format == 3) {
+				// coppia istanza-stato
+				res.put(data[i] + 1, data[i + 1]);
+				i++;
+			} else if (format == 2) {
+				// lista ordinata stato
+				res.put(i + 1, data[i]);
+			} else if (format == 4) {
+				// codifica bitmap istanze aperte
+				for (int j = 0; j < 8; j++) {
+					if ((data[i] & ( 1 << j)) > 0) {
+						res.put(i * 8 + j + 1, 1);
+					}
+				}
+			} else if (format == 5 || format == 8) {
+				// lista numeri istanze aperte
+				res.put(data[i] + 1, 1);
+			} else if (format == 6) {
+				// lista differenziale istanze chiuse
+				res.put(data[i] + 1, 0);
+			} else if (format == 7) {
+				// lista differenziale combinata: terzo stato (switch)
+				res.put(data[i] + 1, -1);
+			}
+		}
+		return res;
 	}
+
+
 
 }

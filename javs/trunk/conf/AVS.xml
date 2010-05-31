@@ -3,7 +3,7 @@
   <AVS>
     <connectors>
       <connector>
-        <name>advance88</name>
+        <name>abc</name>
         <interfaccia>EasyLink</interfaccia>
         <centrale>Advance88</centrale>
         <transport>
@@ -11,6 +11,8 @@
           <speed>57600</speed>
           <port>COM6</port>
         </transport>
+        <pin>000010</pin>
+        <sectors>1;2;3;4</sectors>
       </connector>
     </connectors> 
   </AVS>

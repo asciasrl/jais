@@ -77,7 +77,6 @@ public class AVSMessageParser extends MessageParser {
 	public void push(int b) {
 		b = b & 0xFF;
 		buff[iBuff++] = b;
-		//logger.trace(iBuff+"="+Message.b2h(b));
 		if (valid) {
 			valid = false;
 		}
@@ -112,40 +111,28 @@ public class AVSMessageParser extends MessageParser {
 		return CRC;
 	}
 
+	/**
+	 * Create a message using buff
+	 * @return
+	 */
 	private AVSMessage createMessage() {
-		int messageLength = buff[0] + 1;
-		int seqNumber =  buff[2];
 		int command = buff[3];
-		@SuppressWarnings("unused")
-		int session = buff[4]; // Non usato
 		int selector = buff[5];
 		Code code =  null;
 		try {
 			code = Code.get(command, selector);
 		} catch (AISException e) {
 			logger.error(e);
+			return null;
 		}
-		int format = buff[6];
-		int dataLength = messageLength - 7 - 2;
+		//  buff[0] + 1 - 7 - 2 == buff[0] - 8 = messageLength - 9
+		int dataLength = messageLength - 9;
 		int[] data = new int[dataLength];
-		//String dataString = new String();
-		StringBuffer sb = new StringBuffer();
-		//StringBuffer sbS = new StringBuffer();
 		for (int i=0; i < dataLength; i++) {
 			data[i] = buff[i+7];
-			sb.append(" "+Message.b2h(buff[i+7]));
-			//sbS.append((char)data[i]);
-		}
-		//dataString = sbS.toString();
-		//String sn = ((seqNumber >> 4) & 0x0F) + "/" + (seqNumber & 0x0F);  
-		//logger.debug("Length="+messageLength+" Seq="+sn+" Command="+command+","+AVSMessage.commands[command]+" Selector="+selector+","+AVSMessage.selectors[command][selector]+" Format="+format+" Data="+dataLength+","+sb.toString());
-		
-		if (AVSMessage.Code.GET_ERROR.match(command)) { 
-			return new AVSGetErrorMessage(seqNumber,code, format, data);
-		} else {
-			return new AVSMessage(seqNumber,code, format, data);
 		}
 		
+		return new AVSMessage(buff[2],buff[4],code, buff[6], data);
 		
 	}
 

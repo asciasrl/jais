@@ -444,7 +444,7 @@ public class AUIConfigRPCServer implements Serializable {
 	
 	public void changePageControlId(HttpSession session, String pageId, String controlId, String newId) {
 		if (controlId.equals(newId)) {
-			logger.warn("Ignored identity page control id change");
+			logger.trace("Control id not changed");
 			return;
 		}
 		HierarchicalConfiguration auiConfig = getConfiguration(session);

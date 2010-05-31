@@ -73,11 +73,6 @@ public class EDSConnector extends Connector {
 	 */
 	public static final int BROADCAST_RESENDS = 7;
 	
-	/**
-	 * EDSMessageParser per la lettura dei messaggi in ingresso.
-	 */
-	protected EDSMessageParser mp;
-
 	private int lastBroadcast = -1;
 
 	/**
@@ -113,23 +108,9 @@ public class EDSConnector extends Connector {
     	return myAddress;
     }
         
-    /**
-     * Gestisce ogni byte ricevuto finche' compone un messaggio e quindi ne effettua il dispacciamento
-     */
-    public void received(int b) {    	
-		mp.push(b);
-		setGuardtime(messageTransmitTime());
-		if (mp.isValid()) {
-			Message m = mp.getMessage();
-			if (m != null) {
-				//receiveQueue.offer(m);
-		    	logger.debug("Dispatching: " + m);
-				dispatchMessage(m);
-				if (AcknowledgeMessage.class.isInstance(m)) {
-					//setGuardtime(0);
-				}
-			}
-		}
+    public void received(int b) {
+    	setGuardtime(messageTransmitTime());
+    	super.received(b);
     }
 
     protected void dispatchMessage(Message m) throws AISException {
@@ -226,6 +207,12 @@ public class EDSConnector extends Connector {
 	public int getRetryTimeout() {
 		return getConfiguration().getInt("retrytimeout", RETRY_TIMEOUT);
 	}
+	
+	private double getRetryTimeout(PTPMessage m) {
+		return getRetryTimeout() + m.getRetryTimeout();
+	}
+
+
 
     public boolean sendMessage(Message m) {
     	if (EDSMessage.class.isInstance(m)) {
@@ -396,7 +383,7 @@ public class EDSConnector extends Connector {
 	    			if (!m.isAnswered()) {
 		    			// si mette in attesa, ma se nel frattempo arriva la risposta viene avvisato
 		    	    	try {
-		    	    		messageToBeAnswered.wait((long)(getRetryTimeout() * (1 + 2 * r.nextDouble())));
+		    	    		messageToBeAnswered.wait((long)(getRetryTimeout(m) * (1 + 2 * r.nextDouble())));
 		    	    	} catch (InterruptedException e) {
 		    				logger.trace("sendPTPRequest interrupted");
 		    	    	}

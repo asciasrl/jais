@@ -61,5 +61,9 @@ public class ImpostaParametroMessage extends PTPMessage {
 	public int getMessageType() {
 		return MSG_IMPOSTA_PARAMETRO;
 	}
-	
+
+	public double getRetryTimeout() {
+		return 1000;
+	}
+
 }

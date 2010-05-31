@@ -3,14 +3,14 @@
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
   debug="false">
   <appender name="stderr" class="org.apache.log4j.ConsoleAppender">
-    <param name="Threshold" value="error" />
+    <param name="Threshold" value="warn" />
     <param name="Target" value="System.err" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d %-5p [%t] %c - %m%n" />
     </layout>
   </appender>
   <appender name="stdout" class="org.apache.log4j.ConsoleAppender">
-    <param name="Threshold" value="trace" />
+    <param name="Threshold" value="info" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d %-5p [%t] %c - %m%n" />
     </layout>
@@ -34,6 +34,9 @@
   </appender>
   <logger name="org.mortbay">
     <level value="info" />
+  </logger>
+  <logger name="org.jabsorb.JSONSerializer">
+    <level value="trace" />
   </logger>
   <logger name="it.ascia.alarm.AlarmControllerModule">
   	<level value="trace" />

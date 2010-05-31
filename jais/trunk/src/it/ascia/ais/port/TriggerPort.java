@@ -3,6 +3,8 @@
  */
 package it.ascia.ais.port;
 
+import it.ascia.ais.DevicePort;
+
 /**
  * Questa porta ha sempre valore false. Viene usata solo per inviare comandi al device 
  * 
@@ -18,7 +20,6 @@ public class TriggerPort extends BooleanPort {
 	 */
 	public TriggerPort(String portId) {
 		super(portId);
-		setCachedValue(new Boolean(false));
 	}
 	
 	/**

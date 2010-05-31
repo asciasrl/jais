@@ -120,6 +120,11 @@ public class BMCRegT22 extends BMCStandardIO {
 	private static final int PARAM_T2_WINTER_VALUE = 63;
 	private static final int PARAM_T3_SUMMER_VALUE = 75;
 	private static final int PARAM_T3_WINTER_VALUE = 66;
+	
+	/**
+	 * Offset in secondi per effettuare la reimpostazione dell'orologio
+	 */
+	private static final int MAX_CLOCK_OFFSET = 2;
 		
 	/**
 	 * Costruttore.
@@ -440,6 +445,7 @@ public class BMCRegT22 extends BMCStandardIO {
 		int m = conn.getMyAddress();
 		int d = getIntAddress();
 		Calendar c = new GregorianCalendar();
+		Date deviceDate = null;
 		RichiestaRTCCMessage m0 = new RichiestaRTCCMessage(d,m,0);
 		RichiestaRTCCMessage m1 = new RichiestaRTCCMessage(d,m,1);
 		RichiestaRTCCMessage m2 = new RichiestaRTCCMessage(d,m,2); 
@@ -457,12 +463,27 @@ public class BMCRegT22 extends BMCStandardIO {
 					c.set(Calendar.MONTH,r1.getMese()-1);
 					c.set(Calendar.YEAR,r1.getAnno()+2000);
 					c.set(Calendar.DAY_OF_MONTH,r2.getGiorno());
+					if (r2.getSecondi() == 0) {
+						// ripete la lettura, perche' potrebbe essere affetta da errore di lettura
+						readRTCC();
+						return;
+					}
 					c.set(Calendar.SECOND,r2.getSecondi());
-					setPortValue(port_RTCC,c.getTime());
+					deviceDate = c.getTime();
+					setPortValue(port_RTCC,deviceDate);
 				}
 			}
 		}	
-		//TODO Determinare se l'orologio e' sballato e nel caso sincronizzarlo
+		//Determina se l'orologio e' sballato e nel caso lo sincronizza
+		if (deviceDate != null) {
+			long diff = deviceDate.getTime() - System.currentTimeMillis();
+			if ( Math.abs(diff) > MAX_CLOCK_OFFSET * 1000) {
+				logger.warn("Clock offset= "+diff+" mS");
+				writeRTCC();
+			} else {
+				logger.trace("Clock offset= "+diff+" mS");
+			}
+		}
 	}
 	
 	/**
@@ -471,7 +492,7 @@ public class BMCRegT22 extends BMCStandardIO {
 	 * @return true if send ok
 	 */
 	private boolean clearSeason(int season) {
-		logger.info("Cancellazione setPoint "+getSeason(season));
+		logger.info("Cancellazione setPoint stagione "+getSeason(season));
 		if (sendParameter(PARAM_CLEAR_SEASON,season & 0x01)) {
 			for (int day = 0; day < 7; day++) {
 				for (int h = 0; h < 24 ; h++) {
@@ -557,6 +578,8 @@ public class BMCRegT22 extends BMCStandardIO {
 		EDSConnector conn = (EDSConnector) getConnector();
 		int m = conn.getMyAddress();
 		int d = getIntAddress();
+		// aggiunge un secondo per ridurre lo sfalsamento
+		cal.add(Calendar.SECOND, 1);
 		boolean s1 = conn.sendMessage(new ImpostaRTCCMessage(d,m,0, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE)));
 		boolean s2 = conn.sendMessage(new ImpostaRTCCMessage(d,m,1, cal.get(Calendar.MONTH)+1, cal.get(Calendar.YEAR)-2000));
 		boolean s3 = conn.sendMessage(new ImpostaRTCCMessage(d,m,2, cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.SECOND)));

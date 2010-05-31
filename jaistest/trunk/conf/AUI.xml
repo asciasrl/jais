@@ -158,6 +158,15 @@
 <coords>0,241,320,370</coords>
 <page>pianoT</page>
 </area>
+<control id="page2">
+<type>page</type>
+<title>Pagina Test</title>
+<top>270</top>
+<left>40</left>
+<address/>
+<page>test2</page>
+<layer/>
+</control>
 </page>
 <page id="test">
 <src>/images/piani-all.png</src>
@@ -257,8 +266,8 @@
 <title>Luce ingresso</title>
 <type>dimmer</type>
 <layer>light</layer>
-<top>225</top>
-<left>495</left>
+<top>220</top>
+<left>490</left>
 <address>2.5:Out1</address>
 <page/>
 </control>
@@ -288,16 +297,16 @@
 <title>Allarme</title>
 <type>group</type>
 <layer>security</layer>
-<top>50</top>
-<left>50</left>
+<top>380</top>
+<left>20</left>
 <address>2.Group1:Attivazione</address>
 </control>
 <control id="allarme2">
 <title>Allarme</title>
 <type>group</type>
 <layer>security</layer>
-<top>50</top>
-<left>110</left>
+<top>380</top>
+<left>90</left>
 <address>2.Group1:Disattivazione</address>
 </control>
 <control id="allarme">
@@ -310,6 +319,7 @@
 <default>images/alarm_off.png</default>
 <on>images/alarm_on.png</on>
 <off>images/alarm_off.png</off>
+<page/>
 </control>
 <control id="b1">
 <title>Tapparella lunga</title>
@@ -336,7 +346,7 @@
 <address>2.7:temp</address>
 </control>
 <control id="c2">
-<title>Cronotermostato WDB</title>
+<title>Cronotermostato EDS RegT</title>
 <type>thermo</type>
 <model>eds.regt</model>
 <layer>thermo</layer>
@@ -351,6 +361,7 @@
 <top>120</top>
 <left>570</left>
 <address>2.3:Out7</address>
+<page/>
 </control>
 <control id="cam1">
 <title>Telecamera</title>
@@ -409,11 +420,65 @@
 <control id="light21">
 <type>light</type>
 <title>Nuovo controllo light21</title>
-<top>310</top>
-<left>200</left>
-<address/>
+<top>220</top>
+<left>430</left>
+<address>2.5:Out1</address>
 <page/>
 <layer>light</layer>
+</control>
+<control id="light22">
+<type>light</type>
+<title>Sensore allarme zona 10</title>
+<top>10</top>
+<left>10</left>
+<address>abc.Zone10:Stato</address>
+<page/>
+<layer>security</layer>
+</control>
+<control id="light23">
+<type>light</type>
+<title>Settore 1</title>
+<top>10</top>
+<left>110</left>
+<address>abc.Advance88:Sector1</address>
+<page/>
+<layer>security</layer>
+</control>
+<control id="light24">
+<type>light</type>
+<title>Settore 2</title>
+<top>10</top>
+<left>170</left>
+<address>abc.Advance88:Sector2</address>
+<page/>
+<layer>security</layer>
+</control>
+<control id="dimmer25">
+<type>light</type>
+<title>Settore 3</title>
+<top>10</top>
+<left>230</left>
+<address>abc.Advance88:Sector3</address>
+<page/>
+<layer>security</layer>
+</control>
+<control id="light26">
+<type>light</type>
+<title>Settore 4</title>
+<top>10</top>
+<left>290</left>
+<address>abc.Advance88:Sector4</address>
+<page/>
+<layer>security</layer>
+</control>
+<control id="light27">
+<type>light</type>
+<title>Allarme!</title>
+<top>110</top>
+<left>10</left>
+<address>abc.Advance88:Relay1</address>
+<page/>
+<layer>security</layer>
 </control>
 </page>
 <page id="chrono_c1">
@@ -466,11 +531,11 @@
 <layer>light</layer>
 </control>
 <control id="light3">
-<type>light</type>
-<title>Nuovo controllo light3</title>
+<type>power</type>
+<title>Presa comandata</title>
 <top>290</top>
 <left>240</left>
-<layer>light</layer>
+<layer>power</layer>
 <address>2.3:Out7</address>
 <page/>
 </control>

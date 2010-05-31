@@ -57,17 +57,17 @@
         <transport>
           <type>serial</type>
           <speed>9600</speed>
-          <port>COM1</port>
+          <port>COM2</port>
         </transport>
 		    <computer>251</computer>
 		    <discover>255</discover>
       </connector>
-      <connector>
+      <connector disabled="true">
         <name>2</name>
         <transport>
           <type>serial</type>
           <speed>9600</speed>
-          <port>COM2</port>
+          <port>auto</port>
         </transport>
 		    <computer>252</computer>
 		    <discover>2;3;4;5;6;7</discover>

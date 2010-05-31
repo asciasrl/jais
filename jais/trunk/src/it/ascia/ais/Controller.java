@@ -185,6 +185,11 @@ public class Controller {
 		{
 		    HierarchicalConfiguration sub = (HierarchicalConfiguration) it.next();
 		    String name = (String) sub.getProperty("[@name]");
+		    Boolean disabled = sub.getBoolean("[@disabled]",false);
+		    if (disabled) {
+				logger.info("Modulo '"+name+"' disabilitato, non viene caricato.");
+				continue;
+		    }
 		    String className = sub.getString("class");
 		    String configName = sub.getString("config",null);
 		    try {

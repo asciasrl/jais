@@ -69,6 +69,11 @@ public class AUIConfigRPCServer implements Serializable {
 		}
 		return auiConfig = (HierarchicalConfiguration) session.getAttribute("AUI.config");
 	}
+	
+	private HierarchicalConfiguration getSkinConfiguration() {
+		// FIXME Non gestito cambio di skin in fase di configurazione
+		return aui.getSkinConfiguration();
+	}
 
 	/**
 	 * Save AUI configuration to xml configuration file
@@ -293,6 +298,7 @@ public class AUIConfigRPCServer implements Serializable {
 	 */
 	public Vector<HashMap<String, Object>> getPageControls(HttpSession session, String pageId) {
 		HierarchicalConfiguration auiConfig = getConfiguration(session);
+		HierarchicalConfiguration skinConfig = getSkinConfiguration();
 		//auiConfig.setExpressionEngine(new XPathExpressionEngine());
 		HierarchicalConfiguration pageConfig = auiConfig.configurationAt("//pages/page[@id='"+pageId+"']");
 		List controls = pageConfig.configurationsAt("control");
@@ -303,8 +309,8 @@ public class AUIConfigRPCServer implements Serializable {
 			String id = controlConfig.getString("[@id]");
 			String controlId = "control-" + pageId + "-" + id;
 			HashMap<String, Object> controlMap = new HashMap<String, Object>();
-			if (auiConfig.containsKey("controls/"+type+"/default")) {
-				SubnodeConfiguration typeConfig = auiConfig.configurationAt("controls/"+type);
+			if (skinConfig.containsKey("controls."+type+".default")) {
+				SubnodeConfiguration typeConfig = skinConfig.configurationAt("controls."+type);
 				for (Iterator ip = typeConfig.getKeys(); ip.hasNext(); ) {
 					String k = (String) ip.next();
 					controlMap.put(k, typeConfig.getString(k));

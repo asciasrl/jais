@@ -9,7 +9,7 @@
 	<target name="lib">
 		<copy verbose="true" todir="${lib}">			
 			<fileset dir="lib/">
-			  <include name="*"/>
+			  <include name="**"/>
 			</fileset>
 		</copy>
 	</target>

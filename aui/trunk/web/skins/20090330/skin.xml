@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jais:configuration version="1.4">
+	<AUI>
+       <controls>
+			<page>
+				<default>images/page_back.png</default>
+			</page>
+			<light>
+				<default>images/light_off.png</default>
+				<on>images/light_on.png</on>
+				<off>images/light_off.png</off>
+			</light>
+			<pushbutton>
+				<default>images/pushbutton_green-off.png</default>
+				<on>images/pushbutton_green-on.png</on>
+				<off>images/pushbutton_green-off.png</off>
+			</pushbutton>
+			<group>
+				<default>images/pushbutton_green-off.png</default>
+			</group>
+			<dimmer>
+				<default>images/light_off.png</default>
+				<on>images/light_on.png</on>
+				<off>images/light_off.png</off>
+				<dimming>images/light_dimming.png</dimming>
+				<up>images/light_up.png</up>
+				<down>images/light_down.png</down>
+				<timer>500</timer>
+			</dimmer>
+			<blind>
+				<default>images/blind_stopped.png</default>
+				<stopped>images/blind_stopped.png</stopped>
+				<open>images/blind_open.png</open>
+				<opening>images/blind_opening.png</opening>
+				<opened>images/blind_opened.png</opened>
+				<close>images/blind_close.png</close>
+				<closing>images/blind_closing.png</closing>
+				<closed>images/blind_closed.png</closed>
+			</blind>
+			<digitalinput>
+				<default>images/light_off.png</default>
+				<true>images/light_on.png</true>
+				<false>images/light_off.png</false>
+			</digitalinput>
+			<power>
+				<default>images/power_off.png</default>
+				<on>images/power_on.png</on>
+				<off>images/power_off.png</off>
+			</power>
+			<scene>
+				<default>images/scene_off.png</default>
+				<off>images/scene_off.png</off>
+				<on>images/scene_on.png</on>
+			</scene>
+			<thermo>
+				<default>images/thermo_display.png</default>
+				<crono>images/thermo_crono.png</crono>
+				<down>images/thermo_down.png</down>
+				<fan0>images/thermo_fan0.png</fan0>
+				<fan1>images/thermo_fan1.png</fan1>
+				<fan2>images/thermo_fan2.png</fan2>
+				<fan3>images/thermo_fan3.png</fan3>
+				<manual_off>images/thermo_manual_off.png</manual_off>
+				<manual_on>images/thermo_manual_on.png</manual_on>
+				<switch_on>images/thermo_switch_on.png</switch_on>
+				<T1_off>images/thermo_T1_off.png</T1_off>
+				<T1_on>images/thermo_T1_on.png</T1_on>
+				<T2_off>images/thermo_T2_off.png</T2_off>
+				<T2_on>images/thermo_T2_on.png</T2_on>
+				<T3_off>images/thermo_T3_off.png</T3_off>
+				<T3_on>images/thermo_T3_on.png</T3_on>
+				<up>images/thermo_up.png</up>
+				<dn>images/thermo_dn.png</dn>
+			</thermo>
+			<webcam>
+				<default>images/webcam-pause.png</default>
+				<pause>images/webcam-pause.png</pause>
+				<play>images/webcam-play.png</play>
+			</webcam>
+		</controls>
+		<layers>
+			<layer id="scene">
+				<title>Scenari</title>
+				<icon>images/layer-scene.png</icon>
+			</layer>
+			<layer id="light">
+				<title>Illuminazione</title>
+				<icon>images/layer-light.png</icon>
+			</layer>
+			<layer id="blind">
+				<title>Serramenti</title>
+				<icon>images/layer-blind.png</icon>
+			</layer>
+			<layer id="security">
+				<title>Sicurezza</title>
+				<icon>images/layer-security.png</icon>
+			</layer>
+			<layer id="video">
+				<title>Video</title>
+				<icon>images/layer-video.png</icon>
+			</layer>
+			<layer id="audio">
+				<title>Audio</title>
+				<icon>images/layer-audio.png</icon>
+			</layer>
+			<layer id="thermo">
+				<title>Termoregolazione</title>
+				<icon>images/layer-thermo.png</icon>
+			</layer>
+			<layer id="power">
+				<title>Controllo carichi</title>
+				<icon>images/layer-power.png</icon>
+			</layer>
+		</layers>
+	</AUI>
+</jais:configuration>

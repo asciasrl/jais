@@ -33,6 +33,7 @@ if (auiControllerModule == null) {
 }
 HierarchicalConfiguration auiConfig = auiControllerModule.getConfiguration();
 String skin = auiConfig.getString("skin","");
+HierarchicalConfiguration skinConfig = auiControllerModule.getSkinConfiguration();
 %>
 <?xml version="1.0" encoding="iso-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -111,7 +112,7 @@ for (Iterator it = pages.iterator(); it.hasNext();) {
 %>
 <div id="<%= id %>" class="control control-<%= type %>" style="left: <%= controlConfig.getString("left") %>px; top: <%= controlConfig.getString("top") %>px;">
 	<div class="control-icon" <%= eventType %>="<%= eventHandler %>">
-		<img id="<%= id %>-img" src="<%= skin + controlConfig.getString("default",auiConfig.getString("controls."+type+".default")) %>" title="<%= controlConfig.getString("title",controlConfig.getString("address")) %>" border="0" alt="<%= type %>"/>
+		<img id="<%= id %>-img" src="<%= skin + controlConfig.getString("default",skinConfig.getString("controls."+type+".default")) %>" title="<%= controlConfig.getString("title",controlConfig.getString("address")) %>" border="0" alt="<%= type %>"/>
 	</div>
 <%
 		if (type.equals("dimmer")) {
@@ -129,10 +130,10 @@ for (Iterator it = pages.iterator(); it.hasNext();) {
 		} else if (type.equals("blind")) {
 %>	
 	<div id="<%= id %>-open" class="control-button control-button-open control-<%= type %>-open">
-		<img id="<%= id %>-open-img" src="<%= skin + controlConfig.getString("open",auiConfig.getString("controls."+type+".open")) %>" title="Open <%= controlConfig.getString("title",controlConfig.getString("address")) %>" border="0" alt="Open <%= type %>"/>
+		<img id="<%= id %>-open-img" src="<%= skin + controlConfig.getString("open",skinConfig.getString("controls."+type+".open")) %>" title="Open <%= controlConfig.getString("title",controlConfig.getString("address")) %>" border="0" alt="Open <%= type %>"/>
 	</div>
 	<div id="<%= id %>-close" class="control-button control-button-close control-<%= type %>-close">
-		<img id="<%= id %>-close-img" src="<%= skin + controlConfig.getString("close",auiConfig.getString("controls."+type+".close")) %>" title="Close <%= controlConfig.getString("title",controlConfig.getString("address")) %>" border="0" alt="Close <%= type %>"/>
+		<img id="<%= id %>-close-img" src="<%= skin + controlConfig.getString("close",skinConfig.getString("controls."+type+".close")) %>" title="Close <%= controlConfig.getString("title",controlConfig.getString("address")) %>" border="0" alt="Close <%= type %>"/>
 	</div>
 <% 
 		} else if (type.equals("thermo")) {
@@ -140,10 +141,10 @@ for (Iterator it = pages.iterator(); it.hasNext();) {
 	<div class="thermo-display" id="<%= id %>-label"  <%= eventType %>="<%= eventHandler %>">-,-°C</div>
 	<div id="<%= id %>-buttons">
 		<div id="<%= id %>-dn" class="control-button control-button-dn control-<%= type %>-dn">
-			<img id="<%= id %>-dn-img" src="<%= skin + controlConfig.getString("dn",auiConfig.getString("controls."+type+".dn")) %>" title="Down <%= controlConfig.getString("title",controlConfig.getString("address")) %>" border="0" alt="Down <%= type %>"/>
+			<img id="<%= id %>-dn-img" src="<%= skin + controlConfig.getString("dn",skinConfig.getString("controls."+type+".dn")) %>" title="Down <%= controlConfig.getString("title",controlConfig.getString("address")) %>" border="0" alt="Down <%= type %>"/>
 		</div>		
 		<div id="<%= id %>-up" class="control-button control-button-up control-<%= type %>-up">
-			<img id="<%= id %>-up-img" src="<%= skin + controlConfig.getString("up",auiConfig.getString("controls."+type+".up")) %>" title="Up <%= controlConfig.getString("title",controlConfig.getString("address")) %>" border="0" alt="Up <%= type %>"/>
+			<img id="<%= id %>-up-img" src="<%= skin + controlConfig.getString("up",skinConfig.getString("controls."+type+".up")) %>" title="Up <%= controlConfig.getString("title",controlConfig.getString("address")) %>" border="0" alt="Up <%= type %>"/>
 		</div>		
 	</div>
 <%
@@ -167,7 +168,7 @@ for (Iterator it = pages.iterator(); it.hasNext();) {
 <div id="layers">
 <div id="scroller">
 <%
-List layers = auiConfig.configurationsAt("layers.layer");
+List layers = skinConfig.configurationsAt("layers.layer");
 JSONArray jLayers = new JSONArray();
 int nLayers = layers.size();
 for (int iLayer = 0;  iLayer < (5 + nLayers); iLayer++) {

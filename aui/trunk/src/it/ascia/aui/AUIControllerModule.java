@@ -10,8 +10,10 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.jabsorb.JSONRPCBridge;
 import org.jabsorb.JSONRPCServlet;
@@ -35,11 +37,48 @@ public class AUIControllerModule extends ControllerModule {
 	private static final String SESSION_ATTRIBUTE_USERNAME = "AUI.username";
 	
 	private static final String SESSION_ATTRIBUTE_ISLOGGED = "AUI.isLogged";
+	
+    private HierarchicalConfiguration skinConfiguration;
 
 	public AUIControllerModule() {
 		super();
 	}
 
+	@Override
+	public void setConfiguration(HierarchicalConfiguration config) {
+		String skin = config.getString("AUI.skin");
+		if (skin == null) {
+			throw(new AISException("Missing <skin> tag in configuration!"));
+		}
+		if (!skin.endsWith("/")) {
+			skin += "/";
+		}
+		if (!skin.startsWith("/")) {
+			String webroot = config.getString("AUI.webroot");
+			if (webroot == null) {
+				throw(new AISException("Missing <webroot> tag in configuration!"));
+			}
+			if (!webroot.endsWith("/")) {
+				webroot += "/";
+			}
+			skin = webroot + skin;
+		}
+		skin += "skin.xml";		
+		try {
+			skinConfiguration = new XMLConfiguration(skin);
+		} catch (ConfigurationException e) {
+			//logger.fatal("Error loading skin configuration from "+skin,e);
+			throw(new AISException("Error loading skin configuration from: "+skin,e));
+		}
+		//skinConfiguration.setExpressionEngine(new XPathExpressionEngine());
+		logger.info("Loaded skin configuration from: "+skin);
+		super.setConfiguration(config);
+	}
+	
+	public HierarchicalConfiguration getSkinConfiguration() {
+		return skinConfiguration.configurationAt(getName());
+	}
+	
 	public void start() {
 		super.start();
 		HTTPServerControllerModule h = (HTTPServerControllerModule) Controller.getController().getModule("HTTPServer");

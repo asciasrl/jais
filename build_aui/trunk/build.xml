@@ -1,6 +1,6 @@
 <project name="AUI Package Builder" default="zip">
 
-	<target name="zip" depends="base,jais,jeds,jbis,jalarm,aui,JaisTest,i18n">
+	<target name="zip" depends="base,jais,jeds,jbis,javs,jalarm,aui,JaisTest,i18n">
 		<mkdir dir="${dst}logs/"/>
 		<zip file="${dst}../aui-${v}.zip" duplicate="fail" >
 			<fileset dir="${dst}">
@@ -21,7 +21,7 @@
 	</target>
 	
 	<target name="base">
-		<property name="version.num" value="1.07"/>		
+		<property name="version.num" value="1.08"/>		
 		<buildnumber file="build.num"/>
 		<tstamp>
 			<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
@@ -45,6 +45,10 @@
 
 	<target name="jbis" depends="jais">
 		<ant dir="../jbis"/>
+	</target>
+
+	<target name="javs" depends="jais">
+		<ant dir="../javs"/>
 	</target>
 
 	<target name="aui" depends="jais">

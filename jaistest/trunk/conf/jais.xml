@@ -19,9 +19,9 @@
 			<class>it.ascia.bentel.BentelKyoControllerModule</class>
 			<config>conf/BentelKyo.xml</config>
 		</module>
-		<module name="AVS" disabled="false">
+		<module name="AVS" disabled="true">
 			<class>it.ascia.avs.AVSControllerModule</class>
-			<config>../javs/conf/AVS.xml</config>
+			<config>conf/AVS.xml</config>
 		</module>
 		<module name="AUI" disabled="false">
 			<class>it.ascia.aui.AUIControllerModule</class>

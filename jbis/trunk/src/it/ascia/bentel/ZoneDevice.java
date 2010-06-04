@@ -5,13 +5,14 @@ import it.ascia.ais.Device;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.port.DigitalInputPort;
 import it.ascia.ais.port.DigitalOutputPort;
+import it.ascia.ais.port.StringPort;
 
 public class ZoneDevice extends Device {
 
 	public ZoneDevice(String address) throws AISException {
 		super(address);
 		DevicePort p;
-		p = new LabelPort("Description");
+		p = new StringPort("Description");
 		p.setCacheRetention(10 * 60 * 1000);
 		addPort(p);
 		p = new DigitalInputPort("Alarm");

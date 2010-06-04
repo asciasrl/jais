@@ -91,10 +91,6 @@
 				<title>Serramenti</title>
 				<icon>images/layer-blind.png</icon>
 			</layer>
-			<layer id="security">
-				<title>Sicurezza</title>
-				<icon>images/layer-security.png</icon>
-			</layer>
 			<layer id="video">
 				<title>Video</title>
 				<icon>images/layer-video.png</icon>
@@ -103,13 +99,17 @@
 				<title>Audio</title>
 				<icon>images/layer-audio.png</icon>
 			</layer>
-			<layer id="thermo">
-				<title>Termoregolazione</title>
-				<icon>images/layer-thermo.png</icon>
-			</layer>
 			<layer id="power">
 				<title>Controllo carichi</title>
 				<icon>images/layer-power.png</icon>
+			</layer>
+			<layer id="security">
+				<title>Sicurezza</title>
+				<icon>images/layer-security.png</icon>
+			</layer>
+			<layer id="thermo">
+				<title>Termoregolazione</title>
+				<icon>images/layer-thermo.png</icon>
 			</layer>
 		</layers>
 	</AUI>

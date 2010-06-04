@@ -17,7 +17,7 @@ import it.ascia.ais.port.IntegerPort;
 import it.ascia.ais.port.StatePort;
 import it.ascia.ais.port.TemperaturePort;
 import it.ascia.ais.port.TemperatureSetpointPort;
-import it.ascia.ais.port.TriggerPort;
+import it.ascia.ais.port.NullPort;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.msg.ImpostaParametroMessage;
 import it.ascia.eds.msg.EDSMessage;
@@ -151,8 +151,8 @@ public class BMCRegT22 extends BMCStandardIO {
 		addPort(new IntegerPort(port_autoSendTime));
 		addPort(new TemperatureSetpointPort(port_setPoint));
 		addPort(new DatePort(port_RTCC));
-		addPort(new TriggerPort(virtual_RESET_DAY));
-		addPort(new TriggerPort(virtual_RESET_SEASON));
+		addPort(new NullPort(virtual_RESET_DAY));
+		addPort(new NullPort(virtual_RESET_SEASON));
 		for (int stagione = 0; stagione <= 1; stagione++) {
 			for (int giorno = 0; giorno <= 6; giorno++) {
 				for (int ora = 0; ora <= 23; ora++) {

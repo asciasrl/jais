@@ -22,6 +22,7 @@ import it.ascia.eds.msg.VariazioneIngressoMessage;
  */
 public class BMCScenarioManager extends BMCStandardIO {
 
+	private static final String SCENE_PORTID_PREFIX = "Scene";
 	/**
 	 * Costruttore
 	 * @param connector 
@@ -33,7 +34,7 @@ public class BMCScenarioManager extends BMCStandardIO {
 		super(address, model, name);
 		// aggiunge le porte per l'attivazione delle scene
 		for (int i = 1; i <= getSceneNumber(); i++) {
-			addPort(new ScenePort("Scene"+i));
+			addPort(new ScenePort(SCENE_PORTID_PREFIX+i));
 		}
 	}
 
@@ -120,36 +121,43 @@ public class BMCScenarioManager extends BMCStandardIO {
 		}
 	}
 	
-	public int getSceneNumberFromPortId(String portId) {
-		int retval = -1;		
-		int max = getSceneNumber();
-		// TODO Non e' il massimo dell'efficienza, ma funziona.
-		for (int i = 0; (i < max) && (retval == -1); i++) {
-			if (portId.equals(getScenePortId(i))) {
-				retval = i;
+	/**
+	 * Restituisce il numero di scenario dall'id della porta
+	 * Scene1 -> 0
+	 * @param portId
+	 * @return
+	 */
+	private int getSceneNumberFromPortId(String portId) {
+		int l = SCENE_PORTID_PREFIX.length();
+		if (portId.startsWith(SCENE_PORTID_PREFIX) && portId.length() > l) {
+			try {
+				int retval = new Integer(portId.substring(l)).intValue();
+				if (retval < 1) {
+					throw(new AISException("Port "+portId+" specifiy non positive scene"));				
+				}
+				if (retval > getSceneNumber()) {
+					throw(new AISException("Port "+portId+" specifiy a scene over max scene number"));								
+				}
+				return retval - 1;
+			} catch (NumberFormatException e) {
+				throw(new AISException("Port "+portId+" is not a valid id for Scene port"));
 			}
+		} else {
+			throw(new AISException("Port "+portId+" is not a valid id for Scene port"));
 		}
-		return retval;
 	}
 
 	/**
 	 * Genera il nome per una porta di attivazione scenario.
+	 * 0 -> Scene1
 	 */
 	private String getScenePortId(int number) {
-		return "Scene" + (number +1);
+		return SCENE_PORTID_PREFIX + (number +1);
 	}
 
-	public boolean sendPortValue(String portId, Object newValue) throws AISException {
-		if (portId.startsWith("Scene")) {
-			if (Boolean.class.isInstance(newValue)) {
-				int sceneNumber = getSceneNumberFromPortId(portId);
-				if (sceneNumber == -1) {
-					throw new AISException("Porta non valida: " + portId);
-				}
-				return getConnector().sendMessage(new ComandoUscitaMessage(getIntAddress(), getBMCComputerAddress(), sceneNumber));
-			} else {
-				throw new AISException(getFullAddress() + " tipo valore non valido: " + newValue.getClass().getCanonicalName());
-			}		
+	public boolean sendPortValue(String portId, Object newValue) {
+		if (portId.startsWith(SCENE_PORTID_PREFIX)) {
+			return getConnector().sendMessage(new ComandoUscitaMessage(getIntAddress(), getBMCComputerAddress(), getSceneNumberFromPortId(portId)));
 		} else {
 			return super.sendPortValue(portId, newValue);
 		}

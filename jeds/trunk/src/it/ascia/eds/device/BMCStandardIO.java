@@ -357,7 +357,7 @@ public class BMCStandardIO extends BMC {
 		if (Boolean.class.isInstance(newValue)) {
 			intValue = ((Boolean)newValue).booleanValue() ? 1 : 0;
 		} else {
-			throw new AISException(getFullAddress() + " tipo valore non valido: " + newValue.getClass().getCanonicalName());
+			throw new AISException(getAddress() + " tipo valore non valido: " + newValue.getClass().getCanonicalName());
 		}
 		int portNumber = getOutputNumberFromPortId(portId);
 		if (portNumber == -1) {

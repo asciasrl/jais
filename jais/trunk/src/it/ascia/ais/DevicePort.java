@@ -58,7 +58,7 @@ public abstract class DevicePort {
 	public void removePropertyChangeListener(PropertyChangeListener listener) {
 		this.pcs.removePropertyChangeListener(listener);
 		logger.trace(pcs.getPropertyChangeListeners().length
-				+ " (-) PCL's for " + getFullAddress());
+				+ " (-) PCL's for " + getAddress());
 	}
 
 	/**
@@ -113,9 +113,9 @@ public abstract class DevicePort {
 		expiration = 0;
 	}
 
-	public Map getStatus() throws AISException {
-		HashMap m = new HashMap();
-		m.put("A",getFullAddress());
+	public Map<String, Object> getStatus() throws AISException {
+		HashMap<String, Object> m = new HashMap<String, Object>();
+		m.put("A",getAddress().toString());
 		m.put("C",getClass().getSimpleName());
 		Object value = getCachedValue();
 		if (value == null) {
@@ -185,15 +185,15 @@ public abstract class DevicePort {
 					}
 				} else {
 					// il valore, nel frattempo, e' stato aggiornato
-					return cachedValue;
+					return getCachedValue();
 				}
 			}
 		}
 		if (isDirty() || isExpired()) {
-			logger.error("Non aggiornato valore porta " + getFullAddress()
+			logger.error("Non aggiornato valore porta " + getAddress()
 					+ " in " + (System.currentTimeMillis() - start) + "mS");
 		}
-		return cachedValue;
+		return getCachedValue();
 	}
 
 	/**
@@ -254,13 +254,16 @@ public abstract class DevicePort {
 	}
 
 	/**
-	 * Subclasses should ovveride this method to normalize and check values
-	 * @param newValue
+	 * Subclasses must ovveride this method to normalize and check values.
+	 * If newValue is null, return null
+	 * If newValue is an instance of the class of port, return newValue.
+	 * This metod try to convert supplied value to the class of port value.
+	 * Can check boundaries or list of values. 
+	 * @param newValue The value to be checked and converted
 	 * @return Normalized (converted) value
+	 * @throws IllegalArgumentException if the argument cannot be converted
 	 */
-	protected Object normalize(Object newValue) throws IllegalArgumentException {
-		return newValue;
-	}
+	protected abstract Object normalize(Object newValue) throws IllegalArgumentException;
 	
 	/**
 	 * Propaga l'evento di modifica a tutti i listener registrati ed al device
@@ -283,7 +286,7 @@ public abstract class DevicePort {
 	 */
 	public void invalidate() {
 		if (!dirty) {
-			logger.trace("Invalidate " + getFullAddress());
+			logger.trace("Invalidate " + getAddress());
 		}
 		dirty = true;
 		queueUpdate();
@@ -318,14 +321,6 @@ public abstract class DevicePort {
 		return System.currentTimeMillis() >= expiration;
 	}
 
-	/**
-	 * @return indirizzo completo della porta
-	 * @deprecated use getAddress() and implicit toString()
-	 */
-	public String getFullAddress() {
-		return getAddress().getFullAddress();
-	}
-	
 	public Address getAddress() {
 		Address a = device.getAddress();
 		a.setPortId(portId);

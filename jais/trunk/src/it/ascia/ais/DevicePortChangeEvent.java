@@ -22,7 +22,7 @@ public class DevicePortChangeEvent extends PropertyChangeEvent {
 	 * @param oldValue valore precedente della porta.
 	 */
 	public DevicePortChangeEvent(DevicePort devicePort, Object oldValue, Object newValue) {
-		super(devicePort, devicePort.getFullAddress(), oldValue, newValue);
+		super(devicePort, devicePort.getAddress().toString(), oldValue, newValue);
 		timeStamp = System.currentTimeMillis();
 	}
 	

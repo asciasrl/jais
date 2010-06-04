@@ -4,13 +4,14 @@ import it.ascia.ais.AISException;
 import it.ascia.ais.Device;
 import it.ascia.ais.port.DigitalInputPort;
 import it.ascia.ais.port.SlaveBitStatePort;
+import it.ascia.ais.port.StringPort;
 
 public class PartitionDevice extends Device {
 
 	public PartitionDevice(String address)
 			throws AISException {
 		super(address);
-		addPort(new LabelPort("Description"));
+		addPort(new StringPort("Description"));
 		addPort(new DigitalInputPort("Alarm"));
 		DigitalInputPort pAway = new DigitalInputPort("Away");
 		addPort(pAway);

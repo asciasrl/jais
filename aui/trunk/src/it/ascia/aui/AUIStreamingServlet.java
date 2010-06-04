@@ -75,7 +75,7 @@ public class AUIStreamingServlet extends HttpServlet {
 					if (value == null) {
 						logger.trace("Non invio valore null");
 					} else {
-						obj.put("A",p.getFullAddress());
+						obj.put("A",p.getAddress().toString());
 						obj.put("V",value.toString());
 					}
 					out.println(obj.toJSONString());

@@ -123,6 +123,7 @@ public class AUIControllerModule extends ControllerModule {
 	public String getMapControls(String mapId) {
 		JSONObject j =new JSONObject();
 		HierarchicalConfiguration auiConfig = getConfiguration();
+		HierarchicalConfiguration skinConfig = getSkinConfiguration();
 		List maps = auiConfig.configurationsAt("map");
 		for (Iterator im = maps.iterator(); im.hasNext(); ) {
 			HierarchicalConfiguration mapConfig = (HierarchicalConfiguration) im.next();
@@ -133,7 +134,7 @@ public class AUIControllerModule extends ControllerModule {
 					HierarchicalConfiguration controlConfig = (HierarchicalConfiguration) ic.next();
 					String id = mapId + "-" + controlConfig.getString("id");
 					String type = controlConfig.getString("type");
-					SubnodeConfiguration typeConfig = auiConfig.configurationAt("controls."+type);
+					SubnodeConfiguration typeConfig = skinConfig.configurationAt("controls."+type);
 					HashMap controlMap = new HashMap();
 					for (Iterator ip = typeConfig.getKeys(); ip.hasNext(); ) {
 						String k = (String) ip.next();
@@ -157,6 +158,7 @@ public class AUIControllerModule extends ControllerModule {
 	public String getControls() {
 		JSONObject j =new JSONObject();
 		HierarchicalConfiguration auiConfig = getConfiguration();
+		HierarchicalConfiguration skinConfig = getSkinConfiguration();
 		List pages = auiConfig.configurationsAt("pages.page");
 		for (Iterator iPages = pages.iterator(); iPages.hasNext(); ) {
 			HierarchicalConfiguration pageConfig = (HierarchicalConfiguration) iPages.next();
@@ -167,8 +169,8 @@ public class AUIControllerModule extends ControllerModule {
 				String id = "control-" + pageId + "-" + controlConfig.getString("[@id]");
 				String type = controlConfig.getString("type");
 				HashMap controlMap = new HashMap();
-				if (auiConfig.containsKey("controls."+type+".default")) {
-					SubnodeConfiguration typeConfig = auiConfig.configurationAt("controls."+type);
+				if (skinConfig.containsKey("controls."+type+".default")) {
+					SubnodeConfiguration typeConfig = skinConfig.configurationAt("controls."+type);
 					for (Iterator ip = typeConfig.getKeys(); ip.hasNext(); ) {
 						String k = (String) ip.next();
 						controlMap.put(k, typeConfig.getString(k));
@@ -359,9 +361,11 @@ public class AUIControllerModule extends ControllerModule {
 			List<HierarchicalConfiguration> addresses = controlConfig.configurationsAt("address");
 			for (int i = 0; i < addresses.size(); i++) {
 				Address address = new Address((String) ((SubnodeConfiguration) addresses.get(i)).getRoot().getValue());
-				DevicePort p = controller.getDevicePort(address);
-				if (p != null) {
-					ports.add(p);
+				if (address.isFullyQualified()) {
+					DevicePort p = controller.getDevicePort(address);
+					if (p != null) {
+						ports.add(p);
+					}
 				}
 			}
 		}

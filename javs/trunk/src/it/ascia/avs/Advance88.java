@@ -26,7 +26,7 @@ public class Advance88 extends CentraleAVS {
 	private static final int NUM_OC_DIG = 40;
 	private static final int NUM_RELAYS = 5;
 	private static final int NUM_SECTORS = 4;
-	private static final String[] SectorStatus = new String[]{"OFF","ON","HOME","AREA","PERIMETER"};
+	private static final String[] SectorStatus = new String[]{"off","on","home","area","perimeter"};
 	private static final int NUM_SIRENS = 4;
 	
 	private boolean loginOk = false;

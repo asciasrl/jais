@@ -1,16 +1,18 @@
 package it.ascia.ais.port;
 
-import it.ascia.ais.DevicePort;
-
-public class AnalogOutputPort extends DevicePort {
+public class AnalogOutputPort extends DoublePort {
 	
+	/*
 	Double minValue = null;
 	Double maxValue = null;
 
+	*/
+	
 	public AnalogOutputPort(String portId) {
 		super(portId);
 	}
 
+	/*
 	public AnalogOutputPort(String portId, Double minValue, Double maxValue) {
 		this(portId);
 		this.minValue = minValue;
@@ -23,7 +25,7 @@ public class AnalogOutputPort extends DevicePort {
 		} else if (Double.class.isInstance(newValue)) {
 			Double d = (Double)newValue;
 			if (maxValue != null && d.compareTo(maxValue) > 0) {
-				throw new IllegalArgumentException(getFullAddress() + " Valore superiore al massimo ("+maxValue+"): "+newValue);				
+				throw new IllegalArgumentException(getAddress() + " Valore superiore al massimo ("+maxValue+"): "+newValue);				
 			}
 			if (minValue != null && d.compareTo(minValue) < 0) {
 				throw new IllegalArgumentException(getFullAddress() + " Valore minore del minimo ("+minValue+"): "+newValue);				
@@ -43,5 +45,6 @@ public class AnalogOutputPort extends DevicePort {
 			throw new IllegalArgumentException(getFullAddress() + " Valore non valido: "+text);
 		}
 	}
+	*/
 
 }

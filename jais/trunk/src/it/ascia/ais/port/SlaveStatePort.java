@@ -69,11 +69,11 @@ public class SlaveStatePort extends DigitalVirtualPort implements PropertyChange
 	 * @return true se il valore della porta master e' uguale al valore di riferimento
 	 */
 	public Object getValue(boolean useCache) {
-		String masterValue;
+		Object masterValue;
 		if (useCache) {
-			masterValue = (String) masterPort.getCachedValue();
+			masterValue = masterPort.getCachedValue();
 		} else {
-			masterValue = (String) masterPort.getValue();
+			masterValue = masterPort.getValue();
 		}
 		Boolean newValue = null;
 		if (masterValue != null) {

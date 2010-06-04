@@ -9,10 +9,10 @@ package it.ascia.ais.port;
  * @author Sergio
  *
  */
-public class ScenePort extends TriggerPort {
+public class ScenePort extends NullPort {
 
 	public ScenePort(String portId) {
 		super(portId);
 	}
-	
+
 }

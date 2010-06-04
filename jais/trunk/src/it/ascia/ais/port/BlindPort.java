@@ -16,13 +16,13 @@ import java.beans.PropertyChangeListener;
  * @author Sergio
  *
  */
-public class BlindPort extends DevicePort implements PropertyChangeListener {
+public class BlindPort extends StatePort implements PropertyChangeListener {
 	
 	private DevicePort closePort; 
 	private DevicePort openPort; 
 	
 	public BlindPort(String portId, DevicePort closePort, DevicePort openPort) throws AISException {
-		super(portId);
+		super(portId,new String[] {"stopped","stop","open","opening","opened","close","closing","closed"});
 		this.closePort = closePort;
 		this.openPort = openPort;
 		closePort.addPropertyChangeListener(this);
@@ -99,17 +99,6 @@ public class BlindPort extends DevicePort implements PropertyChangeListener {
 		getValue(true);
 	}
 
-	public String[] getTags() {
-		return new String[] {"open","close","stop"};
-	}
-
-	public boolean writeValue(Object newValue) throws IllegalArgumentException {
-		if (String.class.isInstance(newValue)) {
-			return writeValue((String) newValue);
-		}
-		throw new IllegalArgumentException(getFullAddress() + " Tipo di valore non valido: "+newValue.getClass().getName());
-	}
-
 	public boolean writeValue(String text) throws IllegalArgumentException {
 		if (text.toLowerCase().equals("open")) {
 			if (Boolean.TRUE.equals(closePort.getCachedValue())) {
@@ -131,7 +120,20 @@ public class BlindPort extends DevicePort implements PropertyChangeListener {
 				return true;
 			}
 		} else {
-			throw new IllegalArgumentException(getFullAddress()+ " valore non valido: " + text);
+			throw new IllegalArgumentException(getAddress()+ " valore non valido: " + text);
+		}
+	}
+	
+	@Override
+	public boolean writeValue(Object newValue) {
+		Object x = normalize(newValue);
+		if (x == null) {
+			return false;
+		} else if (String.class.isInstance(x)) {
+			return writeValue((String)x);
+		} else {
+			assert false : x;
+			return false;
 		}
 	}
 

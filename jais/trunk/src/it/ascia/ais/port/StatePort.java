@@ -1,9 +1,8 @@
 package it.ascia.ais.port;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.DevicePort;
 
-public class StatePort extends DevicePort {
+public class StatePort extends StringPort {
 
 	private String[] tags = null;
 
@@ -48,9 +47,6 @@ public class StatePort extends DevicePort {
 			return newValue;
 		} else if (Integer.class.isInstance(newValue)) {
 			Integer i = (Integer) newValue;
-			if (tags == null) {
-				return super.normalize(newValue);
-			}
 			if (i > tags.length) {
 				throw(new IllegalArgumentException("Value too high (max "+tags.length+"): "+i));				
 			}
@@ -60,15 +56,15 @@ public class StatePort extends DevicePort {
 			return tags[i];
 		} else if (String.class.isInstance(newValue)) {
 			for(int i=0; i < tags.length; i++) {
-				if (tags[i].equalsIgnoreCase((String) newValue)) {
-					return i;
+				if (tags[i] != null && tags[i].equalsIgnoreCase((String) newValue)) {
+					return tags[i];
 				}
 			}
 			throw(new AISException("Tag is invalid: " + newValue));
 		} else {
-			throw(new IllegalArgumentException("Value of wrong class: "+newValue.getClass().getCanonicalName()));
+			throw(new IllegalArgumentException("Value of "+getAddress()+" cannot be a "+newValue.getClass().getCanonicalName()));
 		}
 		
 	}
-
+	
 }

@@ -6,6 +6,7 @@ package it.ascia.ais.port;
 import it.ascia.ais.DevicePort;
 
 /**
+ * Store java.lang.Boolean
  * @author Sergio
  *
  */
@@ -19,28 +20,26 @@ public class BooleanPort extends DevicePort {
 		super(portId);
 	}
 	
-	/**
-	 * Imposta il valore della porta convertendo il testo fornito in valore Boolean 
-	 */	
-	private Boolean normalize(String text) throws IllegalArgumentException {
-		boolean v = false;
-		if (text.equals("1") || text.toLowerCase().equals("on") || text.toLowerCase().equals("true")) {
-			v = true;
-		} else if (text.equals("0") || text.toLowerCase().equals("off") || text.toLowerCase().equals("false")) {
-			v = false;
+	public Object normalize(Object newValue) {
+		if (newValue == null) {
+			return null;		
+		} else if (newValue instanceof Boolean) {
+			return newValue;
+		} else if (newValue instanceof Integer) {
+			return ((Integer) newValue).intValue() > 0;
+		} else if (newValue instanceof String) {
+			boolean v = false;
+			String textValue = (String) newValue;
+			if (textValue.equals("1") || textValue.toLowerCase().equals("on") || textValue.toLowerCase().equals("true")) {
+				v = true;
+			} else if (textValue.equals("0") || textValue.toLowerCase().equals("off") || textValue.toLowerCase().equals("false")) {
+				v = false;
+			} else {
+				throw new IllegalArgumentException(getAddress() + " invalid value: '"+textValue+"'");
+			}
+			return new Boolean(v);
 		} else {
-			throw new IllegalArgumentException(getFullAddress() + " valore non valido: '"+text+"'");
-		}
-		return new Boolean(v);
-	}
-
-	public Object normalize(Object value) {
-		if (value instanceof String) {
-			return normalize((String)value);
-		} else if (value instanceof Boolean) {
-			return value;
-		} else {
-			return super.normalize(value);
+			throw(new IllegalArgumentException("Value of "+getAddress()+" cannot be a "+newValue.getClass().getCanonicalName()));
 		}
 	}
 

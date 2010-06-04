@@ -2,7 +2,7 @@ package it.ascia.ais.port;
 
 import it.ascia.ais.Device;
 
-public class TemperatureSetpointPort extends AnalogOutputPort {
+public class TemperatureSetpointPort extends DoublePort {
 
 	/**
 	 * Porta che viene aggiornata una volta ogni ora

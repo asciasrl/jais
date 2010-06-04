@@ -11,14 +11,14 @@ import it.ascia.ais.DevicePort;
  * @author Sergio
  *
  */
-public class TriggerPort extends BooleanPort {
+public class NullPort extends DevicePort {
 
 	/**
 	 * Crea una porta virtuale, che serve solo da trigger per comandare il device
 	 * @param device
 	 * @param portId
 	 */
-	public TriggerPort(String portId) {
+	public NullPort(String portId) {
 		super(portId);
 	}
 	
@@ -34,6 +34,11 @@ public class TriggerPort extends BooleanPort {
 	 */	
 	public boolean isExpired() {
 		return false;
+	}
+
+	@Override
+	protected Object normalize(Object newValue) throws IllegalArgumentException {
+		return null;
 	}
 	
 }

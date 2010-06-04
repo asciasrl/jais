@@ -82,7 +82,7 @@ public class DF4IV extends DF4I {
 					DevicePort p = getPort("v"+((DXPResponseMessage) m).getSource()+"."+i);
 					p.setCacheRetention(1000);
 					p.setValue(new Boolean(r.getExitStatus(i)));
-					logger.trace("messageSent setValue "+p.getFullAddress());
+					logger.trace("messageSent setValue "+p.getAddress());
 				}
 				break;
 			case DXPMessage.RISPOSTA_STATO_INGRESSO:

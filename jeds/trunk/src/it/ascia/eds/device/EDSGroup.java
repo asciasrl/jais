@@ -3,7 +3,7 @@ package it.ascia.eds.device;
 import it.ascia.ais.AISException;
 import it.ascia.ais.Device;
 import it.ascia.ais.DevicePort;
-import it.ascia.ais.port.TriggerPort;
+import it.ascia.ais.port.NullPort;
 import it.ascia.eds.msg.ComandoBroadcastMessage;
 
 public class EDSGroup extends Device {
@@ -23,8 +23,8 @@ public class EDSGroup extends Device {
 		if (group < 0 || group > 31) {
 			throw(new IllegalArgumentException("Invalid address: "+address));
 		}
-		addPort(new TriggerPort(ACTIVATE));
-		addPort(new TriggerPort(DISACTIVATE));
+		addPort(new NullPort(ACTIVATE));
+		addPort(new NullPort(DISACTIVATE));
 	}
 
 	public DevicePort getPort(String portId) throws AISException {

@@ -10,7 +10,7 @@ import it.ascia.ais.port.SlaveStatePort;
 import it.ascia.ais.port.StatePort;
 import it.ascia.ais.port.TemperaturePort;
 import it.ascia.ais.port.TemperatureSetpointPort;
-import it.ascia.ais.port.TriggerPort;
+import it.ascia.ais.port.NullPort;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.msg.CronotermMessage;
 import it.ascia.eds.msg.ImpostaSetPointMessage;
@@ -131,12 +131,12 @@ public class BMCChronoTerm extends BMC {
 		addPort(new SlaveStatePort(stateStrings[STATE_SUMMER_MODE],seasonPort));
 		addPort(new SlaveStatePort(stateStrings[STATE_WINTER_MODE],seasonPort));		
 
-		addPort(new TriggerPort(stateStrings[STATE_TEMP_ANTIFREEZE]));
-		addPort(new TriggerPort(stateStrings[STATE_TEMP_SETPOINT_MINUS]));
-		addPort(new TriggerPort(stateStrings[STATE_TEMP_SETPOINT_PLUS]));
-		addPort(new TriggerPort(stateStrings[STATE_TEMP_T1]));
-		addPort(new TriggerPort(stateStrings[STATE_TEMP_T2]));
-		addPort(new TriggerPort(stateStrings[STATE_TEMP_T3]));
+		addPort(new NullPort(stateStrings[STATE_TEMP_ANTIFREEZE]));
+		addPort(new NullPort(stateStrings[STATE_TEMP_SETPOINT_MINUS]));
+		addPort(new NullPort(stateStrings[STATE_TEMP_SETPOINT_PLUS]));
+		addPort(new NullPort(stateStrings[STATE_TEMP_T1]));
+		addPort(new NullPort(stateStrings[STATE_TEMP_T2]));
+		addPort(new NullPort(stateStrings[STATE_TEMP_T3]));
 
 	}
 	

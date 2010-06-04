@@ -258,6 +258,12 @@ public abstract class Connector {
 		} catch (InterruptedException e) {
 			logger.error("Interrupted:",e);
 		}
+		dispatchingThread.interrupt();
+    	try {
+    		dispatchingThread.join();
+		} catch (InterruptedException e) {
+			logger.error("Interrupted:",e);
+		}
 	}
 	
 	/**
@@ -309,7 +315,8 @@ public abstract class Connector {
     		while (running) {
     			Message m;
 				try {
-					m = dispatchQueue.poll(timeout,TimeUnit.SECONDS);
+					// tolleranza del 10% in piu
+					m = dispatchQueue.poll(Math.round(timeout * 1.1),TimeUnit.SECONDS);
 					if (m == null) {
 						logger.warn("No message received in "+timeout+" seconds.");
 					} else {

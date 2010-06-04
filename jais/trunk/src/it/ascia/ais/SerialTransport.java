@@ -64,13 +64,24 @@ public class SerialTransport extends Transport {
     }
    
     public String getInfo() {
+    	String s = getClass().getSimpleName() + " " + name + ": ";
     	if (serialPort == null) {
-    		return getClass().getSimpleName() + " " + name + ": Disconnected";
+    		s += "Disconnected";
     	} else {
-    		return getClass().getSimpleName() + " " + name + ": " + serialPort.getName()+" "+serialPort.getBaudRate()+" "+serialPort.getDataBits() +
-    			(serialPort.getParity() == 0 ? "N" : "E") + 
-    			serialPort.getStopBits();
+    		s += serialPort.getBaudRate()+" "+serialPort.getDataBits()+parityChar(serialPort.getParity())+serialPort.getStopBits();
     	}
+		return s;
+    }
+    
+    private char parityChar(int parity) {
+		switch (parity) {
+			case SerialPort.PARITY_NONE: return 'N';
+			case SerialPort.PARITY_EVEN: return 'E';
+			case SerialPort.PARITY_MARK: return 'M';
+			case SerialPort.PARITY_ODD:  return 'O';
+			case SerialPort.PARITY_SPACE: return 'S';
+		}
+		return '?';
     }
 
     /**
@@ -168,7 +179,7 @@ public class SerialTransport extends Transport {
 	}
 
 	private void open() {
-    	logger.debug("Opening serial port '" + portName + "'");    	
+    	logger.debug("Opening serial port '" + portName + "' "+portSpeed+" "+databits+parityChar(parity)+stopbits);
     	if (portName.toLowerCase().equals("auto")) {						
 	    	Enumeration portList = CommPortIdentifier.getPortIdentifiers();
 	    	while (portList.hasMoreElements()) {
@@ -201,39 +212,37 @@ public class SerialTransport extends Transport {
     	}
 		try {
 		    serialPort.setSerialPortParams(portSpeed, databits, stopbits, parity);
-		    logger.trace("Input buffer: "+serialPort.getInputBufferSize()+" bytes -> "+inputBufferSize);
-		    serialPort.setInputBufferSize(inputBufferSize);
-		    logger.debug("Input buffer: "+serialPort.getInputBufferSize()+" bytes");
-		    logger.trace("Output buffer: "+serialPort.getOutputBufferSize()+" bytes -> "+outputBufferSize);
-		    serialPort.setOutputBufferSize(outputBufferSize);
-		    logger.debug("Output buffer: "+serialPort.getOutputBufferSize()+" bytes.");
-		    try {
-			    logger.trace("Receive Threshold: "+serialPort.getReceiveThreshold()+" bytes -> "+receiveThreshold);		    
-		    	serialPort.enableReceiveThreshold(receiveThreshold);
-			    logger.debug("Receive Threshold: "+serialPort.getReceiveThreshold()+" bytes.");		    
-		    } catch (UnsupportedCommOperationException e ) {
-		    	logger.debug("Receive Threshold not supportted");
-		    }
-		    try {
-			    logger.trace("Receive Framing: "+serialPort.getReceiveFramingByte()+" bytes -> "+receiveFraming);		    
-			    serialPort.enableReceiveFraming(receiveFraming);
-			    logger.debug("Receive Framing: "+serialPort.getReceiveFramingByte()+" bytes.");		    
-		    } catch (UnsupportedCommOperationException e ) {
-		    	logger.debug("Receive Framing not supportted");
-		    }
-		    try {
-			    logger.trace("Receive Timeout: "+serialPort.getReceiveTimeout()+" mS -> "+receiveTimeout);		    
-			    serialPort.enableReceiveTimeout(receiveTimeout);
-			    logger.debug("Receive Timeout: "+serialPort.getReceiveTimeout()+" mS");		    
-		    } catch (UnsupportedCommOperationException e ) {
-		    	logger.debug("Receive Timeout not supportted");
-		    }
-		    
 		} catch (UnsupportedCommOperationException e) {
-			logger.error("",e);
+			logger.fatal(e);
 			throw new AISException("Unable to configure port: " + e.getMessage());
 		}
-		
+	    logger.trace("Input buffer: "+serialPort.getInputBufferSize()+" bytes -> "+inputBufferSize);
+	    serialPort.setInputBufferSize(inputBufferSize);
+	    logger.debug("Input buffer: "+serialPort.getInputBufferSize()+" bytes");
+	    logger.trace("Output buffer: "+serialPort.getOutputBufferSize()+" bytes -> "+outputBufferSize);
+	    serialPort.setOutputBufferSize(outputBufferSize);
+	    logger.debug("Output buffer: "+serialPort.getOutputBufferSize()+" bytes.");
+	    try {
+		    logger.trace("Receive Threshold: "+serialPort.getReceiveThreshold()+" bytes -> "+receiveThreshold);		    
+	    	serialPort.enableReceiveThreshold(receiveThreshold);
+		    logger.debug("Receive Threshold: "+serialPort.getReceiveThreshold()+" bytes.");		    
+	    } catch (UnsupportedCommOperationException e ) {
+	    	logger.debug("Receive Threshold not supportted");
+	    }
+	    try {
+		    logger.trace("Receive Framing: "+serialPort.getReceiveFramingByte()+" bytes -> "+receiveFraming);		    
+		    serialPort.enableReceiveFraming(receiveFraming);
+		    logger.debug("Receive Framing: "+serialPort.getReceiveFramingByte()+" bytes.");		    
+	    } catch (UnsupportedCommOperationException e ) {
+	    	logger.debug("Receive Framing not supportted");
+	    }
+	    try {
+		    logger.trace("Receive Timeout: "+serialPort.getReceiveTimeout()+" mS -> "+receiveTimeout);		    
+		    serialPort.enableReceiveTimeout(receiveTimeout);
+		    logger.debug("Receive Timeout: "+serialPort.getReceiveTimeout()+" mS");		    
+	    } catch (UnsupportedCommOperationException e ) {
+	    	logger.debug("Receive Timeout not supportted");
+	    }
     	try {
     		serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
     	} catch (UnsupportedCommOperationException e) {  

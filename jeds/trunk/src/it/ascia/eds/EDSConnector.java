@@ -15,6 +15,7 @@ import org.apache.commons.configuration.tree.ConfigurationNode;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
+import it.ascia.ais.Device;
 import it.ascia.ais.Message;
 import it.ascia.eds.device.*;
 import it.ascia.eds.msg.*;
@@ -158,8 +159,10 @@ public class EDSConnector extends Connector {
 	    		// Mandiamo il messaggio a tutti
 	    		Iterator it = getDevices().values().iterator();
 	    		while (it.hasNext()) {
-	    			BMC bmc = (BMC)it.next();
-	    			bmc.messageReceived(m);
+	    			Device d = (Device) it.next();
+	    			if (BMC.class.isInstance(d)) {
+	    				((BMC)d).messageReceived(m);
+	    			}
 	    		}
 			}
     	} else if (RispostaModelloMessage.class.isInstance(m)) {

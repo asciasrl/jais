@@ -27,14 +27,6 @@ public class DevicePortChangeEvent extends PropertyChangeEvent {
 	}
 	
 	/**
-	 * @return the device of the port
-	 * @deprecated
-	 */
-	public Device getDevice() {		
-		return ((DevicePort)getSource()).getDevice();
-	}
-
-	/**
 	 * @return the port fullAddress
 	 */
 	public String getFullAddress() {

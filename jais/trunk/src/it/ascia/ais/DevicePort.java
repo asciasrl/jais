@@ -47,12 +47,14 @@ public abstract class DevicePort {
 
 	private boolean queuedForUpdate = false;
 
+	/**
+	 * Given listener will be notified each time port value changes
+	 * @param listener
+	 */
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		this.pcs.addPropertyChangeListener(listener);
-		/*
 		logger.trace(pcs.getPropertyChangeListeners().length
-				+ " (+) PCL's for " + getFullAddress());
-		*/
+				+ " (+) PCL's for " + getAddress());
 	}
 
 	public void removePropertyChangeListener(PropertyChangeListener listener) {

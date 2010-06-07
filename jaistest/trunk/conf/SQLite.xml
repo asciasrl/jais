@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<jais:configuration version="1.4">
+  <SQLite>
+    <db>jais.db</db>
+  </SQLite>
+</jais:configuration>

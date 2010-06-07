@@ -3,6 +3,10 @@
 	<logger file="conf/log4j.xml" configurator="DOMConfigurator" />
 	<locale language="it" country="IT" />
 	<modules>
+		<module name="SQLite" disabled="false">
+			<class>it.ascia.ais.SQLiteControllerModule</class>
+			<config>conf/SQLite.xml</config>
+		</module>
 		<module name="EDS" disabled="true">
 			<class>it.ascia.eds.EDSControllerModule</class>
 			<config>conf/EDS.xml</config>

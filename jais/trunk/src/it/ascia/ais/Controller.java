@@ -3,11 +3,15 @@
  */
 package it.ascia.ais;
 
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.management.openmbean.KeyAlreadyExistsException;
@@ -49,6 +53,8 @@ public class Controller {
 	 * Moduli del controllore
 	 */
 	private Map<String, ControllerModule> modules = new LinkedHashMap<String, ControllerModule>();
+
+	private Set<NewDevicePortListener> ndpl = new HashSet<NewDevicePortListener>();
 	
 	private Logger logger;
 		
@@ -340,6 +346,29 @@ public class Controller {
 			logger.error("Getting port '"+address+"': ",e);
 			return null;
 		}
+	}
+
+	/**
+	 * Fired when a port is added to a device, dispatch to all listner bounded with addNewDevicePortListener()   
+	 * @param evt
+	 */
+	void fireNewDevicePortEvent(NewDevicePortEvent evt) {
+		for (NewDevicePortListener el : ndpl) {
+			el.newDevicePort(evt);
+		}
+	}
+
+	
+	/**
+	 * Add to the list of object listnening for new port 
+	 * @param listener
+	 */
+	public synchronized void addNewDevicePortListener(NewDevicePortListener listener) {
+		ndpl.add(listener);
+	}
+
+	public synchronized void removePropertyChangeListener(NewDevicePortListener listener) {
+		ndpl.remove(listener);
 	}
 
 }

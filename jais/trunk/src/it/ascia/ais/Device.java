@@ -131,11 +131,13 @@ public abstract class Device {
 	/**
 	 * Aggiunge una porta al device
 	 * Also call DevicePort.setDevice(this)
+	 * Call Controller.fireNewDevicePortEvent()
 	 * @param port
 	 */
 	public void addPort(DevicePort port) {
 		port.setDevice(this);
 		ports.put(port.getPortId(),port);
+		Controller.getController().fireNewDevicePortEvent(new NewDevicePortEvent(port));
 	}
 
 	public boolean havePort(String portId) {

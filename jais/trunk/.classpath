@@ -25,7 +25,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/commons-fileupload-1.2.1.jar" sourcepath="P:/Dev/sources/commons-fileupload-1.2.1-src.zip"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-io-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/core-3.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/sqlitejdbc-v056.jar"/>
+	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.6.20.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry exported="true" kind="lib" path="lib/ant-1.6.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jsp-2.1.jar" sourcepath="/jasper/src/share"/>

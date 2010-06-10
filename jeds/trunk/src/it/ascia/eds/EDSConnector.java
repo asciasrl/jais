@@ -89,8 +89,8 @@ public class EDSConnector extends Connector {
      * @param address 
      * @param edsControllerModule 
      */
-    public EDSConnector(String name, int myAddress) {
-    	super(name);
+    public EDSConnector(long autoupdate, String name, int myAddress) {
+    	super(autoupdate, name);
 		this.myAddress = myAddress; 		
 		mp = new EDSMessageParser();
 		for (int i = 1; i <= 31; i++) {
@@ -157,7 +157,7 @@ public class EDSConnector extends Connector {
 			} else {
 				lastBroadcast = bmsg.getRandom();
 	    		// Mandiamo il messaggio a tutti
-	    		Iterator it = getDevices().values().iterator();
+	    		Iterator it = getDevices().iterator();
 	    		while (it.hasNext()) {
 	    			Device d = (Device) it.next();
 	    			if (BMC.class.isInstance(d)) {

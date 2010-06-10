@@ -43,10 +43,17 @@ public abstract class ControllerModule {
 	
 	/**
 	 * Stop module and reset running
-	 * In subclasses super.stop() must be the first instruction
+	 * Stop also all connectors belonging to module 
 	 */
 	public void stop() {
-		running = false;		
+		running = false;
+		for (Connector connector : Controller.getController().getConnectors()) {
+			if (connector.getModule() == this) {
+				logger.debug("Chiusura connettore "+connector.getName());
+				connector.close();
+				logger.trace("Chiuso connettore "+connector.getName());
+			}
+		}
 	};
 
 	/**

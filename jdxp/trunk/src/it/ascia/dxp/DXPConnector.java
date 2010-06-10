@@ -14,8 +14,8 @@ public class DXPConnector extends Connector {
 	protected DXPMessageParser mp;
 	private DXPRequestMessage messageToBeAnswered;
 	
-	public DXPConnector(String name, ControllerModule module) {
-		super(name);
+	public DXPConnector(long autoupdate, String name, ControllerModule module) {
+		super(autoupdate,name);
 		mp = new DXPMessageParser();
 	}
 

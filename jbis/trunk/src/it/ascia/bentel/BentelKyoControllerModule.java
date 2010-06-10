@@ -5,10 +5,10 @@ import java.util.List;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
 
-import it.ascia.ais.BUSControllerModule;
+import it.ascia.ais.ControllerModule;
 import it.ascia.ais.Transport;
 
-public class BentelKyoControllerModule extends BUSControllerModule {
+public class BentelKyoControllerModule extends ControllerModule {
 	
 	public void start() {
 		HierarchicalConfiguration config = getConfiguration();
@@ -19,7 +19,6 @@ public class BentelKyoControllerModule extends BUSControllerModule {
 		    BentelKyoConnector connector = null;
 		 	try {
 		 		connector = new BentelKyoConnector(sub.getString("name"));
-			 	myConnectors.add(connector);
 		 		if (connector.getName().equals("rw")) {
 			 		//continue;
 			 	}

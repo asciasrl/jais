@@ -18,10 +18,6 @@ if (!AUI.Config) {
 		
 		layers: ['all'],
 
-		portsElement : null,
-		portsEmptyMessage : "Nessuna porta.",
-		ports : new Array(),
-		
 		onMaskClickHandler: null,
 
 		pageElement : null,
@@ -36,12 +32,6 @@ if (!AUI.Config) {
 			var self = this;
 			
 			this.pagesElement = document.getElementById("pages");
-			//this.onPageClickHandler = function(e) { self.onPageClick(e); };
-			//this.pagesElement.addEventListener('click', this.onPageClickHandler, false);
-
-			this.portsElement = document.getElementById("ports");
-			//this.onControlClickHandler = function(e) { self.onControlClick(e); };
-			//this.controlsElement.addEventListener('click', this.onControlClickHandler, false);
 
 			this.pageElement = document.getElementById("page");
 
@@ -70,8 +60,6 @@ if (!AUI.Config) {
 		clear : function() {
 			this.pagesElement.innerHTML = this.pagesEmptyMessage;			
 			this.pages = new Array(),		
-			this.portsElement.innerHTML = this.portsEmptyMessage;
-			this.ports = new Array(),		
 			this.pageElement.innerHTML = this.pageEmptyMessage;
 			this.currentPageIndex = null;
 		},
@@ -91,7 +79,6 @@ if (!AUI.Config) {
 				this.newPage();
 			}
 		
-			this.loadPorts();
 			this.statusMessage("Configurazione caricata dal server");
 		},
 		
@@ -536,6 +523,7 @@ if (!AUI.Config) {
 				var page = this.pages[this.currentPageIndex];
 				var control = page.controls[this.currentControlIndex];
 				var id = 'control-' + page.id + '-' + control.map['[@id]'];
+				// FIXME Usare pageId e controlId separati
 				this.jsonrpc.AUIConfig.setPageControlProperty(id,"layer",layerName);
 				this.reloadPage();
 			} catch(e) {
@@ -558,6 +546,7 @@ if (!AUI.Config) {
 			var descr = "["+page.id+"/" + control.map['[@id]'] + "] "+title;
 			if (window.confirm("Rimuovere il controllo "+descr+" ?")) {
 				try {
+					// FIXME Usare pageId e controlId separati
 					this.jsonrpc.AUIConfig.deletePageControl(id);
 				} catch(e) {
 					alert(e.msg || e);
@@ -591,6 +580,7 @@ if (!AUI.Config) {
 			var id = 'control-' + page.id + '-' + control.map['[@id]'];
 			if (typeof(console) != 'undefined') console.log(id+" left="+left+" top="+top);			
 			try {
+				// FIXME Usare pageId e controlId separati
 				this.jsonrpc.AUIConfig.setPageControlProperties(id,{"javaClass":"java.util.Map","map":{"top": top, "left": left}});
 			} catch(e) {
 				alert(e.msg || e);
@@ -648,10 +638,12 @@ if (!AUI.Config) {
 				props['$family'] = null;
 				
 				//this.jsonrpc.AUIConfig.setPageControls(id,props);
+				// FIXME Usare pageId e controlId separati
 				this.jsonrpc.AUIConfig.setPageControlProperties(id,{"javaClass":"java.util.Map","map":props});
 				
 				var newId = form.id.value;
 				if (id != newId) {
+					// FIXME Usare pageId e controlId separati
 					this.jsonrpc.AUIConfig.changePageControlId(id,newId);
 				}
 
@@ -756,70 +748,6 @@ if (!AUI.Config) {
 			}
 		},
 
-		addPort : function(type, src, address, name) {
-			if (this.portsElement.innerHTML == this.portsEmptyMessage) {
-				this.portsElement.innerHTML = "";
-			}
-			
-			var i = this.ports.length;
-			var c = new Element('div',{'id': "port-"+i, 'class': 'portItem'});
-			c.grab(new Element('img', {'src': this.skinImages + src}));
-			var p = new Element('p');
-			/*
-			p.grab((new Element('label')).appendText('Type:'));
-			p.appendText(type);
-			p.grab(new Element('br'));
-			p.grab((new Element('label')).appendText('Addr:'));
-			*/
-			p.appendText(address);
-			if (name != address) {
-				p.grab(new Element('br'));
-				/*
-				p.grab((new Element('label')).appendText('Name:'));
-				*/
-				p.appendText(name);
-			}
-			c.grab(p);
-			this.portsElement.grab(c);
-						
-			var port = new Array();
-			port['id'] = "port-" + address;
-			port['address'] = address;
-			port['name'] = name;
-			this.ports.include(port);
-			this.statusMessage("Aggiunta porta ["+address+"] :"+name);
-			return true;
-
-		},
-		
-		loadPorts : function() {
-			var ports = this.jsonrpc.AUIConfig.getPorts().list;
-			for (var i=0; i < ports.length; i++) {
-				var cl = ports[i].map.Class;
-				var addr = ports[i].map.Address;
-				var name = ports[i].map.Description;
-				if (cl == "DigitalOutputPort") {
-					this.addPort('Luce','light_on.png',addr,name);
-				} else if (cl == "DimmerPort") {
-					this.addPort('Dimmer','light_dimming.png',addr,name);
-				} else if (cl == "BlindPort") {
-					this.addPort('Serramento','blind_stopped.png',addr,name);
-				} else if (cl == "ScenePort") {
-					this.addPort('Scenario','scene-generic.png',addr,name);
-				} else if (cl == "TemperaturePort") {
-					this.addPort('Termostato','thermo_display.png',addr,name);
-				} else if (cl == "TriggerPort") {
-					if (addr.match("Attivazione")) {
-						this.addPort('Button','pushbutton_blue-on.png',addr,name);
-					} else if (addr.match("Disattivazione")) {
-						this.addPort('Button','pushbutton_blue-off.png',addr,name);
-					} else {
-						this.addPort('Button','pushbutton_yellow-on.png',addr,name);
-					}
-				}  					
-			}
-		},
-				
 		deletePage : function(i) {
 			var p = this.pages[i];
 			var descr = "["+p.id+"] "+p.title;

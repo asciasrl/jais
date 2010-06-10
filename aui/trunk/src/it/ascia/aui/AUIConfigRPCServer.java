@@ -4,11 +4,10 @@
 package it.ascia.aui;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Address;
+import it.ascia.ais.Connector;
 import it.ascia.ais.Controller;
 import it.ascia.ais.Device;
 import it.ascia.ais.DevicePort;
-import it.ascia.ais.randomUUID;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -224,7 +223,10 @@ public class AUIConfigRPCServer implements Serializable {
 	 * @param pageId Page to be deleted
 	 */
 	public void deletePage(HttpSession session, String pageId) {
-		HierarchicalConfiguration auiConfig = getConfiguration(session);		
+		HierarchicalConfiguration auiConfig = getConfiguration(session);
+		if (auiConfig.configurationsAt("pages/page").size() == 1) {
+			throw(new AISException("Cannot delete last page"));
+		}
 		auiConfig.clearTree("pages/page[@id='"+pageId+"']");
 		logger.info("Removed page "+pageId);
 			//throw(new AISException("Page not found id="+id));
@@ -334,17 +336,20 @@ public class AUIConfigRPCServer implements Serializable {
 	 */
 	public void newPageControl(HttpSession session, String pageId, String controlId, String type, String title) {
 		HierarchicalConfiguration auiConfig = getConfiguration(session);
+		HierarchicalConfiguration skinConfig = getSkinConfiguration();
 		if (auiConfig.containsKey("pages/page[@id='"+pageId+"']/control[@id='"+controlId+"']/type")) {
 			throw(new AISException("Duplicated control id="+controlId+" on page "+pageId));
 		}
-		if (!auiConfig.containsKey("controls/"+type+"/default")) {
+		if (!skinConfig.containsKey("controls."+type+".default")) {
 			throw(new AISException("Control type not defined: "+type));
-		}		
+		}
+		String layer = skinConfig.getString("controls."+type+".layer",type);
 		auiConfig.addProperty("pages/page[@id='"+pageId+"'] control@id", controlId);
 		auiConfig.addProperty("pages/page[@id='"+pageId+"']/control[@id='"+controlId+"'] type",type);
 		auiConfig.addProperty("pages/page[@id='"+pageId+"']/control[@id='"+controlId+"'] title",title);
 		auiConfig.addProperty("pages/page[@id='"+pageId+"']/control[@id='"+controlId+"'] top",0);
 		auiConfig.addProperty("pages/page[@id='"+pageId+"']/control[@id='"+controlId+"'] left",0);
+		auiConfig.addProperty("pages/page[@id='"+pageId+"']/control[@id='"+controlId+"'] layer",layer);
 		logger.info("Added control "+controlId+" on page "+pageId+": "+title);
 	}
 
@@ -352,6 +357,7 @@ public class AUIConfigRPCServer implements Serializable {
 	 * Delete a page control
 	 * @param session
 	 * @param fullControlId
+	 * @deprecated Usare il motodo con pageId e controlId separati
 	 */
 	public void deletePageControl(HttpSession session, String fullControlId) {
 		String[] parts = fullControlId.split("-",3);
@@ -384,6 +390,7 @@ public class AUIConfigRPCServer implements Serializable {
 	 * @param session
 	 * @param fullControlId
 	 * @param properties
+	 * @deprecated Usare il motodo con pageId e controlId separati
 	 */
 	public void setPageControlProperties(HttpSession session, String fullControlId, Map properties) {
 		String[] parts = fullControlId.split("-",3);
@@ -408,6 +415,14 @@ public class AUIConfigRPCServer implements Serializable {
 	}
 	
 
+	/**
+	 * 
+	 * @param session
+	 * @param fullControlId
+	 * @param key
+	 * @param value
+	 * @deprecated Usare il motodo con pageId e controlId separati
+	 */
 	public void setPageControlProperty(HttpSession session, String fullControlId, String key, Object value) {
 		String[] parts = fullControlId.split("-",3);
 		logger.debug("fullControlId="+fullControlId);
@@ -434,6 +449,13 @@ public class AUIConfigRPCServer implements Serializable {
 		logger.debug(pageId + "/" + controlId + ", "+key+" ("+Object.class.getSimpleName()+") : "+oldValue+" -> "+value);
 	}
 	
+	/**
+	 * 
+	 * @param session
+	 * @param fullControlId
+	 * @param newId
+	 * @deprecated Usare il motodo con pageId e controlId separati
+	 */
 	public void changePageControlId(HttpSession session, String fullControlId, String newId) {
 		String[] parts = fullControlId.split("-",3);
 		logger.debug("fullControlId="+fullControlId);
@@ -461,23 +483,29 @@ public class AUIConfigRPCServer implements Serializable {
 		controlConfig.setProperty("[@id]", newId);
 		logger.debug(pageId + "/" + controlId + ", change id: "+newId);
 	}
-	
-	public Vector<HashMap<String, String>> getPorts() {
+		
+	public HashMap<String,HashMap<String, HashMap<String, HashMap<String, String>>>> getPorts() {
 		return getPorts("*");
 	}
 	
-	public Vector<HashMap<String, String>> getPorts(String search) {
-		Vector<HashMap<String, String>> ports = new Vector<HashMap<String, String>>();
-		for (Device d : Controller.getController().getDevices(new Address(search))) {
-			for (DevicePort devicePort : d.getPorts()) {
-				HashMap<String, String> p = new HashMap<String, String>();
-				p.put("Address",devicePort.getAddress().toString());
-				p.put("Class",devicePort.getClass().getSimpleName());
-				p.put("Description",devicePort.getDescription());						
-				ports.add(p);
+	public HashMap<String,HashMap<String, HashMap<String, HashMap<String, String>>>> getPorts(String search) {
+		HashMap<String,HashMap<String, HashMap<String, HashMap<String, String>>>> connectors = new HashMap<String,HashMap<String, HashMap<String, HashMap<String, String>>>>();
+		for (Connector connector : Controller.getController().getConnectors()) {
+			HashMap<String, HashMap<String, HashMap<String, String>>> devices = new HashMap<String, HashMap<String, HashMap<String, String>>>();
+			for (Device device : connector.getDevices()) {
+				HashMap<String, HashMap<String, String>> ports = new HashMap<String, HashMap<String, String>>();
+				for (DevicePort port : device.getPorts()) {
+					HashMap<String, String> p = new HashMap<String, String>();
+					p.put("Address",port.getAddress().toString());
+					p.put("Class",port.getClass().getSimpleName());
+					p.put("Description",port.getDescription());						
+					ports.put(port.getPortId(),p);
+				}
+				devices.put(device.getSimpleAddress(),ports);
 			}			
+			connectors.put(connector.getName(),devices);
 		}	
-		return ports;
+		return connectors;
 	}
 	
 }

@@ -30,8 +30,6 @@
 
 <div id="pages">Nessuna pagina</div>
 
-<div id="ports">Nessuna porta</div>
-
 <div id="page">Selezionare la pagina da modificare</div>
 
 <div id="footer">
@@ -44,13 +42,11 @@
 
 function resize() {
 	var wp = $("pages").getSize().x;
-	var wc = $("ports").getSize().x;
 	var h = (window.innerHeight - 21 - 20 - 1 - 20 - 20 - 1 - 17) + "px";
-	var w = (window.innerWidth - wp - wc - 20 - 20) + "px";
+	var w = (window.innerWidth - wp - 20 - 20) + "px";
 	document.getElementById("pages").style.height = h;
 	document.getElementById("page").style.height = h;
 	document.getElementById("page").style.width = w;
-	document.getElementById("ports").style.height = h;
 }
 
 resize();
@@ -76,40 +72,25 @@ var myMenu =
 		_cmSplit,
 		[null, 'Esci', 'javascript: AUI.Config.cmdExit();',null,null]
 	],
-	[null, 'Modifica', null, null, null,
+	[null, 'Pagina', null, null, null,
 		['<img src="'+themeImages+'new.gif" />','Nuova pagina...', 'javascript: AUI.Config.cmdNewPage();', null, null],
-		[null,'Rinomina pagina...', 'javascript: AUI.Config.cmdRenamePage();', null, null],
+		[null,'Modifica pagina...', 'javascript: AUI.Config.cmdRenamePage();', null, null],
 		[null,'Carica nuovo sfondo...', 'javascript: AUI.Config.cmdUploadBackground();', null, null],
 		[null,'Cambia sfondo...', 'javascript: AUI.Config.cmdChangeBackground();', null, null],
-		[null,'Elimina pagina', 'javascript: AUI.Config.cmdDeletePage();', null, null],
+		[null,'Elimina pagina', 'javascript: AUI.Config.cmdDeletePage();', null, null]
+	],
+	[null, 'Controllo', null, null, null,
+		['<img src="'+themeImages+'new-page.gif" />','Nuovo cambio pagina...','javascript: AUI.Config.cmdNewControl("page");',null,null],
+		['<img src="'+themeImages+'new-scene.gif" />','Nuovo scenario...','javascript: AUI.Config.cmdNewControl("scene");',null,null],
+		['<img src="'+themeImages+'new-light.gif" />','Nuova luce...','javascript: AUI.Config.cmdNewControl("light");',null,null],
+		['<img src="'+themeImages+'new-dimmer.gif" />','Nuovo dimmer...','javascript: AUI.Config.cmdNewControl("dimmer");',null,null],
+		['<img src="'+themeImages+'new-blind.gif" />','Nuova tapparella...','javascript: AUI.Config.cmdNewControl("blind");',null,null],
+		['<img src="'+themeImages+'new-camera.gif" />','Nuova telecamera...','javascript: AUI.Config.cmdNewControl("camera");',null,null],
+		['<img src="'+themeImages+'new-speaker.gif" />','Nuovo speaker...','javascript: AUI.Config.cmdNewControl("speaker");',null,null],
+		['<img src="'+themeImages+'new-temperature.gif" />','Nuovo termostato...','javascript: AUI.Config.cmdNewControl("temperature");',null,null],
+		['<img src="'+themeImages+'new-power.gif" />','Nuova presa...','javascript: AUI.Config.cmdNewControl("power");',null,null],
 		_cmSplit,
-		['<img src="'+themeImages+'new.gif" />','Nuovo controllo', null, null, null,
-			[null,'Cambio pagina...','javascript: AUI.Config.cmdNewControl("page");',null,null],
-			[null,'Scenario...','javascript: AUI.Config.cmdNewControl("scene");',null,null],
-			[null,'Luce...','javascript: AUI.Config.cmdNewControl("light");',null,null],
-			[null,'Dimmer...','javascript: AUI.Config.cmdNewControl("dimmer");',null,null],
-			[null,'Tapparella...','javascript: AUI.Config.cmdNewControl("blind");',null,null],
-			[null,'Telecamera...','javascript: AUI.Config.cmdNewControl("camera");',null,null],
-			[null,'Speaker...','javascript: AUI.Config.cmdNewControl("speaker");',null,null],
-			[null,'Termostato...','javascript: AUI.Config.cmdNewControl("temperature");',null,null],
-			[null,'Presa...','javascript: AUI.Config.cmdNewControl("power");',null,null]
-		],
-		[null,'Rinomina controllo...', 'javascript: AUI.Config.cmdRenameControl();', null, null],
-		[null,'Cambia indirizzo...', 'javascript: AUI.Config.cmdChangeControlAddress();', null, null],
-		[null,'Cambia layer...', null, null, null,
-			[null,'Ogni layer','javascript: AUI.Config.cmdChangeControlLayer(null);',null,null],
-			_cmSplit,
-			[null,'Scenari','javascript: AUI.Config.cmdChangeControlLayer("scene");',null,null],
-			[null,'Luci','javascript: AUI.Config.cmdChangeControlLayer("light");',null,null],
-			[null,'Serramenti','javascript: AUI.Config.cmdChangeControlLayer("blind");',null,null],
-			[null,'Sicurezza','javascript: AUI.Config.cmdChangeControlLayer("security");',null,null],
-			[null,'Video','javascript: AUI.Config.cmdChangeControlLayer("video");',null,null],
-			[null,'Audio','javascript: AUI.Config.cmdChangeControlLayer("audio");',null,null],
-			[null,'Termoregolazione','javascript: AUI.Config.cmdChangeControlLayer("thermo");',null,null],
-			[null,'Controllo carichi','javascript: AUI.Config.cmdChangeControlLayer("power");',null,null]
-		],
-		[null,'Cambia tipo...', 'javascript: AUI.Config.cmdChangeControlType();', null, null],
-		[null,'Cambia icona...', 'javascript: AUI.Config.cmdChangeControlIcon();', null, null],
+		[null,'Modifica controllo...', 'javascript: AUI.Config.cmdRenameControl();', null, null],
 		[null,'Elimina controllo', 'javascript: AUI.Config.cmdDeleteControl();', null, null]
 	], 
 	[null,'Visualizza', null, null, null,

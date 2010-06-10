@@ -74,7 +74,7 @@ class AVSConnector extends Connector {
 			}			
 		}
 
-		if (!sentReply) {
+		if (!sentReply && isRunning()) {
     		logger.trace("Sending idle ...");
 			sendMessage(new AVSIdleMessage());
 		}

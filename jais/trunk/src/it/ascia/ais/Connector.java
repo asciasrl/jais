@@ -3,6 +3,7 @@
  */
 package it.ascia.ais;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Vector;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -36,7 +37,9 @@ public abstract class Connector {
 	private boolean running = false;
 	private ControllerModule module = null;
 	protected MessageParser mp;
-	
+
+	private long autoupdate = 1000;
+
     /**
      * Il nostro nome secondo AUI.
      */
@@ -67,7 +70,17 @@ public abstract class Connector {
      * @param name Nome del connettore
      */
     public Connector(String name) {
+    	this(0,name);
+    }
+
+    /**
+     * 
+     * @param autoupdate Tempo autoaggiornamento porte scadute (expired)
+     * @param name Nome del connettore
+     */
+    public Connector(long autoupdate, String name) {
 		this.name = name;
+		this.autoupdate = autoupdate;
         devices = new LinkedHashMap<String, Device>();
         devicesAlias = new LinkedHashMap<String, Device>();
 		logger = Logger.getLogger(getClass());
@@ -155,8 +168,8 @@ public abstract class Connector {
      * 
      * @return all devices belonging to connector
      */
-    public LinkedHashMap<String, Device> getDevices() {
-		return devices;
+    public Collection<Device> getDevices() {
+		return devices.values();
     }
         
     /**
@@ -173,7 +186,7 @@ public abstract class Connector {
      * Aggiunge un porta alla coda delle porte da aggiornare
      * @param m
      */
-	public void queueUpdate(DevicePort p) {
+	public synchronized void queueUpdate(DevicePort p) {
 		if (p.isQueuedForUpdate()) {
 			logger.trace("Port already queued for update: "+p);			
 		}
@@ -182,7 +195,7 @@ public abstract class Connector {
 		} else {
 			if (updateQueue.offer(p)) {
 				p.setQueuedForUpdate();
-				logger.trace("Port queued for update: "+p);
+				logger.trace("Port queued for update ("+updateQueue.size()+"): "+p);
 			} else {
 				logger.error("Queue full queuing for update: "+p);
 			}
@@ -266,6 +279,10 @@ public abstract class Connector {
 		}
 	}
 	
+	public boolean isRunning() {
+		return running;
+	}
+
 	/**
 	 * Questo thread esegue l'aggiornamento delle porte che sono state messe nella apposita coda.
 	 * Esegue il metodo DevicePort.update()
@@ -278,8 +295,16 @@ public abstract class Connector {
     		while (running) {
     			DevicePort p;
 				try {
-					p = (DevicePort) updateQueue.take();
-			    	if (p.isDirty() || p.isExpired()) {
+					if (autoupdate > 0) {
+						queueExpiredPorts();
+						p = (DevicePort) updateQueue.poll(autoupdate, TimeUnit.MILLISECONDS);
+						if (p == null) {
+							continue;
+						}
+					} else {
+						p = (DevicePort) updateQueue.take();
+					}					
+			    	if (!p.isQueuedForUpdate() || p.isDirty() || p.isExpired()) {
 				    	logger.trace("Updating (+"+updateQueue.size()+"): " + p.getAddress());
 			    		p.update();
 			    	} else {
@@ -344,6 +369,17 @@ public abstract class Connector {
 	}
 	
 	
+	protected void queueExpiredPorts() {
+		for (Device device : getDevices()) {
+			for (DevicePort devicePort : device.getPorts()) {
+				if (devicePort.isExpired() && !devicePort.isQueuedForUpdate()) {
+					logger.trace("Queue for update expired port "+devicePort.getAddress());
+					queueUpdate(devicePort);
+				}
+			}
+		}
+	}
+
 	public HierarchicalConfiguration getConfiguration() {		
 		return getModule().getConfiguration();
 	}

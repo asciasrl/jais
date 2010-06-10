@@ -5,10 +5,10 @@ import java.util.List;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
 
-import it.ascia.ais.BUSControllerModule;
+import it.ascia.ais.ControllerModule;
 import it.ascia.ais.Transport;
 
-public class DXPControllerModule extends BUSControllerModule {
+public class DXPControllerModule extends ControllerModule {
 	
 	public void start() {
 		HierarchicalConfiguration config = getConfiguration();
@@ -18,13 +18,12 @@ public class DXPControllerModule extends BUSControllerModule {
 		    HierarchicalConfiguration sub = (HierarchicalConfiguration) c.next();
 		 	DXPConnector conn = null;
 		 	try {
-		 		conn = new DXPConnector(sub.getString("name"),this);
+		 		conn = new DXPConnector(config.getLong("autoupdate",1000),sub.getString("name"),this);
 			 	Transport transport = Transport.createTransport(sub);		 		
 		 		// associa transport e connector 
 		 		conn.addTransport(transport);
 			 	// registra il connector
 				controller.addConnector(conn);		
-				myConnectors.add(conn);
 				// aggiunta devices
 				List devices = sub.configurationsAt("devices.device");
 				for (Iterator d = devices.iterator(); d.hasNext();)
@@ -37,10 +36,6 @@ public class DXPControllerModule extends BUSControllerModule {
 		 		conn.close();
 		 	}
 		}				
- 		int autoupdate = config.getInt("autoupdate",1000);
- 		autoUpdater = new AutoUpdater(autoupdate);
- 		autoUpdater.setName("AutoUpdater");
- 		autoUpdater.start();
  		logger.info("Completato start");
  		super.start();
 	}

@@ -3,8 +3,8 @@
  */
 package it.ascia.ais;
 
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -40,14 +40,14 @@ import org.apache.log4j.xml.DOMConfigurator;
  */
 public class Controller {
 	
-	public static final String CONFIGURATION_VERSION = "1.4";
+	public static final String CONFIGURATION_VERSION = "1.5";
 
 	/**
 	 * Connector registrati.
 	 * 
 	 * <p>I Connector qui dentro sono accessibili dal loro nome (stringa).</p>
 	 */
-	private LinkedHashMap<String, Connector> connectors = new LinkedHashMap<String,Connector>();
+	private HashMap<String, Connector> connectors = new LinkedHashMap<String,Connector>();
 
 	/**
 	 * Moduli del controllore
@@ -59,6 +59,8 @@ public class Controller {
 	private Logger logger;
 		
 	private XMLConfiguration config;
+	
+	private boolean running = false;
 
 	private static Controller controller;
 
@@ -107,6 +109,10 @@ public class Controller {
 	 */
 	public Connector getConnector(String name) {
 		return connectors.get(name);
+	}
+	
+	public Collection<Connector> getConnectors() {
+		return connectors.values();
 	}
 
 	/**
@@ -261,6 +267,11 @@ public class Controller {
 	 * @see ControllerModule.start
 	 */
 	public void start() throws AISException {
+		if (running) {
+			logger.warn("Controller already running.");
+			return;
+		}
+		running = true;
 		Iterator<String> i = modules.keySet().iterator();
 		logger.info("Avvio di "+modules.size()+" moduli");
 		long start = System.currentTimeMillis();
@@ -289,19 +300,41 @@ public class Controller {
 	 * Ferma tutti i moduli
 	 */
 	public void stop() {
+		if (running) {
+			logger.warn("Controller already stopped.");
+			return;
+		}
+		running = false;
 		Iterator<String> i = modules.keySet().iterator();
-		logger.info("Arresto di "+modules.size()+" moduli");
+		logger.info("Stopping "+modules.size()+" modules.");
 		while (i.hasNext()) {
 			String moduleName = (String) i.next();
 			ControllerModule module = getModule(moduleName);
 			if (module.isRunning()) {
-				logger.info("Arresto modulo "+moduleName);
+				logger.info("Stopping module "+moduleName);
 				try {
 					module.stop();								
-					logger.debug("Arrestato modulo "+moduleName);
+					logger.debug("Stopped module "+moduleName);
 				} catch (Exception e) {
 					logger.fatal("Stop exception:",e);					
 				}
+			} else {
+				logger.trace("Module "+module.getName()+" already stopped.");
+			}
+		}		
+		logger.trace("Closing "+connectors.size()+" connectors");
+		for (Connector connector: connectors.values()) {
+			if (connector.isRunning()) {
+				// I connettori dovrebbero essere stati tutti chiusi dal modulo relativo
+				logger.error("Closing connettor "+connector.getName());
+				try {
+					connector.close();								
+					logger.debug("Closed connettore "+connector.getName());
+				} catch (Exception e) {
+					logger.fatal("Stop exception:",e);					
+				}
+			} else {
+				logger.trace("Connector "+connector.getName()+" already closed.");
 			}
 		}		
 		logger.info("Arresto completato.");

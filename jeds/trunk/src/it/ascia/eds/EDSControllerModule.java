@@ -6,11 +6,11 @@ import java.util.List;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.BUSControllerModule;
+import it.ascia.ais.ControllerModule;
 import it.ascia.ais.Transport;
 import it.ascia.eds.device.BMC;
 
-public class EDSControllerModule extends BUSControllerModule {
+public class EDSControllerModule extends ControllerModule {
 	
 	@SuppressWarnings("unchecked")
 	public void start() {
@@ -21,11 +21,11 @@ public class EDSControllerModule extends BUSControllerModule {
 		    HierarchicalConfiguration sub = (HierarchicalConfiguration) c.next();
 		 	EDSConnector eds = null;
 		 	try {
-		 		eds = new EDSConnector(sub.getString("name"),sub.getInt("computer",250));
+		 		// autoupdate sia per connettore che per modulo
+		 		eds = new EDSConnector(sub.getLong("autoupdate",getConfiguration().getLong("autoupdate",1000)),sub.getString("name"),sub.getInt("computer",250));
 			 	Transport transport = Transport.createTransport(sub);		 		
 		 		// associa transport e connector 
 		 		eds.addTransport(transport);
-		 		myConnectors.add(eds);
 		 		eds.setModule(this);
 			 	// effettua il discovery
 			 	List discover = sub.getList("discover",null);

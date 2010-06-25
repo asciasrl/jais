@@ -235,11 +235,16 @@ public abstract class Connector {
 		if (mp.isValid()) {
 			Message m = mp.getMessage();
 			if (m != null) {
-		    	if (dispatchQueue.offer(m)) {
+		    	if (dispatchQueue.remainingCapacity() > 0) {
 			    	logger.debug("Received: " + m);
 		    	} else {
 		    		logger.error("Queue full for messagge: " + m);
 		    	}
+	    		try {
+					dispatchQueue.put(m);
+				} catch (InterruptedException e) {
+					logger.error("Interrupted while putting message in dispatch queue");
+				}
 			}
 		}
 	}

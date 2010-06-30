@@ -1,10 +1,17 @@
 if (!AUI.Controls) {
 	
 	AUI.Controls = {
+		rpc : null,
 		currentControlId : null,
 		lastEvent : null,
 		controls : null,
 		addresses : null
+	};
+	
+	AUI.Controls.init = function() {
+		var rpc = new JSONRpcClient("/aui/rpc");
+		this.controls = rpc.AUI.getControls();
+		this.addresses = rpc.AUI.getAddresses();
 	};
 
 	AUI.Controls.onTouchStart = function(id,event) {
@@ -41,7 +48,7 @@ if (!AUI.Controls) {
 	};
 	
 	AUI.Controls.getControl = function(id) {
-		return AUI.Controls.controls[id];		
+		return AUI.Controls.controls.map[id].map;		
 	};
 	
 	AUI.Controls.getDevice = function(id) {
@@ -66,7 +73,7 @@ if (!AUI.Controls) {
 				AUI.Logger.error("device non disponibile per controllo di tipo: "+control.type);
 			} else {
 				AUI.Logger.debug("Nuovo device "+control.type+" :"+id);
-				this.controls[id].device = device;
+				this.controls.map[id].map.device = device;
 			}
 		}
 		return device;
@@ -74,7 +81,7 @@ if (!AUI.Controls) {
 	
 	AUI.Controls.revertStatus = function(address) {
 		AUI.Logger.info("revertStatus:"+address);
-		var ids = this.addresses[address];
+		var ids = this.addresses.map[address].list;
 		if (ids == null) {
 			return;
 		}
@@ -101,7 +108,11 @@ if (!AUI.Controls) {
 	
 	AUI.Controls.fireDevicePortChangeEvent = function(devicePortChangeEvent) {
 		var address = devicePortChangeEvent.A; 
-		var ids = this.addresses[address];
+		if (address == undefined) {
+			AUI.Logger.debug("Event without address");
+			return;
+		}
+		var ids = this.addresses.map[address].list;
 		if (ids == null) {
 			return;
 		}
@@ -113,6 +124,10 @@ if (!AUI.Controls) {
 				return;
 			}
 			var newValue = devicePortChangeEvent.V;
+			if (newValue == undefined) {
+				AUI.Logger.error("Event without value, address="+address);
+				return;
+			}
 			var port = address.split(":")[1];
 			try {
 				AUI.Logger.info("setPortValue device="+id+" port="+port+" value="+newValue);

@@ -88,19 +88,21 @@ if (!AUI.StreamRequest) {
 				self.streamStart += i+1;
 				self.eventCounter++;
 				try {
+					AUI.Logger.debug("evt="+res1);
 					//AUI.Logger.log(self.eventCounter+"/"+self.errorCounter+":"+res1);
 					var evt;
 					eval("evt="+res1+";");
 					if (evt) {
-						AUI.Controls.fireDevicePortChangeEvent(evt);
+						if (evt.ERROR != undefined) {
+							AUI.Header.show(evt.ERROR);
+						} else {
+							AUI.Controls.fireDevicePortChangeEvent(evt);
+						}
 					}
 				} catch (e) {
 					self.errorCounter++;
 					// TODO: handle exception
 					AUI.Logger.error(e);
-				}
-				if (self.eventCounter == 1) {
-					AUI.Header.show("Connessione OK.");
 				}
 			}
 			//AUI.Logger.info("stateChange, setting timeout "+(self.sendTimeout + self.updateTimeout));

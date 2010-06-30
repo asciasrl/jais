@@ -442,6 +442,7 @@ public class AUIConfigRPCServer implements Serializable {
 		HierarchicalConfiguration controlConfig = auiConfig.configurationAt("//pages/page[@id='"+pageId+"']/control[@id='"+controlId+"']", true);
 		Object oldValue = null;
 		if (controlConfig.containsKey(key)) {
+			oldValue = controlConfig.getProperty(key); 
 			controlConfig.setProperty(key, (Object) value);
 		} else {
 			controlConfig.addProperty(key, value);

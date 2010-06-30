@@ -11,15 +11,20 @@ import it.ascia.ais.DevicePort;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.apache.log4j.Logger;
 import org.jabsorb.JSONRPCBridge;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 /**
  * Server RPC, espone i metodi usati dal client RPC
@@ -74,7 +79,93 @@ public class AUIRPCServer implements Serializable {
 			return false;
 		}
 	}
-		
+	
+	public JSONObject getControls() {
+		JSONObject j =new JSONObject();
+		HierarchicalConfiguration auiConfig = aui.getConfiguration();
+		HierarchicalConfiguration skinConfig = aui.getSkinConfiguration();
+		List pages = auiConfig.configurationsAt("pages.page");
+		for (Iterator iPages = pages.iterator(); iPages.hasNext(); ) {
+			HierarchicalConfiguration pageConfig = (HierarchicalConfiguration) iPages.next();
+			String pageId = pageConfig.getString("[@id]");
+			List controls = pageConfig.configurationsAt("control");
+			for (Iterator ic = controls.iterator(); ic.hasNext(); ) {
+				HierarchicalConfiguration controlConfig = (HierarchicalConfiguration) ic.next();
+				String id = "control-" + pageId + "-" + controlConfig.getString("[@id]");
+				String type = controlConfig.getString("type");
+				HashMap controlMap = new HashMap();
+				if (skinConfig.containsKey("controls."+type+".default")) {
+					SubnodeConfiguration typeConfig = skinConfig.configurationAt("controls."+type);
+					for (Iterator ip = typeConfig.getKeys(); ip.hasNext(); ) {
+						String k = (String) ip.next();
+						controlMap.put(k, typeConfig.getString(k));
+					}
+				}
+				for (Iterator ip = controlConfig.getKeys(); ip.hasNext(); ) {
+					String k = (String) ip.next();
+					controlMap.put(k, controlConfig.getString(k));
+				}
+				j.put(id, controlMap);
+			}
+		}
+		return j;
+	}
+	
+	public JSONObject getAddresses() {
+		JSONObject j =new JSONObject();
+		HierarchicalConfiguration auiConfig = aui.getConfiguration();
+		List pages = auiConfig.configurationsAt("pages.page");
+		for (Iterator iPages = pages.iterator(); iPages.hasNext(); ) {
+			HierarchicalConfiguration pageConfig = (HierarchicalConfiguration) iPages.next();
+			String pageId = pageConfig.getString("[@id]");
+			List controls = pageConfig.configurationsAt("control");
+			for (Iterator ic = controls.iterator(); ic.hasNext(); ) {
+				HierarchicalConfiguration controlConfig = (HierarchicalConfiguration) ic.next();
+				String id = "control-" + pageId + "-" + controlConfig.getString("[@id]");
+				String address = controlConfig.getString("address");
+				if (address != null) {
+					if (j.containsKey(address)) {
+						((JSONArray) j.get(address)).add(id);
+					} else {
+						JSONArray ja = new JSONArray();
+						ja.add(id);
+						j.put(address, ja);
+					}
+				}
+			}
+		}
+		return j;
+	}
+	
+	public JSONObject getPageLayerControls() {
+		JSONObject j =new JSONObject();
+		HierarchicalConfiguration auiConfig = aui.getConfiguration();
+		List pages = auiConfig.configurationsAt("pages.page");
+		for (Iterator iPages = pages.iterator(); iPages.hasNext(); ) {
+			HierarchicalConfiguration pageConfig = (HierarchicalConfiguration) iPages.next();
+			String pageId = pageConfig.getString("[@id]");
+			JSONObject jp = new JSONObject();
+			j.put("page-" + pageId, jp);
+			List controls = pageConfig.configurationsAt("control");
+			for (Iterator ic = controls.iterator(); ic.hasNext(); ) {
+				HierarchicalConfiguration controlConfig = (HierarchicalConfiguration) ic.next();
+				String id = pageId + "-" + controlConfig.getString("[@id]");
+				String layer = controlConfig.getString("layer","");
+				if (layer.equals("")) {
+					layer = "null";
+				}
+				if (jp.containsKey(layer)) {
+					((JSONArray) jp.get(layer)).add("control-" + id);
+				} else {
+					JSONArray jl = new JSONArray();
+					jl.add("control-" + id);
+					jp.put(layer, jl);
+				}
+			}
+		}
+		return j;				
+	}
+	
 	/**
 	 * End config session
 	 * @param session

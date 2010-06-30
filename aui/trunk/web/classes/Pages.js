@@ -7,12 +7,15 @@
 if (!AUI.Pages) {
 
 	AUI.Pages = {
+		pageLayerControls : null,
 		currentPage: null,
 		currentLayer: null,
 		currentPageId: null
 	};
 
 	AUI.Pages.init = function() {
+		var rpc = new JSONRpcClient("/aui/rpc");		
+		this.pageLayerControls = rpc.AUI.getPageLayerControls();
 		startLayer = this.currentLayer;
 		if (this.currentPageId != null) {
 			this.changeTo(this.currentPageId);
@@ -133,7 +136,7 @@ if (!AUI.Pages) {
 	};
 	
 	AUI.Pages.pageHaveLayers = function(pageId) {
-		var o = AUI.Pages.pageLayers[pageId];
+		var o = AUI.Pages.pageLayerControls.map[pageId].map;
 		if (typeof(o) == 'object') {
 			for (i in o) {
 				if (i != 'null' && i != '') {
@@ -175,14 +178,14 @@ if (!AUI.Pages) {
 
 	AUI.Pages.getLayerControls = function(layer) {
 		var pageId = this.getCurrentPageId();
-		var layers = this.pageLayers[pageId];
-		return layers[layer];
+		var layers = this.pageLayerControls.map[pageId].map;
+		return layers[layer].list;
 	};
 	
 	AUI.Pages.showLayer = function(layer) {
 		AUI.Logger.debug("Richiesto layer "+layer);
 		var pageId = this.getCurrentPageId();
-		var layers = this.pageLayers[pageId];
+		var layers = this.pageLayerControls.map[pageId].map;
 		for (i in layers) {
 			if (i == 'null' || i == '') {
 				continue;

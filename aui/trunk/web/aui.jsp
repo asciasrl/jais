@@ -139,14 +139,6 @@ for (Iterator it = pages.iterator(); it.hasNext();) {
 		} else if (type.equals("thermo")) {
 %>	
 	<div class="thermo-display" id="<%= id %>-label"  <%= eventType %>="<%= eventHandler %>">-,-°C</div>
-	<div id="<%= id %>-buttons">
-		<div id="<%= id %>-dn" class="control-button control-button-dn control-<%= type %>-dn">
-			<img id="<%= id %>-dn-img" src="<%= skin + controlConfig.getString("dn",skinConfig.getString("controls."+type+".dn")) %>" title="Down <%= controlConfig.getString("title",controlConfig.getString("address")) %>" border="0" alt="Down <%= type %>"/>
-		</div>		
-		<div id="<%= id %>-up" class="control-button control-button-up control-<%= type %>-up">
-			<img id="<%= id %>-up-img" src="<%= skin + controlConfig.getString("up",skinConfig.getString("controls."+type+".up")) %>" title="Up <%= controlConfig.getString("title",controlConfig.getString("address")) %>" border="0" alt="Up <%= type %>"/>
-		</div>		
-	</div>
 <%
 		}
 %>
@@ -235,11 +227,9 @@ for (int iLayer = 0;  iLayer < (5 + nLayers); iLayer++) {
 <script type="text/javascript" language="javascript" src="classes/Alarm.js"></script>
 <script type="text/javascript" language="javascript" src="classes/Keypad.js"></script>
 <script type="text/javascript" language="javascript" src="classes/Prealarm.js"></script>
+<script type="text/javascript" language="javascript" src="classes/Alarmzone.js"></script>
 
 <script language="javascript" type="text/javascript">
-AUI.Controls.controls = <%= auiControllerModule.getControls() %>;
-AUI.Controls.addresses = <%= auiControllerModule.getAddresses() %>;
-AUI.Pages.pageLayers = <%= auiControllerModule.getPageLayerControls() %>;
 AUI.Layers.layers = <%= jLayers.toString() %>;
 var skin = '<%= skin %>';
 </script>

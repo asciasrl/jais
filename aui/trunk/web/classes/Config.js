@@ -23,6 +23,8 @@ if (!AUI.Config) {
 		pageElement : null,
 		pageEmptyMessage : "Selezionare la pagina da modificare.",
 		currentControlIndex : null,
+		
+		controlPropertyTitles : {'title': 'Titolo','[@id]': 'Identificatore', 'type': 'Tipo', 'layer' : 'Livello'},
 
 		/**
 		 * Inizializza la procedura di configurazione
@@ -428,17 +430,26 @@ if (!AUI.Config) {
 				var info = new Element('div', {'class': 'info'} );
 				info.addEventListener('click',function(e) { self.editControlShow(e); },false);
 				
-				info.grab(new Element('label').appendText("Identifier: "));
+				info.grab(new Element('label').appendText("Id: "));
 				info.appendText(c.map['[@id]']);
 				info.grab(new Element('br'));
-				info.grab(new Element('label').appendText("Type: "));
+				info.grab(new Element('label').appendText("Tipo: "));
 				info.appendText(c.map['type']);
-				info.grab(new Element('br'));
-				info.grab(new Element('label').appendText("Address: "));
-				info.appendText(c.map['address']);
-				info.grab(new Element('br'));
-				info.grab(new Element('label').appendText("Layer: "));
-				info.appendText(c.map['layer']);
+				if (c.map['address'] != ""  && c.map['address'] != undefined) {
+					info.grab(new Element('br'));
+					info.grab(new Element('label').appendText("Indirizzo: "));
+					info.appendText(c.map['address']);
+				}
+				if (c.map['layer'] != ""  && c.map['layer'] != undefined) {
+					info.grab(new Element('br'));
+					info.grab(new Element('label').appendText("Layer: "));
+					info.appendText(c.map['layer']);
+				}
+				if (c.map['page'] != "" && c.map['page'] != undefined) {
+					info.grab(new Element('br'));
+					info.grab(new Element('label').appendText("Pagina: "));
+					info.appendText(c.map['page']);
+				}
 				control.grab(info);
 
 				control.makeDraggable({'onDrop': AUI.Config.onDropControl});
@@ -588,16 +599,12 @@ if (!AUI.Config) {
 		},
 		
 		editControlShow : function(event) {
-			/*
-			if (typeof(console) != 'undefined') console.log("editControl: " + event);
-			event.preventDefault();
-			event.stopPropagation();
-			*/
 			this.showMask(this.editControlHide);
 			var popup = document.getElementById("editControl"); 
 			popup.style.visibility = 'visible';
 						
-			var controlMap = this.pages[this.currentPageIndex].controls[this.currentControlIndex];
+			var controlProperties = this.pages[this.currentPageIndex].controls[this.currentControlIndex].map;
+			/*
 			var inputs = popup.getElements('input');
 			if (typeof(console) != 'undefined') console.log(inputs);
 			for (var i=0; i < inputs.length; i++) {
@@ -607,13 +614,39 @@ if (!AUI.Config) {
 				if (name == 'id') {
 					name = '[@id]';
 				}
-				input.setProperty('value',controlMap.map[name]);
+				var value = controlProperties[name];
+				if (typeof(value) == 'object') {
+					value = value.list.join(";");
+				}
+				input.setProperty('value',value);
 			}
+			*/
+
+			var div = popup.getElement('div');
+			for (var key in controlProperties) {
+				// 		<label>Titolo:</label><input type="text" size="100" name="title">
+				var value = controlProperties[key];
+
+				if (typeof(console) != 'undefined') console.log("Key:"+key+" Value:"+value);
+
+				var title = this.controlPropertyTitles[key] || key;
+				
+				var label = new Element('label');
+				label.innerHTML = title + ":";
+				div.grab(label);
+				
+				var input = new Element('input', {'type': 'text', 'size': 100, 'name': key});
+				input.setProperty('value',value);
+				div.grab(input);
+			}
+
 		},
 		
 		editControlHide : function() {
 			var popup = document.getElementById("editControl"); 
 			popup.style.visibility = 'hidden';			
+			var div = popup.getElement('div');
+			div.empty();
 		},
 
 		editControlSubmit : function(form) {
@@ -625,14 +658,19 @@ if (!AUI.Config) {
 				var props = new Hash();
 				//var map = new Hash();
 				
-				//map.set('title',form.title.value);
-				props['title'] = form.title.value;
-				//props['id'] = form.id.value;
-				props['type'] = form.type.value;
-				props['address'] = form.address.value;
-				props['page'] = form.page.value;
-				props['layer'] = form.layer.value;
-
+				var inputs = form.getElements('input');
+				for (var i=0; i < inputs.length; i++) {
+					var input = inputs[i];
+					if (typeof(console) != 'undefined') console.log(input);
+					var name = input.getProperty("name");
+					if (name == '[@id]') {
+						continue;
+					}
+					var value = input.getProperty("value");
+					props[name] = value;
+				}
+				if (typeof(console) != 'undefined') console.log(props);
+				
 				//delete(data.$family);
 				
 				props['$family'] = null;
@@ -641,12 +679,11 @@ if (!AUI.Config) {
 				// FIXME Usare pageId e controlId separati
 				this.jsonrpc.AUIConfig.setPageControlProperties(id,{"javaClass":"java.util.Map","map":props});
 				
-				var newId = form.id.value;
+				var newId = form['[@id]'].value;
 				if (id != newId) {
 					// FIXME Usare pageId e controlId separati
 					this.jsonrpc.AUIConfig.changePageControlId(id,newId);
 				}
-
 				this.hideMask();
 				this.reloadPage();
 			} catch(e) {

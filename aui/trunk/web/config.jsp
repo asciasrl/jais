@@ -167,12 +167,15 @@ cmDraw ('mainmenu', myMenu, 'hbr', cmThemeOffice2003);
 <div id="editControl" class="popup">
 	<form action="http://null/" onsubmit="return false;">
 		<h3>Modifica controllo</h3>
+		<div id="fields">-</div>
+<!-- 
 		<label>Titolo:</label><input type="text" size="100" name="title">
 		<label>Identificatore:</label><input type="text" size="100" name="id">
 		<label>Tipo:</label><input type="text" size="100" name="type">
 		<label>Indirizzo:</label><input type="text" size="100" name="address">
 		<label>Pagina:</label><input type="text" size="100" name="page">
 		<label>Layer:</label><input type="text" size="100" name="layer">
+-->
 		<button type="submit" onclick="AUI.Config.editControlSubmit(this.form);">Aggiorna</button>
 	</form>
 </div>

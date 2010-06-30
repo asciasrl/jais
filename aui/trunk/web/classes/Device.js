@@ -36,7 +36,7 @@ if (!AUI.Device) {
 		if (img == null) {
 			img = document.getElementById(this.id+"-img");
 			if (img == null) {
-				AUI.Logger.error("Elemento label non trovato per "+this.id);
+				AUI.Logger.error("Elemento img non trovato per "+this.id);
 			} else {
 				this.img = img;
 			}

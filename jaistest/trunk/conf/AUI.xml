@@ -315,13 +315,12 @@
 <page/>
 <layer>light</layer>
 </control>
-<control id="light22">
-<type>light</type>
+<control id="alarmzone1">
+<type>alarmzone</type>
 <title>Sensore allarme zona 10</title>
 <top>10</top>
 <left>10</left>
-<address>abc.Zone10:Stato</address>
-<page/>
+<address>abc.Zone10:Bypassed;abc.Zone10:Stato</address>
 <layer>security</layer>
 </control>
 <control id="light23">

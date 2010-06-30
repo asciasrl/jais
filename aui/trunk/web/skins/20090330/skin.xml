@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <jais:configuration version="1.4">
 	<AUI>
-       <controls>
+		<controls>
 			<page>
 				<default>images/page_back.png</default>
 			</page>
@@ -16,7 +16,8 @@
 				<off>images/pushbutton_green-off.png</off>
 			</pushbutton>
 			<group>
-				<default>images/pushbutton_green-off.png</default>
+				<default>images/pushbutton_green-off.png
+				</default>
 			</group>
 			<dimmer>
 				<default>images/light_off.png</default>
@@ -53,16 +54,20 @@
 				<on>images/scene_on.png</on>
 			</scene>
 			<thermo>
-				<default>images/thermo_display.png</default>
+				<default>images/thermo_display.png
+				</default>
 				<crono>images/thermo_crono.png</crono>
 				<down>images/thermo_down.png</down>
 				<fan0>images/thermo_fan0.png</fan0>
 				<fan1>images/thermo_fan1.png</fan1>
 				<fan2>images/thermo_fan2.png</fan2>
 				<fan3>images/thermo_fan3.png</fan3>
-				<manual_off>images/thermo_manual_off.png</manual_off>
-				<manual_on>images/thermo_manual_on.png</manual_on>
-				<switch_on>images/thermo_switch_on.png</switch_on>
+				<manual_off>images/thermo_manual_off.png
+				</manual_off>
+				<manual_on>images/thermo_manual_on.png
+				</manual_on>
+				<switch_on>images/thermo_switch_on.png
+				</switch_on>
 				<T1_off>images/thermo_T1_off.png</T1_off>
 				<T1_on>images/thermo_T1_on.png</T1_on>
 				<T2_off>images/thermo_T2_off.png</T2_off>
@@ -77,6 +82,13 @@
 				<pause>images/webcam-pause.png</pause>
 				<play>images/webcam-play.png</play>
 			</webcam>
+			<alarmzone>
+			  <default>images/alarmzone-door.closed.png</default>
+			  <on>images/alarmzone-door.open.png</on>
+			  <off>images/alarmzone-door.closed.png</off>
+			  <bypassed_on>images/alarmzone-door.bypassed_open.png</bypassed_on>
+			  <bypassed_off>images/alarmzone-door.bypassed_closed.png</bypassed_off>
+			</alarmzone>
 		</controls>
 		<layers>
 			<layer id="scene">
@@ -112,5 +124,22 @@
 				<icon>images/layer-thermo.png</icon>
 			</layer>
 		</layers>
+		<!--  Icone diverse  -->
+		<icons>
+			<icon type="alarmzone" variant="motion">
+			  <default>images/alarmzone-motion.stay.png</default>
+			  <on>images/alarmzone-motion.walk.png</on>
+			  <off>images/alarmzone-motion.stay.png</off>
+			  <bypassed_on>images/alarmzone-motion.bypassed_walk.png</bypassed_on>
+			  <bypassed_off>images/alarmzone-motion.bypassed_stay.png</bypassed_off>
+			</icon>
+			<icon type="alarmzone" variant="door">
+			  <default>images/alarmzone-door.closed.png</default>
+			  <on>images/alarmzone-door.open.png</on>
+			  <off>images/alarmzone-door.closed.png</off>
+			  <bypassed_on>images/alarmzone-door.bypassed_open.png</bypassed_on>
+			  <bypassed_off>images/alarmzone-door.bypassed_closed.png</bypassed_off>
+			</icon>
+		</icons>
 	</AUI>
 </jais:configuration>

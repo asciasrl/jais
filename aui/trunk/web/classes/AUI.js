@@ -7,6 +7,7 @@ if (!AUI) {
      var AUI = {
     	init : function(page) {
     	 	AUI.Logger.info("init AUI");
+    	 	AUI.Controls.init();
     	 	AUI.Layers.init();
     	 	window.setTimeout(function() { AUI.Pages.init(); }, 1000);
      	},

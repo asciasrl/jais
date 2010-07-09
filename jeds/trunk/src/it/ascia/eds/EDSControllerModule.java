@@ -19,6 +19,10 @@ public class EDSControllerModule extends ControllerModule {
 		for (Iterator c = connectors.iterator(); c.hasNext();)
 		{
 		    HierarchicalConfiguration sub = (HierarchicalConfiguration) c.next();
+		    if (sub.getBoolean("[@disabled]",false)) {
+		    	logger.debug("Connector disabled: "+sub.getString("name"));
+		    	continue;
+		    }
 		 	EDSConnector eds = null;
 		 	try {
 		 		// autoupdate sia per connettore che per modulo
@@ -40,13 +44,13 @@ public class EDSControllerModule extends ControllerModule {
 						}
 					}
 			 	}
+			 	// registra il connector
+				controller.addConnector(eds);		
 				// carica il file di configurazione
 			 	String configFileName = sub.getString("config",null);
 			 	if (configFileName != null) {
 			 		eds.loadConfig(configFileName);
 			 	}				
-			 	// registra il connector
-				controller.addConnector(eds);		
 				List devices = sub.configurationsAt("devices.device");
 				for (Iterator d = devices.iterator(); d.hasNext();)
 				{
@@ -58,7 +62,7 @@ public class EDSControllerModule extends ControllerModule {
 						if (bmc != null) {
 							bmc.discover();
 						}
-					} catch (AISException e) {
+					} catch (Exception e) {
 						logger.warn("addBMC Model: "+model+" Address: "+address+" Error: ",e);
 					}
 				}

@@ -1,0 +1,35 @@
+body {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+div.port {
+	float: left;
+	background-color: silver;
+	margin: 1px;
+	padding: 2px;
+	width: 49%;
+	height: 24px;
+}
+
+div.port:hover {
+	background-color: lime;
+}
+
+div.address {
+	float: left;
+	width: 50%;
+}
+
+div.value {
+	float: left;
+	width: 10%;
+}
+
+div.buttons {
+	float: left;
+	width: 40%;
+}
+
+button {
+	height: 24px;
+}

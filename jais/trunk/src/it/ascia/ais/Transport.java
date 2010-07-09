@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
  * Il transport può essere usato da un solo thread per volta, che deve acquisirne il permesso e rilasciarlo alla fine.
  * <pre>
  *   transport.acquire();
- *   ... use transport ...
+ *   transport.write(stuff);
  *   transport.release();
  * </pre>
  * 
@@ -115,6 +115,10 @@ public abstract class Transport {
  			String host = transportConfig.getString("host");
  			int port = transportConfig.getInt("port");					
  			transport = new TCPSerialTransport(host,port);
+ 		} else if (type.equals("loop")) {
+ 			transport = new LoopTransport();
+ 		} else if (type.equals("null")) {
+ 			transport = null;
 		} else {
 			throw(new AISException("Transport "+type+" non riconosciuto"));
 		}

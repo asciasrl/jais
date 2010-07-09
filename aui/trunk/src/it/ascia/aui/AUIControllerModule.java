@@ -18,7 +18,6 @@ import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.jabsorb.JSONRPCBridge;
 import org.jabsorb.JSONRPCServlet;
 // TODO Eliminare riferimenti a jsonsimple (usare org.json di jabsorb)
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.mortbay.jetty.servlet.Context;
 

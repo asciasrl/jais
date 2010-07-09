@@ -7,7 +7,7 @@
 			<class>it.ascia.ais.SQLiteControllerModule</class>
 			<config>conf/SQLite.xml</config>
 		</module>
-		<module name="EDS" disabled="true">
+		<module name="EDS" disabled="false">
 			<class>it.ascia.eds.EDSControllerModule</class>
 			<config>conf/EDS.xml</config>
 		</module>
@@ -30,6 +30,10 @@
 		<module name="AUI" disabled="false">
 			<class>it.ascia.aui.AUIControllerModule</class>
 			<config>conf/AUI.xml</config>
+		</module>
+		<module name="Webconsole" disabled="false">
+			<class>it.ascia.webconsole.WebconsoleControllerModule</class>
+			<config>conf/Webconsole.xml</config>
 		</module>
 		<module name="HTTPServer" disabled="false">
 			<class>it.ascia.ais.HTTPServerControllerModule</class>

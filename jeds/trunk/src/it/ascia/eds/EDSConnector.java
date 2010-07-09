@@ -513,6 +513,9 @@ public class EDSConnector extends Connector {
 	}
 
 	public BMC addBmc(String modelName, String address) throws AISException {
+		if (modelName == null || address == null) {
+			throw(new AISException("Must specify model and address"));
+		}
 		int model;
 		if (modelName.startsWith("REG-T-22")) {
 			model = 122; 
@@ -523,7 +526,9 @@ public class EDSConnector extends Connector {
 				throw(new AISException("Invalid model for addBMC: "+modelName));
 			}			
 		}
-	    return BMC.createBMC(address, model);			
+	    BMC bmc = BMC.createBMC(address, model);
+	    addDevice(bmc);
+	    return bmc;
 	}
 
 	public boolean isDiscoverNew() {

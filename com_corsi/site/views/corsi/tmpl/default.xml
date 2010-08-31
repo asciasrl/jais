@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="Layout Elenco Corsi">
+		<message>
+			<![CDATA[Questo layout mostra un elenco di corsi.]]>
+		</message>
+	</layout>
+	<state>
+		<name>Layout Corsi</name>
+		<description>Questo layout mostra un elenco di corsi.</description>
+		<params>
+		</params>
+	</state>
+</metadata>

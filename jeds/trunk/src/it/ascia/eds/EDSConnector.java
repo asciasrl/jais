@@ -208,7 +208,7 @@ public class EDSConnector extends Connector {
 
 
 	public int getRetryTimeout() {
-		return getConfiguration().getInt("retrytimeout", RETRY_TIMEOUT);
+		return getModuleConfiguration().getInt("retrytimeout", RETRY_TIMEOUT);
 	}
 	
 	private double getRetryTimeout(PTPMessage m) {
@@ -532,7 +532,7 @@ public class EDSConnector extends Connector {
 	}
 
 	public boolean isDiscoverNew() {
-		return getConfiguration().getBoolean("discovernew", true);
+		return getModuleConfiguration().getBoolean("discovernew", true);
 	}
 	
 	private class BmcDiscover extends Thread {

@@ -11,7 +11,16 @@ public class AVSMessageParser extends MessageParser {
 	private int[] buff = new int[256]; // max message size
 	private int messageLength;
 
-	public AVSMessageParser() {
+	private AVSLink link; 
+
+	public AVSMessageParser(String interfaccia) {
+		if (interfaccia.equals("EasyLink")) {
+			link = new AVSEasyLink();
+		} else if (interfaccia.equals("XLink")) {
+			link = new AVSXLink();
+		} else {
+			throw(new AISException("Unsupported AVS interface: " + interfaccia));
+		}
 		clear(); 
 	}
 	
@@ -135,5 +144,9 @@ public class AVSMessageParser extends MessageParser {
 		return new AVSMessage(buff[2],buff[4],code, buff[6], data);
 		
 	}
+
+	boolean supports(String modello) {
+		return link.supports(modello);
+	}	
 
 }

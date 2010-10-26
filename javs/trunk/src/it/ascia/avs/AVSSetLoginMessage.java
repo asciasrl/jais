@@ -7,7 +7,7 @@ import it.ascia.ais.AISException;
 public class AVSSetLoginMessage extends AVSMessage {
 
 	public AVSSetLoginMessage(String pin, List<String> sectors) {
-		super(AVSMessage.Code.SET_LOGIN,AVSMessage.FORMAT_0);
+		super(SET_LOGIN);
 		int[] data = new int[7];
 		for (int i=1; i <= 6; i++) {
 			if (i > pin.length()) {

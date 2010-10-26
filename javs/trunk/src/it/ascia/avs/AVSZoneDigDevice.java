@@ -13,6 +13,10 @@ public class AVSZoneDigDevice extends Device {
 		addPort(new DigitalInputPort("Stato"));
 		addPort(new DigitalInputPort("Tamper"));
 		addPort(new DigitalOutputPort("Bypass"));
+		addPort(new DigitalInputPort("Batteria"));
+		addPort(new DigitalInputPort("Sopravvivenza"));
+		addPort(new DigitalInputPort("Antimask"));
+		addPort(new DigitalInputPort("AllarmiAvvenuti"));
 	}
 
 	@Override
@@ -26,29 +30,31 @@ public class AVSZoneDigDevice extends Device {
 		return 0;
 	}
 
-	protected void setThreeState(DevicePort p, int stato) {
-		if (stato == -1) {
-			Boolean c = (Boolean) p.getCachedValue();
-			if (c == null) {
-				throw(new AISException("Cannot toggle null value"));
-			}
-			p.setValue(!c);			
-		} else {
-			p.setValue(stato == 1);
-		}		
+	void setStato(boolean stato) {
+		getPort("Stato").setValue(stato);
 	}
 
-	void setStato(int stato) {
-		setThreeState(getPort("Stato"),stato);
+	void setTamper(boolean stato) {
+		getPort("Tamper").setValue(stato);
 	}
 
-	void setTamper(int stato) {
-		setThreeState(getPort("Tamper"),stato);
+	void setBypass(boolean stato) {
+		getPort("Bypass").setValue(stato);
 	}
 
-	void setBypass(int stato) {
-		setThreeState(getPort("Bypass"),stato);
+	void setBatteria(boolean stato) {
+		getPort("Batteria").setValue(stato);
 	}
 
+	void setSopravvivenza(boolean stato) {
+		getPort("Sopravvivenza").setValue(stato);
+	}
 
+	void setAntimask(boolean stato) {
+		getPort("Antimask").setValue(stato);
+	}
+
+	void setAllarmiAvvenuti(boolean stato) {
+		getPort("AllarmiAvvenuti").setValue(stato);
+	}
 }

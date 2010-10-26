@@ -10,6 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.apache.log4j.Logger;
 
 /**
@@ -390,9 +391,23 @@ public abstract class Connector {
 		}
 	}
 
-	public HierarchicalConfiguration getConfiguration() {		
+	/**
+	 * 
+	 * @return La configurazione del modulo
+	 */
+	public HierarchicalConfiguration getModuleConfiguration() {		
 		return getModule().getConfiguration();
 	}
+
+	/**
+	 * 
+	 * @return La configurazione specifica del connettore
+	 */
+	public HierarchicalConfiguration getConfiguration() {		
+		HierarchicalConfiguration config = getModuleConfiguration();
+		config.setExpressionEngine(new XPathExpressionEngine());
+		return config.configurationAt("connectors/connector[name='" + getName() + "']");
+	}	
 
 	public void setModule(ControllerModule controllerModule) {
 		this.module = controllerModule;		

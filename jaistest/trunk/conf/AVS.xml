@@ -8,8 +8,8 @@
         <centrale>Advance88</centrale>
         <transport>
           <type>serial</type>
-          <speed>57600</speed>
-          <port>COM6</port>
+          <speed>9600</speed>
+          <port>COM4</port>
         </transport>
         <pin>000010</pin>
         <sectors>1;2;3;4</sectors>

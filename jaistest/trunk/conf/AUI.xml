@@ -320,7 +320,7 @@
 <title>Sensore allarme zona 10</title>
 <top>10</top>
 <left>10</left>
-<address>abc.Zone10:Bypassed;abc.Zone10:Stato</address>
+<address>abc.Zone10:Bypass;abc.Zone10:Stato</address>
 <layer>security</layer>
 </control>
 <control id="light23">
@@ -367,34 +367,6 @@
 <address>abc.Advance88:Relay1</address>
 <page/>
 <layer>security</layer>
-</control>
-</page>
-<page id="chrono_c1">
-<title>Test crono</title>
-<control id="back">
-<title>Indietro</title>
-<type>page</type>
-<page>Hbox</page>
-<top>300</top>
-<left>130</left>
-</control>
-<control id="c1">
-<title>Cronotermostato HI</title>
-<type>thermo</type>
-<class>ThermoEDS</class>
-<layer>thermo</layer>
-<top>300</top>
-<left>10</left>
-<address>2.7:temp</address>
-<address>2.7:season</address>
-<address>2.7:state</address>
-<address>2.7:setPoint</address>
-<up_address>2.7:stp_up</up_address>
-<dn_address>2.7:stp_up</dn_address>
-<chrono_address>2.7:chrono</chrono_address>
-<manual_address>2.7:manual</manual_address>
-<off_address>2.7:manual</off_address>
-<temp_t0_address>2.7:manual</temp_t0_address>
 </control>
 </page>
 <page id="test2">

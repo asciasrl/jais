@@ -2,7 +2,8 @@ if (!AUI.Alarmzone) {
 
 	AUI.Alarmzone = function(id) {
 		this.id = id;
-		this.bypass = false;
+		this.bypassed = "";
+		this.zonestatus = "off";
 		this.rpc = null;
 	};
 	
@@ -19,29 +20,38 @@ if (!AUI.Alarmzone) {
 		} else {
 			newstatus = "off";
 		}
-		AUI.SetRequest.setValue(address,newstatus);
+		// prova 2 volte
+		if (AUI.SetRequest.setValue(address,newstatus) || AUI.SetRequest.setValue(address,newstatus)) {
+			return true;
+		} else {
+			AUI.Header.show("Errore di comunicazione, riprovare.");				
+			return false;
+		}
 	};
 	
 	AUI.Alarmzone.prototype.setPortValue = function(port,newValue) {
 		this.value = newValue;
 		if (newValue == true || newValue == "true" || newValue == "on") {
 			if (port == "Status" || port == "Stato") {
-				this.status = "on";
-			} else if (port == "Bypassed") {
+				this.zonestatus = "on";
+			} else if (port == "Bypass") {
+				AUI.Logger.info("Bypassed on");
 				this.bypassed = "bypassed_";
 			} else {
 				AUI.Logger.error("Port not recognized:"+port);
 			}
 		} else if (newValue == false || newValue == "false" ||newValue == "off") {
 			if (port == "Status" || port == "Stato") {
-				this.status = "off";
-			} else if (port == "Bypassed") {
+				this.zonestatus = "off";
+			} else if (port == "Bypass") {
+				AUI.Logger.info("Bypassed off");
 				this.bypassed = "";
 			} else {
 				AUI.Logger.error("Port not recognized:"+port);
 			}
 		}		
-		this.setStatus(this.bypassed + this.status);				
+		AUI.Logger.info("Set status: '" + this.bypassed + "' '"+this.zonestatus+"'");
+		this.setStatus(this.bypassed + this.zonestatus);				
 	};
 
 }

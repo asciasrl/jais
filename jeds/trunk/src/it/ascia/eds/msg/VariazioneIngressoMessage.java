@@ -24,13 +24,33 @@ public class VariazioneIngressoMessage extends PTPMessage
 	 * 
 	 * @param d destinatario del messaggio.
 	 * @param m mittente del messaggio.
-	 * @param Attivazione true per attivazione/incremento.
-	 * @param Uscita numero dell'uscita da cambiare.
+	 * @param Attivazione true per attivazione/incremento, false per disattivazione/decremento.
+	 * @param Uscita numero dell'uscita da cambiare (da 0 a 7).
 	 * @param Variazione 0: circuito aperto, 1: contatto (cortocircuito a 
 	 * massa).
 	 */
 	public VariazioneIngressoMessage(int d, int m, boolean Attivazione, 
 			int Uscita, boolean Variazione) {
+		this(d, m, Attivazione, Uscita, Variazione, 0, false, 0);
+	}
+	
+	/**
+	 * Costruttore per messaggio diretto a modulo motori.
+	 * 
+	 * @param d destinatario del messaggio.
+	 * @param m mittente del messaggio.
+	 * @param Attivazione true per attivazione/incremento, false per disattivazione/decremento.
+	 * @param Uscita numero dell'uscita da cambiare (da 0 a 7).
+	 * @param Variazione 0: circuito aperto, 1: contatto (cortocircuito a 
+	 * massa).
+	 * @param Ingresso
+	 * @param Toggle
+	 * @param ReTx
+	 * 
+	 * @since 20100713
+	 */
+	public VariazioneIngressoMessage(int d, int m, boolean Attivazione, 
+			int Uscita, boolean Variazione, int Ingresso, boolean Toggle, int ReTx) {
 		Destinatario = d & 0xFF;
 		Mittente = m & 0xFF;
 		TipoMessaggio = getMessageType();
@@ -42,7 +62,7 @@ public class VariazioneIngressoMessage extends PTPMessage
 			Byte2 = 0x01;
 		}
 	}
-	
+
 	/**
 	 * Costruttore per messaggio diretto a cronotermostato o centralina scenari
 	 * 
@@ -97,6 +117,14 @@ public class VariazioneIngressoMessage extends PTPMessage
 	}
 	
 	/**
+	 * Ritorna il numero dell'ingresso.
+	 * @since 20100713
+	 */
+	public int getInputNumber() {
+		return (Byte2 & 0x0E) >> 1;
+	}
+	
+	/**
 	 * Ritorna il numero di scena attivata dal comando.
 	 * 
 	 * <p>Questo metodo ha senso solo  se questo messaggio e' diretto a una 
@@ -119,6 +147,7 @@ public class VariazioneIngressoMessage extends PTPMessage
 	public String toString()	{
 		StringBuffer s = new StringBuffer();
 		s.append(super.toString());
+		s.append(" In" + (getInputNumber()+1));
 		s.append(" Out"+ (getOutputNumber()+1));
 		s.append(" Scene" + (getScenePortNumber()+1));
 		if (isActivation()) {

@@ -2,6 +2,11 @@ package it.ascia.ais.port;
 
 import it.ascia.ais.AISException;
 
+/**
+ * Porta che memorizza uno stato, ovvero un valore stringa che puo' assumere uno dei valori dell'elenco  
+ * @author Sergio
+ *
+ */
 public class StatePort extends StringPort {
 
 	private String[] tags = null;

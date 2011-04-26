@@ -72,7 +72,7 @@ public class ComandoUscitaMessage extends PTPMessage {
 	 *            indirizzo destinatario.
 	 * @param m
 	 *            indirizzo mittente.
-	 * @param Uscita
+	 * @param Scenario
 	 *            numero dello scenario da attivare (da 0 a 15)
 	 */
 	public ComandoUscitaMessage(int d, int m, int Scenario) {
@@ -81,6 +81,28 @@ public class ComandoUscitaMessage extends PTPMessage {
 		TipoMessaggio = EDSMessage.MSG_COMANDO_USCITA; // 21;
 		Byte1 = (Scenario & 0x07);
 		Byte2 =  1 - ((Scenario & 0x08) >> 3);
+	}
+
+	/**
+	 * Costruttore per messaggio per modulo motori.
+	 * 
+	 * @param d
+	 *            indirizzo destinatario.
+	 * @param m
+	 *            indirizzo mittente.
+	 * @param Uscita
+	 *            numero dello scenario da attivare (da 0 a 15)
+	 *            
+	 * @param Percentuale 
+	 * @param Fessure 0-14 (se Fessure > 0, il valore Percentuale viene ignorato)
+	 * @param Attivazione
+	 */
+	public ComandoUscitaMessage(int d, int m, int Uscita, int Percentuale, int Fessure, boolean Attivazione) {
+		Destinatario = d & 0xFF;
+		Mittente = m & 0xFF;
+		TipoMessaggio = EDSMessage.MSG_COMANDO_USCITA; // 21;
+		Byte1 = ((Fessure & 0x0F) << 3 ) | (Uscita & 0x07);
+		Byte2 =  ((Percentuale & 0x7F) << 1 ) | (Attivazione ? 0x01 : 0x00);
 	}
 
 	public ComandoUscitaMessage(int[] message) {

@@ -11,7 +11,7 @@
 		<mkdir dir="${temp}"/>
 		<javac srcdir="src"
 			destdir="${temp}"
-			optimize="true"			
+			optimize="false"			
 		/>
 		<jar destfile="../jais/lib/${ant.project.name}.jar"
 		   basedir="${temp}"

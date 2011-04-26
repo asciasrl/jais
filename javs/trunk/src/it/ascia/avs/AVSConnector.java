@@ -51,6 +51,7 @@ class AVSConnector extends Connector {
 			logger.error("Cannot dispatch message of class "
 					+ m.getClass().getName());
 		} else {
+			logger.trace("Dispatching: " + m);
 			dispatchMessage((AVSMessage) m);
 		}
 	}

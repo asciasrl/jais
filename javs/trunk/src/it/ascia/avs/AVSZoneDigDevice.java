@@ -7,9 +7,12 @@ import it.ascia.ais.port.DigitalInputPort;
 import it.ascia.ais.port.DigitalOutputPort;
 
 public class AVSZoneDigDevice extends Device {
+	
+	private int zone;
 
-	public AVSZoneDigDevice(String address) throws AISException {
+	public AVSZoneDigDevice(int zone, String address) throws AISException {
 		super(address);
+		this.zone = zone;
 		addPort(new DigitalInputPort("Stato"));
 		addPort(new DigitalInputPort("Tamper"));
 		addPort(new DigitalOutputPort("Bypass"));
@@ -22,7 +25,12 @@ public class AVSZoneDigDevice extends Device {
 	@Override
 	public boolean sendPortValue(String portId, Object newValue)
 			throws AISException {
-		return false;
+		if (portId.equals("Bypass") && Boolean.class.isInstance(newValue)) {
+			return getConnector().sendMessage(AVSBypassZoneMessage.create(zone,(Boolean)newValue));
+		} else {
+			logger.warn("Cannot send value to port "+portId);
+			return false;
+		}
 	}
 
 	@Override

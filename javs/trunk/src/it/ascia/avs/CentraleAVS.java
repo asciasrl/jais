@@ -80,6 +80,14 @@ public abstract class CentraleAVS extends Device {
 			} else {
 				return false;
 			}
+		} else if (portId.startsWith("Oc")) {
+			DigitalOutputPort p = (DigitalOutputPort) getPort(portId);
+			if (Boolean.class.isInstance(newValue)) {
+				int uscita = new Integer(portId.substring(2));
+				return getConnector().sendMessage(AVSSetUscitaOcDigMessage.create(uscita,(Boolean)newValue));
+			} else {
+				throw(new IllegalArgumentException("Invalid Digital Open Collector status type: "+newValue.getClass().getSimpleName()));				
+			}
 		} else {
 			throw new AISException("Not implemented write to port: " + portId);
 		}

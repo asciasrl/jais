@@ -3,11 +3,11 @@
 	<logger file="conf/log4j.xml" configurator="DOMConfigurator" />
 	<locale language="it" country="IT" />
 	<modules>
-		<module name="SQLite" disabled="false">
+		<module name="SQLite" disabled="true">
 			<class>it.ascia.ais.SQLiteControllerModule</class>
 			<config>conf/SQLite.xml</config>
 		</module>
-		<module name="EDS" disabled="false">
+		<module name="EDS" disabled="true">
 			<class>it.ascia.eds.EDSControllerModule</class>
 			<config>conf/EDS.xml</config>
 		</module>
@@ -23,7 +23,7 @@
 			<class>it.ascia.bentel.BentelKyoControllerModule</class>
 			<config>conf/BentelKyo.xml</config>
 		</module>
-		<module name="AVS" disabled="true">
+		<module name="AVS" disabled="false">
 			<class>it.ascia.avs.AVSControllerModule</class>
 			<config>conf/AVS.xml</config>
 		</module>

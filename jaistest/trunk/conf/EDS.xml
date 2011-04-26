@@ -1,89 +1,39 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <jais:configuration version="1.4">
-  <EDS>
-    <autoupdate>1000</autoupdate>
-    <skipautoupdate>false</skipautoupdate>
-    <retrytimeout>100</retrytimeout>
-    <discovernew>true</discovernew>
-    <connectors>
-      <!--
-      <connector>
-        <name>0</name>
-        <transport>
-          <type>serial</type>
-          <port>COM1</port>
-          <speed>9600</speed>
-        </transport>
-		    <computer>249</computer>
-		    <discover>2;3;4;5;6;7</discover> 
-      </connector>
-			-->
+	<EDS>
+		<autoupdate>1000</autoupdate>
+		<skipautoupdate>false</skipautoupdate>
+		<retrytimeout>100</retrytimeout>
+		<discovernew>true</discovernew>
+		<connectors>
+			<connector disabled="true">
+				<name>1</name>
+				<autoupdate>2000</autoupdate>
+				<transport>
+					<type>serial</type>
+					<speed>9600</speed>
+					<port>COM1</port>
+				</transport>
+				<computer>251</computer>
+				<discover>255</discover>
+			</connector>
+			<connector disabled="false">
+				<name>2</name>
+				<autoupdate>500</autoupdate>
+				<transport>
+					<type>serial</type>
+					<speed>9600</speed>
+					<port>COM2</port>
+				</transport>
+				<computer>252</computer>
+				<discover>2;3;4;5;6;7</discover>
+			</connector>
 			<!--
-      <connector>
-        <name>0</name>
-        <transport>
-          <type>tcp</type>
-          <host>copper.ascia.it</host>
-          <port>10001</port>
-        </transport>
-		    <computer>250</computer>
-		    <discover>2;3;4;5;6;7</discover> 
-      </connector>
-      -->
-      <!-- 
-      <connector>
-        <name>wdb</name>
-        <transport>
-          <type>serial</type>
-          <speed>9600</speed>
-          <port>COM1</port>
-        </transport>
-		    <computer>251</computer>
-		    <discover>255</discover> 
-      </connector>
-      <connector>
-        <name>1</name>
-        <transport>
-          <type>serial</type>
-          <speed>9600</speed>
-          <port>COM1</port>
-        </transport>
-		    <computer>251</computer>
-		    <discover>255</discover> 
-      </connector>
--->
-      <connector>
-        <name>1</name>
-        <transport>
-          <type>serial</type>
-          <speed>9600</speed>
-          <port>COM2</port>
-        </transport>
-		    <computer>251</computer>
-		    <discover>255</discover>
-      </connector>
-      <connector disabled="true">
-        <name>2</name>
-        <transport>
-          <type>serial</type>
-          <speed>9600</speed>
-          <port>auto</port>
-        </transport>
-		    <computer>252</computer>
-		    <discover>2;3;4;5;6;7</discover>
-      </connector>
-<!--       
-      <connector>
-        <name>wdb</name>
-		    <computer>253</computer>
-		    <config>conf/NuovoImpiantoUfficio.xml</config>
-        <transport>
-          <type>tcp</type>
-          <host>192.168.52.34</host>
-          <port>2001</port>
-        </transport>
-      </connector>
--->      
-    </connectors> 
-  </EDS>
+				<connector> <name>wdb</name> <computer>253</computer>
+				<config>conf/NuovoImpiantoUfficio.xml</config> <transport>
+				<type>tcp</type> <host>192.168.52.34</host> <port>2001</port>
+				</transport> </connector>
+			-->
+		</connectors>
+	</EDS>
 </jais:configuration>

@@ -122,14 +122,16 @@ public class AUIRPCServer implements Serializable {
 			for (Iterator ic = controls.iterator(); ic.hasNext(); ) {
 				HierarchicalConfiguration controlConfig = (HierarchicalConfiguration) ic.next();
 				String id = "control-" + pageId + "-" + controlConfig.getString("[@id]");
-				String address = controlConfig.getString("address");
-				if (address != null) {
-					if (j.containsKey(address)) {
-						((JSONArray) j.get(address)).add(id);
-					} else {
-						JSONArray ja = new JSONArray();
-						ja.add(id);
-						j.put(address, ja);
+				List<String> addresses = controlConfig.getList("address");
+				if (addresses.size() > 0) {
+					for (String address : addresses) {
+						if (j.containsKey(address)) {
+							((JSONArray) j.get(address)).add(id);
+						} else {
+							JSONArray ja = new JSONArray();
+							ja.add(id);
+							j.put(address, ja);
+						}
 					}
 				}
 			}

@@ -11,6 +11,8 @@ import org.apache.log4j.Logger;
 /**
  * Mezzo di trasporto dei messaggi (seriale, tcp, ...) 
  * 
+ * $Id$
+ * 
  * Il transport può essere usato da un solo thread per volta, che deve acquisirne il permesso e rilasciarlo alla fine.
  * <pre>
  *   transport.acquire();

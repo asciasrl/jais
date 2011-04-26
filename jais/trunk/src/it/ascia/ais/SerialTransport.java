@@ -119,6 +119,9 @@ public class SerialTransport extends Transport {
     	open();
     }
     
+    /**
+     * Carica la libreria nativa specifica del sistema in uso
+     */
 	private void loadLibrary() {
 		
 		if (rxtxLoaded) {

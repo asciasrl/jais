@@ -25,7 +25,7 @@ var webconsole = {
 				var map = result.list[i].map;
 				
 				var addressElement = new Element('div', {'class': 'address'});
-				addressElement.innerHTML = map.Address;
+				addressElement.innerHTML = map.Address + " (" + map.SimpleClassName + ")";
 				portElement.grab(addressElement);
 
 				var valueElement = new Element('div', {'class': 'value'});
@@ -33,21 +33,28 @@ var webconsole = {
 				portElement.grab(valueElement);
 				
 				buttonsElement = new Element('div', {'class': 'buttons'});
+				var addr = map.Address;
 
-				if (map.Class == "it.ascia.ais.port.NullPort") {
-					var bottone = new Element('button', {'class': 'azione'} );
+				if (map.ClassName == "it.ascia.ais.port.NullPort") {
+					var bottone = new Element('button', {'class': 'azione', 'onclick': "webconsole.writePortValue('"+addr+"','true');"} );
 					bottone.innerHTML = "Aziona";
-					bottone.addEventListener('click',function(e) { webconsole.writePortValue(map.Address,'true'); },false);
 					buttonsElement.grab(bottone);
-				} else if (map.Class  == "it.ascia.ais.port.DigitalOutputPort") {
-					var bottoneOn = new Element('button', {'class': 'azione'} );
+				} else if (map.ClassName  == "it.ascia.ais.port.DigitalOutputPort") {
+					var bottoneOn = new Element('button', {'class': 'azione', 'id': 'port-' + i + '-on', 'onclick': "webconsole.writePortValue('"+addr+"','on');"} );
 					bottoneOn.innerHTML = "ON";
-					bottoneOn.addEventListener('click',function(e) { webconsole.writePortValue(map.Address,'on'); },false);
 					buttonsElement.grab(bottoneOn);
-					var bottoneOff = new Element('button', {'class': 'azione'} );
+					var bottoneOff = new Element('button', {'class': 'azione', 'id': 'port-' + i + '-off', 'onclick': "webconsole.writePortValue('"+addr+"','off');"} );
 					bottoneOff.innerHTML = "OFF";
-					bottoneOff.addEventListener('click',function(e) { webconsole.writePortValue(map.Address,'off'); },false);
 					buttonsElement.grab(bottoneOff);
+				} else if (map.ClassName  == "it.ascia.ais.port.StatePort") {
+					var tags = map.Tags.split(";");
+					for (var j = 0; j < tags.length; j++) {
+						var tag = tags[j];
+						var bottone = new Element('button', {'class': 'azione', 'onclick': "webconsole.writePortValue('"+addr+"','"+tag+"');"} );
+						bottone.innerHTML = tag;
+						buttonsElement.grab(bottone);
+						//alert(bottone);
+					}
 				}
 
 				portElement.grab(buttonsElement);				
@@ -66,7 +73,12 @@ var webconsole = {
   		webconsole.result = result;
   		webconsole.err = err;
   		if (err) {
-  			alert(err.message);
+  			if (err.message) {
+  				alert(err.message);
+  			}
+  			if (err.msg) {
+  				alert(err.msg);
+  			}  			
   		}
   		if (result == false) {
   			alert("Non eseguito");

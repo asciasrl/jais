@@ -237,6 +237,9 @@ public abstract class Connector {
 	 * @param b Dato ricevuto
 	 */
 	public void received(int b) {
+		if (mp == null) {
+			return;
+		}
 		mp.push(b);
 		if (mp.isValid()) {
 			Message m = mp.getMessage();

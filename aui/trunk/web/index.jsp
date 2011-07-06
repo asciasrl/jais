@@ -1,10 +1,11 @@
 <%
 String ua = request.getHeader( "User-Agent" );
 boolean iPod = ( ua != null && ua.indexOf( "iPod" ) != -1 );
+boolean iPad = ( ua != null && ua.indexOf( "iPad" ) != -1 );
 boolean iPhone = ( ua != null && ua.indexOf( "iPhone" ) != -1 );
 boolean SymbianOS = ( ua != null && ua.indexOf( "SymbianOS" ) != -1 );
 %>
-<% if (iPod | iPhone | SymbianOS) { %>
+<% if (iPod | iPhone | iPad | SymbianOS) { %>
 <%@ include file="aui.jsp" %>
 <% } else { %>
 <html>

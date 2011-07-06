@@ -623,7 +623,12 @@ if (!AUI.Config) {
 			*/
 
 			var div = popup.getElement('div');
+			div.innerHTML = "";
 			for (var key in controlProperties) {
+				// campi nascosti
+				if (key == "top" || key == "left" || key == "default" || key == "on" || key == "off") {
+					continue;
+				}
 				// 		<label>Titolo:</label><input type="text" size="100" name="title">
 				var value = controlProperties[key];
 

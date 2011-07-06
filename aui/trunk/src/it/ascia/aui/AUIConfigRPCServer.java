@@ -345,6 +345,7 @@ public class AUIConfigRPCServer implements Serializable {
 		}
 		String layer = skinConfig.getString("controls."+type+".layer",type);
 		auiConfig.addProperty("pages/page[@id='"+pageId+"'] control@id", controlId);
+		auiConfig.addProperty("pages/page[@id='"+pageId+"']/control[@id='"+controlId+"'] address",type);
 		auiConfig.addProperty("pages/page[@id='"+pageId+"']/control[@id='"+controlId+"'] type",type);
 		auiConfig.addProperty("pages/page[@id='"+pageId+"']/control[@id='"+controlId+"'] title",title);
 		auiConfig.addProperty("pages/page[@id='"+pageId+"']/control[@id='"+controlId+"'] top",0);

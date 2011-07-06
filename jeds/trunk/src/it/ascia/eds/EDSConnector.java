@@ -265,8 +265,9 @@ public class EDSConnector extends Connector {
 		// windows ho uno scheduler che non garantisce i tempi bassi 
 		if (dt > 0 && dt < 30) {
 			if (System.getProperty("os.name").startsWith("Windows")) {
-			  dt += 30;
+				// fixme: verificare guard time anche su Linux
 			}
+			  dt += 30;
 		}
 		return dt;
 	}

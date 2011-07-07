@@ -186,7 +186,7 @@ public class CmdControllerModule extends ControllerModule {
 			for (DevicePort devicePort : d.getPorts()) {
 				s.append(" "+devicePort.getAddress());
 				s.append(" ("+devicePort.getClass().getSimpleName()+")");
-				s.append("="+devicePort.getValue());
+				s.append("="+devicePort.getCachedValue());
 				s.append('\n');
 			}
 			return s.toString();

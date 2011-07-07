@@ -1,7 +1,6 @@
 package it.ascia.dmx;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Address;
 import it.ascia.ais.Connector;
 import it.ascia.ais.Message;
 
@@ -23,10 +22,13 @@ public class DMXConnector extends Connector {
 		dmxinterface.dispatchMessage(m);
 	}
 
+	/*
 	public void addChannel(int i) {
 		addDevice(new DMXChannel(i));		
 	}
+	*/
 
+	/*
 	public void addRGB(int i, int r, int g, int b) {
 		addDevice(new DMXRGB(i,
 				(DMXChannel)getDevice(new Address(getName(), "channel"+r, null)),
@@ -34,6 +36,7 @@ public class DMXConnector extends Connector {
 				(DMXChannel)getDevice(new Address(getName(), "channel"+b, null))));
 						
 	}
+	*/
 	
 	@Override
 	public boolean sendMessage(Message m) {
@@ -48,7 +51,7 @@ public class DMXConnector extends Connector {
 			}
 			message = m;
 			synchronized (message) {
-				ret = dmxinterface.sendMessage(message, transport);
+				transport.write(message.getBytesMessage());
     	    	try {
     	    		message.wait(1000); // TODO parametro
     	    	} catch (InterruptedException e) {
@@ -75,6 +78,7 @@ public class DMXConnector extends Connector {
 	public void received(int b) {
 		char c = (char)b;
 		logger.info("Received: "+c);
+		// TODO Fare il parse del messaggio di risposta
 		synchronized (message) {
 			if (b == 71) {
 				message.setSent();				

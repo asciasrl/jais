@@ -73,7 +73,7 @@ public class AlarmControllerModule extends ControllerModule implements PropertyC
 	 * @return value of alarmArmedPort
 	 */
 	public boolean isArmed() {
-		return ((Boolean) (alarmArmedPort.getValue())).booleanValue();
+		return ((Boolean) (alarmArmedPort.getCachedValue())).booleanValue();
 	}
 	
 	/**

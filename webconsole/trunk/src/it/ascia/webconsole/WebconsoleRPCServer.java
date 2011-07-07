@@ -20,7 +20,6 @@ public class WebconsoleRPCServer {
 
 	public WebconsoleRPCServer(
 			WebconsoleControllerModule webconsoleControllerModule) {
-		// TODO Auto-generated constructor stub
 		logger = Logger.getLogger(getClass());	
 	}
 	
@@ -39,7 +38,7 @@ public class WebconsoleRPCServer {
 				if (StatePort.class.isInstance(p)) {
 					res1.put("Tags",StringUtils.join(((StatePort)p).getTags(),";"));					
 				}
-				Object value = p.getValue();
+				Object value = p.getCachedValue();
 				if (value == null) {
 					res1.put("Value","null");
 				} else {

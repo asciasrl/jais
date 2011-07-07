@@ -190,7 +190,7 @@ public class AUIRPCServer implements Serializable {
 		if (p == null) {
 			throw(new AISException("Porta non trovata: "+fullAddress));
 		}
-		return p.getValue();
+		return p.getCachedValue();
 	}
 
 	/**

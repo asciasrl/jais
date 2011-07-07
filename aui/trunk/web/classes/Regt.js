@@ -6,7 +6,7 @@ if (AUI.Regt == undefined) {
 			this.step = 0.5; // regulation step
 			this.factor = 4; // pixels per step
 			this.minT = 5; // minimum value
-			this.maxT = 30; // minimum value
+			this.maxT = 30; // maximum value
 			this.request = AUI.Http.getRequest();
 			this.jsonrpc = new JSONRpcClient("/aui/rpc");
 			this.jsonrpc.AUI.login("utente","demo");
@@ -149,7 +149,14 @@ if (AUI.Regt == undefined) {
 		
 		updateBar : function(id,value) {
 			var el = document.getElementById("eds-regt-" + id);
-			el.style.bottom = ((value - this.minT ) * this.factor) + 'px';
+			var v = value;
+			if (v < this.minT) {
+				v = this.minT;
+			}
+			if (v > this.maxT) {
+				v = this.maxT;
+			}
+			el.style.bottom = ((v - this.minT ) * this.factor) + 'px';
 			el.style.display = 'block';
 			/*
 			FIXME aggiungere zero finale

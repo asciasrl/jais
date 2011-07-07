@@ -11,6 +11,9 @@ public abstract class DevicePort {
 
 	protected String portId;
 
+	/**
+	 * @return portId as specified in constructor
+	 */
 	public String getPortId() {
 		return portId;
 	}
@@ -142,7 +145,7 @@ public abstract class DevicePort {
 
 	/**
 	 * Ritorna il valore della porta. Se il valore non risulta aggiornato,
-	 * invoca Device.updatePort() per richiederne l'aggiornamento.
+	 * invoca Device.readValue() per richiederne l'aggiornamento.
 	 * Questo metodo e' sincrono.
 	 * 
 	 * @return Oggetto memorizzato in cache o null
@@ -150,7 +153,7 @@ public abstract class DevicePort {
 	 */
 	public Object getValue() throws AISException {
 		if (isDirty() || isExpired()) {
-			setCachedValue(readValue());
+			readValue();
 		}
 		return getCachedValue();
 	}
@@ -173,7 +176,7 @@ public abstract class DevicePort {
 		long timeToWait;
 		if (isQueuedForUpdate()) {
 			logger.trace("Port already queued for update");
-			timeToWait = 300;
+			timeToWait = 300; // TODO da parametrizzare
 		} else {
 			timeToWait = device.updatePort(portId);
 		}

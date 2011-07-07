@@ -2,16 +2,21 @@ package it.ascia.dmx;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Device;
-import it.ascia.ais.port.IntegerPort;
 
+/**
+ * DMX Single channel interface
+ * Il canale e' il dispositivo DMX elementare
+ * @author Sergio
+ *
+ */
 public class DMXChannel extends Device {
 	
 	private int channel;
 
 	public DMXChannel(int i) {
-		super("channel" + i);
+		super("Channel" + i);
 		channel = i;
-		addPort(new IntegerPort("value",0,255));
+		addPort(new DMXChannelPort("out"));
 	}
 
 	@Override

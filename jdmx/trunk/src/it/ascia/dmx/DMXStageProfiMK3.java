@@ -2,11 +2,8 @@ package it.ascia.dmx;
 
 import org.apache.log4j.Logger;
 
-import it.ascia.ais.Connector;
 import it.ascia.ais.Message;
 import it.ascia.ais.MessageParser;
-import it.ascia.ais.Transport;
-
 
 public class DMXStageProfiMK3 extends MessageParser {
 
@@ -14,12 +11,6 @@ public class DMXStageProfiMK3 extends MessageParser {
 	
 	public DMXStageProfiMK3() {
 		logger = Logger.getLogger(getClass());
-	}
-
-	public boolean sendMessage(Message m, Transport t) {
-		logger.info(m);
-		t.write(m.getBytesMessage());
-		return true;
 	}
 
 	public void dispatchMessage(Message m) {

@@ -4,7 +4,7 @@
 package it.ascia.aui;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Connector;
+import it.ascia.ais.ConnectorInterface;
 import it.ascia.ais.Controller;
 import it.ascia.ais.Device;
 import it.ascia.ais.DevicePort;
@@ -492,7 +492,7 @@ public class AUIConfigRPCServer implements Serializable {
 	
 	public HashMap<String,HashMap<String, HashMap<String, HashMap<String, String>>>> getPorts(String search) {
 		HashMap<String,HashMap<String, HashMap<String, HashMap<String, String>>>> connectors = new HashMap<String,HashMap<String, HashMap<String, HashMap<String, String>>>>();
-		for (Connector connector : Controller.getController().getConnectors()) {
+		for (ConnectorInterface connector : Controller.getController().getConnectors()) {
 			HashMap<String, HashMap<String, HashMap<String, String>>> devices = new HashMap<String, HashMap<String, HashMap<String, String>>>();
 			for (Device device : connector.getDevices()) {
 				HashMap<String, HashMap<String, String>> ports = new HashMap<String, HashMap<String, String>>();

@@ -3,15 +3,11 @@
  */
 package it.ascia.ais;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Vector;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
-import org.apache.log4j.Logger;
 
 /**
  * Connector domotico.
@@ -27,7 +23,7 @@ import org.apache.log4j.Logger;
  * @author arrigo, sergio
  * TODO Aggiungere gestione stato del trasport (connesso, disconnesso, passivo, ecc.) e riconnessione
  */
-public abstract class Connector {
+public abstract class Connector extends SimpleConnector implements ConnectorInterface {
 
 	public static final boolean DEGUG = false;
 	private static final long DEFAULT_DISPATCH_TIMEOUT = 60;
@@ -35,37 +31,15 @@ public abstract class Connector {
 	private Thread updatingThread;
 	protected LinkedBlockingQueue<Message> dispatchQueue;
 	private Thread dispatchingThread;
-	private boolean running = false;
-	private ControllerModule module = null;
 	protected MessageParser mp;
 
 	private long autoupdate = 1000;
 
-    /**
-     * Il nostro nome secondo AUI.
-     */
-    protected String name;
-    
 	/**
 	 * Transport con il quale il Connector comunica con il sistema
 	 */
 	protected Transport transport;
 	
-	/**
-     * Il nostro logger.
-     */
-    protected Logger logger;
-
-	/**
-	 * I dispositivi presenti nel sistema.
-	 */
-    private LinkedHashMap<String,Device> devices;
-    
-	/**
-	 * L'elenco degli indirizzi - primari o alias - dei dispositivi.
-	 */
-    private LinkedHashMap<String, Device> devicesAlias;
-
     /**
      * 
      * @param name Nome del connettore
@@ -80,12 +54,8 @@ public abstract class Connector {
      * @param name Nome del connettore
      */
     public Connector(long autoupdate, String name) {
-		this.name = name;
+    	super(name);
 		this.autoupdate = autoupdate;
-        devices = new LinkedHashMap<String, Device>();
-        devicesAlias = new LinkedHashMap<String, Device>();
-		logger = Logger.getLogger(getClass());
-		running = true;
 		updateQueue = new LinkedBlockingQueue<DevicePort>();
 		updatingThread = new UpdatingThread();
 		updatingThread.setName("Updating-"+getClass().getSimpleName()+"-"+getName());
@@ -104,75 +74,17 @@ public abstract class Connector {
 		return DEFAULT_DISPATCH_TIMEOUT;
 	}
 
-	/**
-     * Ritorna tutti i Device collegati che rispondono a un certo indirizzo.
-     * 
-     * @param addr l'indirizzo da cercare.
-     * @return Elenco devices (eventualmente vuoto)
-     */
-    public Vector<Device> getDevices(Address addr) {
-    	Vector<Device> res = new Vector<Device>();
-    	Device device1 = getDevice(addr);
-    	if (device1 != null) {
-    		res.add(device1);
-    	} else {
-			for (Device device : devicesAlias.values()) {
-				if (addr.matches(device.getAddress())) {
-					res.add(device);
-				}
-			}
-    	}
-    	return res;    	
-    }
     
-    /**
-     * Aggiunge un dispositivo all'elenco di quelli gestiti
-     * Non sono ammessi duplicati
-     * @param device
-     * @throws AISException
-     */
-    public void addDevice(Device device) throws AISException {    	
-    	String address = device.getSimpleAddress();
-    	if (devices.containsKey(address)) {
-    		throw(new AISException("Dispositivo duplicato con indirizzo "+address+" connettore "+getName()));
-    	}
-    	devices.put(address, device);
-    	addDeviceAlias(address, device);
-    	device.setConnector(this);
-    }
-    
-    /**
-     * Aggiunge un indirizzo "alias" che corrisponde allo stesso device fisico
-     * Se l'alias e' gia' presente viene semplicemente ridefinito
-     * @param address Indirizzo alias del dispositivo
-     * @param device Dispositivo effettivo
-     */
-    public void addDeviceAlias(String address, Device device) {
-    	devicesAlias.put(address, device);
-    }
-        
     /**
      * Ottiene il device con l'indirizzo specificato, o null se non esiste
      * Usa l'elenco degli indirizzi alias 
      * @param address Indirizzo o alias del device
      * @return null se nessun device ha l'indirizzo
      */
-    public Device getDevice(String address) {
-    	return devicesAlias.get(address);
+	public Device getDevice(String address) {
+    	return getDevice(new Address(address));
     }
 
-    public Device getDevice(Address address) {
-    	return devicesAlias.get(address.getDeviceAddress());
-    }
-
-    /**
-     * 
-     * @return all devices belonging to connector
-     */
-    public Collection<Device> getDevices() {
-		return devices.values();
-    }
-        
     /**
      * Invia un messaggio e attende una risposta dal destinatario, se il
      * messaggio lo richiede.
@@ -223,14 +135,6 @@ public abstract class Connector {
     }
 
 
-    /**
-     * Restituisce il nome del controllore, come specificato alla creazione
-     * @return Nome
-     */
-	public String getName() {
-		return name;
-	}
-
 	/**
 	 * Questo metodo viene chiamato dal Transport per ogni byte che viene ricevuto
 	 * Se il MessageParser ho ottenuto un messaggio valido, viene aggiunto alla coda di dispacciamento
@@ -274,11 +178,11 @@ public abstract class Connector {
 	 * Chiude il Transport e le code di invio/ricezione 
 	 */
 	public void close() {
+		super.close();
 		if (transport != null) {
 			transport.close();
 			transport = null;
 		}
-		running = false;
 		updatingThread.interrupt();
     	try {
     		updatingThread.join();
@@ -293,10 +197,6 @@ public abstract class Connector {
 		}
 	}
 	
-	public boolean isRunning() {
-		return running;
-	}
-
 	/**
 	 * Questo thread esegue l'aggiornamento delle porte che sono state messe nella apposita coda.
 	 * Esegue il metodo DevicePort.update()
@@ -306,7 +206,7 @@ public abstract class Connector {
         
     	public void run() {
 			logger.debug("Start.");
-    		while (running) {
+    		while (isRunning()) {
     			DevicePort p;
 				try {
 					if (autoupdate > 0) {
@@ -351,7 +251,7 @@ public abstract class Connector {
 
 		public void run() {
 			logger.debug("Start.");
-    		while (running) {
+    		while (isRunning()) {
     			Message m;
 				try {
 					// tolleranza del 10% in piu
@@ -372,16 +272,6 @@ public abstract class Connector {
     	}
     }
 
-	/**
-	 * @return Get the Controller Module to which connector belongs
-	 */
-	public ControllerModule getModule() {
-		if (module == null) {
-			throw(new IllegalStateException("Connector " + getName() + " not assigned to a module"));
-		}
-		return module;
-	}
-	
 	
 	protected void queueExpiredPorts() {
 		for (Device device : getDevices()) {
@@ -411,10 +301,6 @@ public abstract class Connector {
 		config.setExpressionEngine(new XPathExpressionEngine());
 		return config.configurationAt("connectors/connector[name='" + getName() + "']");
 	}	
-
-	public void setModule(ControllerModule controllerModule) {
-		this.module = controllerModule;		
-	}
 
 }
 

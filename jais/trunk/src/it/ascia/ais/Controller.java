@@ -47,7 +47,7 @@ public class Controller {
 	 * 
 	 * <p>I Connector qui dentro sono accessibili dal loro nome (stringa).</p>
 	 */
-	private HashMap<String, Connector> connectors = new LinkedHashMap<String,Connector>();
+	private HashMap<String, ConnectorInterface> connectors = new LinkedHashMap<String,ConnectorInterface>();
 
 	/**
 	 * Moduli del controllore
@@ -86,7 +86,7 @@ public class Controller {
 	 * @param connector il connector da aggiungere.
 	 * @throws KeyAlreadyExistsException if a connector with the same name is already registered 
 	 */
-	public void addConnector(Connector connector) throws KeyAlreadyExistsException {
+	public void addConnector(ConnectorInterface connector) throws KeyAlreadyExistsException {
 		if (connectors.containsKey(connector.getName())) {
 			throw(new KeyAlreadyExistsException("Connector name duplicated: "+connector.getName()));
 		}
@@ -107,11 +107,11 @@ public class Controller {
 	 * @param name Name of connector
 	 * @return Connector
 	 */
-	public Connector getConnector(String name) {
+	public ConnectorInterface getConnector(String name) {
 		return connectors.get(name);
 	}
 	
-	public Collection<Connector> getConnectors() {
+	public Collection<ConnectorInterface> getConnectors() {
 		return connectors.values();
 	}
 
@@ -122,7 +122,7 @@ public class Controller {
 	 */
 	public Vector<Device> getDevices(Address address) {
 		Vector<Device> res = new Vector<Device>();
-		for (Connector connector : connectors.values()) {
+		for (ConnectorInterface connector : connectors.values()) {
 			if (address.matchConnector(connector.getName())) {
 				res.addAll(connector.getDevices(address));			
 			}
@@ -323,7 +323,7 @@ public class Controller {
 			}
 		}		
 		logger.trace("Closing "+connectors.size()+" connectors");
-		for (Connector connector: connectors.values()) {
+		for (ConnectorInterface connector: connectors.values()) {
 			if (connector.isRunning()) {
 				// I connettori dovrebbero essere stati tutti chiusi dal modulo relativo
 				logger.error("Closing connettor "+connector.getName());

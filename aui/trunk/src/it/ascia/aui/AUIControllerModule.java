@@ -178,7 +178,7 @@ public class AUIControllerModule extends ControllerModule {
 		Iterator iterator = params.entrySet().iterator();
 		Entry entry = (Entry) iterator.next();
 		Address address = new Address((String) entry.getKey());
-		if (address == null) {
+		if (! address.isFullyQualified()) {
 			throw(new AISException("Parametro 'address' richiesto"));
 		}
 		String value = (String) entry.getValue();				

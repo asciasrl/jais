@@ -47,7 +47,7 @@ public abstract class ControllerModule {
 	 */
 	public void stop() {
 		running = false;
-		for (Connector connector : Controller.getController().getConnectors()) {
+		for (ConnectorInterface connector : Controller.getController().getConnectors()) {
 			if (connector.getModule() == this) {
 				logger.debug("Chiusura connettore "+connector.getName());
 				connector.close();

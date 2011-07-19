@@ -22,7 +22,7 @@ public abstract class Device {
 	/**
 	 * Il bus a cui il dispositivo e' collegato.
 	 */
-	private Connector connector;
+	private ConnectorInterface connector;
 	
 	private String description;
 
@@ -117,7 +117,7 @@ public abstract class Device {
 	/**
 	 * Ritorna il Connector di questo device.
 	 */
-	public Connector getConnector() {
+	public ConnectorInterface getConnector() {
 		return connector;
 	}
 
@@ -328,7 +328,7 @@ public abstract class Device {
 	 * Used by Connector to set belonging connector
 	 * @param connector
 	 */
-	public void setConnector(Connector connector) {
+	public void setConnector(ConnectorInterface connector) {
 		this.connector = connector;		
 	}
 	

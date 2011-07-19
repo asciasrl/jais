@@ -38,7 +38,7 @@ public class Address implements Comparable<Object> {
 		setPortId(port);
 	}
 
-	public Address(Connector connector, Device device, DevicePort port) {
+	public Address(ConnectorInterface connector, Device device, DevicePort port) {
 		if (connector != null) {
 			setConnectorName(connector.getName());
 		}

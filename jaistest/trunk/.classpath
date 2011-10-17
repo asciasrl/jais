@@ -12,5 +12,10 @@
 	<classpathentry kind="lib" path="lib/junit-4.6.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jalarm"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jbis"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jdmx"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/sequencer"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/translations"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/webconsole"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -20,9 +20,14 @@ public class DimmerPort extends IntegerPort {
 			String s = (String) newValue;
 			if (s.toLowerCase().equals("off") || s.toLowerCase().equals("on")) {
 				return s;
-			} else {
-				throw(new IllegalArgumentException("Value of "+getAddress()+" cannot be "+newValue));				
 			}
+			try {
+				int n = Integer.parseInt(s);
+				return n;
+			} catch (NumberFormatException e) {
+				logger.error("Not a number:"+s);
+			}
+			throw(new IllegalArgumentException("Value of "+getAddress()+" cannot be "+newValue));				
 		}
 		return super.normalize(newValue);
 	}

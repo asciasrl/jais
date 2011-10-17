@@ -7,6 +7,11 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Porta di un device, ha un Id ed un Value
+ * @author Sergio
+ *
+ */
 public abstract class DevicePort {
 
 	protected String portId;
@@ -214,7 +219,7 @@ public abstract class DevicePort {
 			changed = true;
 		}
 		synchronized (this) {
-			expiration = System.currentTimeMillis() + cacheRetention;
+			setExpiration(System.currentTimeMillis() + getCacheRetention());
 			setCachedValue(newValue);
 			dirty = false;
 			// sveglia getValue()
@@ -342,11 +347,22 @@ public abstract class DevicePort {
 	 */
 	public void setDuration(long i) {
 		if (i > 0) {
-			expiration = Math.min(expiration, System.currentTimeMillis() + i);
+			setExpiration(Math.min(expiration, System.currentTimeMillis() + i ));
 			logger.trace(getAddress() + " set duration " + i + "mS");
+		} else {
+			logger.error("Ignoring duration not positive.");
 		}
 	}
-
+	
+	public void setExpiration(long i) {
+		if (i > 0) {
+			expiration = i;
+			logger.trace(getAddress() + " will expire in "+ (expiration - System.currentTimeMillis()) +  "mS");
+		} else {
+			expiration = 0;
+		}		
+	}
+	
 	/**
 	 * Fornisce il momento in cui risulta l'ultima modifica del valore
 	 * 

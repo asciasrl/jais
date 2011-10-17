@@ -35,7 +35,7 @@ var webconsole = {
 				buttonsElement = new Element('div', {'class': 'buttons'});
 				var addr = map.Address;
 
-				if (map.ClassName == "it.ascia.ais.port.NullPort") {
+				if (map.ClassName == "it.ascia.ais.port.ScenePort" || map.ClassName == "it.ascia.ais.port.NullPort") {
 					var bottone = new Element('button', {'class': 'azione', 'onclick': "webconsole.writePortValue('"+addr+"','true');"} );
 					bottone.innerHTML = "Aziona";
 					buttonsElement.grab(bottone);

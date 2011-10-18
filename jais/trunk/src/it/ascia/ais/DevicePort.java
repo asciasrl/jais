@@ -219,9 +219,10 @@ public abstract class DevicePort {
 			changed = true;
 		}
 		synchronized (this) {
-			setExpiration(System.currentTimeMillis() + getCacheRetention());
 			setCachedValue(newValue);
 			dirty = false;
+			// TODO SPOSTATO, VERIFICARE
+			resetQueuedForUpdate();
 			// sveglia getValue()
 			notify();
 		}
@@ -229,6 +230,7 @@ public abstract class DevicePort {
 			DevicePortChangeEvent evt = new DevicePortChangeEvent(this, oldValue,getCachedValue());
 			fireDevicePortChangeEvent(evt);
 		}
+		setExpiration(System.currentTimeMillis() + getCacheRetention());
 	}
 
 	/**

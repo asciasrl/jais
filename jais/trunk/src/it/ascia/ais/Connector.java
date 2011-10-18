@@ -222,9 +222,9 @@ public abstract class Connector extends SimpleConnector implements ConnectorInte
 				    	logger.trace("Updating (+"+updateQueue.size()+"): " + p.getAddress());
 			    		p.update();
 			    	} else {
-			    		if (DEGUG) logger.trace("Port already updated: "+p.getAddress());
+			    		logger.trace("Port already updated: "+p.getAddress());
 			    	}
-			    	p.resetQueuedForUpdate();
+			    	// TODO SPOSTATO, DA VERIFICARE p.resetQueuedForUpdate();
 				} catch (InterruptedException e) {
 					logger.debug("Interrotto.");
 				} catch (Exception e) {
@@ -277,7 +277,7 @@ public abstract class Connector extends SimpleConnector implements ConnectorInte
 		for (Device device : getDevices()) {
 			for (DevicePort devicePort : device.getPorts()) {
 				if (devicePort.isExpired() && !devicePort.isQueuedForUpdate()) {
-					logger.trace("Queue for update expired port "+devicePort.getAddress());
+					logger.trace("Queuing for update expired port "+devicePort.getAddress());
 					queueUpdate(devicePort);
 				}
 			}

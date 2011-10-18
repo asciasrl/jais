@@ -7,11 +7,15 @@
 			<class>it.ascia.ais.SQLiteControllerModule</class>
 			<config>conf/SQLite.xml</config>
 		</module>
-		<module name="sequencer" disabled="false">
+		<module name="sequencer" disabled="true">
 			<class>it.ascia.sequencer.SequencerControllerModule</class>
 			<config>conf/sequencer.xml</config>
 		</module>
-		<module name="EDS" disabled="false">
+		<module name="modbus" disabled="false">
+			<class>it.ascia.modbus.ModbusControllerModule</class>
+			<config>conf/modbus.xml</config>
+		</module>
+		<module name="EDS" disabled="true">
 			<class>it.ascia.eds.EDSControllerModule</class>
 			<config>conf/EDS.xml</config>
 		</module>
@@ -19,7 +23,7 @@
 			<class>it.ascia.dxp.DXPControllerModule</class>
 			<config>conf/DXP.xml</config>
 		</module>
-		<module name="Alarm" disabled="false">
+		<module name="Alarm" disabled="true">
 			<class>it.ascia.alarm.AlarmControllerModule</class>
 			<config>conf/Alarm.xml</config>
 		</module>
@@ -27,7 +31,7 @@
 			<class>it.ascia.bentel.BentelKyoControllerModule</class>
 			<config>conf/BentelKyo.xml</config>
 		</module>
-		<module name="AVS" disabled="false">
+		<module name="AVS" disabled="true">
 			<class>it.ascia.avs.AVSControllerModule</class>
 			<config>conf/AVS.xml</config>
 		</module>

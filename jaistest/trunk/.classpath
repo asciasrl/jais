@@ -17,5 +17,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/sequencer"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/translations"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/webconsole"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jmodbus"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

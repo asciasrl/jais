@@ -1,26 +1,43 @@
 package it.ascia.modbus;
 
-import net.wimpi.modbus.Modbus;
-import net.wimpi.modbus.ModbusCoupler;
-import net.wimpi.modbus.io.ModbusSerialTransaction;
-import net.wimpi.modbus.msg.ReadInputRegistersRequest;
-import net.wimpi.modbus.msg.ReadInputRegistersResponse;
-import net.wimpi.modbus.net.SerialConnection;
-import net.wimpi.modbus.util.SerialParameters;
-import it.ascia.ais.AISException;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.commons.configuration.HierarchicalConfiguration;
+
 import it.ascia.ais.ControllerModule;
-import it.ascia.ais.SerialTransport;
 
 public class ModbusControllerModule extends ControllerModule {
 
 	public void start() {
 		super.start();
 
-		// TODO Gestire valori da file di configurazione
-		ModbusConnector conn = new ModbusConnector("sq-0","COM3");
-		controller.addConnector(conn);
-		
-		conn.addDevice(new GavazziEM24(2));
+		List<HierarchicalConfiguration> connectors = getConfiguration().configurationsAt("connectors.connector");
+		for (Iterator<HierarchicalConfiguration> c = connectors.iterator(); c.hasNext();) {
+			HierarchicalConfiguration sub = c.next();
+			if (sub.getBoolean("[@disabled]", false)) {
+				logger.debug("Connector disabled: " + sub.getString("name"));
+				continue;
+			}
+						
+			ModbusConnector conn = new ModbusConnector(sub.getInt("master"),sub.getString("name"), sub.getString("portname"), sub.getString("encoding"));
+
+			controller.addConnector(conn);
+
+			List<HierarchicalConfiguration> slaves = sub.configurationsAt("slave");
+			if (slaves == null || slaves.size() == 0) {
+				logger.fatal("Nessun dispositivo slave");
+			} else {
+				for (Iterator<HierarchicalConfiguration> i = slaves.iterator(); i.hasNext();) {
+					try {
+						conn.addSlave(i.next());
+					} catch (NumberFormatException e) {
+						logger.error("Indirizzo dispositivo slave non corretto: " + e.getMessage());
+					}
+				}
+			}
+
+		}
 	}
-	
+
 }

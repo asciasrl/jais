@@ -1,11 +1,9 @@
 package it.ascia.modbus;
 
-import net.wimpi.modbus.msg.ModbusResponse;
-
 import it.ascia.ais.AISException;
 import it.ascia.ais.Device;
 
-public abstract class ModbusDevice extends Device {
+public class ModbusDevice extends Device {
 	
 	private int unitId;
 	

@@ -1,8 +1,13 @@
 package it.ascia.modbus;
 
-import net.wimpi.modbus.Modbus;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.commons.configuration.HierarchicalConfiguration;
+
 import net.wimpi.modbus.ModbusCoupler;
 import net.wimpi.modbus.io.ModbusSerialTransaction;
+import net.wimpi.modbus.io.ModbusTransport;
 import net.wimpi.modbus.msg.ModbusRequest;
 import net.wimpi.modbus.msg.ModbusResponse;
 import net.wimpi.modbus.msg.ReadInputRegistersRequest;
@@ -25,14 +30,13 @@ public class ModbusConnector extends Connector implements
 	/* The important instances of the classes mentioned before */
 	private SerialConnection con = null; // the connection
 
-	public ModbusConnector(String name, String portname) {
+	public ModbusConnector(int unitID, String name, String portname, String encoding) {
 		super(1000,name);
 
-		// TODO Gestire valori da file di configurazione
 
 		// 2. Set master identifier
-		ModbusCoupler.getReference().setUnitID(1);
-
+		ModbusCoupler.getReference().setUnitID(unitID);
+		
 		// 3. Setup serial parameters
 		SerialParameters params = new SerialParameters();
 		params.setPortName(portname);
@@ -40,7 +44,7 @@ public class ModbusConnector extends Connector implements
 		params.setDatabits(8);
 		params.setParity("None");
 		params.setStopbits(1);
-		params.setEncoding(Modbus.SERIAL_ENCODING_RTU);
+		params.setEncoding(encoding);
 		params.setEcho(false);
 		// params.setReceiveTimeout(200);
 
@@ -56,7 +60,7 @@ public class ModbusConnector extends Connector implements
 		}
 
 	}
-
+	
 	@Override
 	public boolean sendMessage(Message m) {
 		if (!ModbusRequestMessage.class.isInstance(m)) {
@@ -135,6 +139,35 @@ public class ModbusConnector extends Connector implements
 	    }
     	
     }
+
+	/**
+	 * Aggiunge un dispositivo modbus slave al connettore
+	 * @param sub configurazione del device
+	 */
+    public void addSlave(HierarchicalConfiguration sub) {
+    	int unitID = sub.getInt("unitid");
+		ModbusDevice device = new ModbusDevice(unitID);
+		device.setDescription(sub.getString("description"));
+		//logger.info("Adding modbus slave device, ID = " + unitID);
+		addDevice(device);
+		logger.info("Added " + device);
+		List<HierarchicalConfiguration> registers = sub.configurationsAt("register");
+		for (Iterator<HierarchicalConfiguration> i = registers.iterator(); i.hasNext();) {
+			HierarchicalConfiguration registerConfig = i.next();
+			String type = registerConfig.getString("type");
+			int address = registerConfig.getInt("address");
+			ModbusPort port = null;
+			if (type.equals("int32")) {
+				port = new ModbusInt32Port(address);
+				port.setCacheRetention(1000);
+			} else {
+				logger.error("Unsupported port type:" + type);
+			}
+			device.addPort(port);
+			port.setDescription(registerConfig.getString("description"));
+			logger.info("Added " + port);			
+		}
+	}
 
 	
 	

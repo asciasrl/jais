@@ -388,7 +388,7 @@ public abstract class DevicePort {
 	}
 	
 	public String toString() {
-		return getClass().getSimpleName() + " " + getAddress();
+		return getClass().getSimpleName() + " " + getAddress() + " " + getDescription();
 	}
 
 	/**

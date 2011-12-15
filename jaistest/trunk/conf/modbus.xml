@@ -5,21 +5,16 @@
 		<connectors>
 			<connector disabled="false">
 				<name>sq-0</name>
-				<autoupdate>2000</autoupdate>
-				<transport>
-					<type>rtu</type>
-					<speed>9600</speed>
-					<port>COM3</port>
-				</transport>
+				<encoding>rtu</encoding>
+				<autoupdate>1000</autoupdate>
+				<portname>COM3</portname>
 				<master>1</master>
 				<slave>
 					<unitid>2</unitid>
-					<name>em24</name>
+					<description>Analizzatore Gavazzi EM24</description>
 					<register>	
 						<type>int32</type>
 						<address>40</address>
-						<length>2</length>
-						<name>sumwx10</name>
 						<description>Potenza totale istantanea in Watt x 10</description>
 					</register>
 				</slave>

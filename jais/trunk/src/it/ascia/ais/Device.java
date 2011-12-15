@@ -125,7 +125,7 @@ public abstract class Device {
 	 * Ritorna una descrizione del dispositivo.
 	 */
 	public String getInfo() {
-		return getAddress() + " " + getClass().getSimpleName() + " " + getDescription();
+		return getClass().getSimpleName() + " " + getAddress() + " " + getDescription();
 	}
 
 	/**
@@ -330,6 +330,10 @@ public abstract class Device {
 	 */
 	public void setConnector(ConnectorInterface connector) {
 		this.connector = connector;		
+	}
+	
+	public String toString() {
+		return getInfo();
 	}
 	
 }

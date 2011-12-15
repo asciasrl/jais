@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
  * 
  * $Id$
  * 
- * Il transport può essere usato da un solo thread per volta, che deve acquisirne il permesso e rilasciarlo alla fine.
+ * Il transport puo' essere usato da un solo thread per volta, che deve acquisirne il permesso e rilasciarlo alla fine.
  * <pre>
  *   transport.acquire();
  *   transport.write(stuff);
@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
  * 
  * TODO Gestire riconnessioni: metodo Transport.connect(), metodo Connector.getTransport() effettua tentativi riconnessione
  * TODO Modificare il metodo di creazione in modo che possa creare anche altri transport
- * TODO Gestire più transport con una priorità
+ * TODO Gestire piu' transport con una priorita'
  * 
  * @author Sergio
  *
@@ -106,6 +106,9 @@ public abstract class Transport {
  		} 		
 		SubnodeConfiguration transportConfig = (SubnodeConfiguration) transports.get(0);
  		String type = transportConfig.getString("type");
+ 		if (type == null) {
+ 			throw(new AISException("Missing parameter 'type' of transport"));
+ 		}
  		if (type.equals("serial")) {
  			String port = transportConfig.getString("port");
  			int speed = transportConfig.getInt("speed");

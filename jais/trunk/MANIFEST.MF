@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Ant-Version: Apache Ant 1.7.1
-Created-By: 16.3-b01 (Sun Microsystems Inc.)
+Created-By: 21.1-b02 (Oracle Corporation)
 Built-By: Sergio
 Main-Class: it.ascia.ais.Controller
-Implementation-Version: 1.08.131
-Built-Date: 2010-06-09 22:04:06
+Implementation-Version: 1.09.150
+Built-Date: 2011-12-16 17:55:44
 

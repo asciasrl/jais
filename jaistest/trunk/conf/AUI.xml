@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<jais:configuration version="1.4">
+<jais:configuration version="1.5">
 <AUI>
 <webroot>../aui/web</webroot>
 <startPage>Hbox</startPage>
@@ -21,6 +21,14 @@
 <coords>0,0,320,460</coords>
 <page>piani</page>
 </area>
+<control id="page1">
+<address>Test</address>
+<type>page</type>
+<title>Kit5</title>
+<top>100</top>
+<left>160</left>
+<layer/>
+</control>
 </page>
 <page id="piani">
 <title>Selezione Piani</title>
@@ -58,7 +66,7 @@
 </control>
 </page>
 <page id="test">
-<src>/images/piani-all.png</src>
+<src>images/piani-all.png</src>
 <control id="back">
 <title>Torna alla selezione dei piani</title>
 <type>page</type>
@@ -123,7 +131,7 @@
 </page>
 <page id="Hbox">
 <title>Home in The Box</title>
-<src>/images/HBox.jpg</src>
+<src>images/HBox.jpg</src>
 <control id="back">
 <title>Torna alla selezione dei piani dell'edificio</title>
 <type>page</type>
@@ -320,7 +328,8 @@
 <title>Sensore allarme zona 10</title>
 <top>10</top>
 <left>10</left>
-<address>abc.Zone10:Bypass;abc.Zone10:Stato</address>
+<address>abc.Zone10:Bypass</address>
+<address>abc.Zone10:Stato</address>
 <layer>security</layer>
 </control>
 <control id="light23">
@@ -368,10 +377,18 @@
 <page/>
 <layer>security</layer>
 </control>
+<control id="light28">
+<address>2.3:Out5</address>
+<type>light</type>
+<title>test</title>
+<top>220</top>
+<left>300</left>
+<layer>light</layer>
+</control>
 </page>
 <page id="test2">
 <title>Test</title>
-<src>/images/edskit5.jpg</src>
+<src>images/edskit5.jpg</src>
 <control id="page1">
 <type>page</type>
 <title>Nuovo controllo page1</title>
@@ -416,6 +433,14 @@
 <address>2.3:Blind1</address>
 <page/>
 <layer/>
+</control>
+<control id="light6">
+<address>eds.3:Out1</address>
+<type>light</type>
+<title>Salone</title>
+<top>150</top>
+<left>310</left>
+<layer>light</layer>
 </control>
 </page>
 </pages>

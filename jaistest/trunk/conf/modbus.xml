@@ -14,8 +14,44 @@
 					<description>Analizzatore Gavazzi EM24</description>
 					<register>	
 						<type>int32</type>
+						<address>00</address>
+						<description>Tensione L1 - N in Volt x 10</description>
+					</register>
+					<register>	
+						<type>int32</type>
+						<address>02</address>
+						<description>Tensione L2 - N in Volt x 10</description>
+					</register>
+					<register>	
+						<type>int32</type>
+						<address>04</address>
+						<description>Tensione L3 - N in Volt x 10</description>
+					</register>
+					<register>	
+						<type>int32</type>
+						<address>12</address>
+						<description>Corrente L1 in Ampere x 1000</description>
+					</register>
+					<register>	
+						<type>int32</type>
+						<address>14</address>
+						<description>Corrente L2 in Ampere x 1000</description>
+					</register>
+					<register>	
+						<type>int32</type>
+						<address>16</address>
+						<description>Corrente L3 in Ampere x 1000</description>
+					</register>
+					<register>	
+						<type>int32</type>
 						<address>40</address>
 						<description>Potenza totale istantanea in Watt x 10</description>
+						<retention>1000</retention>
+					</register>
+					<register>	
+						<type>int32</type>
+						<address>42</address>
+						<description>Potenza apparente totale istantanea in VA x 10</description>
 					</register>
 				</slave>
 			</connector>

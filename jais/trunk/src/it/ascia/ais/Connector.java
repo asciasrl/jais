@@ -209,7 +209,7 @@ public abstract class Connector extends SimpleConnector implements ConnectorInte
     		while (isRunning()) {
     			DevicePort p;
 				try {
-					if (autoupdate > 0) {
+					if (autoupdate > 0 && updateQueue.size() == 0) {
 						queueExpiredPorts();
 						p = (DevicePort) updateQueue.poll(autoupdate, TimeUnit.MILLISECONDS);
 						if (p == null) {
@@ -218,22 +218,28 @@ public abstract class Connector extends SimpleConnector implements ConnectorInte
 					} else {
 						p = (DevicePort) updateQueue.take();
 					}					
-			    	if (!p.isQueuedForUpdate() || p.isDirty() || p.isExpired()) {
+			    	if (!p.isQueuedForUpdate()) {
+			    		logger.trace("Already updated port " + p.getAddress());
+			    	/*
+			    	} else if (!p.isDirty() || !p.isExpired()) {
+			    		logger.trace("Not dirty or expired port " + p.getAddress());
+			    		//p.resetQueuedForUpdate();
+			    	*/
+			    	} else {
 				    	logger.trace("Updating (+"+updateQueue.size()+"): " + p.getAddress());
 				    	try {
 				    		p.update();
+							//p.resetQueuedForUpdate();
 						} catch (Exception e) {
 							p.resetQueuedForUpdate();
 							throw(e);
 						}
-			    	} else {
-			    		logger.trace("Port already updated: "+p.getAddress());
 			    	}
 			    	// TODO SPOSTATO, DA VERIFICARE p.resetQueuedForUpdate();
 				} catch (InterruptedException e) {
 					logger.debug("Interrotto.");
 				} catch (Exception e) {
-					logger.fatal("Errore:",e);
+					logger.error("Errore:",e);
 				}
     		}
 			logger.debug("Stop.");

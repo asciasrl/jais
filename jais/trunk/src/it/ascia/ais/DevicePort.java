@@ -211,7 +211,7 @@ public abstract class DevicePort {
 	 * 
 	 * @param newValue
 	 */
-	public void setValue(Object newValue) {
+	public void setValue(Object newValue, long duration) {
 		Object oldValue = getCachedValue();
 		boolean changed = false; 
 		if (isDirty() || oldValue == null || !oldValue.equals(newValue)) {
@@ -221,6 +221,7 @@ public abstract class DevicePort {
 		synchronized (this) {
 			setCachedValue(newValue);
 			dirty = false;
+			setExpiration(System.currentTimeMillis() + duration);
 			// TODO SPOSTATO, VERIFICARE
 			resetQueuedForUpdate();
 			// sveglia getValue()
@@ -230,7 +231,6 @@ public abstract class DevicePort {
 			DevicePortChangeEvent evt = new DevicePortChangeEvent(this, oldValue,getCachedValue());
 			fireDevicePortChangeEvent(evt);
 		}
-		setExpiration(System.currentTimeMillis() + getCacheRetention());
 	}
 
 	/**
@@ -241,9 +241,8 @@ public abstract class DevicePort {
 	 * @param duration
 	 *            durata della cache in mS
 	 */
-	public void setValue(Object newValue, long duration) {
-		setValue(newValue);
-		setDuration(duration);
+	public void setValue(Object newValue) {
+		setValue(newValue,getCacheRetention());
 	}
 
 	/**
@@ -348,11 +347,11 @@ public abstract class DevicePort {
 	 *            Tempo di durata in mS del valore in cache ( deve essere > 0)
 	 */
 	public void setDuration(long i) {
-		if (i > 0) {
+		if (i >= 0) {
 			setExpiration(Math.min(expiration, System.currentTimeMillis() + i ));
 			logger.trace(getAddress() + " set duration " + i + "mS");
 		} else {
-			logger.error("Ignoring duration not positive.");
+			logger.error("Ignoring negative duration.");
 		}
 	}
 	
@@ -388,9 +387,25 @@ public abstract class DevicePort {
 	}
 	
 	public String toString() {
-		return getClass().getSimpleName() + " " + getAddress() + " " + getDescription();
+		return getClass().getSimpleName() + ";" + getAddress() + ";" + getDescription() + ";" + getCacheTime() + ";" + getStringValue();
 	}
 
+	private String getCacheTime() {
+		return new Long(timeStamp).toString();
+	}
+
+	/**
+	 * @return Rappresentazione testuale del valore della porta
+	 */
+	public String getStringValue() {
+		if (cachedValue != null) {
+			return cachedValue.toString();
+		} else {
+			return null;
+		}
+		
+	}
+	
 	/**
 	 * Aggiorna il valore della porta, delegando al device
 	 * @return

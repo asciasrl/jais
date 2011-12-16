@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<jais:configuration version="1.5">
+  <MySQL>
+    <url>jdbc:mysql://sq-0.sequas.it:3306/jais</url>
+    <username>jais</username>
+    <password>jais</password>
+  </MySQL>
+</jais:configuration>

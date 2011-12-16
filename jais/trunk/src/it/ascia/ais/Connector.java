@@ -220,7 +220,12 @@ public abstract class Connector extends SimpleConnector implements ConnectorInte
 					}					
 			    	if (!p.isQueuedForUpdate() || p.isDirty() || p.isExpired()) {
 				    	logger.trace("Updating (+"+updateQueue.size()+"): " + p.getAddress());
-			    		p.update();
+				    	try {
+				    		p.update();
+						} catch (Exception e) {
+							p.resetQueuedForUpdate();
+							throw(e);
+						}
 			    	} else {
 			    		logger.trace("Port already updated: "+p.getAddress());
 			    	}

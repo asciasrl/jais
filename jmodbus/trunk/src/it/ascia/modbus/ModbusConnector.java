@@ -127,7 +127,8 @@ public class ModbusConnector extends Connector implements
     	if (ReadInputRegistersRequest.class.isInstance(req)) {
     		int ref = ((ReadInputRegistersRequest)req).getReference();
     		portId = new Integer(ref).toString();
-    		newValue = ((ReadInputRegistersResponse)res).getRegisterValue(0);
+    		newValue = ((ReadInputRegistersResponse)res).getRegisterValue(1) << 16 |  
+    					((ReadInputRegistersResponse)res).getRegisterValue(0);
     	}
     	if (portId != null) {
     		DevicePort p = d.getPort(portId);
@@ -159,7 +160,10 @@ public class ModbusConnector extends Connector implements
 			ModbusPort port = null;
 			if (type.equals("int32")) {
 				port = new ModbusInt32Port(address);
-				port.setCacheRetention(1000);
+				int retention = registerConfig.getInt("retention",-1);
+				if (retention > 0) {
+					port.setCacheRetention(retention);
+				}
 			} else {
 				logger.error("Unsupported port type:" + type);
 			}

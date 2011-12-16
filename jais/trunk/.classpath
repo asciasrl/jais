@@ -32,5 +32,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/servlet-api-2.5-6.1.7.jar" sourcepath="P:/Dev/sources/servlet-api-2.5-6.1.7-sources.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="lib/rxtx-2.2pre2.jar" sourcepath="/rxtx-2.2pre2/src"/>
+	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.18-bin.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
 
+import it.ascia.ais.AISException;
 import it.ascia.ais.ControllerModule;
 
 public class ModbusControllerModule extends ControllerModule {
@@ -19,24 +20,30 @@ public class ModbusControllerModule extends ControllerModule {
 				logger.debug("Connector disabled: " + sub.getString("name"));
 				continue;
 			}
-						
-			ModbusConnector conn = new ModbusConnector(sub.getInt("master"),sub.getString("name"), sub.getString("portname"), sub.getString("encoding"));
-
-			controller.addConnector(conn);
-
-			List<HierarchicalConfiguration> slaves = sub.configurationsAt("slave");
-			if (slaves == null || slaves.size() == 0) {
-				logger.fatal("Nessun dispositivo slave");
-			} else {
-				for (Iterator<HierarchicalConfiguration> i = slaves.iterator(); i.hasNext();) {
-					try {
-						conn.addSlave(i.next());
-					} catch (NumberFormatException e) {
-						logger.error("Indirizzo dispositivo slave non corretto: " + e.getMessage());
+			ModbusConnector conn = null;
+			try {
+				conn = new ModbusConnector(sub.getInt("master"),sub.getString("name"), sub.getString("portname"), sub.getString("encoding"));
+				conn.setModule(this);
+				controller.addConnector(conn);
+	
+				List<HierarchicalConfiguration> slaves = sub.configurationsAt("slave");
+				if (slaves == null || slaves.size() == 0) {
+					logger.fatal("Nessun dispositivo slave");
+				} else {
+					for (Iterator<HierarchicalConfiguration> i = slaves.iterator(); i.hasNext();) {
+						try {
+							conn.addSlave(i.next());
+						} catch (NumberFormatException e) {
+							logger.error("Indirizzo dispositivo slave non corretto: " + e.getMessage());
+						}
 					}
 				}
+			} catch (Exception e) {
+		 		if (conn != null) {
+		 			conn.close();
+		 		}
+		 		throw(new AISException("Unable to start: ",e));
 			}
-
 		}
 	}
 

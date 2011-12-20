@@ -28,6 +28,17 @@ public abstract class ControllerModule {
      */
     protected Controller controller;
 
+	protected boolean isalive = true;
+	
+	public boolean isAlive() {
+		if (isalive) {
+			isalive = false;
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	public ControllerModule() {
 		logger = Logger.getLogger(getClass());
 		controller = Controller.getController();

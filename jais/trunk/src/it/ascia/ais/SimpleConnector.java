@@ -33,6 +33,20 @@ public abstract class SimpleConnector implements ConnectorInterface {
      */
     private boolean running = false;
 
+    /**
+     * Variabile del watchdog
+     */
+	protected boolean isalive = true;
+	
+	public boolean isAlive() {
+		if (isalive) {
+			isalive = false;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	/**
 	 * L'elenco degli indirizzi - primari o alias - dei dispositivi.
 	 */

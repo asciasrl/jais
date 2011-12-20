@@ -70,5 +70,7 @@ public interface ConnectorInterface {
 	 */
 	public void queueUpdate(DevicePort devicePort);
 
+	public boolean isAlive();
+
 
 }

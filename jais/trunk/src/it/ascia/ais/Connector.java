@@ -59,10 +59,12 @@ public abstract class Connector extends SimpleConnector implements ConnectorInte
 		updateQueue = new LinkedBlockingQueue<DevicePort>();
 		updatingThread = new UpdatingThread();
 		updatingThread.setName("Updating-"+getClass().getSimpleName()+"-"+getName());
+		updatingThread.setDaemon(true);
 		updatingThread.start();
 		dispatchQueue = new LinkedBlockingQueue<Message>();
 		dispatchingThread = new DispatchingThread(getDispatchingTimeout());
 		dispatchingThread.setName("Dispatching-"+getClass().getSimpleName()+"-"+getName());
+		dispatchingThread.setDaemon(true);
 		dispatchingThread.start();
 	}
 
@@ -209,6 +211,7 @@ public abstract class Connector extends SimpleConnector implements ConnectorInte
     		while (isRunning()) {
     			DevicePort p;
 				try {
+					isalive = true;
 					if (autoupdate > 0 && updateQueue.size() == 0) {
 						queueExpiredPorts();
 						p = (DevicePort) updateQueue.poll(autoupdate, TimeUnit.MILLISECONDS);

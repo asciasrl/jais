@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<jais:configuration version="1.3">
+<jais:configuration version="1.5">
 	<logger file="conf/log4j.xml" configurator="DOMConfigurator" />
 	<locale language="it" country="IT" />
+	<watchdog interval="120" />
 	<modules>
 		<module name="SQLite" disabled="true">
 			<class>it.ascia.ais.SQLiteControllerModule</class>

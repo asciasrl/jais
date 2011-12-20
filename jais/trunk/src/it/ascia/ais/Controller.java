@@ -42,6 +42,8 @@ public class Controller {
 	
 	public static final String CONFIGURATION_VERSION = "1.5";
 
+	private static final int DEFAULT_WATCHDOG_INTERVAL = 100;
+
 	/**
 	 * Connector registrati.
 	 * 
@@ -61,6 +63,11 @@ public class Controller {
 	private XMLConfiguration config;
 	
 	private boolean running = false;
+
+	/**
+	 * Tempo intervallo watchdog in secondi
+	 */
+	private int watchdogInterval = DEFAULT_WATCHDOG_INTERVAL;
 
 	private static Controller controller;
 
@@ -235,6 +242,9 @@ public class Controller {
 				logger.fatal("Fallito caricamento modulo '"+name+"': Errore nel file di configurazione:",e);
 			}
 		}		
+		
+		watchdogInterval = config.getInt("watchdog[@interval]",DEFAULT_WATCHDOG_INTERVAL);
+		
 		logger.info("Configurato controller.");
 	}
 	
@@ -294,13 +304,16 @@ public class Controller {
 			stop();
 			throw(new AISException("Cannot start all modules"));
 		}
+		WatchDog watchdog = new WatchDog(watchdogInterval);
+		watchdog.setName("WatchDog");
+		watchdog.start();
 	}
 
 	/**
 	 * Ferma tutti i moduli
 	 */
 	public void stop() {
-		if (running) {
+		if (!running) {
 			logger.warn("Controller already stopped.");
 			return;
 		}
@@ -343,6 +356,67 @@ public class Controller {
 	public void restart() {
 		stop();
 		start();
+	}
+	
+	private class WatchDog extends Thread {
+					
+		long interval = DEFAULT_WATCHDOG_INTERVAL;
+		
+		public WatchDog(long i) {
+			super();
+			interval = i;
+		}
+
+		@Override
+		public void run() {
+			super.run();
+	   		while (true) {
+				try {
+					logger.debug("Sleeping "+interval+" seconds.");
+					sleep(interval*1000); 
+					int ok = 0;
+					int tot = 0;
+					/*
+					for (ControllerModule module: modules.values()) {
+						if (module.isRunning()) {
+							tot++;
+							if (module.isAlive()) {
+								logger.trace("Module "+module.getName()+" is alive.");
+								ok++;
+							} else {
+								logger.fatal("Module "+module.getName()+" is NOT alive!");
+							}
+						} else {
+							logger.trace("Module "+module.getName()+" is not running.");
+						}
+					}
+					*/		
+					for (ConnectorInterface connector: connectors.values()) {
+						if (connector.isRunning()) {
+							tot++;
+							if (connector.isAlive()) {
+								logger.trace("Connector "+connector.getName()+" is alive.");
+								ok++;
+							} else {
+								logger.fatal("Connector "+connector.getName()+" is NOT alive!");
+							}
+						} else {
+							logger.trace("Connector "+connector.getName()+" is not running.");
+						}
+					}
+					Runtime.getRuntime().gc();
+					logger.info("Ok "+ok+"/"+tot+" Memory (free/tot): "+Runtime.getRuntime().freeMemory()/1024/1024+"/"+Runtime.getRuntime().totalMemory()/1024/1024+" MBytes");
+					if (ok < tot) {
+						logger.error("Not all running modules and connector are alive, exiting!");
+						System.exit(1);
+					}					
+				} catch (InterruptedException e) {
+					logger.debug("Interrotto.");
+				} catch (Exception e) {
+					logger.error("Errore:",e);
+				}
+    		}			
+		}		
 	}
 
 	/**

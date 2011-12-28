@@ -344,7 +344,7 @@ public abstract class DevicePort {
 	 * specificata, non viene modificata
 	 * 
 	 * @param i
-	 *            Tempo di durata in mS del valore in cache ( deve essere > 0)
+	 *            Tempo di durata in mS del valore in cache
 	 */
 	public void setDuration(long i) {
 		if (i >= 0) {
@@ -358,7 +358,7 @@ public abstract class DevicePort {
 	public void setExpiration(long i) {
 		if (i > 0) {
 			expiration = i;
-			logger.trace(getAddress() + " will expire in "+ (expiration - System.currentTimeMillis()) +  "mS");
+			logger.trace(getAddress() + " will expire in "+ (expiration - System.currentTimeMillis())/1000 +  " Sec");
 		} else {
 			expiration = 0;
 		}		

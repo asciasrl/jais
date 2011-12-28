@@ -170,7 +170,7 @@ public class EDSConnector extends Connector {
 			RispostaModelloMessage risposta = (RispostaModelloMessage) m;
 			BMC bmc = (BMC) getDevice(risposta.getSource()); 
 			if (bmc == null) {
-				bmc = createBMC(risposta.getSource(), risposta.getModello());
+				bmc = createBMC(risposta.getSource(), risposta.getModello(), risposta.getRevisione());
 				addDevice(bmc);
 				if (bmc != null) {
 					logger.info("Creato BMC "+bmc+" Indirizzo:"+bmc.getFullAddress());
@@ -202,8 +202,8 @@ public class EDSConnector extends Connector {
     	}
     }
 
-    private BMC createBMC(String source, int modello) throws AISException {
-    	return BMC.createBMC(source, modello, null);
+    private BMC createBMC(String source, int modello, int version) throws AISException {
+    	return BMC.createBMC(source, modello, version, null);
 	}
 
 
@@ -394,7 +394,7 @@ public class EDSConnector extends Connector {
 	    			}
 	    			if (m.isAnswered()) {
 		    			setGuardtime(0);
-		    			if (tries > 1) {
+		    			if (tries > 2) {
 		    	    		logger.warn("Message aswered after "+tries+" tries: "+m);		    				
 		    			}
 	    				break;
@@ -459,8 +459,8 @@ public class EDSConnector extends Connector {
 		    String name = (String) dispositivo.getProperty("[@nome]");
 		    String address = (String) dispositivo.getString("indirizzo");
 		    int model = dispositivo.getInt("modello");
-		    String revision = (String) dispositivo.getString("revisione");
-		    BMC bmc = BMC.createBMC(address, model, name);
+		    int revision = dispositivo.getInt("revisione");
+		    BMC bmc = BMC.createBMC(address, model, revision, name);
 		    if (bmc != null) {
 		    	logger.debug(bmc.getClass().getSimpleName()+" address="+address+" model="+model+" revision="+revision);		    	
 				List inputs = dispositivo.configurationsAt("ingresso");
@@ -513,7 +513,7 @@ public class EDSConnector extends Connector {
 		return true;
 	}
 
-	public BMC addBmc(String modelName, String address) throws AISException {
+	public BMC addBmc(String modelName, String address, int revision, String name) throws AISException {
 		if (modelName == null || address == null) {
 			throw(new AISException("Must specify model and address"));
 		}
@@ -527,7 +527,7 @@ public class EDSConnector extends Connector {
 				throw(new AISException("Invalid model for addBMC: "+modelName));
 			}			
 		}
-	    BMC bmc = BMC.createBMC(address, model);
+	    BMC bmc = BMC.createBMC(address, model, revision, name);
 	    addDevice(bmc);
 	    return bmc;
 	}

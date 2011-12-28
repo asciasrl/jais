@@ -44,6 +44,11 @@ public abstract class BMC extends Device {
 	protected int model;
 	
 	/**
+	 * Versione prodotto: indica la versione del dispositivo; ogni versione successiva alla precedente identifica l’aggiunta di funzionalità
+	 */
+	private int version;
+
+	/**
 	 * Il nome che AUI da' a questo BMC.
 	 */
 	protected String name;
@@ -86,9 +91,10 @@ public abstract class BMC extends Device {
 	 * @param name il nome di questo BMC (dal file di configurazione), se null lo genera automaticamente
 	 * @throws AISException 
 	 */
-	public BMC(String bmcAddress, int model, String name) throws AISException {
+	public BMC(String bmcAddress, int model, int version, String name) throws AISException {
 		super(bmcAddress);
 		this.model = model;
+		this.version = version;
 		this.name = name;
 		broadcastBindingsByGroup = new Set[32];
 		broadcastBindingsByPort = new Set[getDigitalOutputPortsNumber()];
@@ -132,9 +138,13 @@ public abstract class BMC extends Device {
 	public String getName() {
 		return name;
 	}
+	
+	public int getVersion() {
+		return version;
+	}
 
-	public static BMC createBMC(String address, int model) {
-		return createBMC(address,model,null);		
+	public static BMC createBMC(String address, int model, int version) {
+		return createBMC(address,model,version, null);		
 	}
 
 	/**
@@ -150,7 +160,7 @@ public abstract class BMC extends Device {
 	 * 
 	 * @throws an exception if the address is already in use by another BMC.
 	 */
-	public static BMC createBMC(String bmcAddress, int model, String name) 
+	public static BMC createBMC(String bmcAddress, int model, int version, String name) 
 		throws AISException {
 		Logger logger = Logger.getLogger("BMC.createBMC");
 		BMC bmc;
@@ -170,7 +180,7 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "IO-" +model+ "-" + bmcAddress;
 			}
-			bmc = new BMCStandardIO(bmcAddress, model, name);
+			bmc = new BMCStandardIO(bmcAddress, model, version, name);
 			break;
 		case 91:
 		case 92:
@@ -183,7 +193,7 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "IO-R-" +model+ "-" + bmcAddress;
 			}
-			bmc = new BMCRelaysIO(bmcAddress, model, name);
+			bmc = new BMCRelaysIO(bmcAddress, model, version, name);
 			break;
 		case 21:
 		case 41:
@@ -193,7 +203,7 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "IR-" + bmcAddress;
 			}
-			bmc = new BMCIR(bmcAddress, model, name);
+			bmc = new BMCIR(bmcAddress, model, version, name);
 			break;
 		case 101:
 		case 102:
@@ -204,13 +214,13 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "DIM-" + bmcAddress;
 			}
-			bmc = new BMCDimmer(bmcAddress, model, name);
+			bmc = new BMCDimmer(bmcAddress, model, version, name);
 			break;
 		case 131:
 			if (name == null) {
 				name = "INT-IR-" + bmcAddress;
 			}
-			bmc = new BMCIntIR(bmcAddress, model, name);
+			bmc = new BMCIntIR(bmcAddress, model, version, name);
 			break;
 		case 141:
 		case 142:
@@ -226,7 +236,7 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "IO-L-" +model+ "-" + bmcAddress;
 			}
-			bmc = new BMCLogicaIO(bmcAddress, model, name);
+			bmc = new BMCLogicaIO(bmcAddress, model, version, name);
 			break;
 		case 152:
 		case 154:
@@ -235,7 +245,7 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "SC-" + bmcAddress;
 			}
-			bmc = new BMCScenarioManager(bmcAddress, model, name);
+			bmc = new BMCScenarioManager(bmcAddress, model, version, name);
 			break;
 		case 161:
 		case 162:
@@ -245,19 +255,19 @@ public abstract class BMC extends Device {
 			if (name == null) {
 				name = "SC2-" + bmcAddress;
 			}
-			bmc = new BMCScenarioManager(bmcAddress, model, name);
+			bmc = new BMCScenarioManager(bmcAddress, model, version, name);
 			break;
 		case 122:
 			if (name == null) {
 				name = "REG-T-22-" + bmcAddress; 
 			}
-			bmc = new BMCRegT22(bmcAddress, model, name);
+			bmc = new BMCRegT22(bmcAddress, model, version, name);
 			break;
 		case 127:
 			if (name == null) {
 				name = "ChronoTerm-" + bmcAddress;
 			}
-			bmc = new BMCChronoTerm(bmcAddress, model, name);
+			bmc = new BMCChronoTerm(bmcAddress, model, version, name);
 			break;
 		default:
 			logger.error("Modello di BMC sconosciuto: " + 

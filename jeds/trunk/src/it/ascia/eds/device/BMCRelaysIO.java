@@ -4,9 +4,8 @@ import it.ascia.ais.AISException;
 
 public class BMCRelaysIO extends BMCStandardIO {
 
-	public BMCRelaysIO(String bmcAddress, int model,
-			String name) throws AISException {
-		super(bmcAddress, model, name);
+	public BMCRelaysIO(String bmcAddress, int model, int version, String name) throws AISException {
+		super(bmcAddress, model, version, name);
 	}
 
 	public String getInfo() {

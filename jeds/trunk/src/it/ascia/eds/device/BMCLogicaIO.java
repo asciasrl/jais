@@ -4,9 +4,8 @@ import it.ascia.ais.AISException;
 
 public class BMCLogicaIO extends BMCStandardIO {
 
-	public BMCLogicaIO(String bmcAddress, int model,
-			String name) throws AISException {
-		super(bmcAddress, model, name);
+	public BMCLogicaIO(String bmcAddress, int model, int version, String name) throws AISException {
+		super(bmcAddress, model, version, name);
 	}
 
 	public String getInfo() {

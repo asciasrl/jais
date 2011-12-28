@@ -2,12 +2,12 @@ package it.ascia.eds.msg;
 
 public class RispostaModelloMessage extends PTPResponse {
 
-	public RispostaModelloMessage(int d, int m, int Modello, int Versione) {
+	public RispostaModelloMessage(int d, int m, int Modello, int Revisione) {
 		Destinatario = d & 0xFF;
 		Mittente = m & 0xFF;
 		TipoMessaggio = 1;
 		Byte1 = Modello & 0xFF;
-		Byte2 = Versione & 0xFF;
+		Byte2 = Revisione & 0xFF;
 	}
 
 	public RispostaModelloMessage(int[] message) {
@@ -22,15 +22,20 @@ public class RispostaModelloMessage extends PTPResponse {
 		return Byte1;
 	}
 
+	public int getRevisione() {
+		return Byte2;
+	}
+
 	public String toString()	{
 		StringBuffer s = new StringBuffer();
 		s.append(super.toString()+" ");
-		s.append(" Model:"+Byte1);
-		s.append(" Revision:"+Byte2);
+		s.append(" Modello:"+getModello());
+		s.append(" Revisione:"+getRevisione());
 		return s.toString();
 	}
 
 	public int getMessageType() {
 		return MSG_RISPOSTA_MODELLO;
 	}
+
 }

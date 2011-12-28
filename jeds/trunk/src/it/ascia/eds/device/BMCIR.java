@@ -23,8 +23,8 @@ public class BMCIR extends BMCStandardIO {
 	 * @param model numero del modello
 	 * @throws AISException 
 	 */
-	public BMCIR(String address, int model, String name) throws AISException {
-		super(address, model, name);
+	public BMCIR(String address, int model, int version, String name) throws AISException {
+		super(address, model, version, name);
 	}
 	
 	public String getInfo() {

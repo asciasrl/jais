@@ -58,9 +58,7 @@ public class VariazioneIngressoMessage extends PTPMessage
 		if (!Attivazione) {
 			Byte1 |= 0x01 << 3;
 		}
-		if (Variazione) {
-			Byte2 = 0x01;
-		}
+		Byte2 = (Variazione ? 0x01 : 0x00) + (((Ingresso-1) & 0x07) << 1);
 	}
 
 	/**
@@ -147,18 +145,18 @@ public class VariazioneIngressoMessage extends PTPMessage
 	public String toString()	{
 		StringBuffer s = new StringBuffer();
 		s.append(super.toString());
-		s.append(" In" + (getInputNumber()+1));
+		s.append(" Inp" + (getInputNumber()+1));
+		if (isClose()) {
+			s.append(" Chiuso");
+		} else {
+			s.append(" Aperto");
+		}
 		s.append(" Out"+ (getOutputNumber()+1));
 		s.append(" Scene" + (getScenePortNumber()+1));
 		if (isActivation()) {
 			s.append(" Attiva");
 		} else {
 			s.append(" Disattiva");
-		}
-		if (isClose()) {
-			s.append(" Chiuso");
-		} else {
-			s.append(" Aperto");
 		}
 		s.append(" CT: " + BMCChronoTerm.getStateAsString(getChronoTermState()));
 		return s.toString();

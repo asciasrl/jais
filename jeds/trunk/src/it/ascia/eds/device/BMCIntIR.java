@@ -32,8 +32,8 @@ public class BMCIntIR extends BMC {
 	 * @param model numero del modello
 	 * @throws AISException 
 	 */
-	public BMCIntIR(String address, int model, String name) throws AISException {
-		super(address, model, name);
+	public BMCIntIR(String address, int model, int version, String name) throws AISException {
+		super(address, model, version, name);
 		if (model != 131) {
 			logger.error("Errore: modello di BMC Int IR sconosciuto:" + 
 					model);

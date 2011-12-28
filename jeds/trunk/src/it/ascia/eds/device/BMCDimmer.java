@@ -52,8 +52,8 @@ public class BMCDimmer extends BMC {
 	 * @param model numero del modello
 	 * @throws AISException 
 	 */
-	public BMCDimmer(String address, int model, String name) throws AISException {
-		super(address,model, name);
+	public BMCDimmer(String address, int model, int version, String name) throws AISException {
+		super(address,model,version,name);
 		switch(model) {
 		case 101:
 			power = 800;

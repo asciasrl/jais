@@ -57,8 +57,10 @@ public class EDSControllerModule extends ControllerModule {
 					HierarchicalConfiguration dev = (HierarchicalConfiguration) d.next();
 					String model = dev.getString("model");
 					String address = dev.getString("address");
+					int revision = dev.getInt("revision",0);
+					String name = dev.getString("name",null);
 					try {
-						BMC bmc = eds.addBmc(model,address);						
+						BMC bmc = eds.addBmc(model,address,revision,name);						
 						if (bmc != null) {
 							bmc.discover();
 						}

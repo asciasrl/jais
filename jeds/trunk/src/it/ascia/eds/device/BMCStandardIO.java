@@ -3,6 +3,7 @@
  */
 package it.ascia.eds.device;
 
+import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 import it.ascia.ais.AISException;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.port.BlindPort;
@@ -51,8 +52,8 @@ public class BMCStandardIO extends BMC {
 	 *            numero del modello
 	 * @throws AISException 
 	 */
-	public BMCStandardIO(String bmcAddress, int model, String name) throws AISException {
-		super(bmcAddress, model, name);
+	public BMCStandardIO(String bmcAddress, int model, int version, String name) throws AISException {
+		super(bmcAddress, model, version, name);
 	}
 
 	/*
@@ -98,7 +99,7 @@ public class BMCStandardIO extends BMC {
 			int port = vmsg.getOutputNumber();
 			// Non sappiamo che succede. Ipotizziamo un toggle e non 
 			// aggiorniamo il timestamp.
-			invalidate(getOutputPortId(vmsg.getOutputNumber()));
+			invalidate(getOutputPortId(port));
 			break;
 		default:
 			super.messageReceived(m);			
@@ -179,8 +180,12 @@ public class BMCStandardIO extends BMC {
 				}
 				break;
 			case EDSMessage.MSG_VARIAZIONE_INGRESSO:
-				for (i = 0; i < getDigitalInputPortsNumber(); i++) {
-					getPort(getInputPortId(i)).invalidate();
+				if (getVersion() >= 74) {
+					getPort(getInputPortId(((VariazioneIngressoMessage)m).getInputNumber())).setValue(((VariazioneIngressoMessage)m).isClose(),0);
+				} else {
+					for (i = 0; i < getDigitalInputPortsNumber(); i++) {
+						getPort(getInputPortId(i)).invalidate();
+					}					
 				}
 				break;
 			case EDSMessage.MSG_ACKNOWLEDGE:
@@ -225,7 +230,7 @@ public class BMCStandardIO extends BMC {
 	}
 
 	public String getInfo() {
-		return getName() + ": BMC Standard I/O (modello " + model + ") con "
+		return getName() + ": BMC Standard I/O (modello " + model + " revisione " + getVersion() + ") con "
 				+ getDigitalInputPortsNumber() + " ingressi e " + getDigitalOutputPortsNumber()
 				+ " uscite digitali";
 	}
@@ -324,6 +329,7 @@ public class BMCStandardIO extends BMC {
 		case 21:
 		case 40:
 		case 60:
+		case 80:
 			return 0;
 		case 44:
 			return 4;

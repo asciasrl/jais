@@ -115,8 +115,8 @@ public class BMCChronoTerm extends BMC {
 	 * @param model numero del modello
 	 * @throws AISException 
 	 */
-	public BMCChronoTerm(String address, int model, String name) throws AISException {
-		super(address, model, name);
+	public BMCChronoTerm(String address, int model, int version, String name) throws AISException {
+		super(address, model, version, name);
 		addPort(new TemperaturePort(port_temperature));
 		addPort(new TemperatureSetpointPort(port_setpoint));
 

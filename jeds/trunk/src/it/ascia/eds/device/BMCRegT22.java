@@ -131,8 +131,8 @@ public class BMCRegT22 extends BMCStandardIO {
 	 * @param connector 
 	 * @throws AISException 
 	 */
-	public BMCRegT22(String address, int model,  String name) throws AISException {
-		super(address, model, name);
+	public BMCRegT22(String address, int model, int version, String name) throws AISException {
+		super(address, model, version, name);
 		broadcastBindingsByPort = new Set[16];
 		for (int i = 0; i < 16; i++) {
 			broadcastBindingsByPort[i] = new LinkedHashSet();

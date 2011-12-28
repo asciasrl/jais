@@ -30,8 +30,8 @@ public class BMCScenarioManager extends BMCStandardIO {
 	 * @param model numero del modello
 	 * @throws AISException 
 	 */
-	public BMCScenarioManager(String address, int model, String name) throws AISException {
-		super(address, model, name);
+	public BMCScenarioManager(String address, int model, int version, String name) throws AISException {
+		super(address, model, version, name);
 		// aggiunge le porte per l'attivazione delle scene
 		for (int i = 1; i <= getSceneNumber(); i++) {
 			addPort(new ScenePort(SCENE_PORTID_PREFIX+i));

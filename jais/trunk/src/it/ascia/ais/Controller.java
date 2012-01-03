@@ -405,11 +405,15 @@ public class Controller {
 						}
 					}
 					Runtime.getRuntime().gc();
-					logger.info("Ok "+ok+"/"+tot+" Memory (free/tot): "+Runtime.getRuntime().freeMemory()/1024/1024+"/"+Runtime.getRuntime().totalMemory()/1024/1024+" MBytes");
+					logger.info("Ok "+ok+"/"+tot+" Memory (free/tot): "+Runtime.getRuntime().freeMemory()/1024+"/"+Runtime.getRuntime().totalMemory()/1024+" KBytes");
 					if (ok < tot) {
 						logger.error("Not all running modules and connector are alive, exiting!");
 						System.exit(1);
-					}					
+					}
+					if (Runtime.getRuntime().freeMemory() * 100 < Runtime.getRuntime().totalMemory()) {
+						logger.error("Low free memory, exiting!");
+						System.exit(1);						
+					}
 				} catch (InterruptedException e) {
 					logger.debug("Interrotto.");
 				} catch (Exception e) {

@@ -94,6 +94,7 @@ public class MySQLControllerModule extends ControllerModule implements NewDevice
 			}
 			ps.setString(4, newValue.toString());
 			int n = ps.executeUpdate();
+			ps.close();
 			conn.commit();
 			logger.trace("Inserted rows="+n);
 			/*

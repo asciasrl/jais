@@ -8,8 +8,13 @@ boolean mobile = request.getParameter("nomobile") == null;
 
 if (mobile) {
   String ua1 = request.getHeader( "User-Agent" );
-  if (( ua1 != null && ua1.indexOf( "iPod" ) != -1 ) ||
-     ( ua1 != null && ua1.indexOf( "iPhone" ) != -1 )) {
+  if (ua1 != null && 
+  		(ua1.indexOf( "iPod" ) != -1 
+  		|| ua1.indexOf( "iPhone" ) != -1
+  		|| ua1.indexOf( "iPad" ) != -1
+  		|| ua1.indexOf( "SymbianOS" ) != -1
+  		|| ua1.indexOf( "Android" ) != -1
+  	  ) {
 	  mobile = true;
   } else {
 	  mobile = false;

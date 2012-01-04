@@ -4,8 +4,9 @@ boolean iPod = ( ua != null && ua.indexOf( "iPod" ) != -1 );
 boolean iPad = ( ua != null && ua.indexOf( "iPad" ) != -1 );
 boolean iPhone = ( ua != null && ua.indexOf( "iPhone" ) != -1 );
 boolean SymbianOS = ( ua != null && ua.indexOf( "SymbianOS" ) != -1 );
+boolean Android = ( ua != null && ua.indexOf( "Android" ) != -1 );
 %>
-<% if (iPod | iPhone | iPad | SymbianOS) { %>
+<% if (iPod | iPhone | iPad | SymbianOS | Android) { %>
 <%@ include file="aui.jsp" %>
 <% } else { %>
 <html>

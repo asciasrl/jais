@@ -240,6 +240,8 @@ public class Controller {
 				logger.fatal("Fallito caricamento modulo '"+name+"': accesso negato alla classe '"+className+"'");
 			} catch (ConfigurationException e) {
 				logger.fatal("Fallito caricamento modulo '"+name+"': Errore nel file di configurazione:",e);
+			} catch (Exception e) {
+				logger.fatal("Fallito caricamento modulo '"+name+"':",e);
 			}
 		}		
 		

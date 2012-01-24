@@ -14,7 +14,7 @@ if (mobile) {
   		|| ua1.indexOf( "iPad" ) != -1
   		|| ua1.indexOf( "SymbianOS" ) != -1
   		|| ua1.indexOf( "Android" ) != -1
-  	  ) {
+  	  )) {
 	  mobile = true;
   } else {
 	  mobile = false;

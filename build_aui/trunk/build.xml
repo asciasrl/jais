@@ -37,6 +37,7 @@
 		<property name="lib" value="${dst}lib/"/>
 		<property name="web" value="${dst}web/"/>
 		<property name="conf" value="${dst}conf/"/>		
+		<property name="webconsole" value="${dst}webconsole/"/>
 	</target>
 
 	<target name="jais" depends="base">

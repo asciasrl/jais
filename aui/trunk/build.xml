@@ -42,7 +42,7 @@
 				<exclude name="classes/**"/>
 			</fileset>
 		</copy>
-		<jsmin destdir="${web}classes" copyright="(C) 2010 www.ascia.it" force="true">
+		<jsmin destdir="${web}classes" copyright="(C) 2012 www.ascia.it" force="true">
 			<fileset dir="web/classes" includes="**/*.js"/>
 		</jsmin>
 		<mkdir dir="${web}images"/>

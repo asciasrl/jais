@@ -1,8 +1,14 @@
-<project name="webconsole" default="jar">
+<project name="webconsole" default="all">
+
+	<target name="all" depends="jar, webconsole" />
 
 	<path id="lib.path.ref">
 	   <fileset dir="${lib}" includes="*.jar"/>
 	</path>
+
+	<taskdef name="jsmin"
+	        classname="net.matthaynes.jsmin.JSMin_Task"
+	        classpath="lib/jsmin.0.2.3.jar"/>	
 
 	<target name="jar">
 		<property name="temp" value="buildtemp"/>
@@ -17,6 +23,18 @@
 		   includes="**/*.class"
 		   />
 		<delete includeemptydirs="true" dir="${temp}" />
+	</target>
+
+	<target name="webconsole">
+		<copy todir="${webconsole}" >
+			<fileset dir="webconsole">
+				<include name="**/*"/>
+				<exclude name="*.js"/>
+			</fileset>
+		</copy>
+		<jsmin destdir="${webconsole}" copyright="(C) 2012 www.ascia.it" force="true">
+			<fileset dir="webconsole" includes="*.js"/>
+		</jsmin>
 	</target>
 	
 </project>

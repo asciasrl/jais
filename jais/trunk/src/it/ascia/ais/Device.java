@@ -214,23 +214,13 @@ public abstract class Device {
 	}
 
 	/**
-     * Richiede l'aggiornamento del valore di una porta 
-     * <p>Se ritorna con tempo da attesa = 0 (zero) vuol dire che il chiamante non deve aspettare, perche' l'aggiornamento:
-     * <ul>
-     * <li>e' stato immediato</li>
-     * <li>e' stato gia' fatto</li>
-     * <li>non puo' essere fatto</li>
-     * </ul>
-     * altrimenti il chiamante deve attendere il tempo previsto prima di leggere il valore.
+     * Richiede l'aggiornamento del valore di una porta del device 
      * 
-     * @TODO: updatePort e' sincrona, quindi non ha piu' senso ritornare il tempo di attesa
-     * 
-     * </p>
-	 * @param portId
-	 * @return Tempo massimo previsto per l'aggiornamento in millisecondi
+	 * @param portId Nome della porta del device
+	 * @return True se l'aggiornamento e' andato a buon fine 
 	 * @throws AISException
 	 */
-	public abstract long updatePort(String portId) throws AISException;
+	public abstract boolean updatePort(String portId) throws AISException;
 	
 	/**
 	 * Aggiorna il valore della porta memorizzato localmente.

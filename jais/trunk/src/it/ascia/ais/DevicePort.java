@@ -165,40 +165,17 @@ public abstract class DevicePort {
 
 	/**
 	 * Legge il valore della porta di un dispositivo fisico Questa
-	 * implementazione lavora in modo asincrono, in quanto richiede al device di
+	 * implementazione lavora in modo sincrono, in quanto richiede al device di
 	 * aggiornare la porta con il metodo updatePort(portId) ed attende un certo
 	 * tempo affinche' la porta venga aggiornata. Il valore della porta deve
 	 * essere aggiornato con setValue(), che interrompe subito l'attesa di
 	 * readValue() Se il valore non e' aggiornato, restituisce il valore in
 	 * cache
 	 * 
-	 * TODO: updatePort e' sincrona, va quindi cambiata la logica
-	 * 
-	 * @return
 	 */
 	public Object readValue() {
 		long start = System.currentTimeMillis();
-		long timeToWait;
-		if (isQueuedForUpdate()) {
-			logger.trace("Port already queued for update");
-			timeToWait = 300; // TODO da parametrizzare
-		} else {
-			timeToWait = device.updatePort(portId);
-		}
-		if (timeToWait > 0) {
-			synchronized (this) {
-				if (isDirty() || isExpired()) {
-					try {
-						wait(timeToWait);
-					} catch (InterruptedException e) {
-						logger.warn("Thread Interrupted: ", e);
-					}
-				} else {
-					// il valore, nel frattempo, e' stato aggiornato
-					return getCachedValue();
-				}
-			}
-		}
+		device.updatePort(portId);
 		if (isDirty() || isExpired()) {
 			logger.error("Non aggiornato valore porta " + getAddress()
 					+ " in " + (System.currentTimeMillis() - start) + "mS");
@@ -410,7 +387,7 @@ public abstract class DevicePort {
 	 * Aggiorna il valore della porta, delegando al device
 	 * @return
 	 */
-	public long update() {
+	public boolean update() {
 		return device.updatePort(portId);		
 	}
 

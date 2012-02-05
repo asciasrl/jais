@@ -13,13 +13,14 @@ public class ModbusDevice extends Device {
 	}
 
 	@Override
-	public long updatePort(String portId) throws AISException {
+	public boolean updatePort(String portId) throws AISException {
 		ModbusPort p = (ModbusPort) getPort(portId);
 		if (ModbusInt32Port.class.isInstance(p)) {
 			ReadInputRegistersRequestMessage m = new ReadInputRegistersRequestMessage(p.getPhysicalAddress(),2,unitId);
-			getConnector().sendMessage(m);
+			return getConnector().sendMessage(m);
+		} else {
+			return false;
 		}
-		return 0;
 	}
 	
 	@Override

@@ -199,8 +199,6 @@ public abstract class DevicePort {
 			setCachedValue(newValue);
 			dirty = false;
 			setExpiration(System.currentTimeMillis() + duration);
-			// TODO SPOSTATO, VERIFICARE
-			resetQueuedForUpdate();
 			// sveglia getValue()
 			notify();
 		}

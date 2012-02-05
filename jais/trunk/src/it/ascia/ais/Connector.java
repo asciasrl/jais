@@ -223,22 +223,19 @@ public abstract class Connector extends SimpleConnector implements ConnectorInte
 					}					
 			    	if (!p.isQueuedForUpdate()) {
 			    		logger.trace("Already updated port " + p.getAddress());
-			    	/*
-			    	} else if (!p.isDirty() || !p.isExpired()) {
-			    		logger.trace("Not dirty or expired port " + p.getAddress());
-			    		//p.resetQueuedForUpdate();
-			    	*/
+			    	} else if (!(p.isDirty() || p.isExpired())) {
+			    		//logger.trace("Not dirty or expired port " + p.getAddress());
+			    		p.resetQueuedForUpdate();
 			    	} else {
 				    	logger.trace("Updating (+"+updateQueue.size()+"): " + p.getAddress());
 				    	try {
 				    		p.update();
-							//p.resetQueuedForUpdate();
-						} catch (Exception e) {
+						} catch (Exception e) {							
+							throw(new AISException("During update: ",e));
+						} finally {
 							p.resetQueuedForUpdate();
-							throw(e);
 						}
 			    	}
-			    	// TODO SPOSTATO, DA VERIFICARE p.resetQueuedForUpdate();
 				} catch (InterruptedException e) {
 					logger.debug("Interrotto.");
 				} catch (Exception e) {

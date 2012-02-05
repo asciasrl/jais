@@ -3,19 +3,18 @@
  */
 package it.ascia.eds.device;
 
-import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 import it.ascia.ais.AISException;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.port.BlindPort;
-import it.ascia.eds.msg.AcknowledgeMessage;
+import it.ascia.eds.EDSConnector;
 import it.ascia.eds.msg.ComandoBroadcastMessage;
 import it.ascia.eds.msg.ComandoUscitaMessage;
 import it.ascia.eds.msg.EDSMessage;
+import it.ascia.eds.msg.PTPRequest;
 import it.ascia.eds.msg.RichiestaAssociazioneUscitaMessage;
 import it.ascia.eds.msg.RichiestaStatoMessage;
 import it.ascia.eds.msg.RichiestaUscitaMessage;
 import it.ascia.eds.msg.RispostaAssociazioneUscitaMessage;
-import it.ascia.eds.msg.RispostaModelloMessage;
 import it.ascia.eds.msg.RispostaStatoMessage;
 import it.ascia.eds.msg.RispostaUscitaMessage;
 import it.ascia.eds.msg.VariazioneIngressoMessage;
@@ -114,32 +113,7 @@ public class BMCStandardIO extends BMC {
 	public void messageSent(EDSMessage m) throws AISException {
 		switch (m.getMessageType()) {
 			case EDSMessage.MSG_RISPOSTA_STATO:
-				updating = true;
-				RispostaStatoMessage r;
-				r = (RispostaStatoMessage) m;
-				// Il RispostaStatoMessage da' sempre 8 valori. Dobbiamo
-				// prendere solo quelli effettivamente presenti sul BMC
-				boolean temp[];
-				int i;
-				String portId;
-				temp = r.getInputs();
-				for (i = 0; i < getDigitalInputPortsNumber(); i++) {
-					portId = getInputPortId(i); 
-					setPortValue(portId, new Boolean(temp[i]));
-				}
-				temp = r.getOutputs();
-				for (i = 0; i < getDigitalOutputPortsNumber(); i++) {
-					portId = getOutputPortId(i); 
-					DevicePort p = getPort(portId);
-					Boolean newValue = new Boolean(temp[i]);
-					Boolean oldValue = (Boolean) p.getCachedValue();
-					if (outTimers[i] > 0 && oldValue != null && (p.isDirty() || newValue.equals(new Boolean(true)) || ! newValue.equals(oldValue))) {
-						p.setValue(newValue,outTimers[i]);						
-					} else {
-						p.setValue(newValue);
-					}
-				}
-				updating = false;
+				// Messaggio gestito da updateStatus()
 				break;
 			case EDSMessage.MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST:
 				// Stiamo facendo un discovery delle associazioni.
@@ -183,7 +157,7 @@ public class BMCStandardIO extends BMC {
 				if (getVersion() >= 74) {
 					getPort(getInputPortId(((VariazioneIngressoMessage)m).getInputNumber())).setValue(((VariazioneIngressoMessage)m).isClose(),0);
 				} else {
-					for (i = 0; i < getDigitalInputPortsNumber(); i++) {
+					for (int i = 0; i < getDigitalInputPortsNumber(); i++) {
 						getPort(getInputPortId(i)).invalidate();
 					}					
 				}
@@ -344,14 +318,49 @@ public class BMCStandardIO extends BMC {
 	}
 
 
-	public long updatePort(String portId) throws AISException {
+	public boolean updatePort(String portId) throws AISException {
 		if (portId.startsWith("Blind")) {
 			getPortValue(portId);
-			return 0;
+			return true;
 		} else {
 			return updateStatus();
 		}
 	}
+	
+	protected boolean updateStatus() {
+		EDSConnector connector = (EDSConnector) getConnector();
+		PTPRequest m = new RichiestaStatoMessage(getIntAddress(), 
+				connector.getMyAddress(), 0);
+		if (connector.sendMessage(m)) {			
+			RispostaStatoMessage r = (RispostaStatoMessage) m.getResponse();
+			// Il RispostaStatoMessage da' sempre 8 valori. Dobbiamo
+			// prendere solo quelli effettivamente presenti sul BMC
+			boolean temp[];
+			int i;
+			String portId;
+			temp = r.getInputs();
+			for (i = 0; i < getDigitalInputPortsNumber(); i++) {
+				portId = getInputPortId(i); 
+				setPortValue(portId, new Boolean(temp[i]));
+			}
+			temp = r.getOutputs();
+			for (i = 0; i < getDigitalOutputPortsNumber(); i++) {
+				portId = getOutputPortId(i); 
+				DevicePort p = getPort(portId);
+				Boolean newValue = new Boolean(temp[i]);
+				Boolean oldValue = (Boolean) p.getCachedValue();
+				if (outTimers[i] > 0 && oldValue != null && (p.isDirty() || newValue.equals(new Boolean(true)) || ! newValue.equals(oldValue))) {
+					p.setValue(newValue,outTimers[i]);						
+				} else {
+					p.setValue(newValue);
+				}
+			}			
+			return true;
+		} else {
+			return false;			
+		}
+	}
+
 
 	/**
 	 * @see BMC.sendPortValue

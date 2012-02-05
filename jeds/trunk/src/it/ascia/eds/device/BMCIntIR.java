@@ -127,5 +127,11 @@ public class BMCIntIR extends BMC {
 		return false;
 	}
 
+	@Override
+	public boolean updatePort(String portId) throws AISException {
+		// non c'e' niente da aggiornare
+		return false;
+	}
+
 
 }

@@ -11,7 +11,6 @@ import it.ascia.ais.port.StatePort;
 import it.ascia.ais.port.TemperaturePort;
 import it.ascia.ais.port.TemperatureSetpointPort;
 import it.ascia.ais.port.NullPort;
-import it.ascia.eds.EDSConnector;
 import it.ascia.eds.msg.CronotermMessage;
 import it.ascia.eds.msg.ImpostaSetPointMessage;
 import it.ascia.eds.msg.EDSMessage;
@@ -169,9 +168,25 @@ public class BMCChronoTerm extends BMC {
 	public void messageSent(EDSMessage m) throws AISException {
 		switch (m.getMessageType()) {
 		case EDSMessage.MSG_RISPOSTA_STATO_TERMOSTATO:
-			updating = true;
+		case EDSMessage.MSG_LETTURA_SET_POINT:
 			// Questo messaggio contiene il nostro stato
-			RispostaStatoTermostatoMessage tm = (RispostaStatoTermostatoMessage) m;
+			break;
+		default:
+			super.messageSent(m);
+		}
+	}
+	
+	public String getInfo() {
+		return getName() + ": BMC cronotermostato (modello " + model + ")";
+	}
+
+	/**
+	 * Aggiorna lo stato del termostato.
+	 */
+	public boolean updateTermStatus() {
+		RichiestaStatoTermostatoMessage m = new RichiestaStatoTermostatoMessage(getIntAddress(), getBMCComputerAddress());		
+		if (getConnector().sendMessage(m)) {
+			RispostaStatoTermostatoMessage tm = (RispostaStatoTermostatoMessage) m.getResponse();
 			double temperature = tm.getChronoTermTemperature();
 			int state = 0;
 			switch (tm.getMode()) {
@@ -191,47 +206,32 @@ public class BMCChronoTerm extends BMC {
 			}
 			setPortValue(port_state,getStateAsString(state));
 			setPortValue(port_temperature,new Double(temperature));
-			updating = false;
-			break;
-		case EDSMessage.MSG_LETTURA_SET_POINT:
-			updating = true;
-			CronotermMessage ctm = (CronotermMessage) m;
-			double setPoint = ctm.getSetPoint();
-			setPortValue(port_setpoint,new Double(setPoint));
-			setPortValue(port_season,ctm.isWinter() ? getStateAsString(STATE_WINTER_MODE) : getStateAsString(STATE_SUMMER_MODE));
-			updating = false;
-		break;
+			return true;
+		} else {
+			return false;
 		}
-	}
-	
-	public String getInfo() {
-		return getName() + ": BMC cronotermostato (modello " + model + ")";
-	}
 
-	/**
-	 * Aggiorna lo stato del termostato.
-	 */
-	public void updateTermStatus() {
-		getConnector().sendMessage(new RichiestaStatoTermostatoMessage(getIntAddress(), getBMCComputerAddress()));
 	}
 	
 	/**
 	 * Aggiorna il set point corrente.
 	 */
-	public void updateSetPoint() {
-		getConnector().sendMessage(new RichiestaSetPointMessage(getIntAddress(), getBMCComputerAddress(), false));
+	public boolean updateSetPoint() {
+		RichiestaSetPointMessage m = new RichiestaSetPointMessage(getIntAddress(), getBMCComputerAddress(), false);	
+		if (getConnector().sendMessage(m)) {
+			CronotermMessage ctm = (CronotermMessage) m.getResponse();
+			double setPoint = ctm.getSetPoint();
+			setPortValue(port_setpoint,new Double(setPoint));
+			setPortValue(port_season,ctm.isWinter() ? getStateAsString(STATE_WINTER_MODE) : getStateAsString(STATE_SUMMER_MODE));
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
-	public long updateStatus() {
-		// FIXME calcolare il timeout oggettivamente
-		long timeout = 2 * 2 * ((EDSConnector)getConnector()).getRetryTimeout();		
-		if (updating) {
-			logger.trace("update in corso, richiesta omessa");
-			return timeout;
-		}		
-		updateTermStatus();
-		updateSetPoint();
-		return timeout;
+	@Override
+	public boolean updatePort(String portId) throws AISException {
+		return updateTermStatus() && updateSetPoint();
 	}
 
 	/*

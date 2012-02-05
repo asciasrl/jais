@@ -8,7 +8,6 @@ import java.util.Set;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.DevicePort;
-import it.ascia.ais.port.DigitalOutputPort;
 import it.ascia.ais.port.DimmerPort;
 import it.ascia.eds.EDSConnector;
 import it.ascia.eds.msg.ComandoBroadcastMessage;
@@ -167,24 +166,7 @@ public class BMCDimmer extends BMC {
 		RispostaAssociazioneUscitaMessage ra;
 		switch(m.getMessageType()) {
 		case EDSMessage.MSG_RISPOSTA_STATO_DIMMER:
-			r = (RispostaStatoDimmerMessage)m;
-			// Il RispostaStatoMessage da' sempre 8 valori. Dobbiamo
-			// prendere solo quelli effettivamente presenti sul BMC
-			int temp[];
-			int i;
-			temp = r.getOutputs();
-			for (i = 0; i < getDimmerPortsNumber(); i++) {
-				String portId = getOutputPortId(i);
-				DevicePort p = getPort(portId);
-				Integer newValue = new Integer(temp[i]);
-				Integer oldValue = (Integer) p.getCachedValue();
-				// aggiorna di nuovo quando finisce il soft time
-				if (p.getCachedValue() != null && (p.isDirty() || ! newValue.equals(oldValue))) {
-					p.setValue(newValue,outTimers[i]);
-				} else {
-					p.setValue(newValue);
-				}
-			}
+			// Messaggio gestito da updateStatus()
 			break;
 		case EDSMessage.MSG_RISPOSTA_ASSOCIAZIONE_BROADCAST: 
 			ra = (RispostaAssociazioneUscitaMessage) m;
@@ -245,14 +227,34 @@ public class BMCDimmer extends BMC {
 	 	}
 	}
 		
-	public long updatePort(String portId) throws AISException {
+	public boolean updatePort(String portId) throws AISException {
 		PTPRequest m;
 		EDSConnector connector = (EDSConnector) getConnector();
 		// Il protocollo permette di scegliere piu' uscite. Qui chiediamo solo le
 		// prime due.
 		m = new RichiestaStatoMessage(getIntAddress(),getBMCComputerAddress(), 3);
-		connector.sendMessage(m);
-		return connector.getRetryTimeout() * m.getMaxSendTries(); 
+		if (connector.sendMessage(m)) {
+			RispostaStatoDimmerMessage r = (RispostaStatoDimmerMessage)m.getResponse();
+			// Il RispostaStatoMessage da' sempre 8 valori. Dobbiamo
+			// prendere solo quelli effettivamente presenti sul BMC
+			int temp[];
+			int i;
+			temp = r.getOutputs();
+			for (i = 0; i < getDimmerPortsNumber(); i++) {
+				DevicePort p = getPort(getOutputPortId(i));
+				Integer newValue = new Integer(temp[i]);
+				Integer oldValue = (Integer) p.getCachedValue();
+				// aggiorna di nuovo quando finisce il soft time
+				if (p.getCachedValue() != null && (p.isDirty() || ! newValue.equals(oldValue))) {
+					p.setValue(newValue,outTimers[i]);
+				} else {
+					p.setValue(newValue);
+				}
+			}
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**

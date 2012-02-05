@@ -21,14 +21,14 @@ public class RispostaStatoDimmerMessage extends PTPResponse {
 	public String toString()	{
 		StringBuffer s = new StringBuffer();
 		s.append(super.toString());
-		s.append("Uscita 1: "+(Byte1 & 0x7F) +"% Uscita 2: "+(Byte2 & 0x7F) +"%");
+		s.append(" Uscita 1: "+(Byte1 & 0x7F) +"% Uscita 2: "+(Byte2 & 0x7F) +"%");
 		return s.toString();
 	}
 	
 	/**
 	 * Ritorna lo stato delle uscite.
 	 * 
-	 * @return un'array di 2 interi, anche se il BMC ha meno porte. I valori vanno da 0 a 100. 
+	 * @return un'array di 2 interi, anche se il dimmer ha meno porte. I valori vanno da 0 a 100. 
 	 */
 	public int[] getOutputs() {
 		int retval[] = {(Byte1 & 0x7F), (Byte2 & 0x7F)};

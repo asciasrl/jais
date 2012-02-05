@@ -337,10 +337,8 @@ public class BMCRegT22 extends BMCStandardIO {
 	/**
 	 * Aggiorna lo stato del sensore (temperatura, modalita' di funzionamento).
 	 */
-	public long updateTermStatus() {
-		getConnector().sendMessage(new RichiestaStatoTermostatoMessage(getIntAddress(), getBMCComputerAddress()));
-		// FIXME calcolare il timeout
-		return 0;
+	public boolean updateTermStatus() {
+		return getConnector().sendMessage(new RichiestaStatoTermostatoMessage(getIntAddress(), getBMCComputerAddress()));
 	}
 	
 	/**
@@ -348,21 +346,27 @@ public class BMCRegT22 extends BMCStandardIO {
 	 * 
 	 * <p>Invia un messaggio al BMC richiedendo il valore del parametro.</p>
 	 */
-	private void updateAlarmTemperature() {
+	private boolean updateAlarmTemperature() {
 		RichiestaParametroMessage m = new RichiestaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
 				PARAM_TERM_ALARM_TEMPERATURE);
 		if (getConnector().sendMessage(m)) {
 			RispostaParametroMessage rpm = (RispostaParametroMessage) m.getResponse();
 			setPortValue(port_alarmeTemp,new Integer(rpm.getValue()));
+			return true;
+		} else {
+			return false;
 		}
 	}
 
-	private void readSeason() {
+	private boolean readSeason() {
 		RichiestaParametroMessage m = new RichiestaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
 				PARAM_SEASON);
 		if (getConnector().sendMessage(m)) {
 			RispostaParametroMessage rpm = (RispostaParametroMessage) m.getResponse();
 			setPortValue(port_season,getSeason(rpm.getValue()));
+			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -371,12 +375,15 @@ public class BMCRegT22 extends BMCStandardIO {
 	 * 
 	 * <p>Invia un messaggio al BMC richiedendo il valore del parametro.</p>
 	 */
-	private void updateAutoSendTime() {
+	private boolean updateAutoSendTime() {
 		RichiestaParametroMessage m = new RichiestaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
 				PARAM_TERM_AUTO_SEND_TIME); 
 		if (getConnector().sendMessage(m)) {
 			RispostaParametroMessage rpm = (RispostaParametroMessage) m.getResponse();
 			setPortValue(port_autoSendTime,new Integer(rpm.getValue()));
+			return true;
+		} else {
+			return false;
 		}
 	}
 	
@@ -385,62 +392,51 @@ public class BMCRegT22 extends BMCStandardIO {
 	 * 
 	 * <p>Invia un messaggio al BMC richiedendo il valore del parametro.</p>
 	 */
-	private void updateSetPoint() {
-		getConnector().sendMessage(new RichiestaSetPointMessage(getIntAddress(), getBMCComputerAddress(), true));
+	private boolean updateSetPoint() {
+		return getConnector().sendMessage(new RichiestaSetPointMessage(getIntAddress(), getBMCComputerAddress(), true));
 	}
 
 	/**
 	 * @todo separare le chiamate
 	 */
-	public long updateStatus() {
-		updateAlarmTemperature();
-		updateAutoSendTime();
-		updateTermStatus();
+	public boolean updateStatus() {
+		return updateAlarmTemperature() &&
+		updateAutoSendTime() &&
+		updateTermStatus() &&
 		updateSetPoint();
-		return 0;
 	}
 	
-	public long updatePort(String portId) {
+	public boolean updatePort(String portId) {
 		if (portId.startsWith("Inp")) {
 			return super.updateStatus();
 		} else if (portId.startsWith("Out")) {
 			return super.updateStatus();
 		} else if (portId.equals(port_RTCC)) {
-			readRTCC();
-			return 0;
+			return readRTCC();
 		} else if (portId.equals(port_season)) {
-			readSeason();
-			return 0;
+			return readSeason();
 		} else if (portId.startsWith("setPoint-")) {
-			readSetPoint(portId);
-			return 0;
+			return readSetPoint(portId);
 		} else if (portId.equals(port_T0)) {
-			readSetpointParameter(portId,PARAM_T0_VALUE);
-			return 0;
+			return readSetpointParameter(portId,PARAM_T0_VALUE);
 		} else if (portId.equals(port_T1_SUMMER)) {
-			readSetpointParameter(portId,PARAM_T1_SUMMER_VALUE);
-			return 0;
+			return readSetpointParameter(portId,PARAM_T1_SUMMER_VALUE);
 		} else if (portId.equals(port_T1_WINTER)) {
-			readSetpointParameter(portId,PARAM_T1_WINTER_VALUE);
-			return 0;
+			return readSetpointParameter(portId,PARAM_T1_WINTER_VALUE);
 		} else if (portId.equals(port_T2_SUMMER)) {
-			readSetpointParameter(portId,PARAM_T2_SUMMER_VALUE);
-			return 0;
+			return readSetpointParameter(portId,PARAM_T2_SUMMER_VALUE);
 		} else if (portId.equals(port_T2_WINTER)) {
-			readSetpointParameter(portId,PARAM_T2_WINTER_VALUE);
-			return 0;
+			return readSetpointParameter(portId,PARAM_T2_WINTER_VALUE);
 		} else if (portId.equals(port_T3_SUMMER)) {
-			readSetpointParameter(portId,PARAM_T3_SUMMER_VALUE);
-			return 0;
+			return readSetpointParameter(portId,PARAM_T3_SUMMER_VALUE);
 		} else if (portId.equals(port_T3_WINTER)) {
-			readSetpointParameter(portId,PARAM_T3_WINTER_VALUE);
-			return 0;
+			return readSetpointParameter(portId,PARAM_T3_WINTER_VALUE);
 		} else {
 			return updateStatus();
 		}
 	}
 	
-	private void readRTCC() {
+	private boolean readRTCC() {
 		EDSConnector conn = (EDSConnector) getConnector();
 		int m = conn.getMyAddress();
 		int d = getIntAddress();
@@ -465,8 +461,7 @@ public class BMCRegT22 extends BMCStandardIO {
 					c.set(Calendar.DAY_OF_MONTH,r2.getGiorno());
 					if (r2.getSecondi() == 0) {
 						// ripete la lettura, perche' potrebbe essere affetta da errore di lettura
-						readRTCC();
-						return;
+						return readRTCC();
 					}
 					c.set(Calendar.SECOND,r2.getSecondi());
 					deviceDate = c.getTime();
@@ -484,6 +479,7 @@ public class BMCRegT22 extends BMCStandardIO {
 				logger.trace("Clock offset= "+diff+" mS");
 			}
 		}
+		return true;
 	}
 	
 	/**
@@ -697,12 +693,15 @@ public class BMCRegT22 extends BMCStandardIO {
 	 * @param portId Porta nella quale memorizzare il parametro
 	 * @param param Indice del parametro
 	 */
-	public void readSetpointParameter(String portId,int param) {
+	public boolean readSetpointParameter(String portId,int param) {
 		RichiestaParametroMessage richiesta = new RichiestaParametroMessage(getIntAddress(), getBMCComputerAddress(), 
 				param);
 		if (getConnector().sendMessage(richiesta)) {
 			DevicePort p = getPort(portId);		
 			p.setValue(new Double(setPoint(((RispostaParametroMessage) (richiesta.getResponse())).getValue())));
+			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -778,7 +777,7 @@ public class BMCRegT22 extends BMCStandardIO {
 		}
 	}
 	
-	private void readSetPoint(String portId) {
+	private boolean readSetPoint(String portId) {
 		EDSConnector conn = (EDSConnector) getConnector();
 		int m = conn.getMyAddress();
 		int d = getIntAddress();
@@ -787,8 +786,7 @@ public class BMCRegT22 extends BMCStandardIO {
 		int giorno = Integer.parseInt(temp[2]);
 		int ora = Integer.parseInt(temp[3]);
 		RichiestaSetPointMessage rich = new RichiestaSetPointMessage(d,m,stagione,giorno,ora);
-		conn.sendMessage(rich);
-		// risposta gestita da messageSent
+		return conn.sendMessage(rich);
 	}	
 
 }

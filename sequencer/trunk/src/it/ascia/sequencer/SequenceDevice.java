@@ -69,8 +69,8 @@ public class SequenceDevice extends Device {
 	}
 
 	@Override
-	public long updatePort(String portId) throws AISException {
-		return 0;
+	public boolean updatePort(String portId) throws AISException {
+		return true;
 	}
 
 	private class SequenceRunner extends Thread {

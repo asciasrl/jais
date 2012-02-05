@@ -11,8 +11,8 @@ public class StepsPort extends DevicePort {
 	}
 
 	@Override
-	public long update() {
-		return 0;
+	public boolean update() {
+		return true;
 	}
 	
 	@Override

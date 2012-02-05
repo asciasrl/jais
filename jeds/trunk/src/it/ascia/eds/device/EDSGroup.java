@@ -51,9 +51,8 @@ public class EDSGroup extends Device {
 	}
 
 	@Override
-	public long updatePort(String portId) throws AISException {
-		// TODO Auto-generated method stub
-		return 0;
+	public boolean updatePort(String portId) throws AISException {
+		return true;
 	}
 
 }

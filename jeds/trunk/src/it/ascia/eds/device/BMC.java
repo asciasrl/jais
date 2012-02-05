@@ -14,9 +14,7 @@ import it.ascia.ais.port.DigitalInputPort;
 import it.ascia.ais.port.DigitalOutputPort;
 import it.ascia.eds.*;
 import it.ascia.eds.msg.EDSMessage;
-import it.ascia.eds.msg.PTPRequest;
 import it.ascia.eds.msg.RichiestaAssociazioneUscitaMessage;
-import it.ascia.eds.msg.RichiestaStatoMessage;
 import it.ascia.eds.msg.RichiestaUscitaMessage;
 import it.ascia.eds.msg.RispostaAssociazioneUscitaMessage;
 import it.ascia.eds.msg.RispostaUscitaMessage;
@@ -75,8 +73,6 @@ public abstract class BMC extends Device {
 	 * Il nostro logger.
 	 */
 	protected Logger logger;
-
-	protected boolean updating = false;
 
 	/**
 	 * Tempo del timer associato ad una uscita
@@ -375,32 +371,6 @@ public abstract class BMC extends Device {
 	}
 		
 	/**
-	 * Aggiorna la rappresentazione interna delle porte.
-	 * 
-	 * <p>Manda un messaggio al BMC mettendo come mittente il bmcComputer. 
-	 * Quando arrivera' la risposta, receiveMessage() aggiornera' le 
-	 * informazioni.</p>
-	 * 
-	 * <p>Il metodo di default manda un RichiestaStatoMessage per BMC.</p>
-	 * 
-	 * @return Tempo previsto per l'aggiornamento
-	 * @throws AISException 
-	 */
-	protected long updateStatus() {
-		EDSConnector connector = (EDSConnector) getConnector();
-		PTPRequest m = new RichiestaStatoMessage(getIntAddress(), 
-				((EDSConnector)getConnector()).getMyAddress(), 0);
-		long timeout = connector.getRetryTimeout() * m.getMaxSendTries(); 
-		if (updating) {
-			logger.trace("update in corso, richiesta omessa");
-			return timeout;
-		}
-		getConnector().sendMessage(m);
-		// NON tornare 0: bisogna aspettare il dispatch ! 
-		return timeout;	
-	}
-
-	/**
 	 * Ritorna il numero del primo ingresso.
 	 * 
 	 * <p>Questo metodo e' necessario perche' quasi tutti i modelli di BMC hanno
@@ -610,7 +580,4 @@ public abstract class BMC extends Device {
 		return getInfo();
 	}
 
-	public long updatePort(String portId) throws AISException {
-		return updateStatus();
-	}
 }

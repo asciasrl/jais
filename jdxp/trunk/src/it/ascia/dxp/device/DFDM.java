@@ -50,10 +50,14 @@ public class DFDM extends DominoDevice {
 		return null;
 	}
 
-	public long updatePort(String portId) throws AISException {
+	public boolean updatePort(String portId) throws AISException {
 		RichiestaStatoUsciteMessage m = new RichiestaStatoUsciteMessage(getSimpleAddress());
-		getConnector().sendMessage(m);
-		return 100;
+		if (getConnector().sendMessage(m)) {
+			// FIXME gestire risposta qui invece che in dispatchmessage
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public boolean sendPortValue(String portId, Object newValue)

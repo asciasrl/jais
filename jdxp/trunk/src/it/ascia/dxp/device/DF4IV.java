@@ -28,20 +28,26 @@ public class DF4IV extends DF4I {
 		}
 	}
 
-	public long updatePort(String portId) throws AISException {
+	public boolean updatePort(String portId) throws AISException {
 		int i = portId.indexOf(".");
 		if (i > 0) {
 			char tipo = portId.substring(0,1).toCharArray()[0];
 			if (tipo == 'i') { 
-				super.updatePort(portId);
+				return super.updatePort(portId);
 			} else if (tipo == 'v') {
 				RichiestaStatoUsciteMessage m = new RichiestaStatoUsciteMessage(portId.substring(1,i));
-				getConnector().sendMessage(m);
+				if (getConnector().sendMessage(m)) {
+					// FIXME gestire risposta qui invece che in dispatchmessage
+					return true;
+				} else {
+					return false;
+				}				
 			} else {
 				throw(new AISException("Porta tipo "+tipo+" non valida"));				
 			}
+		} else {
+			return false;
 		}
-		return 100;
 	}
 	
 	public boolean sendPortValue(String portId, Object newValue)

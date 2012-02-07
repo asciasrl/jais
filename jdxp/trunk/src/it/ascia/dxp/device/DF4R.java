@@ -24,13 +24,16 @@ public class DF4R extends DominoDevice {
 		return null;
 	}
 
-	public long updatePort(String portId) throws AISException {
+	public boolean updatePort(String portId) throws AISException {
 		int i = portId.indexOf(".");
 		if (i > 0) {
 			RichiestaStatoUsciteMessage m = new RichiestaStatoUsciteMessage(portId.substring(1,i));
 			getConnector().sendMessage(m);
+			// FIXME gestire risposta qui invece che in dispatchmessage
+			return true;
+		} else {
+			return false;
 		}
-		return 100;   // TODO calcolare
 	}
 
 	public boolean sendPortValue(String portId, Object newValue)

@@ -27,14 +27,16 @@ public class DFCT extends DominoDevice {
 		return null;
 	}
 
-	public long updatePort(String portId) throws AISException {
+	public boolean updatePort(String portId) throws AISException {
 		if (portId.equals("temp")) {
 			int d = (new Integer(getSimpleAddress())).intValue() + 1;
 			RichiestaStatoIngressiMessage m = new RichiestaStatoIngressiMessage(d);
 			getConnector().sendMessage(m);			
-			return 100;
+			// FIXME gestire risposta qui invece che in dispatchmessage
+			return true;
+		} else {
+			return false;
 		}
-		return 0;
 	}
 	
 	public boolean sendPortValue(String portId, Object newValue)

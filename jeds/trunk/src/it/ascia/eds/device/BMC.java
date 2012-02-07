@@ -42,7 +42,7 @@ public abstract class BMC extends Device {
 	protected int model;
 	
 	/**
-	 * Versione prodotto: indica la versione del dispositivo; ogni versione successiva alla precedente identifica l’aggiunta di funzionalità
+	 * Versione prodotto: indica la versione del dispositivo; ogni versione successiva alla precedente identifica l'aggiunta di funzionalita'
 	 */
 	private int version;
 

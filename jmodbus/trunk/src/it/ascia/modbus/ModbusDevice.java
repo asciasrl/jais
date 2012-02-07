@@ -1,5 +1,7 @@
 package it.ascia.modbus;
 
+import net.wimpi.modbus.msg.ModbusResponse;
+import net.wimpi.modbus.msg.ReadInputRegistersResponse;
 import it.ascia.ais.AISException;
 import it.ascia.ais.Device;
 
@@ -15,9 +17,11 @@ public class ModbusDevice extends Device {
 	@Override
 	public boolean updatePort(String portId) throws AISException {
 		ModbusPort p = (ModbusPort) getPort(portId);
-		if (ModbusInt32Port.class.isInstance(p)) {
-			ReadInputRegistersRequestMessage m = new ReadInputRegistersRequestMessage(p.getPhysicalAddress(),2,unitId);
-			return getConnector().sendMessage(m);
+		ReadInputRegistersRequestMessage m = new ReadInputRegistersRequestMessage(p.getPhysicalAddress(),p.getWords(),unitId);
+		if (getConnector().sendMessage(m)) {
+	    	ModbusResponse res = m.getResponse().getModbusResponse();
+	    	p.setValue((ReadInputRegistersResponse)res);
+	    	return true;
 		} else {
 			return false;
 		}
@@ -26,7 +30,7 @@ public class ModbusDevice extends Device {
 	@Override
 	public boolean sendPortValue(String portId, Object newValue)
 			throws AISException {
-		// TODO Auto-generated method stub
+		logger.error("sendPortValue metodo non implementato");
 		return false;
 	}
 

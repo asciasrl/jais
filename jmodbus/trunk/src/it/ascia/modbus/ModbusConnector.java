@@ -7,18 +7,12 @@ import org.apache.commons.configuration.HierarchicalConfiguration;
 
 import net.wimpi.modbus.ModbusCoupler;
 import net.wimpi.modbus.io.ModbusSerialTransaction;
-import net.wimpi.modbus.io.ModbusTransport;
 import net.wimpi.modbus.msg.ModbusRequest;
-import net.wimpi.modbus.msg.ModbusResponse;
-import net.wimpi.modbus.msg.ReadInputRegistersRequest;
-import net.wimpi.modbus.msg.ReadInputRegistersResponse;
 import net.wimpi.modbus.net.SerialConnection;
 import net.wimpi.modbus.util.SerialParameters;
 import it.ascia.ais.AISException;
-import it.ascia.ais.Address;
 import it.ascia.ais.Connector;
 import it.ascia.ais.ConnectorInterface;
-import it.ascia.ais.DevicePort;
 import it.ascia.ais.Message;
 import it.ascia.ais.SerialTransport;
 
@@ -63,14 +57,20 @@ public class ModbusConnector extends Connector implements
 	
 	@Override
 	public boolean sendMessage(Message m) {
-		if (!ModbusRequestMessage.class.isInstance(m)) {
+		if (ModbusRequestMessage.class.isInstance(m)) {
+			return sendMessage((ModbusRequestMessage)m); 
+		} else {
 			throw (new AISException("Can send only request, not "
 					+ m.getClass()));
 		}
+	}
+	
+	private boolean sendMessage(ModbusRequestMessage m) {
 		// 6. Prepare a transaction
 		ModbusSerialTransaction trans = new ModbusSerialTransaction(con);
 		trans.setRetries(3);
-		trans.setRequest(((ModbusRequestMessage) m).getRequest());
+		ModbusRequest req = m.getRequest();
+		trans.setRequest(req);
 
 		long delay = lastWrite + 200 - System.currentTimeMillis();
 		if (delay > 0) {
@@ -89,6 +89,7 @@ public class ModbusConnector extends Connector implements
 		}
 		
 		ModbusResponseMessage res = new ModbusResponseMessage(trans);
+		m.setResponse(res);
 		
     	if (dispatchQueue.remainingCapacity() > 0) {
 	    	logger.debug("Received: " + res);
@@ -116,31 +117,10 @@ public class ModbusConnector extends Connector implements
 	}
 	
     protected void dispatchMessage(ModbusResponseMessage m) throws AISException {
-    	ModbusResponse res = m.getResponse();
-    	int unitid = m.getResponse().getUnitID();
-    	Address a = new Address(this, null, null);
-    	a.setDeviceAddress((new Integer(unitid)).toString());
-    	ModbusDevice d = (ModbusDevice) getDevice(a);
-    	ModbusRequest req = m.getRequest();
-    	String portId = null;
-    	Object newValue = null;
-    	if (ReadInputRegistersRequest.class.isInstance(req)) {
-    		int ref = ((ReadInputRegistersRequest)req).getReference();
-    		portId = new Integer(ref).toString();
-    		newValue = ((ReadInputRegistersResponse)res).getRegisterValue(1) << 16 |  
-    					((ReadInputRegistersResponse)res).getRegisterValue(0);
-    	}
-    	if (portId != null) {
-    		DevicePort p = d.getPort(portId);
-    		if (p != null) {
-	    		if (newValue != null) {
-		    		p.setValue(newValue);
-	    		}
-	    	}
-	    }
-    	
+		// TODO Auto-generated method stub	    	
     }
 
+	
 	/**
 	 * Aggiunge un dispositivo modbus slave al connettore
 	 * @param sub configurazione del device
@@ -155,25 +135,38 @@ public class ModbusConnector extends Connector implements
 		List<HierarchicalConfiguration> registers = sub.configurationsAt("register");
 		for (Iterator<HierarchicalConfiguration> i = registers.iterator(); i.hasNext();) {
 			HierarchicalConfiguration registerConfig = i.next();
-			String type = registerConfig.getString("type");
-			int address = registerConfig.getInt("address");
-			ModbusPort port = null;
-			if (type.equals("int32")) {
-				port = new ModbusInt32Port(address);
-				int retention = registerConfig.getInt("retention",-1);
-				if (retention > 0) {
-					port.setCacheRetention(retention);
+			String type = registerConfig.getString("type");			
+			int address;
+			String hexaddress = registerConfig.getString("address","");
+			try {
+				if (hexaddress.startsWith("0x")) {
+					address = Integer.parseInt(hexaddress.substring(2),16);
+				} else {
+					address = Integer.parseInt(hexaddress);
 				}
-			} else {
-				logger.error("Unsupported port type:" + type);
+			} catch (NumberFormatException e) {
+				logger.error("Invalid format of port address: '" + hexaddress + "'");
+				continue;
 			}
+			ModbusPort port = null;
+			if (type.equals("byte")) {
+				port = new ModbusBytePort(address);
+			} else if (type.equals("word")) {
+				port = new ModbusWordPort(address);
+			} else if (type.equals("long")) {
+				port = new ModbusLongPort(address);
+			} else {
+				logger.error("Unsupported port type: '" + type + "'");
+				continue;
+			}
+			int retention = registerConfig.getInt("retention",-1);
+			if (retention > 0) {
+				port.setCacheRetention(retention);
+			}
+			port.setDescription(registerConfig.getString("description",null));
 			device.addPort(port);
-			port.setDescription(registerConfig.getString("description"));
 			logger.info("Added " + port);			
 		}
-	}
-
-	
-	
+	}	
 
 }

@@ -214,7 +214,12 @@ public abstract class Device {
 	}
 
 	/**
-     * Richiede l'aggiornamento del valore di una porta del device 
+     * Richiede l'aggiornamento del valore di una porta del device.
+     * L'implementazione deve:
+     * 1) creare il messaggio necessario per richiedere il valore della porta del device fisico
+     * 2) inviare il messaggio con il metodo Connector.sendMessage()
+     * 3) leggere il valore aggiornato ricevuto nella risposta
+     * 4) eseguire setValue()
      * 
 	 * @param portId Nome della porta del device
 	 * @return True se l'aggiornamento e' andato a buon fine 

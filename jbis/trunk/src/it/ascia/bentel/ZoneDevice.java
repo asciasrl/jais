@@ -40,17 +40,17 @@ public class ZoneDevice extends Device {
 	}
 
 	@Override
-	public long updatePort(String portId) throws AISException {
+	public boolean updatePort(String portId) throws AISException {
 		if (portId.equals("Description")) {
-			((BentelKyoConnector) getConnector()).updateZonesDescriptions();
+			return ((BentelKyoConnector) getConnector()).updateZonesDescriptions();
 		} else if (portId.equals("Alarm") || portId.equals("Tamper")) {
-			((BentelKyoConnector) getConnector()).updateRealTime();
+			return ((BentelKyoConnector) getConnector()).updateRealTime();
 		} else if (portId.equals("AlarmMemory") || portId.equals("TamperMemory") || portId.equals("Bypassed")) {
-			((BentelKyoConnector) getConnector()).updateStatus();
+			return ((BentelKyoConnector) getConnector()).updateStatus();
 		} else {
 			logger.warn("Cannot update unknow port: "+portId);
+			return false;
 		}
-		return 0;
 	}
 
 }

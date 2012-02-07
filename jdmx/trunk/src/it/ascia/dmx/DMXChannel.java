@@ -31,12 +31,13 @@ public class DMXChannel extends Device {
 	}
 
 	@Override
-	public long updatePort(String portId) throws AISException {
+	public boolean updatePort(String portId) throws AISException {
 		DMXGetMessage m = new DMXGetMessage(channel);
 		if (getConnector().sendMessage(m)) {
-			return 10;
+			// FIXME gestire risposta qui invece che in dispatchmessage
+			return true;
 		} else {
-			return 0;
+			return false;
 		}
 	}
 

@@ -38,7 +38,7 @@ public abstract class BentelKyoUnit {
 	 */
 	public abstract int maxOutputs();
 
-	public void updateZonesDescriptions(BentelKyoConnector connector) {
+	public boolean updateZonesDescriptions(BentelKyoConnector connector) {
 		logger.debug("Updating zones descriptions");
 		ReadZonesDescriptionsMessage m;
 		for (int j = 0; j < (maxZones() / 4); j++) {
@@ -47,10 +47,11 @@ public abstract class BentelKyoUnit {
 			for (int i = 0; i <= 3; i++) {
 				connector.getDevice("Zone"+(j * 4 + i+1)).getPort("Description").setValue(m.getDescription(i).trim());
 			}
-		}		
+		}
+		return true;
 	}
 
-	public void updatePartitionsDescriptions(BentelKyoConnector connector) {
+	public boolean updatePartitionsDescriptions(BentelKyoConnector connector) {
 		logger.debug("Updating parttions descriptions");
 		// TODO
 		ReadPartitionsDescriptionsMessage m;
@@ -60,24 +61,25 @@ public abstract class BentelKyoUnit {
 			for (int i = 0; i <= 3; i++) {
 				connector.getDevice("Partition"+(j * 4 + i+1)).getPort("Description").setValue(m.getDescription(i).trim());
 			}
-		}		
+		}
+		return true;
 	}
 
-	public void updateRealTime(BentelKyoConnector connector) {
+	public boolean updateRealTime(BentelKyoConnector connector) {
 		ReadRealtimeStatusMessage m = new ReadRealtimeStatusMessage();
 		connector.sendMessage(m);
-		updateRealTime(connector,m.getResponse());
+		return updateRealTime(connector,m.getResponse());
 	}
 
-	protected abstract void updateRealTime(BentelKyoConnector connector, Vector<Integer> response);
+	protected abstract boolean updateRealTime(BentelKyoConnector connector, Vector<Integer> response);
 	
-	public void updateStatus(BentelKyoConnector connector) {
+	public boolean updateStatus(BentelKyoConnector connector) {
 		ReadStatusMessage m = new ReadStatusMessage();
 		connector.sendMessage(m);
-		updateStatus(connector,m.getResponse());
+		return updateStatus(connector,m.getResponse());
 	}
 
-	protected abstract void updateStatus(BentelKyoConnector connector, Vector<Integer> response);
+	protected abstract boolean updateStatus(BentelKyoConnector connector, Vector<Integer> response);
 
 
 }

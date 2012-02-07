@@ -36,7 +36,7 @@ public class DMXChannelPort extends IntegerPort {
 	}
 	
 	@Override
-	public long update() {
+	public boolean update() {
 		if (channelDevice == null) {
 			return super.update();
 		} else {

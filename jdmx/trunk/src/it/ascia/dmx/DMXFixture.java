@@ -38,7 +38,7 @@ public class DMXFixture extends Device {
 	}
 
 	@Override
-	public long updatePort(String portId) throws AISException {
+	public boolean updatePort(String portId) throws AISException {
 		DMXChannelPort port = (DMXChannelPort) getPort(portId);
 		return port.update();
 	}

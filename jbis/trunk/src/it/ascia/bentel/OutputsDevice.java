@@ -28,13 +28,13 @@ public class OutputsDevice extends Device {
 	}
 
 	@Override
-	public long updatePort(String portId) throws AISException {
+	public boolean updatePort(String portId) throws AISException {
 		if (portId.startsWith("Out")) {
-			((BentelKyoConnector) getConnector()).updateStatus();
+			return ((BentelKyoConnector) getConnector()).updateStatus();
 		} else {
 			logger.warn("Cannot update unknow port: "+portId);
 		}
-		return 0;
+		return false;
 	}
 
 }

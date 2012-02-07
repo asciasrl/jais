@@ -43,17 +43,17 @@ public class PartitionDevice extends Device {
 	}
 
 	@Override
-	public long updatePort(String portId) throws AISException {
+	public boolean updatePort(String portId) throws AISException {
 		if (portId.equals("Description")) {
-			((BentelKyoConnector) getConnector()).updatePartitionsDescriptions();
+			return ((BentelKyoConnector) getConnector()).updatePartitionsDescriptions();
 		} else if (portId.equals("Alarm") || portId.equals("Tamper")) {
-			((BentelKyoConnector) getConnector()).updateRealTime();
+			return ((BentelKyoConnector) getConnector()).updateRealTime();
 		} else if (portId.equals("Away") || portId.equals("Stay") || portId.equals("Stay0") || portId.equals("Disarmed")) {
-			((BentelKyoConnector) getConnector()).updateStatus();
+			return ((BentelKyoConnector) getConnector()).updateStatus();
 		} else {
 			logger.warn("Cannot update unknow port: "+portId);
 		}
-		return 0;
+		return false;
 	}
 
 }

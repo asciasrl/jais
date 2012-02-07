@@ -213,29 +213,29 @@ public class BentelKyoConnector extends Connector {
 	/**
 	 * Perform an update of panel's real time status
 	 */
-	protected void updateRealTime() {
-		panel.updateRealTime(this);
+	protected boolean updateRealTime() {
+		return panel.updateRealTime(this);
 	}
 
 	/**
 	 * Perform an update of panel's status
 	 */
-	protected void updateStatus() {
-		panel.updateStatus(this);
+	protected boolean updateStatus() {
+		return panel.updateStatus(this);
 	}
 
 	/**
 	 * Perform an update of panel's zone descriptions 
 	 */
-	public void updateZonesDescriptions() {
-		panel.updateZonesDescriptions(this);
+	public boolean updateZonesDescriptions() {
+		return panel.updateZonesDescriptions(this);
 	}
 
 	/**
 	 * Perform an update of panel's partitions descriptions 
 	 */
-	public void updatePartitionsDescriptions() {
-		panel.updatePartitionsDescriptions(this);
+	public boolean updatePartitionsDescriptions() {
+		return panel.updatePartitionsDescriptions(this);
 	}
 
 }

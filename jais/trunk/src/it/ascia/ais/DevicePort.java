@@ -33,7 +33,7 @@ public abstract class DevicePort {
 		return device;
 	}
 
-	private String description;
+	private String description = null;
 	
 	/**
 	 * Momento di ultima variazione del valore
@@ -106,15 +106,17 @@ public abstract class DevicePort {
 		setCacheRetention(DEFAULT_CACHE_RETENTION);
 	}
 
-	public DevicePort(String portId, String portName) {
+	/**
+	 * @param portId 
+	 * @param description se null il default e' connector.address:portId
+	 */
+	public DevicePort(String portId, String description) {
 		this(portId);
-		setDescription(portName);
+		setDescription(description);
 	}
 
 	/**
-	 * @param device
 	 * @param portId
-	 *            se null il default e' connector.address:portId
 	 */
 	public DevicePort(String portId) {
 		logger = Logger.getLogger(getClass());
@@ -138,10 +140,14 @@ public abstract class DevicePort {
 
 	/**
 	 * 
-	 * @return Name of the port (default = full address)
+	 * @return Description of the port (default = full address)
 	 */
 	public String getDescription() {
-		return description;
+		if (description == null) {
+			return getAddress().toString();
+		} else {
+			return description;
+		}
 	}
 
 	public void setDescription(String description) {
@@ -278,6 +284,10 @@ public abstract class DevicePort {
 		queueUpdate();
 	}
 
+	/**
+	 * Normalizza e memorizza il valore
+	 * @param newValue
+	 */
 	private void setCachedValue(Object newValue) {
 		cachedValue = normalize(newValue);
 	}
@@ -307,6 +317,9 @@ public abstract class DevicePort {
 		return System.currentTimeMillis() >= expiration;
 	}
 
+	/**
+	 * @return Indirizzo completo (sicuramente device e porta) della porta
+	 */
 	public Address getAddress() {
 		Address a = device.getAddress();
 		a.setPortId(portId);
@@ -330,6 +343,11 @@ public abstract class DevicePort {
 		}
 	}
 	
+	/** 
+	 * Imposta il momento di scadenza in modo che scada al tempo
+	 * specificato (time in milliseconds).
+	 * Se il valore e' minore di zero, viene posto a 0.
+	 */
 	public void setExpiration(long i) {
 		if (i > 0) {
 			expiration = i;
@@ -349,22 +367,29 @@ public abstract class DevicePort {
 	}
 
 	/**
-	 * Ritorna la rappresentazione testuale del valore
+	 * Se non risulta gia' accodata per l'aggiornamento, si aggiunge alla coda di aggiornamento del connettore
 	 */
-	public String getAsText() {
-		return getValue().toString();
-	}
-
 	public void queueUpdate() {
 		if (!isQueuedForUpdate()) {
 			device.getConnector().queueUpdate(this);
 		}
 	}
 	
+	/**
+	 * Ritorna la rappresentazione di tutte le caratteristiche della porta:
+	 *  - nome classe
+	 *  - indirizzo
+	 *  - descrizione 
+	 *  - ultimo aggiornamento del valore in cache
+	 *  - rappresentazione testuale del valore
+	 */
 	public String toString() {
 		return getClass().getSimpleName() + ";" + getAddress() + ";" + getDescription() + ";" + getCacheTime() + ";" + getStringValue();
 	}
 
+	/**
+	 * @return tempo di ultimo aggiornamento
+	 */
 	private String getCacheTime() {
 		return new Long(timeStamp).toString();
 	}
@@ -405,7 +430,7 @@ public abstract class DevicePort {
 	 * Used by Device.addPort() to set the device to which belong
 	 * @param device
 	 */
-	public void setDevice(Device device) {
+	void setDevice(Device device) {
 		this.device = device;		
 	}
 

@@ -17,9 +17,9 @@ public class DFIR extends DominoDevice {
 		return null;
 	}
 
-	public long updatePort(String portId) throws AISException {
+	public boolean updatePort(String portId) throws AISException {
 		// TODO Auto-generated method stub
-		return 0;
+		return false;
 	}
 
 	public boolean sendPortValue(String portId, Object newValue)

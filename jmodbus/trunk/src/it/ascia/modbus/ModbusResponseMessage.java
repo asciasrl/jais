@@ -13,11 +13,11 @@ public class ModbusResponseMessage extends ModbusMessage {
 		req = trans.getRequest();
 	}
 	
-	public ModbusResponse getResponse() {
+	public ModbusResponse getModbusResponse() {
 		return (ModbusResponse) msg;
 	}
 
-	public ModbusRequest getRequest() {
+	public ModbusRequest getModbusRequest() {
 		return req;
 	}
 

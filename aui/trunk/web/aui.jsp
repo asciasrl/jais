@@ -170,7 +170,7 @@ JSONArray jLayers = new JSONArray();
 int nLayers = layers.size();
 for (int iLayer = 0;  iLayer < (5 + nLayers); iLayer++) {
 	int j = iLayer;
-	if (iLayer >= nLayers) {
+	while (j >= nLayers) {
 		j -= nLayers;
 	}
 	HierarchicalConfiguration layerConfig = (HierarchicalConfiguration) layers.get(j);

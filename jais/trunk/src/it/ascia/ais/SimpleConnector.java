@@ -1,3 +1,7 @@
+/**
+ * Copyright (C) 2008-2012 ASCIA S.r.l.
+ * $Id$
+ */
 package it.ascia.ais;
 
 import java.util.Collection;
@@ -9,7 +13,6 @@ import org.apache.log4j.Logger;
 /**
  * Implementazione minima della interfaccia connettore
  * @author Sergio
- *
  */
 public abstract class SimpleConnector implements ConnectorInterface {
 
@@ -20,6 +23,7 @@ public abstract class SimpleConnector implements ConnectorInterface {
     
 	/**
 	 * I dispositivi presenti nel sistema gestiti da questo connettore.
+	 * @TODO Wrap in Collections.synchronizedMap
 	 */
     private LinkedHashMap<String,Device> devices;
 
@@ -49,6 +53,7 @@ public abstract class SimpleConnector implements ConnectorInterface {
 
 	/**
 	 * L'elenco degli indirizzi - primari o alias - dei dispositivi.
+	 * @TODO Wrap in Collections.synchronizedMap
 	 */
     private LinkedHashMap<String, Device> devicesAlias;
 

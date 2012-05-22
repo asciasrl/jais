@@ -1,5 +1,6 @@
 /**
  * Copyright (C) 2008 ASCIA S.r.l.
+ * $Id$
  */
 package it.ascia.ais;
 
@@ -33,6 +34,7 @@ public abstract class Device {
 
 	/**
 	 * le porte del dispositivo.
+	 * @TODO Wrap in Collections.synchronizedMap
 	 */
 	private LinkedHashMap<String, DevicePort> ports = new LinkedHashMap<String, DevicePort>();
 

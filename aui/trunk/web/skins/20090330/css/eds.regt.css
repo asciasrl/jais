@@ -83,7 +83,7 @@ div.eds-regt-0-season, div.eds-regt-1-season {
 	color: white;
 	float: left;
 	clear: left;
-	margin: 10px;
+	margin: 6px;
 	padding: 10px 0px;
 } 
 
@@ -96,7 +96,7 @@ div.eds-regt-0-day, div.eds-regt-1-day {
 	*/
 	float: left;
 	clear: left;
-	padding: 1px 5px;	
+	padding: 1px 3px;	
 	margin: 2px 0px;
 	padding: 3px 4px 0px 3px;
 } 
@@ -112,7 +112,7 @@ div.eds-regt-0-hour, div.eds-regt-1-hour {
 	font-size: 0.7em;
 	text-align: center;
 	float: left;
-	width: 40px;
+	width: 39px;
 	padding: 0px 0px;
 	height: 140px;
 	margin: 10px 1px;

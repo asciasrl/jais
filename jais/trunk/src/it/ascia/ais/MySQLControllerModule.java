@@ -92,7 +92,11 @@ public class MySQLControllerModule extends ControllerModule implements NewDevice
 			} else {
 				ps.setString(3, oldValue.toString());
 			}
-			ps.setString(4, newValue.toString());
+			if (newValue == null) {
+				ps.setNull(4, java.sql.Types.VARCHAR);
+			} else {
+				ps.setString(4, newValue.toString());
+			}			
 			int n = ps.executeUpdate();
 			ps.close();
 			conn.commit();

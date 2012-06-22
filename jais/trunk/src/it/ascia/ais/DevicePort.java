@@ -2,6 +2,7 @@ package it.ascia.ais;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,6 +56,24 @@ public abstract class DevicePort {
 
 	private boolean queuedForUpdate = false;
 
+	/**
+	 * Fattore di scala
+	 */
+	private double factor = 1;
+	
+	protected void setFactor(double factor) {
+		this.factor = factor;
+	}
+	
+	/**
+	 * Stringa formattazione numeri decimali
+	 */
+	private String decimalFormat = null;
+	
+	protected void setDecimalFormat(String decimalFormat) {
+		this.decimalFormat = decimalFormat;
+	}
+	
 	/**
 	 * Given listener will be notified each time port value changes
 	 * @param listener
@@ -398,12 +417,20 @@ public abstract class DevicePort {
 	 * @return Rappresentazione testuale del valore della porta
 	 */
 	public String getStringValue() {
-		if (cachedValue != null) {
-			return cachedValue.toString();
-		} else {
+		Object value = getCachedValue();
+		if (value == null) {
 			return null;
+		} else if (Number.class.isAssignableFrom(value.getClass())) {
+			Double doubleValue = ((Number)value).doubleValue() * factor;
+			if (decimalFormat != null) {
+				DecimalFormat myFormatter = new DecimalFormat(decimalFormat);
+				return myFormatter.format(value);
+			} else {
+				return doubleValue.toString();
+			}
+		} else {
+			return super.toString();
 		}
-		
 	}
 	
 	/**

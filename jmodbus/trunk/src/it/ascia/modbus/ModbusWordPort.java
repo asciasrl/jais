@@ -1,24 +1,33 @@
 package it.ascia.modbus;
 
+public class ModbusWordPort extends ModbusPort {
 
-/**
- * Registra un valore Integer per contenere un intero a 16 bit senza segno
- * @author Sergio
- * @since 20120207
- */
-public class ModbusWordPort extends ModbusIntegerPort {
+	public ModbusWordPort(int PhysicalAddress, int bytes) {
+		super(PhysicalAddress, bytes);
+	}
 
-	public ModbusWordPort(int i) {
-		super(i,2);
+	public ModbusWordPort(int physicalAddress) {
+		super(physicalAddress,2);
+	}
+
+	public ModbusWordPort(int address, double factor, String decimalformat) {
+		this(address);
+		setFactor(factor);
+		setDecimalFormat(decimalformat);		
 	}
 
 	@Override
-	protected void setValue(long l) {
-		setValue(new Long(l).intValue());		
+	protected Object normalize(Object newValue) throws IllegalArgumentException {
+		if (Integer.class.isInstance(newValue)) {
+			return newValue;
+		} else if (Long.class.isInstance(newValue)) {
+			if ((Long)newValue > Integer.MAX_VALUE || (Long)newValue < Integer.MIN_VALUE) {
+		        throw new IllegalArgumentException(newValue + " cannot be cast to integer without changing its value.");
+			}
+			return new Integer(((Long)newValue).intValue());
+		} else {
+			throw(new IllegalArgumentException("Not an integer: " + newValue.getClass().getCanonicalName()));
+		}
 	}
-
-	protected void setValue(int i) {
-		setValue(new Integer(i));		
-	}
-
+		
 }

@@ -136,6 +136,8 @@ public class ModbusConnector extends Connector implements
 		for (Iterator<HierarchicalConfiguration> i = registers.iterator(); i.hasNext();) {
 			HierarchicalConfiguration registerConfig = i.next();
 			String type = registerConfig.getString("type");			
+			double factor = registerConfig.getDouble("factor",1);
+			String decimalformat = registerConfig.getString("decimalformat","");
 			int address;
 			String hexaddress = registerConfig.getString("address","");
 			try {
@@ -150,11 +152,13 @@ public class ModbusConnector extends Connector implements
 			}
 			ModbusPort port = null;
 			if (type.equals("byte")) {
-				port = new ModbusBytePort(address);
-			} else if (type.equals("word")) {
-				port = new ModbusWordPort(address);
-			} else if (type.equals("long")) {
-				port = new ModbusLongPort(address);
+				port = new ModbusBytePort(address, factor, decimalformat);
+			} else if (type.equals("word") || type.equals("int16")) {
+				port = new ModbusWordPort(address, factor, decimalformat);
+			} else if (type.equals("integer") || type.equals("int32")) {
+				port = new ModbusIntegerPort(address, factor, decimalformat);
+			} else if (type.equals("long") || type.equals("int64")) {
+				port = new ModbusLongPort(address, factor, decimalformat);
 			} else {
 				logger.error("Unsupported port type: '" + type + "'");
 				continue;

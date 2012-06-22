@@ -16,44 +16,111 @@
 						<type>int32</type>
 						<address>00</address>
 						<description>Tensione L1 - N in Volt x 10</description>
+						<factor>0.1</factor>
+						<decimalformat>###.###,# Volts</decimalformat>
 					</register>
 					<register>	
 						<type>int32</type>
 						<address>02</address>
 						<description>Tensione L2 - N in Volt x 10</description>
+						<factor>0.1</factor>
+						<decimalformat>###.###,# Volts</decimalformat>
 					</register>
 					<register>	
 						<type>int32</type>
 						<address>04</address>
 						<description>Tensione L3 - N in Volt x 10</description>
+						<factor>0.1</factor>
+						<decimalformat>###.###,# Volts</decimalformat>
 					</register>
 					<register>	
 						<type>int32</type>
 						<address>12</address>
 						<description>Corrente L1 in Ampere x 1000</description>
+						<factor>0.001</factor>
+						<decimalformat>###.###,### Amp</decimalformat>
 					</register>
 					<register>	
 						<type>int32</type>
 						<address>14</address>
 						<description>Corrente L2 in Ampere x 1000</description>
+						<factor>0.001</factor>
+						<decimalformat>###.###,### Amp</decimalformat>
 					</register>
 					<register>	
 						<type>int32</type>
 						<address>16</address>
 						<description>Corrente L3 in Ampere x 1000</description>
+						<factor>0.001</factor>
+						<decimalformat>###.###,### Amp</decimalformat>
 					</register>
 					<register>	
 						<type>int32</type>
 						<address>40</address>
 						<description>Potenza totale istantanea in Watt x 10</description>
 						<retention>1000</retention>
+						<factor>0.1</factor>
+						<decimalformat>###.###,# Watt</decimalformat>
 					</register>
 					<register>	
 						<type>int32</type>
 						<address>42</address>
 						<description>Potenza apparente totale istantanea in VA x 10</description>
+						<factor>0.1</factor>
+						<decimalformat>###.###,# VA</decimalformat>
 					</register>
 				</slave>
+<!-- 				
+				<slave>
+					<unitid>3</unitid>
+					<description>Analizzatore IME Nemo 72-L</description>
+					<register>	
+						<type>long</type>
+						<address>0x301</address>
+						<description>Phase 1: phase voltage mV</description>
+					</register>
+					<register>	
+						<type>long</type>
+						<address>0x305</address>
+						<description>Phase 2: phase voltage mV</description>
+					</register>
+					<register>	
+						<type>long</type>
+						<address>0x309</address>
+						<description>Phase 3: phase voltage mV</description>
+					</register>
+					<register>	
+						<type>long</type>
+						<address>0x30d</address>
+						<description>Phase 1: current mA</description>
+					</register>
+					<register>	
+						<type>long</type>
+						<address>0x311</address>
+						<description>Phase 2: current mA</description>
+					</register>
+					<register>	
+						<type>long</type>
+						<address>0x315</address>
+						<description>Phase 3: current mA</description>
+					</register>
+					<register>	
+						<type>long</type>
+						<address>0x319</address>
+						<description>3-phase: active power</description>
+					</register>
+					<register>	
+						<type>long</type>
+						<address>0x31d</address>
+						<description>3-phase: reactive power</description>
+					</register>
+					<register>	
+						<type>long</type>
+						<address>0x321</address>
+						<description>3-phase: apparent power</description>
+					</register>
+				</slave>
+-->				
 			</connector>
 		</connectors>
 	</modbus>

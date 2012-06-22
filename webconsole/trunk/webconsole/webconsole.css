@@ -17,12 +17,12 @@ div.port:hover {
 
 div.address {
 	float: left;
-	width: 50%;
+	width: 40%;
 }
 
 div.value {
 	float: left;
-	width: 10%;
+	width: 20%;
 }
 
 div.buttons {

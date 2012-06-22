@@ -1,37 +1,33 @@
 package it.ascia.modbus;
 
-import it.ascia.ais.AISException;
-import net.wimpi.modbus.msg.ReadInputRegistersResponse;
-import net.wimpi.modbus.procimg.InputRegister;
-
-public abstract class ModbusIntegerPort extends ModbusPort {
+public class ModbusIntegerPort extends ModbusPort {
 
 	public ModbusIntegerPort(int PhysicalAddress, int bytes) {
 		super(PhysicalAddress, bytes);
+	}
+
+	public ModbusIntegerPort(int physicalAddress) {
+		super(physicalAddress,4);
+	}
+
+	public ModbusIntegerPort(int address, double factor, String decimalformat) {
+		this(address);
+		setFactor(factor);
+		setDecimalFormat(decimalformat);		
 	}
 
 	@Override
 	protected Object normalize(Object newValue) throws IllegalArgumentException {
 		if (Integer.class.isInstance(newValue)) {
 			return newValue;
-		}
-		return null;
-	}
-	
-	@Override
-	public void setValue(ReadInputRegistersResponse res) {
-		InputRegister[] reg = res.getRegisters();
-		if (reg.length == getWords()) {
-			long newValue = 0;
-			for (int i = 0; i < reg.length; i++ ) {
-				newValue |= reg[i].getValue() << (i * 8);
+		} else if (Long.class.isInstance(newValue)) {
+			if ((Long)newValue > Integer.MAX_VALUE || (Long)newValue < Integer.MIN_VALUE) {
+		        throw new IllegalArgumentException(newValue + " cannot be cast to integer without changing its value.");
 			}
-			setValue(newValue);
+			return new Integer(((Long)newValue).intValue());
 		} else {
-			throw(new AISException("Lunghezza risposta errata: " + reg.length + " invece di " + getWords()));
+			throw(new IllegalArgumentException("Not an integer: " + newValue.getClass().getCanonicalName()));
 		}
-		
 	}
-	
-	protected abstract void setValue(long l);
+		
 }

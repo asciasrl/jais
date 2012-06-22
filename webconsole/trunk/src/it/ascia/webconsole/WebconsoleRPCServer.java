@@ -1,6 +1,5 @@
 package it.ascia.webconsole;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -42,7 +41,7 @@ public class WebconsoleRPCServer {
 				if (value == null) {
 					res1.put("Value","null");
 				} else {
-					res1.put("Value",value.toString());
+					res1.put("Value",p.getStringValue());
 				}
 				res.add(res1);
 			}

@@ -22,7 +22,7 @@
 		</module>
 		<module name="EDS" disabled="false">
 			<class>it.ascia.eds.EDSControllerModule</class>
-			<config>conf/EDS.xml</config>
+			<config>conf/EDS.str-vfb.xml</config>
 		</module>
 		<module name="DXP" disabled="true">
 			<class>it.ascia.dxp.DXPControllerModule</class>
@@ -42,7 +42,7 @@
 		</module>
 		<module name="AUI" disabled="false">
 			<class>it.ascia.aui.AUIControllerModule</class>
-			<config>conf/AUI.xml</config>
+			<config>conf/AUI.str-vfb.xml</config>
 		</module>
 		<module name="Webconsole" disabled="false">
 			<class>it.ascia.webconsole.WebconsoleControllerModule</class>

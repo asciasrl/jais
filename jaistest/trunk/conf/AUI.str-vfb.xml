@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jais:configuration version="1.5">
+<AUI>
+<webroot>../aui/web</webroot>
+<startPage>strvfb</startPage>
+<title>ASCIA HomeInTheBox [AUI 0.1]</title>
+<skin>skins/20090330/</skin>
+<users>
+<user>
+<username>utente</username>
+<password>demo</password>
+</user>
+</users>
+<pages>
+<page id="strvfb">
+<title>Strampelli Via Forte Bravetta 21 int 3</title>
+<src>/images/STR-VFB 20120202.png</src>
+<control id="light1">
+<address>strvfb.10:Out2</address>
+<type>light</type>
+<title>Bagno</title>
+<top>770</top>
+<left>390</left>
+<layer>light</layer>
+</control>
+<control id="light2">
+<address>strvfb.10:Out1</address>
+<type>light</type>
+<title>Bagno</title>
+<top>660</top>
+<left>390</left>
+<layer>light</layer>
+</control>
+<control id="dimmer4">
+<address>strvfb.16:Out1</address>
+<type>dimmer</type>
+<title>Sala</title>
+<top>150</top>
+<left>280</left>
+<layer>light</layer>
+<dimming>images/light_dimming.png</dimming>
+<timer>500</timer>
+<down>images/light_down.png</down>
+<up>images/light_up.png</up>
+</control>
+<control id="light4">
+<address>strvfb.6:Out1</address>
+<type>light</type>
+<title>Cucina</title>
+<top>410</top>
+<left>270</left>
+<layer>light</layer>
+</control>
+<control id="light5">
+<address>strvfb.15:Out1</address>
+<type>light</type>
+<title>Ingresso</title>
+<top>260</top>
+<left>470</left>
+<layer>light</layer>
+</control>
+<control id="light7">
+<address>strvfb.8:Out3</address>
+<type>light</type>
+<title>Studio</title>
+<top>750</top>
+<left>510</left>
+<layer>light</layer>
+</control>
+<control id="light8">
+<address>strvfb.6:Out2</address>
+<type>light</type>
+<title>Sole</title>
+<top>250</top>
+<left>290</left>
+<layer>light</layer>
+</control>
+<control id="light9">
+<address>strvfb.6:Out3</address>
+<type>light</type>
+<title>Console</title>
+<top>340</top>
+<left>410</left>
+<layer>light</layer>
+</control>
+<control id="light10">
+<address>strvfb.8:Out8</address>
+<type>light</type>
+<title>Corridoio</title>
+<top>660</top>
+<left>250</left>
+<layer>light</layer>
+</control>
+<control id="dimmer11">
+<address>strvfb.11:Out1</address>
+<type>dimmer</type>
+<title>Matrimoniale</title>
+<top>610</top>
+<left>120</left>
+<layer>light</layer>
+<dimming>images/light_dimming.png</dimming>
+<timer>500</timer>
+<down>images/light_down.png</down>
+<up>images/light_up.png</up>
+</control>
+<control id="blind12">
+<address>strvfb.10:Blind2</address>
+<type>blind</type>
+<title>Matrimoniale</title>
+<top>610</top>
+<left>10</left>
+<layer>blind</layer>
+<open>images/blind_open.png</open>
+<stopped>images/blind_stopped.png</stopped>
+<opening>images/blind_opening.png</opening>
+<closed>images/blind_closed.png</closed>
+<close>images/blind_close.png</close>
+<closing>images/blind_closing.png</closing>
+<opened>images/blind_opened.png</opened>
+</control>
+<control id="blind13">
+<address>strvfb.8:Blind3</address>
+<type>blind</type>
+<title>Cucina</title>
+<top>410</top>
+<left>90</left>
+<layer>blind</layer>
+<open>images/blind_open.png</open>
+<stopped>images/blind_stopped.png</stopped>
+<opening>images/blind_opening.png</opening>
+<closed>images/blind_closed.png</closed>
+<close>images/blind_close.png</close>
+<closing>images/blind_closing.png</closing>
+<opened>images/blind_opened.png</opened>
+</control>
+<control id="blind14">
+<address>strvfb.2:Blind1</address>
+<type>blind</type>
+<title>Sala</title>
+<top>90</top>
+<left>130</left>
+<layer>blind</layer>
+<open>images/blind_open.png</open>
+<stopped>images/blind_stopped.png</stopped>
+<opening>images/blind_opening.png</opening>
+<closed>images/blind_closed.png</closed>
+<close>images/blind_close.png</close>
+<closing>images/blind_closing.png</closing>
+<opened>images/blind_opened.png</opened>
+</control>
+<control id="blind15">
+<address>strvfb.2:Blind2</address>
+<type>blind</type>
+<title>Balcone</title>
+<top>250</top>
+<left>170</left>
+<layer>blind</layer>
+<open>images/blind_open.png</open>
+<stopped>images/blind_stopped.png</stopped>
+<opening>images/blind_opening.png</opening>
+<closed>images/blind_closed.png</closed>
+<close>images/blind_close.png</close>
+<closing>images/blind_closing.png</closing>
+<opened>images/blind_opened.png</opened>
+</control>
+<control id="power16">
+<address>strvfb.19:Out1</address>
+<type>power</type>
+<title>Caldaia</title>
+<top>910</top>
+<left>570</left>
+<layer>thermo</layer>
+</control>
+<control id="dimmer17">
+<address>strvfb.18:Out1</address>
+<type>dimmer</type>
+<title>Ball</title>
+<top>80</top>
+<left>500</left>
+<layer>light</layer>
+<dimming>images/light_dimming.png</dimming>
+<timer>500</timer>
+<down>images/light_down.png</down>
+<up>images/light_up.png</up>
+</control>
+<control id="dimmer18">
+<type>dimmer</type>
+<title>Palle</title>
+<top>80</top>
+<left>400</left>
+<layer>light</layer>
+<address>strvfb.21:Out1</address>
+<page/>
+</control>
+<control id="light18">
+<type>light</type>
+<title>Corridoio</title>
+<top>510</top>
+<left>460</left>
+<layer>light</layer>
+<address>strvfb.8:Out4</address>
+<page/>
+</control>
+<control id="dimmer19">
+<address>strvfb.21:Out2</address>
+<type>dimmer</type>
+<title>Palle 2</title>
+<top>80</top>
+<left>340</left>
+<layer>light</layer>
+<dimming>images/light_dimming.png</dimming>
+<timer>500</timer>
+<down>images/light_down.png</down>
+<up>images/light_up.png</up>
+</control>
+<control id="dimmer20">
+<address>strvfb.18:Out2</address>
+<type>dimmer</type>
+<title>Presa</title>
+<top>50</top>
+<left>210</left>
+<layer>light</layer>
+<dimming>images/light_dimming.png</dimming>
+<timer>500</timer>
+<down>images/light_down.png</down>
+<up>images/light_up.png</up>
+</control>
+<control id="blind21">
+<address>strvfb.10:Blind3</address>
+<type>blind</type>
+<title>Bambini</title>
+<top>820</top>
+<left>10</left>
+<layer>blind</layer>
+<open>images/blind_open.png</open>
+<stopped>images/blind_stopped.png</stopped>
+<opening>images/blind_opening.png</opening>
+<closed>images/blind_closed.png</closed>
+<close>images/blind_close.png</close>
+<closing>images/blind_closing.png</closing>
+<opened>images/blind_opened.png</opened>
+</control>
+<control id="blind22">
+<address>strvfb.10:Blind4</address>
+<type>blind</type>
+<title>Bambini</title>
+<top>910</top>
+<left>130</left>
+<layer>blind</layer>
+<open>images/blind_open.png</open>
+<stopped>images/blind_stopped.png</stopped>
+<opening>images/blind_opening.png</opening>
+<closed>images/blind_closed.png</closed>
+<close>images/blind_close.png</close>
+<closing>images/blind_closing.png</closing>
+<opened>images/blind_opened.png</opened>
+</control>
+<control id="dimmer23">
+<address>strvfb.11:Out2</address>
+<type>dimmer</type>
+<title>Bambini</title>
+<top>810</top>
+<left>150</left>
+<layer>light</layer>
+<dimming>images/light_dimming.png</dimming>
+<timer>500</timer>
+<down>images/light_down.png</down>
+<up>images/light_up.png</up>
+</control>
+<control id="blind24">
+<address>strvfb.20:Blind3</address>
+<type>blind</type>
+<title>Bagno grigio</title>
+<top>870</top>
+<left>380</left>
+<layer>blind</layer>
+<open>images/blind_open.png</open>
+<stopped>images/blind_stopped.png</stopped>
+<opening>images/blind_opening.png</opening>
+<closed>images/blind_closed.png</closed>
+<close>images/blind_close.png</close>
+<closing>images/blind_closing.png</closing>
+<opened>images/blind_opened.png</opened>
+</control>
+<control id="blind25">
+<address>strvfb.20:Blind4</address>
+<type>blind</type>
+<title>Bagno pesce</title>
+<top>910</top>
+<left>270</left>
+<layer>blind</layer>
+<open>images/blind_open.png</open>
+<stopped>images/blind_stopped.png</stopped>
+<opening>images/blind_opening.png</opening>
+<closed>images/blind_closed.png</closed>
+<close>images/blind_close.png</close>
+<closing>images/blind_closing.png</closing>
+<opened>images/blind_opened.png</opened>
+</control>
+<control id="blind26">
+<address>strvfb.20:Blind1</address>
+<type>blind</type>
+<title>Studio</title>
+<top>870</top>
+<left>490</left>
+<layer>blind</layer>
+<open>images/blind_open.png</open>
+<stopped>images/blind_stopped.png</stopped>
+<opening>images/blind_opening.png</opening>
+<closed>images/blind_closed.png</closed>
+<close>images/blind_close.png</close>
+<closing>images/blind_closing.png</closing>
+<opened>images/blind_opened.png</opened>
+</control>
+<control id="light27">
+<address>strvfb.12:Out4</address>
+<type>light</type>
+<title>Presa letto</title>
+<top>750</top>
+<left>80</left>
+<layer>light</layer>
+</control>
+<control id="light28">
+<address>strvfb.14:Out2</address>
+<type>light</type>
+<title>Comodino</title>
+<top>540</top>
+<left>70</left>
+<layer>light</layer>
+</control>
+<control id="light29">
+<address>strvfb.14:Out1</address>
+<type>light</type>
+<title>Comodino</title>
+<top>540</top>
+<left>180</left>
+<layer>light</layer>
+</control>
+<control id="light30">
+<address>strvfb.20:Out3</address>
+<type>light</type>
+<title>Terrazzino</title>
+<top>950</top>
+<left>490</left>
+<layer>light</layer>
+</control>
+<control id="light31">
+<address>strvfb.2:Out5</address>
+<type>light</type>
+<title>Balcone</title>
+<top>250</top>
+<left>170</left>
+<layer>light</layer>
+</control>
+<control id="light32">
+<address>strvfb.8:Out7</address>
+<type>light</type>
+<title>Balcone</title>
+<top>410</top>
+<left>90</left>
+<layer>light</layer>
+</control>
+<control id="light33">
+<address>strvfb.12:Out1</address>
+<type>light</type>
+<title>Specchio</title>
+<top>840</top>
+<left>240</left>
+<layer>light</layer>
+</control>
+<control id="light34">
+<address>strvfb.12:Out2</address>
+<type>light</type>
+<title>Centro</title>
+<top>840</top>
+<left>300</left>
+<layer>light</layer>
+</control>
+<control id="blind35">
+<address>strvfb.17:Blind1</address>
+<type>blind</type>
+<title>Tenda</title>
+<top>60</top>
+<left>200</left>
+<layer>blind</layer>
+<open>images/blind_open.png</open>
+<stopped>images/blind_stopped.png</stopped>
+<opening>images/blind_opening.png</opening>
+<closed>images/blind_closed.png</closed>
+<close>images/blind_close.png</close>
+<closing>images/blind_closing.png</closing>
+<opened>images/blind_opened.png</opened>
+</control>
+<control id="blind36">
+<address>strvfb.17:Blind2</address>
+<type>blind</type>
+<title>Tenda ce</title>
+<top>90</top>
+<left>260</left>
+<layer>blind</layer>
+<open>images/blind_open.png</open>
+<stopped>images/blind_stopped.png</stopped>
+<opening>images/blind_opening.png</opening>
+<closed>images/blind_closed.png</closed>
+<close>images/blind_close.png</close>
+<closing>images/blind_closing.png</closing>
+<opened>images/blind_opened.png</opened>
+</control>
+<control id="blind37">
+<address>strvfb.15:Blind4</address>
+<type>blind</type>
+<title>Tenda</title>
+<top>200</top>
+<left>230</left>
+<layer>blind</layer>
+<open>images/blind_open.png</open>
+<stopped>images/blind_stopped.png</stopped>
+<opening>images/blind_opening.png</opening>
+<closed>images/blind_closed.png</closed>
+<close>images/blind_close.png</close>
+<closing>images/blind_closing.png</closing>
+<opened>images/blind_opened.png</opened>
+</control>
+<control id="blind38">
+<address>strvfb.15:Blind3</address>
+<type>blind</type>
+<title>Tenda</title>
+<top>270</top>
+<left>270</left>
+<layer>blind</layer>
+<open>images/blind_open.png</open>
+<stopped>images/blind_stopped.png</stopped>
+<opening>images/blind_opening.png</opening>
+<closed>images/blind_closed.png</closed>
+<close>images/blind_close.png</close>
+<closing>images/blind_closing.png</closing>
+<opened>images/blind_opened.png</opened>
+</control>
+</page>
+</pages>
+</AUI>
+</jais:configuration>

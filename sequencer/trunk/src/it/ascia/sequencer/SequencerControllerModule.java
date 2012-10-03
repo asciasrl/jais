@@ -13,7 +13,7 @@ public class SequencerControllerModule extends ControllerModule {
 	public void start() {
 		super.start();
 		SequenceConnector conn = new SequenceConnector("sequencer");
- 		//conn.setModule(this);
+ 		conn.setModule(this);
 		controller.addConnector(conn);
 		/*
 		for (int i = 0; i < 256; i++) {

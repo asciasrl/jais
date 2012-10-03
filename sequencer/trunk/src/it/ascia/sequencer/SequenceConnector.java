@@ -22,5 +22,10 @@ public class SequenceConnector extends SimpleConnector implements ConnectorInter
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+	public boolean isAlive() {
+		return true;
+	}
 
 }

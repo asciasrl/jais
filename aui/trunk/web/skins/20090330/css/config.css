@@ -46,9 +46,9 @@ body {
 #pages {
 	position: relative;
 	float: left;	
-	top: 42px;
+	/*	top: 42px; */
 	width: 150px;
-	height: 400px;
+	height: 200px;
 	border-right: 2px solid white;	
 	padding: 20px;
 	overflow: auto;
@@ -56,13 +56,13 @@ body {
 
 #page {
 	position: relative;
-	float: none;
-	top: 42px;
+	float: left;
+	/* top: 42px; */
 	padding: 20px;
 	width: 100%;
-	height: 480px;
-	margin-left: 192px;
-	margin-right: 342px;
+	height: 200px;
+	/* margin-left: 192px;
+	x-margin-right: 342px; */
 	overflow: auto;
 }
 

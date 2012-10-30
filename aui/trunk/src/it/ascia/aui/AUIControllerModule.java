@@ -15,11 +15,12 @@ import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.jabsorb.JSONRPCBridge;
 import org.jabsorb.JSONRPCServlet;
 // TODO Eliminare riferimenti a jsonsimple (usare org.json di jabsorb)
 import org.json.simple.JSONObject;
-import org.mortbay.jetty.servlet.Context;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Address;
@@ -86,14 +87,14 @@ public class AUIControllerModule extends ControllerModule {
 		String webroot = config.getString("webroot","web");
 		logger.info("AUI web root is: "+webroot);
 		
-		Context root = h.addContext("/", webroot);
+		ServletContextHandler root = h.addContext("/", webroot, ServletContextHandler.SESSIONS, true);
 
-		h.addServlet(new JSONRPCServlet(),root,"/aui/rpc");
+		root.addServlet(new ServletHolder("RPC",new JSONRPCServlet()), "/aui/rpc");
 
-		h.addServlet(new UploadServlet(),root,"/aui/upload");
+		root.addServlet(new ServletHolder("UPLOAD",new UploadServlet()), "/aui/upload");
 
-		h.addServlet(new AUIStreamingServlet(),root,"/stream/*");
-
+		root.addServlet(new ServletHolder("STREAMING",new AUIStreamingServlet()), "/stream/*");
+		
 		JSONRPCBridge.getGlobalBridge().registerObject("AUI", new AUIRPCServer(this));
 	}
 	

@@ -1,1 +1,1 @@
-java -Djava.library.path=lib -classpath "lib/*" it.ascia.ais.Controller
+java -Djava.library.path=lib -classpath "lib/*;" it.ascia.ais.Controller

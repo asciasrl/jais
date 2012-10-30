@@ -1,13 +1,14 @@
 package it.ascia.webconsole;
 
-import org.apache.commons.configuration.HierarchicalConfiguration;
-import org.jabsorb.JSONRPCBridge;
-import org.jabsorb.JSONRPCServlet;
-import org.mortbay.jetty.servlet.Context;
-
 import it.ascia.ais.Controller;
 import it.ascia.ais.ControllerModule;
 import it.ascia.ais.HTTPServerControllerModule;
+
+import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.jabsorb.JSONRPCBridge;
+import org.jabsorb.JSONRPCServlet;
 
 public class WebconsoleControllerModule extends ControllerModule {
 
@@ -20,9 +21,9 @@ public class WebconsoleControllerModule extends ControllerModule {
 		String base = config.getString("contextBase","/webconsole");
 		logger.info("Webconsole contextPath="+path+" resourceBase="+base);
 		
-		Context root = h.addContext(path, base);
+		ServletContextHandler context = h.addContext(path, base,ServletContextHandler.SESSIONS, false);
 
-		h.addServlet(new JSONRPCServlet(),root,"/rpc");
+		context.addServlet(new ServletHolder("JSONRPC",new JSONRPCServlet()),"/rpc");				
 
 		JSONRPCBridge.getGlobalBridge().registerObject("Webconsole", new WebconsoleRPCServer(this));
 	}

@@ -309,7 +309,7 @@ public abstract class Device {
 		lastReachError = System.currentTimeMillis();
 		reachRetry = false;
 		reachErrors++;
-		logger.warn("Unreachable ("+reachErrors+"): "+getFullAddress());		
+		logger.warn("Unreachable ("+reachErrors+"): "+getAddress());		
 	}
 
 	/**

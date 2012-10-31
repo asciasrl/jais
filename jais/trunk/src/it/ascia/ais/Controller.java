@@ -480,7 +480,7 @@ public class Controller {
 		ndpl.add(listener);
 	}
 
-	public synchronized void removePropertyChangeListener(NewDevicePortListener listener) {
+	public synchronized void removeNewDevicePortListener(NewDevicePortListener listener) {
 		ndpl.remove(listener);
 	}
 

@@ -724,8 +724,10 @@ public class BMCRegT22 extends BMCStandardIO {
 					PARAM_MODE,getMode((String)newValue)));
 			invalidate("setPoint");
 		} else if (portId.equals(virtual_RESET_DAY)) {
+			// fixme: newValue è un INT
 			res = clearDay((String)newValue);
 		} else if (portId.equals(virtual_RESET_SEASON)) {
+			// fixme: newValue è un INT
 			res = clearSeason((String)newValue);			
 		} else if (portId.equals(port_setPoint)) {
 			if (Integer.class.isInstance(newValue)) {

@@ -8,7 +8,7 @@
 
 	<taskdef name="jsmin"
 	        classname="net.matthaynes.jsmin.JSMin_Task"
-	        classpath="lib/jsmin.0.2.3.jar"/>	
+	        classpath="lib/jsmin.0.2.4.jar"/>	
 
 	<target name="jar">
 		<property name="temp" value="buildtemp"/>

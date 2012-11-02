@@ -1,0 +1,1 @@
+sqlite3 jais.db

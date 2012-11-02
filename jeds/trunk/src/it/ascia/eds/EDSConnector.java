@@ -164,6 +164,12 @@ public class EDSConnector extends Connector {
 	    				((BMC)d).messageReceived(m);
 	    			}
 	    		}
+	    		EDSGroup groupsdevice = (EDSGroup) getDevice("Group"+bmsg.getCommandNumber());
+	    		if (bmsg.isActivation()) {
+	    			groupsdevice.getPort("Attivazione").setValue(true);
+	    		} else {
+	    			groupsdevice.getPort("Disattivazione").setValue(true);
+	    		}
 			}
     	} else if (RispostaModelloMessage.class.isInstance(m)) {
 			// Aggiungiamo i BMC che si presentano

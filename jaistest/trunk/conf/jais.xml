@@ -4,11 +4,15 @@
 	<locale language="it" country="IT" />
 	<watchdog interval="120" />
 	<modules>
+		<module name="EmailNotifier" disabled="false">
+			<class>it.ascia.ais.EmailNotifierControllerModule</class>
+			<config>conf/EmailNotifier.xml</config>
+		</module>
 		<module name="SQLite" disabled="false">
 			<class>it.ascia.ais.SQLiteControllerModule</class>
 			<config>conf/SQLite.xml</config>
 		</module>
-		<module name="MySQL" disabled="false">
+		<module name="MySQL" disabled="true">
 			<class>it.ascia.ais.MySQLControllerModule</class>
 			<config>conf/Mysql.xml</config>
 		</module>
@@ -51,6 +55,10 @@
 		<module name="HTTPServer" disabled="false">
 			<class>it.ascia.ais.HTTPServerControllerModule</class>
 			<config>conf/HTTPServer.xml</config>
+		</module>
+		<module name="HTTPClient" disabled="true">
+			<class>it.ascia.ais.HTTPClientControllerModule</class>
+			<config>conf/HTTPClient.xml</config>
 		</module>
 		<module name="Cmd" disabled="true">
 			<class>it.ascia.ais.CmdControllerModule</class>

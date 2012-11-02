@@ -32,11 +32,11 @@
       <param name="ConversionPattern" value="%d %-5p [%t] %c - %m%n" />
     </layout>
   </appender>
-  <logger name="org.mortbay">
+  <logger name="org.eclipse.jetty">
     <level value="info" />
   </logger>
   <logger name="org.jabsorb.JSONSerializer">
-    <level value="trace" />
+    <level value="info" />
   </logger>
   <logger name="it.ascia.alarm.AlarmControllerModule">
   	<level value="trace" />

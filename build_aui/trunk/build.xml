@@ -25,7 +25,7 @@
 	</target>
 	
 	<target name="base">
-		<property name="version.num" value="1.09"/>		
+		<property name="version.num" value="1.10"/>		
 		<buildnumber file="build.num"/>
 		<tstamp>
 			<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />

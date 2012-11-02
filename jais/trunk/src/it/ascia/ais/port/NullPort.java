@@ -3,15 +3,15 @@
  */
 package it.ascia.ais.port;
 
-import it.ascia.ais.DevicePort;
+import it.ascia.ais.DevicePortChangeEvent;
 
 /**
- * Questa porta ha sempre valore false. Viene usata solo per inviare comandi al device 
+ * Questa porta ha sempre valore false. Viene usata per inviare comandi al device o per registrare eventi
  * 
  * @author Sergio
  *
  */
-public class NullPort extends DevicePort {
+public class NullPort extends BooleanPort {
 
 	/**
 	 * Crea una porta virtuale, che serve solo da trigger per comandare il device
@@ -37,8 +37,17 @@ public class NullPort extends DevicePort {
 	}
 
 	@Override
-	protected Object normalize(Object newValue) throws IllegalArgumentException {
+	public Object getCachedValue() {
 		return null;
 	}
-	
+
+	/**
+	 * Genera un evento di varaizione fittizia 
+	 */
+	public void setValue(Object newValue, long duration) {
+		DevicePortChangeEvent evt = new DevicePortChangeEvent(this, null,true);
+		fireDevicePortChangeEvent(evt);		
+	}
+
+
 }

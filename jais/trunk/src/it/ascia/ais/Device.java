@@ -139,7 +139,9 @@ public abstract class Device {
 	public void addPort(DevicePort port) {
 		port.setDevice(this);
 		ports.put(port.getPortId(),port);
-		Controller.getController().fireNewDevicePortEvent(new NewDevicePortEvent(port));
+		if (getConnector() != null) {
+			Controller.getController().fireNewDevicePortEvent(new NewDevicePortEvent(port));
+		}
 	}
 
 	public boolean havePort(String portId) {
@@ -326,7 +328,11 @@ public abstract class Device {
 	 * @param connector
 	 */
 	public void setConnector(ConnectorInterface connector) {
-		this.connector = connector;		
+		this.connector = connector;
+		Controller controller = Controller.getController();
+		for (DevicePort port : ports.values()) {
+			controller.fireNewDevicePortEvent(new NewDevicePortEvent(port));
+		}
 	}
 	
 	public String toString() {

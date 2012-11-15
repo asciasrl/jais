@@ -297,7 +297,7 @@ public class Controller {
 				if (module.isRunning()) {
 					logger.debug("Started module "+moduleName+" in "+(System.currentTimeMillis()-start1)/1000.0+" seconds.");
 				} else {
-					logger.fatal("Unable to start module: " + moduleName);
+					throw(new AISException("Unable to start module: " + moduleName));
 				}
 			}
 			logger.debug("Avviati "+modules.size()+" moduli in "+(System.currentTimeMillis()-start)/1000.0+" secondi.");			

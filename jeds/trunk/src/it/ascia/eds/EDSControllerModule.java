@@ -14,7 +14,6 @@ public class EDSControllerModule extends ControllerModule {
 	
 	@SuppressWarnings("unchecked")
 	public void start() {
-		super.start();
 		List connectors = getConfiguration().configurationsAt("connectors.connector");
 		for (Iterator c = connectors.iterator(); c.hasNext();)
 		{
@@ -69,13 +68,15 @@ public class EDSControllerModule extends ControllerModule {
 					}
 				}
 		 	} catch (Exception e) {
-		 		logger.fatal("Errore durante inizializzazione:",e);
 		 		if (eds != null) {
 		 			eds.close();
 		 		}
+		 		stop();
+				throw(new AISException("Errore avvio connettore: ",e));		 		
 		 	}
 		}				
  		logger.info("Completato start");
+		super.start();
 	}
 	
 }

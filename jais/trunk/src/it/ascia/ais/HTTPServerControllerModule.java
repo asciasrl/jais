@@ -67,9 +67,9 @@ public class HTTPServerControllerModule extends ControllerModule {
 			server.join();
 			logger.info("Avviato server HTTP");
 		} catch (Exception e) {
-			logger.fatal("Errore avvio server HTTP: ",e);
-			return;
-		}		
+			stop();
+			throw(new AISException("Errore avvio server HTTP: ",e));
+		}
 		super.start();
 	}
 

@@ -60,9 +60,9 @@ public abstract class ControllerModule {
 		running = false;
 		for (ConnectorInterface connector : Controller.getController().getConnectors()) {
 			if (connector.getModule() == this) {
-				logger.debug("Chiusura connettore "+connector.getName());
+				logger.trace("Chiusura connettore "+connector.getName());
 				connector.close();
-				logger.trace("Chiuso connettore "+connector.getName());
+				logger.debug("Chiuso connettore "+connector.getName());
 			}
 		}
 	};

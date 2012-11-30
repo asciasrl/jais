@@ -40,6 +40,11 @@ public abstract class DevicePort {
 	 * Momento di ultima variazione del valore
 	 */
 	private long timeStamp;
+	
+	/**
+	 * Momento di ultimo aggiornamento del valore in cache
+	 */
+	private long cacheTimeStamp;
 
 	protected Logger logger;
 
@@ -141,6 +146,7 @@ public abstract class DevicePort {
 		logger = Logger.getLogger(getClass());
 		this.portId = portId;
 		timeStamp = 0;
+		cacheTimeStamp = 0;
 		expiration = 0;
 	}
 
@@ -183,9 +189,10 @@ public abstract class DevicePort {
 	 */
 	public Object getValue() throws AISException {
 		if (isDirty() || isExpired()) {
-			readValue();
+			return readValue();
+		} else {
+			return getCachedValue();
 		}
-		return getCachedValue();
 	}
 
 	/**
@@ -309,6 +316,7 @@ public abstract class DevicePort {
 	 */
 	private void setCachedValue(Object newValue) {
 		cachedValue = normalize(newValue);
+		cacheTimeStamp = System.currentTimeMillis();
 	}
 
 	/**
@@ -410,7 +418,7 @@ public abstract class DevicePort {
 	 * @return tempo di ultimo aggiornamento
 	 */
 	private String getCacheTime() {
-		return new Long(timeStamp).toString();
+		return new Long(cacheTimeStamp).toString();
 	}
 
 	/**

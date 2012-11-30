@@ -5,6 +5,8 @@ package it.ascia.ais;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.DateFormat;
+import java.util.GregorianCalendar;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
@@ -99,7 +101,10 @@ public class EmailNotifierControllerModule extends ControllerModule implements N
 	}
 
 	public void notifyPortChange(String addess,long ts, Object oldValue, Object newValue) {
-		sendEmail("Port "+addess+" changed from '"+oldValue+"' to '"+newValue+"'");
+		GregorianCalendar cal = new GregorianCalendar();
+		cal.setTimeInMillis(ts);
+		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
+		sendEmail("Port "+addess+" changed from '"+oldValue+"' to '"+newValue+"' at "+df.format(cal.getTime()));
 	}
 	
 	private void sendEmail(String msg) {

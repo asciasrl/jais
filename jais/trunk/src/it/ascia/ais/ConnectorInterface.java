@@ -72,5 +72,10 @@ public interface ConnectorInterface {
 
 	public boolean isAlive();
 
+	/**
+	 * Avvia i thread del connettore che eseguono operazioni automatiche
+	 */
+	public void start();
+
 
 }

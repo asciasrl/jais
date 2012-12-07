@@ -57,10 +57,6 @@ public abstract class Connector extends SimpleConnector implements ConnectorInte
     	super(name);
 		this.autoupdate = autoupdate;
 		updateQueue = new LinkedBlockingQueue<DevicePort>();
-		updatingThread = new UpdatingThread();
-		updatingThread.setName("Updating-"+getClass().getSimpleName()+"-"+getName());
-		updatingThread.setDaemon(true);
-		updatingThread.start();
 		dispatchQueue = new LinkedBlockingQueue<Message>();
 		dispatchingThread = new DispatchingThread(getDispatchingTimeout());
 		dispatchingThread.setName("Dispatching-"+getClass().getSimpleName()+"-"+getName());
@@ -185,11 +181,13 @@ public abstract class Connector extends SimpleConnector implements ConnectorInte
 			transport.close();
 			transport = null;
 		}
-		updatingThread.interrupt();
-    	try {
-    		updatingThread.join();
-		} catch (InterruptedException e) {
-			logger.error("Interrupted:",e);
+		if (updatingThread != null) {
+			updatingThread.interrupt();
+	    	try {
+	    		updatingThread.join();
+			} catch (InterruptedException e) {
+				logger.error("Interrupted:",e);
+			}
 		}
 		dispatchingThread.interrupt();
     	try {
@@ -311,7 +309,19 @@ public abstract class Connector extends SimpleConnector implements ConnectorInte
 		HierarchicalConfiguration config = getModuleConfiguration();
 		config.setExpressionEngine(new XPathExpressionEngine());
 		return config.configurationAt("connectors/connector[name='" + getName() + "']");
-	}	
-
+	}
+	
+	/**
+	 * Avvia il thread di aggiornamento
+	 */
+	@Override
+	public void start() {
+		super.start();
+		updatingThread = new UpdatingThread();
+		updatingThread.setName("Updating-"+getClass().getSimpleName()+"-"+getName());
+		updatingThread.setDaemon(true);
+		updatingThread.start();		
+	}
+	
 }
 

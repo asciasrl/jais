@@ -171,26 +171,6 @@ public class EDSConnector extends Connector {
 	    			groupsdevice.getPort("Disattivazione").setValue(true);
 	    		}
 			}
-    	} else if (RispostaModelloMessage.class.isInstance(m)) {
-			// Aggiungiamo i BMC che si presentano
-			RispostaModelloMessage risposta = (RispostaModelloMessage) m;
-			BMC bmc = (BMC) getDevice(risposta.getSource()); 
-			if (bmc == null) {
-				bmc = createBMC(risposta.getSource(), risposta.getModello(), risposta.getRevisione());
-				addDevice(bmc);
-				if (bmc != null) {
-					logger.info("Creato BMC "+bmc+" Indirizzo:"+bmc.getFullAddress());
-					if (isDiscoverNew()) {
-						logger.debug("Discover new device: "+bmc.getFullAddress());
-						BmcDiscover bmcDiscover = new BmcDiscover(bmc);
-						bmcDiscover.start();
-					} else {
-						logger.debug("Disabled discover of new device in configuration");
-					}
-				}
-			} else {
-				bmc.messageSent(m);
-			}
     	} else { 
     		BMC bmc;
     		
@@ -434,15 +414,32 @@ public class EDSConnector extends Connector {
 	/**
      * "Scopre" il BMC indicato inviandogli un messaggio di richiesta modello.
      * 
-     * <p>Se il BMC non era gia' in lista, allora verra' inserito dal metodo 
-     * messageReceived().
+     * <p>Se il BMC non era gia' in lista, allora lo aggiunge e lo interroga con bmc.discover()
      * 
      * @param address l'indirizzo del BMC da "scoprire".
      * 
      */
     public void discoverBMC(int address) {
-    	// TODO Rendere sincrono il discover
-    	sendMessage(new RichiestaModelloMessage(address,getMyAddress()));
+    	logger.info("Inizio ricerca dispositivo "+address);
+    	RichiestaModelloMessage richiesta = new RichiestaModelloMessage(address,getMyAddress());
+    	if (sendMessage(richiesta)) {
+			RispostaModelloMessage risposta = (RispostaModelloMessage) richiesta.getResponse();
+			BMC bmc = (BMC) getDevice(risposta.getSource()); 
+			if (bmc == null) {
+				bmc = createBMC(risposta.getSource(), risposta.getModello(), risposta.getRevisione());
+				addDevice(bmc);
+				if (bmc != null) {
+					logger.info("Creato BMC "+bmc+" Indirizzo:"+bmc.getAddress());
+					if (isDiscoverNew()) {
+						logger.debug("Discover new device: "+bmc.getAddress());
+						bmc.discover();
+				    	logger.debug("Fine discover dispositivo "+bmc.getAddress());
+					} else {
+						logger.debug("Disabled discover of new device in configuration");
+					}
+				}
+			}
+    	}
     }
 
     /**
@@ -542,17 +539,4 @@ public class EDSConnector extends Connector {
 		return getModuleConfiguration().getBoolean("discovernew", true);
 	}
 	
-	private class BmcDiscover extends Thread {
-		
-		private BMC bmc;
-		
-		public BmcDiscover(BMC bmc) {
-			this.bmc = bmc;
-			setName("Discover-"+bmc.getFullAddress());
-		}
-		
-		public void run() {
-			bmc.discover();
-		}
-	}
 }

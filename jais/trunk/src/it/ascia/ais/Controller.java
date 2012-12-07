@@ -98,6 +98,7 @@ public class Controller {
 			throw(new KeyAlreadyExistsException("Connector name duplicated: "+connector.getName()));
 		}
 		connectors.put(connector.getName(), connector);
+		connector.start();
 	}
 	
 	/**

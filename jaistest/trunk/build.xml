@@ -1,0 +1,86 @@
+<project name="JAIS Package Builder" default="zip">
+
+	<property name="ant.build.javac.source" value="6"/>
+
+	<property name="ant.build.javac.target" value="6"/>
+
+	<target name="zip" depends="base,jais,webconsole,jeds,jbis,jalarm,jmodbus,aui,JaisTest,i18n">
+		<mkdir dir="${dst}logs/"/>
+		<zip file="${dst}../jais-${v}.zip" duplicate="fail" >
+			<fileset dir="${dst}">
+				<include name="**" />
+			</fileset>
+		</zip>
+		<delete includeemptydirs="true" dir="${dst}" />
+	</target>
+
+	<target name="JaisTest">
+		<mkdir dir="${conf}"/>
+		<zip file="${conf}sample.zip" duplicate="fail">
+			<fileset dir="../JaisTest/conf">
+				<include name="*.xml" />
+			</fileset>
+		</zip>
+		<copy verbose="true" file="../JaisTest/run.bat" todir="${dst}" />
+	</target>
+	
+	<target name="base">
+		<property name="version.num" value="1.10"/>		
+		<buildnumber file="build.num"/>
+		<tstamp>
+			<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
+			<format property="YMDHMS" pattern="yyyyMMddHHmmSS" />
+		</tstamp>
+		<property name="v" value="${version.num}.${build.number}-v${YMDHMS}"/>
+
+		<property name="dst" value="../installer/${v}/"/>
+		<property name="lib" value="${dst}lib/"/>
+		<property name="web" value="${dst}web/"/>
+		<property name="conf" value="${dst}conf/"/>		
+		<property name="webconsole" value="${dst}webconsole/"/>
+	</target>
+
+	<target name="jais" depends="base">
+		<ant dir="../jais"/>
+	</target>
+	
+	<target name="jeds" depends="jais">
+		<ant dir="../jeds"/>
+	</target>
+
+	<target name="jbis" depends="jais">
+		<ant dir="../jbis"/>
+	</target>
+
+	<target name="javs" depends="jais">
+		<ant dir="../javs"/>
+	</target>
+
+	<target name="aui" depends="jais">
+		<ant dir="../aui"/>
+	</target>	
+	
+	<target name="i18n">
+		<jar destfile="${lib}i18n-${v}.jar">
+			<fileset dir="../translations/src">
+    		<include name="**/*.properties"/>
+			</fileset>
+		</jar>
+	</target>
+	
+	<target name="jalarm" depends="jais,jeds">
+		<ant dir="../jalarm" inheritrefs="true" />
+	</target>
+
+	<target name="jmodbus" depends="jais">
+		<ant dir="../jmodbus"/>
+	</target>
+
+	<target name="webconsole" depends="jais">
+		<ant dir="../webconsole"/>
+	</target>
+
+
+	
+</project>
+  

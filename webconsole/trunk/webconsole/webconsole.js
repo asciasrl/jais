@@ -24,9 +24,17 @@ var webconsole = {
 				var portElement = new Element('div', {'id': 'port-'+i, 'class': 'port'} );
 				var map = result.list[i].map;
 				
-				var addressElement = new Element('div', {'class': 'address'});
-				addressElement.innerHTML = map.Address + " (" + map.SimpleClassName + ")";
+				var addressElement = new Element('div', {'class': 'address' });
+				addressElement.innerHTML = map.Address;
 				portElement.grab(addressElement);
+
+				var typeElement = new Element('div', {'class': 'type' });
+				typeElement.innerHTML = map.SimpleClassName;
+				portElement.grab(typeElement);
+
+				var descriptionElement = new Element('div', {'class': 'description' });
+				descriptionElement.innerHTML = map.Description;
+				portElement.grab(descriptionElement);
 
 				var valueElement = new Element('div', {'class': 'value'});
 				valueElement.innerHTML = map.Value;

@@ -43,6 +43,7 @@ public class WebconsoleRPCServer {
 				} else {
 					res1.put("Value",p.getStringValue());
 				}
+				res1.put("Description",p.getDescription());
 				res.add(res1);
 			}
 		}

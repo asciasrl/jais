@@ -9,6 +9,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
 
@@ -16,27 +18,48 @@ public class MySQLControllerModule extends ControllerModule implements NewDevice
 
 	private Connection conn = null;
 	
+	protected BlockingQueue<DevicePortChangeEvent> eventsQueue;
+
+	private String url;
+
+	private String username;
+
+	private String password;
+
+	private RecordPortChangeThread recordPortChangeThread;
+	
 	public MySQLControllerModule() {
 		Controller.getController().addNewDevicePortListener(this);
 	}
 	
 	public void start() {
 		HierarchicalConfiguration config = getConfiguration();
-		String url = config.getString("url","jdbc:mysql://localhost:3306/mysql");
-		String username = config.getString("username","root");
-		String password = config.getString("password","");
+		url = config.getString("url","jdbc:mysql://localhost:3306/mysql");
+		username = config.getString("username","root");
+		password = config.getString("password","");
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
 			throw(new AISException("While opening mysql driver:",e));
 		}
+		connect();
+		initDb();
+		eventsQueue = new LinkedBlockingDeque<DevicePortChangeEvent>();
+		recordPortChangeThread = new RecordPortChangeThread();
+		recordPortChangeThread.setName("Record-"+getClass().getSimpleName()+"-"+getName());
+		//recordPortChangeThread.setDaemon(true);
+		recordPortChangeThread.start();
+		super.start();
+	}
+	
+	private void connect() {
 		try {
 			conn = DriverManager.getConnection(url,username, password);
+			conn.setAutoCommit(false);
+			logger.info("Connected to: "+url);
 		} catch (SQLException e) {
 			throw(new AISException("While connecting to "+url+" :",e));
 		}
-		initDb();
-		super.start();
 	}
 
 	private void initDb() {
@@ -52,7 +75,6 @@ public class MySQLControllerModule extends ControllerModule implements NewDevice
 			ResultSet rs = stat.executeQuery("select count(*) from portChange;");
 			rs.first();
 			logger.info("Initialized database, "+rs.getLong(1)+" events records.");	
-			conn.setAutoCommit(false);
 		} catch (SQLException e) {
 			throw(new AISException("While initDb :",e));
 		}
@@ -74,43 +96,33 @@ public class MySQLControllerModule extends ControllerModule implements NewDevice
 		p.addPropertyChangeListener(this);		
 	}
 
-	public void devicePortChange(DevicePortChangeEvent evt) {		
-		recordPortChange(evt.getFullAddress(), evt.getTimeStamp(), evt.getOldValue(), evt.getNewValue());
+	public void devicePortChange(DevicePortChangeEvent evt) {
+		try {
+			eventsQueue.add(evt);
+		} catch (IllegalStateException e) {
+			logger.error("Unable to queue event:" + evt.toString());
+		}
+		logger.debug("Events to record: "+eventsQueue.size());
 	}
 	
-	public void recordPortChange(String address,long ts, Object oldValue, Object newValue) {
-		if (conn == null) {
-			logger.error("SQL connection not open!");
-			return;
+	private void recordPortChange(String address,long ts, Object oldValue, Object newValue) throws SQLException {
+		PreparedStatement ps = conn.prepareStatement("insert into portChange (address,ts,oldValue,newValue) values (?,?,?,?);");
+		ps.setString(1, address);
+		ps.setTimestamp(2, new Timestamp(ts));
+		if (oldValue == null) {
+			ps.setNull(3, java.sql.Types.VARCHAR);
+		} else {
+			ps.setString(3, oldValue.toString());
 		}
-		try {
-			PreparedStatement ps = conn.prepareStatement("insert into portChange (address,ts,oldValue,newValue) values (?,?,?,?);");
-			ps.setString(1, address);
-			ps.setTimestamp(2, new Timestamp(ts));
-			if (oldValue == null) {
-				ps.setNull(3, java.sql.Types.VARCHAR);
-			} else {
-				ps.setString(3, oldValue.toString());
-			}
-			if (newValue == null) {
-				ps.setNull(4, java.sql.Types.VARCHAR);
-			} else {
-				ps.setString(4, newValue.toString());
-			}			
-			int n = ps.executeUpdate();
-			ps.close();
-			conn.commit();
-			logger.trace("Inserted rows="+n);
-			/*
-			Statement stat = conn.createStatement();
-			logger.trace("Rows="+n);
-			ResultSet rs = stat.executeQuery("select count(*) from portChange;");
-			rs.first();
-			logger.debug("portChange records: "+rs.getLong(1));
-			*/
-		} catch (SQLException e) {
-			logger.error("Error inserting:",e);
-		}	    				
+		if (newValue == null) {
+			ps.setNull(4, java.sql.Types.VARCHAR);
+		} else {
+			ps.setString(4, newValue.toString());
+		}			
+		int n = ps.executeUpdate();
+		ps.close();
+		conn.commit();
+		logger.trace("Inserted rows="+n);
 	}
 
 	public void propertyChange(PropertyChangeEvent evt) {
@@ -118,5 +130,47 @@ public class MySQLControllerModule extends ControllerModule implements NewDevice
 			devicePortChange((DevicePortChangeEvent) evt);
 		}		
 	}
+	
+	/**
+	 * Questo thread esegue il dispacciamento dei messaggi ricevuti che sono stati messi nella apposita coda
+	 * Esegue il metodo Connector.dispatchMessage()
+	 * @author Sergio
+	 * @since 20100513
+	 */
+    private class RecordPortChangeThread extends Thread {
+        
+		public void run() {
+			logger.debug("Start.");
+    		while (isRunning()) {
+				try {
+					DevicePortChangeEvent e = eventsQueue.take();
+					// lo rimette in coda
+					eventsQueue.offer(e);
+					try {
+						recordPortChange(e.getFullAddress(), e.getTimeStamp(), e.getOldValue(), e.getNewValue());						
+						// lo elimina solo se la registrazione non ha dato errori
+						eventsQueue.remove(e);
+					} catch (SQLException e1) {
+						logger.error("Error inserting:",e1);
+						try {
+							conn.close();
+						} catch (SQLException e2) {
+						}
+						synchronized (this) {
+							wait(1000);
+						}
+						connect();
+					}
+					logger.debug("Events to record: "+eventsQueue.size());
+				} catch (InterruptedException e) {
+					logger.debug("Interrupted.");
+				} catch (Exception e) {
+					logger.fatal("Error:",e);
+				}
+    		}
+			logger.debug("Stop.");
+    	}
+    }
+
 	
 }

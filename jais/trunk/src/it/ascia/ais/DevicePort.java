@@ -432,7 +432,7 @@ public abstract class DevicePort {
 			Double doubleValue = ((Number)value).doubleValue() * factor;
 			if (decimalFormat != null) {
 				DecimalFormat myFormatter = new DecimalFormat(decimalFormat);
-				return myFormatter.format(value);
+				return myFormatter.format(doubleValue);
 			} else {
 				return doubleValue.toString();
 			}

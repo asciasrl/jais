@@ -6,7 +6,7 @@ import java.util.Vector;
 public interface ConnectorInterface {
 
     /**
-     * Restituisce il nome del controllore, come specificato alla creazione
+     * Restituisce il nome del connettore, come specificato alla creazione
      * @return Nome
      */
 	public String getName();

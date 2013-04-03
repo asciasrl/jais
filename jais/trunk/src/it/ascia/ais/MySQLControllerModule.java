@@ -67,7 +67,8 @@ public class MySQLControllerModule extends ControllerModule implements NewDevice
 			Statement stat = conn.createStatement();
 			stat.executeUpdate("CREATE TABLE IF NOT EXISTS `portChange` (" +
 					  "`address` varchar(60) NOT NULL,"+
-					  "`ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,"+
+					  "`oldTs` timestamp NULL DEFAULT NULL,"+
+					  "`newTs` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,"+
 					  "`oldValue` varchar(60),"+
 					  "`newValue` varchar(60) NOT NULL,"+
 					  "KEY `address` (`address`)"+
@@ -105,19 +106,28 @@ public class MySQLControllerModule extends ControllerModule implements NewDevice
 		logger.debug("Events to record: "+eventsQueue.size());
 	}
 	
-	private void recordPortChange(String address,long ts, Object oldValue, Object newValue) throws SQLException {
-		PreparedStatement ps = conn.prepareStatement("insert into portChange (address,ts,oldValue,newValue) values (?,?,?,?);");
+	private void recordPortChange(String address,long oldTs, long newTs, Object oldValue, Object newValue) throws SQLException {
+		PreparedStatement ps = conn.prepareStatement("insert into portChange (address,oldTs,newTs,oldValue,newValue) values (?,?,?,?,?);");
 		ps.setString(1, address);
-		ps.setTimestamp(2, new Timestamp(ts));
-		if (oldValue == null) {
-			ps.setNull(3, java.sql.Types.VARCHAR);
+		if (oldTs == 0) {
+			ps.setNull(2, java.sql.Types.TIMESTAMP);			
 		} else {
-			ps.setString(3, oldValue.toString());
+			ps.setTimestamp(2, new Timestamp(oldTs));
 		}
-		if (newValue == null) {
+		if (newTs == 0) {
+			ps.setNull(3, java.sql.Types.TIMESTAMP);			
+		} else {
+			ps.setTimestamp(3, new Timestamp(newTs));
+		}
+		if (oldValue == null) {
 			ps.setNull(4, java.sql.Types.VARCHAR);
 		} else {
-			ps.setString(4, newValue.toString());
+			ps.setString(4, oldValue.toString());
+		}
+		if (newValue == null) {
+			ps.setNull(5, java.sql.Types.VARCHAR);
+		} else {
+			ps.setString(5, newValue.toString());
 		}			
 		int n = ps.executeUpdate();
 		ps.close();
@@ -147,7 +157,8 @@ public class MySQLControllerModule extends ControllerModule implements NewDevice
 					// lo rimette in coda
 					eventsQueue.offer(e);
 					try {
-						recordPortChange(e.getFullAddress(), e.getTimeStamp(), e.getOldValue(), e.getNewValue());						
+						DevicePort p = (DevicePort) e.getSource();
+						recordPortChange(e.getFullAddress(), p.getPreviuosTimeStamp(), e.getTimeStamp(), e.getOldValue(), e.getNewValue());						
 						// lo elimina solo se la registrazione non ha dato errori
 						eventsQueue.remove(e);
 					} catch (SQLException e1) {

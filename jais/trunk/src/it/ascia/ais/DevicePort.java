@@ -42,6 +42,17 @@ public abstract class DevicePort {
 	private long timeStamp;
 	
 	/**
+	 * Timestamp of previous value
+	 */
+	private long previousTimeStamp;
+
+	/**
+	 * previous value
+	 */
+	private Object previousValue;
+
+
+	/**
 	 * Momento di ultimo aggiornamento del valore in cache
 	 */
 	private long cacheTimeStamp;
@@ -146,6 +157,7 @@ public abstract class DevicePort {
 		logger = Logger.getLogger(getClass());
 		this.portId = portId;
 		timeStamp = 0;
+		previousTimeStamp = 0;
 		cacheTimeStamp = 0;
 		expiration = 0;
 	}
@@ -224,11 +236,14 @@ public abstract class DevicePort {
 		Object oldValue = getCachedValue();
 		boolean changed = false; 
 		if (isDirty() || oldValue == null || !oldValue.equals(newValue)) {
+			previousTimeStamp = timeStamp;
+			previousValue = oldValue;
 			timeStamp = System.currentTimeMillis();
 			changed = true;
 		}
 		synchronized (this) {
-			setCachedValue(newValue);
+			cachedValue = normalize(newValue);
+			cacheTimeStamp = System.currentTimeMillis();
 			dirty = false;
 			setExpiration(System.currentTimeMillis() + duration);
 			// sveglia getValue()
@@ -311,15 +326,6 @@ public abstract class DevicePort {
 	}
 
 	/**
-	 * Normalizza e memorizza il valore
-	 * @param newValue
-	 */
-	private void setCachedValue(Object newValue) {
-		cachedValue = normalize(newValue);
-		cacheTimeStamp = System.currentTimeMillis();
-	}
-
-	/**
 	 * @return Valore in cache della porta
 	 */
 	public Object getCachedValue() {
@@ -392,11 +398,19 @@ public abstract class DevicePort {
 	public long getTimeStamp() {
 		return timeStamp;
 	}
+	
+	/**
+	 * 
+	 * @return timestamp when value changed to oldValue
+	 */
+	public long getPreviuosTimeStamp() {
+		return previousTimeStamp;
+	}
 
 	/**
 	 * Se non risulta gia' accodata per l'aggiornamento, si aggiunge alla coda di aggiornamento del connettore
 	 */
-	public void queueUpdate() {
+	public synchronized void queueUpdate() {
 		if (!isQueuedForUpdate()) {
 			device.getConnector().queueUpdate(this);
 		}

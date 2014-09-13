@@ -463,7 +463,7 @@ public class Controller {
 	}
 
 	/**
-	 * Fired when a port is added to a device, dispatch to all listner bounded with addNewDevicePortListener()   
+	 * Fired when a port is added to a device, dispatch to method newDevicePort of all listner bounded with addNewDevicePortListener()   
 	 * @param evt
 	 */
 	void fireNewDevicePortEvent(NewDevicePortEvent evt) {
@@ -474,7 +474,8 @@ public class Controller {
 
 	
 	/**
-	 * Add to the list of object listnening for new port 
+	 * Add to the list of object listening for new Device Port.
+	 * When a new Device Port event fires, the method newDevicePort of the listener is invoked  
 	 * @param listener
 	 */
 	public synchronized void addNewDevicePortListener(NewDevicePortListener listener) {

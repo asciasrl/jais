@@ -140,27 +140,27 @@ public class EDSMessageParser extends it.ascia.ais.MessageParser {
 			valid = false;
 		}
 		if (iBuff == 0 && b != Stx) {
-			logger.trace("Non Stx: "+EDSMessage.b2h(b));
+			logger.trace("First byte not Stx: "+EDSMessage.b2h(b));
 			return;
 		}
 		if ((lastReceived > 0) && (System.currentTimeMillis() - lastReceived) >= TIMEOUT ) {
-			logger.debug("Timeout in ricezione "+(System.currentTimeMillis() - lastReceived)+"mS: "+dumpBuffer()+" Next("+iBuff+"): "+EDSMessage.b2h(b));
+			logger.warn("Reception timeout of "+(System.currentTimeMillis() - lastReceived)+"mS: "+dumpBuffer()+" Next("+iBuff+"): "+EDSMessage.b2h(b));
 		}
 		buff[iBuff++] = b;
 		lastReceived = System.currentTimeMillis();		
 		if (iBuff==8) {
-			if ((buff[0] == Stx) && (buff[7] == Etx)) {
-				if (buff[6] == checksum()) {
-					valid = true;
-					message = createMessage();
-					clear();
-				} else {
-					logger.debug("Checksum error: "+dumpBuffer());
-					shift();
-				}
-			} else {
-				logger.debug("Invalid message: "+dumpBuffer());
+			if (buff[0] != Stx) {
+				logger.warn("First byte was not Stx: "+dumpBuffer());
+			} else if (buff[7] != Etx) {
+				logger.warn("Last byte was not Etx: "+dumpBuffer());
 				shift();
+			} else if (buff[6] != checksum()) {
+				logger.warn("Checksum error: "+dumpBuffer());
+				shift();
+			} else {
+				valid = true;
+				message = createMessage();
+				clear();
 			}
 		}
 	}

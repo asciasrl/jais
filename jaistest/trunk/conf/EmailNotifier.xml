@@ -1,8 +1,20 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <jais:configuration version="1.5">
   <EmailNotifier>
+     <Hostname>smtp.ascia.net</Hostname>
+     <From>sergio@ascia.net</From>
      <To>sergio@ascia.net</To>
-     <notify>*.Group1:Attivazione</notify>
-     <notify>*.Group1:Disattivazione</notify>
+     <notify>
+     	<description>Luce Studio</description>
+     	<address>strvfb.8:Out3</address>
+     </notify>
+     <notify>
+        <description>Tapparelle Apri Tutte</description>
+     	<address>*.Group6:Attivazione</address>
+     </notify>
+     <notify>
+        <description>Tapparelle Chiudi Tutte</description>
+     	<address>*.Group6:Disattivazione</address>
+     </notify>
   </EmailNotifier>
 </jais:configuration>

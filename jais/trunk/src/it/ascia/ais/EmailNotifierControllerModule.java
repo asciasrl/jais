@@ -7,6 +7,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
@@ -21,31 +23,26 @@ import it.ascia.ais.NewDevicePortListener;
 /**
  * @author Sergio
  * @since 20121102
+ * @TODO Condizione sul valore 
  */
 public class EmailNotifierControllerModule extends ControllerModule implements NewDevicePortListener, PropertyChangeListener  {
 	
 	private String hostname;
 	private String from;
 	private String to;
-
+	private String subject;
+	
 	protected LinkedBlockingQueue<DevicePortChangeEvent> notifierQueue;
 	private NotifierThread notifierThread;
 
-	/**
-	 * 
-	 */
-	public EmailNotifierControllerModule() {
-	}
-	
 	@Override
-	public void start() {
-		super.start();
-		
+	public void start() {		
 		HierarchicalConfiguration config = getConfiguration();
 		hostname = config.getString("Hostname","smtp.ascia.net");
 		from = config.getString("From","JAIS <sergio@ascia.net>");
 		to = config.getString("To","Me <sergio@ascia.net>");
-		logger.info("Hostname: "+hostname + " From:" + from + " To:" + to);
+		subject = config.getString("Subject","JAIS Email Notifier");
+		logger.info("Hostname: "+hostname + " From:" + from + " To:" + to + " Subject:"+subject);
 				
 		Controller.getController().addNewDevicePortListener(this);
 		notifierQueue = new LinkedBlockingQueue<DevicePortChangeEvent>();
@@ -53,6 +50,8 @@ public class EmailNotifierControllerModule extends ControllerModule implements N
 		notifierThread.setName("Dispatching-"+getClass().getSimpleName()+"-"+getName());
 		notifierThread.setDaemon(true);
 		notifierThread.start();
+		
+		super.start();
 	}
 	
 	@Override
@@ -97,25 +96,25 @@ public class EmailNotifierControllerModule extends ControllerModule implements N
 	}
 
 	public void devicePortChange(DevicePortChangeEvent evt) {		
-		notifyPortChange(evt.getFullAddress(), evt.getTimeStamp(), evt.getOldValue(), evt.getNewValue());
+		notifyPortChange((DevicePort) evt.getSource(), evt.getTimeStamp(), evt.getOldValue(), evt.getNewValue());
 	}
 
-	public void notifyPortChange(String addess,long ts, Object oldValue, Object newValue) {
+	public void notifyPortChange(DevicePort p,long ts, Object oldValue, Object newValue) {
 		GregorianCalendar cal = new GregorianCalendar();
 		cal.setTimeInMillis(ts);
 		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
-		sendEmail("Port "+addess+" changed from '"+oldValue+"' to '"+newValue+"' at "+df.format(cal.getTime()));
+		sendEmail("Port "+p+" changed from '"+oldValue+"' to '"+newValue+"' at "+df.format(cal.getTime()));
 	}
 	
 	private void sendEmail(String msg) {
 		SimpleEmail email = new SimpleEmail();
-		email.setHostName(hostname);
 		try {
+			email.setHostName(hostname);
 			email.setFrom(from);
 			email.addTo(to);
-			email.setSubject("JAIS Email Notifier");
+			email.setSubject(subject);
 			email.setMsg(msg);
-			logger.trace("Sending email: "+msg);
+			logger.info("Sending email to "+to+" : "+msg);
 			String res = email.send();
 			logger.debug("Sent email ("+res+"):" + msg);
 		} catch (EmailException e) {
@@ -126,14 +125,24 @@ public class EmailNotifierControllerModule extends ControllerModule implements N
 	@Override
 	public void newDevicePort(NewDevicePortEvent evt) {
 		DevicePort p = evt.getDevicePort();
-		logger.debug("New device port "+p);
-		// TODO aggiungere solo le porte di cui si vogliono notificare le modifiche in base al file di configurazione
-		if (p.getAddress().toString().startsWith("*.Group6:")) {
-			logger.debug("Attivate notifiche per "+p);
-			p.addPropertyChangeListener(this);
-		} else {
-			logger.trace("Non attivate notifiche per "+p);
+		
+		HierarchicalConfiguration config = getConfiguration();
+		List notifyList = config.configurationsAt("notify");
+		for (Iterator notify = notifyList.iterator(); notify.hasNext();)
+		{
+		    HierarchicalConfiguration notifyConfig = (HierarchicalConfiguration) notify.next();
+		    String address = (String) notifyConfig.getString("address");
+		    String description = (String) notifyConfig.getString("description");
+			if (p.getAddress().matches(address)) {
+				if (p.getDescription().equals(p.getAddress().toString()) && description != null) {
+					logger.debug("Descrizione porta "+p+" : "+description);
+					p.setDescription(description);
+				}
+				logger.debug("Attivate notifiche per "+p);
+				p.addPropertyChangeListener(this);
+			}
 		}
+		
 	}
 
 }

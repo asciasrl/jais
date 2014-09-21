@@ -10,7 +10,7 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.TooManyListenersException;
 
-import gnu.io.*;
+import purejavacomm.*;
 
 /**
  * Gestisce la comunicazione attraverso una porta seriale locale.
@@ -43,7 +43,7 @@ public class SerialTransport extends Transport {
 	private int receiveFraming;
 	private int receiveTimeout;
 	
-	private static boolean rxtxLoaded = false;
+	//private static boolean rxtxLoaded = false;
 	
 	private static int INPUT_BUFFER_SIZE = 1024;
 	private static int OUTPUT_BUFFER_SIZE = 1024;
@@ -115,13 +115,14 @@ public class SerialTransport extends Transport {
     	this.receiveThreshold = receiveThreshold;
     	this.receiveFraming = receiveFraming;
     	this.receiveTimeout = receiveTimeout;
-    	loadLibrary();
+    	//loadLibrary();
     	open();
     }
     
     /**
      * Carica la libreria nativa specifica del sistema in uso
      */
+    /*
 	private void loadLibrary() {
 		
 		if (rxtxLoaded) {
@@ -180,6 +181,7 @@ public class SerialTransport extends Transport {
 		
 		rxtxLoaded = true;
 	}
+	*/
 
 	private void open() {
     	logger.debug("Opening serial port '" + portName + "' "+portSpeed+" "+databits+parityChar(parity)+stopbits);

@@ -132,6 +132,9 @@ public class EmailNotifierControllerModule extends ControllerModule implements N
 		{
 		    HierarchicalConfiguration notifyConfig = (HierarchicalConfiguration) notify.next();
 		    String address = (String) notifyConfig.getString("address");
+		    if (address == null) {
+		    	throw(new AISException("Syntax error in configuration file: address must be specified"));		    	
+		    }
 		    String description = (String) notifyConfig.getString("description");
 			if (p.getAddress().matches(address)) {
 				if (p.getDescription().equals(p.getAddress().toString()) && description != null) {

@@ -24,10 +24,10 @@ import net.wimpi.modbus.msg.ModbusResponse;
 import net.wimpi.modbus.util.ModbusUtil;
 
 import java.io.IOException;
-import gnu.io.CommPort;
+import purejavacomm.CommPort;
 import java.io.InputStream;
 import java.io.OutputStream;
-import gnu.io.UnsupportedCommOperationException;
+import purejavacomm.UnsupportedCommOperationException;
 
 /**
  * Abstract base class for serial <tt>ModbusTransport</tt>

@@ -20,7 +20,7 @@ import net.wimpi.modbus.Modbus;
 import net.wimpi.modbus.io.*;
 import net.wimpi.modbus.util.SerialParameters;
 
-import gnu.io.*;
+import purejavacomm.*;
 
 import java.io.IOException;
 import java.io.InputStream;

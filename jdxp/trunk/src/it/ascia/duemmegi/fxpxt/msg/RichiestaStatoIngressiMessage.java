@@ -1,10 +1,10 @@
-package it.ascia.dxp.msg;
+package it.ascia.duemmegi.fxpxt.msg;
 
-import it.ascia.dxp.DXPMessage;
-import it.ascia.dxp.DXPRequestMessage;
-import it.ascia.dxp.DXPResponseMessage;
+import it.ascia.duemmegi.fxpxt.FXPXTMessage;
+import it.ascia.duemmegi.fxpxt.FXPXTRequestMessage;
+import it.ascia.duemmegi.fxpxt.FXPXTResponseMessage;
 
-public class RichiestaStatoIngressiMessage extends DXPRequestMessage {
+public class RichiestaStatoIngressiMessage extends FXPXTRequestMessage {
 
 	public RichiestaStatoIngressiMessage(int ind) {
 		funzione = 0x82;
@@ -22,10 +22,10 @@ public class RichiestaStatoIngressiMessage extends DXPRequestMessage {
 		this((new Integer(address)).intValue());
 	}
 
-	public boolean isAnsweredBy(DXPMessage m) {
-		if (DXPResponseMessage.class.isInstance(m)
+	public boolean isAnsweredBy(FXPXTMessage m) {
+		if (FXPXTResponseMessage.class.isInstance(m)
 				&& m.getMessageType() == RISPOSTA_STATO_INGRESSO
-				&& ((DXPResponseMessage) m).getSource().equals(getDestination())) {
+				&& ((FXPXTResponseMessage) m).getSource().equals(getDestination())) {
 			return true;
 		} else {
 			return false;

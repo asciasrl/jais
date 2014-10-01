@@ -1,17 +1,17 @@
 /**
  * 
  */
-package it.ascia.dxp.device;
+package it.ascia.duemmegi.domino.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.Message;
 import it.ascia.ais.port.DimmerPort;
-import it.ascia.dxp.DXPMessage;
-import it.ascia.dxp.DominoDevice;
-import it.ascia.dxp.msg.ComandoUsciteMessage;
-import it.ascia.dxp.msg.RichiestaStatoUsciteMessage;
-import it.ascia.dxp.msg.RispostaStatoUsciteMessage;
+import it.ascia.duemmegi.domino.DominoDevice;
+import it.ascia.duemmegi.fxpxt.FXPXTMessage;
+import it.ascia.duemmegi.fxpxt.msg.ComandoUsciteMessage;
+import it.ascia.duemmegi.fxpxt.msg.RichiestaStatoUsciteMessage;
+import it.ascia.duemmegi.fxpxt.msg.RispostaStatoUsciteMessage;
 
 /**
  * @author sergio
@@ -24,7 +24,7 @@ public class DFDM extends DominoDevice {
 		addPort(new DimmerPort("o"+address+".1"));
 	}
 
-	public void messageReceived(DXPMessage m) {
+	public void messageReceived(FXPXTMessage m) {
 		// TODO Auto-generated method stub
 
 	}
@@ -32,9 +32,9 @@ public class DFDM extends DominoDevice {
 	/* (non-Javadoc)
 	 * @see it.ascia.dxp.DominoDevice#messageSent(it.ascia.ais.Message)
 	 */
-	public void messageSent(DXPMessage m) {
+	public void messageSent(FXPXTMessage m) {
 		switch (m.getMessageType()) {
-			case DXPMessage.RISPOSTA_STATO_USCITE:
+			case FXPXTMessage.RISPOSTA_STATO_USCITE:
 				RispostaStatoUsciteMessage r = (RispostaStatoUsciteMessage) m;
 				DevicePort p = getPort("o"+getSimpleAddress()+".1");
 				p.setCacheRetention(1000);

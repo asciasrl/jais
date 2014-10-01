@@ -1,9 +1,9 @@
-package it.ascia.dxp.device;
+package it.ascia.duemmegi.domino.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Message;
-import it.ascia.dxp.DXPMessage;
-import it.ascia.dxp.DominoDevice;
+import it.ascia.duemmegi.domino.DominoDevice;
+import it.ascia.duemmegi.fxpxt.FXPXTMessage;
 
 public class DFIR extends DominoDevice {
 
@@ -28,12 +28,12 @@ public class DFIR extends DominoDevice {
 		return false;
 	}
 
-	public void messageReceived(DXPMessage m) {
+	public void messageReceived(FXPXTMessage m) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void messageSent(DXPMessage m) {
+	public void messageSent(FXPXTMessage m) {
 		// TODO Auto-generated method stub
 		
 	}

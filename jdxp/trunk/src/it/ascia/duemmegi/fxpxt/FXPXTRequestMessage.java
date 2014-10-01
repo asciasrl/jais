@@ -1,6 +1,7 @@
-package it.ascia.dxp;
+package it.ascia.duemmegi.fxpxt;
 
-public abstract class DXPRequestMessage extends DXPMessage {
+
+public abstract class FXPXTRequestMessage extends FXPXTMessage {
 
 	private boolean isAnswered;
 	
@@ -22,6 +23,6 @@ public abstract class DXPRequestMessage extends DXPMessage {
 		return (new Integer(indirizzo)).toString();
 	}
 
-	public abstract boolean isAnsweredBy(DXPMessage m);
+	public abstract boolean isAnsweredBy(FXPXTMessage m);
 
 }

@@ -1,8 +1,8 @@
-package it.ascia.dxp.msg;
+package it.ascia.duemmegi.fxpxt.msg;
 
-import it.ascia.dxp.DXPResponseMessage;
+import it.ascia.duemmegi.fxpxt.FXPXTResponseMessage;
 
-public class RispostaStatoUsciteMessage extends DXPResponseMessage {
+public class RispostaStatoUsciteMessage extends FXPXTResponseMessage {
 
 	public RispostaStatoUsciteMessage(int[] message) {
 		load(message);

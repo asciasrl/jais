@@ -1,28 +1,33 @@
-package it.ascia.dxp;
+package it.ascia.duemmegi;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.ControllerModule;
 import it.ascia.ais.Message;
-import it.ascia.dxp.device.*;
+import it.ascia.duemmegi.domino.DominoDevice;
+import it.ascia.duemmegi.domino.device.*;
+import it.ascia.duemmegi.fxpxt.FXPXTMessage;
+import it.ascia.duemmegi.fxpxt.FXPXTMessageParser;
+import it.ascia.duemmegi.fxpxt.FXPXTRequestMessage;
+import it.ascia.duemmegi.fxpxt.FXPXTResponseMessage;
 
-public class DXPConnector extends Connector {
+public class DFCPConnector extends Connector {
 
 	/**
 	 * MessageParser per la lettura dei messaggi in ingresso.
 	 */
-	protected DXPMessageParser mp;
-	private DXPRequestMessage messageToBeAnswered;
+	protected FXPXTMessageParser mp;
+	private FXPXTRequestMessage messageToBeAnswered;
 	
-	public DXPConnector(long autoupdate, String name, ControllerModule module) {
+	public DFCPConnector(long autoupdate, String name, ControllerModule module) {
 		super(autoupdate,name);
-		mp = new DXPMessageParser();
+		mp = new FXPXTMessageParser();
 	}
 
 	public void received(int b) {
 		mp.push(b);
 		if (mp.isValid()) {
-			DXPMessage m = (DXPMessage) mp.getMessage();
+			FXPXTMessage m = (FXPXTMessage) mp.getMessage();
 			if (m != null) {
 				dispatchMessage(m);
 			}
@@ -30,8 +35,8 @@ public class DXPConnector extends Connector {
 	}
 
 	public boolean sendMessage(Message m) {
-		if (DXPRequestMessage.class.isInstance(m)) {
-			return sendRequestMessage((DXPRequestMessage)m);
+		if (FXPXTRequestMessage.class.isInstance(m)) {
+			return sendRequestMessage((FXPXTRequestMessage)m);
 		} else {
 			try {
 				transport.acquire();
@@ -45,7 +50,7 @@ public class DXPConnector extends Connector {
 		}
 	}
 
-	public boolean sendRequestMessage(DXPRequestMessage m) {
+	public boolean sendRequestMessage(FXPXTRequestMessage m) {
     	boolean received = false;
 		if (messageToBeAnswered != null) {
 			// FIXME
@@ -81,30 +86,30 @@ public class DXPConnector extends Connector {
 
 	protected void dispatchMessage(Message m) throws AISException {
     	if (messageToBeAnswered != null 
-    			&& DXPResponseMessage.class.isInstance(m) 
-    			&& messageToBeAnswered.isAnsweredBy((DXPMessage) m)) {
+    			&& FXPXTResponseMessage.class.isInstance(m) 
+    			&& messageToBeAnswered.isAnsweredBy((FXPXTMessage) m)) {
 			// sveglia sendPTPRequest
 			synchronized (messageToBeAnswered) {
 	    		messageToBeAnswered.setAnswered(true);
 				messageToBeAnswered.notify(); 						
 			}
     	}
-    	if (DXPResponseMessage.class.isInstance(m)) {
+    	if (FXPXTResponseMessage.class.isInstance(m)) {
 			// Al mittente 
-			DominoDevice d = (DominoDevice)getDevice(((DXPResponseMessage)m).getSource());
+			DominoDevice d = (DominoDevice)getDevice(((FXPXTResponseMessage)m).getSource());
 			if (d != null) {
-				d.messageSent((DXPRequestMessage)m);
+				d.messageSent((FXPXTRequestMessage)m);
 			} else {
-				logger.warn("Non trovato device sender "+((DXPResponseMessage)m).getSource());
+				logger.warn("Non trovato device sender "+((FXPXTResponseMessage)m).getSource());
 			}
     	}
-    	if (DXPRequestMessage.class.isInstance(m)) {
+    	if (FXPXTRequestMessage.class.isInstance(m)) {
 			// Al destinatario 
-    		DominoDevice d = (DominoDevice)getDevice(((DXPRequestMessage)m).getDestination());
+    		DominoDevice d = (DominoDevice)getDevice(((FXPXTRequestMessage)m).getDestination());
 			if (d != null) {
-				d.messageReceived((DXPRequestMessage)m);
+				d.messageReceived((FXPXTRequestMessage)m);
 			} else {
-				logger.warn("Non trovato device receiver "+((DXPRequestMessage)m).getDestination());
+				logger.warn("Non trovato device receiver "+((FXPXTRequestMessage)m).getDestination());
 			}
     	}
 		

@@ -10,7 +10,7 @@ package it.ascia.eds.msg;
  * 
  * Codice EDS: 51.
  */
-public class ComandoUscitaDimmerMessage extends PTPMessage {
+public class ComandoUscitaDimmerMessage extends PTPCommand {
 	
 	public ComandoUscitaDimmerMessage(int d, int m, int Uscita, int Percentuale) {
 		Destinatario = d & 0xFF;

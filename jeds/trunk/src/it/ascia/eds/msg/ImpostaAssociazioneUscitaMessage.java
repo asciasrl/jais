@@ -6,7 +6,7 @@ package it.ascia.eds.msg;
 /**
  * Codice EDS: 14
  */
-public class ImpostaAssociazioneUscitaMessage extends PTPMessage {	
+public class ImpostaAssociazioneUscitaMessage extends PTPCommand {	
 	
 	// TODO Costruttore con parametri espliciti
 	

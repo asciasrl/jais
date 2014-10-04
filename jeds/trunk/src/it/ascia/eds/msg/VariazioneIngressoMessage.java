@@ -16,7 +16,7 @@ import it.ascia.eds.device.BMCChronoTerm;
  * 
  * @author sergio, arrigo
  */
-public class VariazioneIngressoMessage extends PTPMessage
+public class VariazioneIngressoMessage extends PTPCommand
 	{
 
 	/**
@@ -165,4 +165,5 @@ public class VariazioneIngressoMessage extends PTPMessage
 	public int getMessageType() {
 		return MSG_VARIAZIONE_INGRESSO;
 	}
+
 }

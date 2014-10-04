@@ -32,6 +32,7 @@ public abstract class Connector extends SimpleConnector implements ConnectorInte
 	protected LinkedBlockingQueue<Message> dispatchQueue;
 	private Thread dispatchingThread;
 	protected MessageParser mp;
+	protected RequestMessage request;
 
 	private long autoupdate = 1000;
 
@@ -145,6 +146,18 @@ public abstract class Connector extends SimpleConnector implements ConnectorInte
 		mp.push(b);
 		if (mp.isValid()) {
 			Message m = mp.getMessage();
+	    	if (request != null 
+	    			&& ResponseMessage.class.isInstance(m) 
+	    			&& request.isAnsweredBy((ResponseMessage)m)) {
+				// sveglia sendMessage
+				synchronized (request) {
+					request.setResponse((ResponseMessage)m);
+					((ResponseMessage)m).setRequest(request);
+		    		request.setAnswered(true);
+					request.notify(); 						
+				}
+	    	}
+
 			if (m != null) {
 		    	if (dispatchQueue.remainingCapacity() > 0) {
 			    	logger.debug("Received: " + m);

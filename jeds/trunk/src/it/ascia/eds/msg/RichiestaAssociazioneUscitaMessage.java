@@ -114,4 +114,5 @@ public class RichiestaAssociazioneUscitaMessage extends PTPRequest {
 		s.append(" Uscita:" + getUscita()+"/"+getUscitaT()+ " Casella:"+getCasella()+"/"+getCasellaDimmer());
 		return s.toString();		
 	}
+
 }

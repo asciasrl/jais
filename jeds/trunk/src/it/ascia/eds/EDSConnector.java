@@ -31,11 +31,6 @@ import it.ascia.eds.msg.*;
 public class EDSConnector extends Connector {
 
 	private Random r = new Random();
-
-	/**
-     * Il messaggio che stiamo mandando, per il quale aspettiamo una risposta.
-     */
-    private PTPMessage messageToBeAnswered;
     
     /**
      * Indirizzo con cui il Connettore invia messaggi sul BUS
@@ -137,19 +132,7 @@ public class EDSConnector extends Connector {
     protected void dispatchMessage(EDSMessage m) throws AISException {
     	int rcpt = m.getRecipient();
     	int sender = m.getSender();
-    	if (messageToBeAnswered != null 
-    			&& PTPMessage.class.isInstance(m) 
-    			&& messageToBeAnswered.isAnsweredBy((PTPMessage) m)) {
-    		if (PTPResponse.class.isInstance(m) && PTPRequest.class.isInstance(messageToBeAnswered)) {
-    			((PTPResponse) m).setRequest((PTPRequest) messageToBeAnswered);
-    			((PTPRequest) messageToBeAnswered).setResponse((PTPResponse) m);
-    		}
-			// sveglia sendPTPMessage
-			synchronized (messageToBeAnswered) {
-	    		messageToBeAnswered.setAnswered(true);
-				messageToBeAnswered.notify(); 						
-			}
-    	}
+    	    	
     	if (ComandoBroadcastMessage.class.isInstance(m)) {
 			ComandoBroadcastMessage bmsg = (ComandoBroadcastMessage) m;
 			if (lastBroadcast == bmsg.getRandom()) {
@@ -296,9 +279,8 @@ public class EDSConnector extends Connector {
 			if (BroadcastMessage.class.isInstance(m)) {
 				sendBroadcastMessage((BroadcastMessage) m);
 				retval = true;
-			} else if (PTPMessage.class.isInstance(m)){ 
-				PTPMessage ptpm = (PTPMessage) m;
-				retval = sendPTPMessage(ptpm);
+			} else if (PTPRequest.class.isInstance(m)){ 
+				retval = sendPTPRequest((PTPRequest) m);
 			} else {
 				logger.error("Messaggio di tipo sconosciuto:"+m.getClass().getName());
 				retval = false;
@@ -340,24 +322,24 @@ public class EDSConnector extends Connector {
      * 
      * <p>Il messaggio di risposta viene riconosciuto da dispatchMessage().</p>
 	 */
-	private boolean sendPTPMessage(PTPMessage m) {
+	private boolean sendPTPRequest(PTPRequest m) {
     	int tries;
     	boolean received = false;
-		if (messageToBeAnswered != null) {
-			if (messageToBeAnswered.compareTo(m) == 0) {
+		if (request != null  && PTPMessage.class.isInstance(request)) {
+			if (((PTPMessage)request).compareTo(m) == 0) {
 				logger.debug("Messaggio gia' inviato in attesa di risposta: "+m);				
 				return true;
 			}
 		}
 		try {
-			if (messageToBeAnswered != null) {
-				logger.error("messageToBeAnswered non nullo: "+messageToBeAnswered);
+			if (request != null) {
+				logger.error("messageToBeAnswered non nullo: "+request);
 				logger.error("Messaggio da inviare: "+m);
 				return false;
 			}
     		BMC recipient = (BMC)getDevice((new Integer(m.getRecipient())).toString());
-        	messageToBeAnswered = m;
-	    	synchronized (messageToBeAnswered) {
+        	request = m;
+	    	synchronized (request) {
 	    		for (tries = 1;
 	    			tries <= m.getMaxSendTries(); 
 	    			tries++) {
@@ -373,7 +355,7 @@ public class EDSConnector extends Connector {
 	    			if (!m.isAnswered()) {
 		    			// si mette in attesa, ma se nel frattempo arriva la risposta viene avvisato
 		    	    	try {
-		    	    		messageToBeAnswered.wait((long)(getRetryTimeout(m) * (1 + 2 * r.nextDouble())));
+		    	    		request.wait((long)(getRetryTimeout(m) * (1 + 2 * r.nextDouble())));
 		    	    	} catch (InterruptedException e) {
 		    				logger.trace("sendPTPRequest interrupted");
 		    	    	}
@@ -404,7 +386,7 @@ public class EDSConnector extends Connector {
 		} catch (Exception e) {
 			logger.error("Exception:",e);
 		}
-    	messageToBeAnswered = null;
+    	request = null;
     	if (! received) {
     		logger.error("Messaggio non risposto: "+m);
     	}

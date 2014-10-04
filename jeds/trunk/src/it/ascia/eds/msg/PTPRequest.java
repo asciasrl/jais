@@ -4,8 +4,8 @@
 package it.ascia.eds.msg;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Message;
 import it.ascia.ais.RequestMessage;
+import it.ascia.ais.ResponseMessage;
 
 /**
  * @author arrigo
@@ -14,9 +14,27 @@ import it.ascia.ais.RequestMessage;
  */
 public abstract class PTPRequest extends PTPMessage implements RequestMessage {
 	
-	public abstract boolean isAnsweredBy(PTPMessage m);
-	
 	private PTPResponse response = null;
+
+	/**
+	 * True se il messaggio ha ricevuto una risposta.
+	 */
+	private boolean isAnswered = false;
+	
+	/**
+	 * @param isAnswered the isAnswered to set
+	 */
+	public void setAnswered(boolean isAnswered) {
+		this.isAnswered = isAnswered;
+	}
+
+	/**
+	 * @return the isAnswered status
+	 */
+	public boolean isAnswered() {
+		return isAnswered;
+	}
+
 
 	/**
 	 * @param response the response to set
@@ -32,7 +50,7 @@ public abstract class PTPRequest extends PTPMessage implements RequestMessage {
 		return response;
 	}
 	
-	public void setResponse(Message res) {
+	public void setResponse(ResponseMessage res) {
 		if (PTPResponse.class.isInstance(res)) {
 			setResponse((PTPResponse)res);
 		} else {
@@ -40,5 +58,15 @@ public abstract class PTPRequest extends PTPMessage implements RequestMessage {
 		}		
 		
 	}
+	
+	public abstract boolean isAnsweredBy(PTPMessage m);
+	
+	public boolean isAnsweredBy(ResponseMessage m) {
+		if (PTPMessage.class.isInstance(m)) {
+			return isAnsweredBy((PTPMessage)m);
+		} else {
+			return false;
+		}
+	}	
 	
 }

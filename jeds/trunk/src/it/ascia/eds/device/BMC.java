@@ -519,12 +519,12 @@ public abstract class BMC extends Device {
 			return;
 		}
 		if (outputIsBound(outPortNumber, groupAddress)) {
-			logger.warn("Output port "+getFullAddress() + ":"+getOutputPortId(outPortNumber)+" already bound to group "+groupAddress);
+			logger.warn("Output port "+getAddress().getDeviceAddress() + ":"+getOutputPortId(outPortNumber)+" already bound to group "+groupAddress);
 			return;
 		}
 		broadcastBindingsByGroup[groupAddress].add(new Integer(outPortNumber));
 		broadcastBindingsByPort[outPortNumber].add(new Integer(groupAddress));
-		logger.debug("Output port "+getFullAddress() + ":"+getOutputPortId(outPortNumber)+" bounded to group "+groupAddress);
+		logger.debug("Output port "+getAddress().getDeviceAddress() + ":"+getOutputPortId(outPortNumber)+ " bounded to group "+groupAddress);
 	}
 		
 	/**

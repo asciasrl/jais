@@ -1,4 +1,4 @@
-package it.ascia.duemmegi.domino.device;
+package it.ascia.dxp.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;

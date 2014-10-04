@@ -1,10 +1,11 @@
-package it.ascia.duemmegi.domino.device;
+package it.ascia.dxp.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Message;
 import it.ascia.ais.port.DigitalInputPort;
-import it.ascia.duemmegi.domino.DominoDevice;
-import it.ascia.duemmegi.fxpxt.FXPXTMessage;
+
+import it.ascia.dxp.DXPMessage;
+import it.ascia.dxp.DominoDevice;
 
 public class DFGSM2 extends DominoDevice {
 
@@ -35,12 +36,12 @@ public class DFGSM2 extends DominoDevice {
 		return false;
 	}
 
-	public void messageReceived(FXPXTMessage m) {
+	public void messageReceived(DXPMessage m) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void messageSent(FXPXTMessage m) {
+	public void messageSent(DXPMessage m) {
 		// TODO Auto-generated method stub
 		
 	}

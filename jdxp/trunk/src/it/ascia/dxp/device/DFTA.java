@@ -1,13 +1,13 @@
-package it.ascia.duemmegi.domino.device;
+package it.ascia.dxp.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.Message;
 import it.ascia.ais.port.TemperaturePort;
-import it.ascia.duemmegi.domino.DominoDevice;
-import it.ascia.duemmegi.fxpxt.FXPXTMessage;
-import it.ascia.duemmegi.fxpxt.msg.RichiestaStatoIngressiMessage;
-import it.ascia.duemmegi.fxpxt.msg.RispostaStatoIngressiMessage;
+import it.ascia.dxp.DXPMessage;
+import it.ascia.dxp.DominoDevice;
+import it.ascia.dxp.msg.RichiestaStatoIngressiMessage;
+import it.ascia.dxp.msg.RispostaStatoIngressiMessage;
 
 public class DFTA extends DominoDevice {
 
@@ -37,14 +37,14 @@ public class DFTA extends DominoDevice {
 		return false;
 	}
 
-	public void messageReceived(FXPXTMessage m) {
+	public void messageReceived(DXPMessage m) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void messageSent(FXPXTMessage m) {
+	public void messageSent(DXPMessage m) {
 		switch (m.getMessageType()) {
-			case FXPXTMessage.RISPOSTA_STATO_INGRESSO:
+			case DXPMessage.RISPOSTA_STATO_INGRESSO:
 				RispostaStatoIngressiMessage r = (RispostaStatoIngressiMessage) m;
 				DevicePort p = getPort("temp");
 				p.setCacheRetention(1000);

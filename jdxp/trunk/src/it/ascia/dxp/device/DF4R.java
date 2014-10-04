@@ -1,14 +1,14 @@
-package it.ascia.duemmegi.domino.device;
+package it.ascia.dxp.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.Message;
 import it.ascia.ais.port.DigitalOutputPort;
-import it.ascia.duemmegi.domino.DominoDevice;
-import it.ascia.duemmegi.fxpxt.FXPXTMessage;
-import it.ascia.duemmegi.fxpxt.msg.ComandoUsciteMessage;
-import it.ascia.duemmegi.fxpxt.msg.RichiestaStatoUsciteMessage;
-import it.ascia.duemmegi.fxpxt.msg.RispostaStatoUsciteMessage;
+import it.ascia.dxp.DXPMessage;
+import it.ascia.dxp.DominoDevice;
+import it.ascia.dxp.msg.ComandoUsciteMessage;
+import it.ascia.dxp.msg.RichiestaStatoUsciteMessage;
+import it.ascia.dxp.msg.RispostaStatoUsciteMessage;
 
 public class DF4R extends DominoDevice {
 
@@ -55,14 +55,14 @@ public class DF4R extends DominoDevice {
 		return false;
 	}
 
-	public void messageReceived(FXPXTMessage m) {
+	public void messageReceived(DXPMessage m) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void messageSent(FXPXTMessage m) {
+	public void messageSent(DXPMessage m) {
 		switch (m.getMessageType()) {
-			case FXPXTMessage.RISPOSTA_STATO_USCITE:
+			case DXPMessage.RISPOSTA_STATO_USCITE:
 				RispostaStatoUsciteMessage r = (RispostaStatoUsciteMessage) m;
 				for (int i = 1; i <= 4; i++) {
 					DevicePort p = getPort("o"+getSimpleAddress()+"."+i);

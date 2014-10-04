@@ -1,8 +1,8 @@
-package it.ascia.duemmegi.domino;
+package it.ascia.dxp;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Device;
-import it.ascia.duemmegi.fxpxt.FXPXTMessage;
+import it.ascia.ais.Message;
 
 public abstract class DominoDevice extends Device {
 
@@ -11,8 +11,8 @@ public abstract class DominoDevice extends Device {
 		super(address);
 	}
 	
-	public abstract void messageReceived(FXPXTMessage m);
+	public abstract void messageReceived(DXPMessage m);
 
-	public abstract void messageSent(FXPXTMessage m);
+	public abstract void messageSent(DXPMessage m);
 
 }

@@ -1,8 +1,8 @@
-package it.ascia.duemmegi.fxpxt.msg;
+package it.ascia.dxp.msg;
 
-import it.ascia.duemmegi.fxpxt.FXPXTMessage;
+import it.ascia.dxp.DXPMessage;
 
-public class ErroreMessage extends FXPXTMessage {
+public class ErroreMessage extends DXPMessage {
 
 	public ErroreMessage(int[] message) {
 		load(message);

@@ -11,9 +11,9 @@ package it.ascia.ais;
  */
 public class Address implements Comparable<Object> {
 	
-	private String connector;
-	private String device;
-	private String port;
+	private String connectorName;
+	private String deviceAddress;
+	private String portId;
 	
 	/**
 	 * 
@@ -56,7 +56,7 @@ public class Address implements Comparable<Object> {
 	 * @throws IllegalArgumentException if connector is already set or contains illegal chars
 	 */
 	public void setConnectorName(String connector) {
-		if (this.connector != null) {
+		if (this.connectorName != null) {
 			throw(new IllegalArgumentException("Connector already set"));
 		}
 		if (connector != null) {
@@ -70,7 +70,7 @@ public class Address implements Comparable<Object> {
 				connector = null;
 			}
 		}
-		this.connector = connector;
+		this.connectorName = connector;
 	}
 	
 	/**
@@ -79,7 +79,7 @@ public class Address implements Comparable<Object> {
 	 * @throws IllegalArgumentException if device is already set or contains illegal chars
 	 */
 	public void setDeviceAddress(String device) {
-		if (this.device != null) {
+		if (this.deviceAddress != null) {
 			throw(new IllegalArgumentException("Device already set"));
 		}
 		if (device != null) {
@@ -90,7 +90,7 @@ public class Address implements Comparable<Object> {
 				device = null;
 			}
 		}
-		this.device = device;		
+		this.deviceAddress = device;		
 	}
 	
 	/**
@@ -99,17 +99,22 @@ public class Address implements Comparable<Object> {
 	 * @throws IllegalArgumentException if port is already set or contains illegal chars
 	 */
 	public void setPortId(String port) {
-		if (this.port != null) {
+		if (this.portId != null) {
 			throw(new IllegalArgumentException("Port already set"));
 		}
 		if (port != null && port.equals("*")) {
 			port = null;
 		}
-		this.port = port;		
+		this.portId = port;		
 	}
 	
 	/**
-	 * 
+	 * Address must have the form
+	 *   connectorName.deviceAddress:portId
+	 *   
+	 *   connectorName cannot contains "." or ":"
+	 *   deviceAddress cannot contains ":" but can contain "."
+	 *   
 	 * @param fullAddress Address to be parsed
 	 */
 	public void parse(String fullAddress) {
@@ -119,23 +124,23 @@ public class Address implements Comparable<Object> {
 		int iDot = fullAddress.indexOf(".");
 		int iColon = fullAddress.indexOf(":");
 		if (iDot > 0) {
-			connector = fullAddress.substring(0, iDot);
-			if (connector.equals("") || connector.equals("*")) {
-				connector = null;
+			connectorName = fullAddress.substring(0, iDot);
+			if (connectorName.equals("") || connectorName.equals("*")) {
+				connectorName = null;
 			}
 		}
 		if (iColon >= 0) {
-			port = fullAddress.substring(iColon+1);
-			if (port.equals("") || port.equals("*")) {
-				port = null;
+			portId = fullAddress.substring(iColon+1);
+			if (portId.equals("") || portId.equals("*")) {
+				portId = null;
 			}
 		} else {
 			iColon = fullAddress.length();
 		}
 		if (iColon > iDot) {
-			device = fullAddress.substring(iDot + 1, iColon);
-			if (device.equals("") || device.equals("*")) {
-				device = null;
+			deviceAddress = fullAddress.substring(iDot + 1, iColon);
+			if (deviceAddress.equals("") || deviceAddress.equals("*")) {
+				deviceAddress = null;
 			}
 		}
 	}
@@ -156,56 +161,35 @@ public class Address implements Comparable<Object> {
 	}
 	
 	/**
-	 * @return Connector name (null if wildcarded or undefined)
-	 */
-	public String getConnector() {
-		return connector;		
-	}
-
-	/**
 	 * @return Connector name ("*" if wildcarded or undefined)
 	 */	
 	public String getConnectorName() {
-		if (connector == null) {
+		if (connectorName == null) {
 			return "*";
 		} else {
-			return connector;
+			return connectorName;
 		}
-	}
-
-	/**
-	 * @return Device name (null if wildcarded or undefined)
-	 */
-	public String getDevice() {
-		return device;
 	}
 
 	/**
 	 * @return Device name ("*" if wildcarded or undefined)
 	 */	
 	public String getDeviceAddress() {
-		if (device == null) {
+		if (deviceAddress == null) {
 			return "*";
 		} else {
-			return device;
+			return deviceAddress;
 		}
 	}
 
 	/**
-	 * @return Port id (null if wildcarded or undefined)
-	 */
-	public String getPort() {
-		return port;
-	}
-	
-	/**
 	 * @return Port id ("*" if wildcarded or undefined)
 	 */	
 	public String getPortId() {
-		if (port == null) {
+		if (portId == null) {
 			return "*";
 		} else {
-			return port;
+			return portId;
 		}
 	}
 	
@@ -214,7 +198,7 @@ public class Address implements Comparable<Object> {
 	 * @return true if all parts are not null, so denote a specific port
 	 */
 	public boolean isFullyQualified() {
-		return connector != null && device != null && port != null;
+		return connectorName != null && deviceAddress != null && portId != null;
 	}
 
 	public boolean equals(Object arg0) {
@@ -233,11 +217,11 @@ public class Address implements Comparable<Object> {
 		} else {
 			throw(new ClassCastException("Invalid class: "+arg0.getClass().getCanonicalName()));			
 		}
-		int res = getConnector().compareTo(arg1.getConnector());
+		int res = connectorName.compareTo(arg1.getConnectorName());
 		if (res == 0) {
-			res = getDevice().compareTo(arg1.getDevice());
+			res = deviceAddress.compareTo(arg1.getDeviceAddress());
 			if (res == 0) {
-				res = getPort().compareTo(arg1.getPort());				
+				res = portId.compareTo(arg1.getPortId());				
 			}
 		}		
 		return res;
@@ -260,7 +244,7 @@ public class Address implements Comparable<Object> {
 	 * @return true if matches
 	 */
 	public boolean matches(Address address) {
-		return matchPort(address.getConnector(),address.getDevice(),address.getPort());
+		return matchPort(address.getConnectorName(),address.getDeviceAddress(),address.getPortId());
 	}
 
 	public boolean matches(String fullAddress) {
@@ -268,15 +252,15 @@ public class Address implements Comparable<Object> {
 	}
 
 	public boolean matchConnector(String connector) {
-		return match(getConnector(),connector);
+		return match(getConnectorName(),connector);
 	}
 
 	public boolean matchDevice(String connector, String device) {
-		return matchConnector(connector) && match(getDevice(),device);
+		return matchConnector(connector) && match(getDeviceAddress(),device);
 	}
 
 	public boolean matchPort(String connector, String device, String port) {
-		return matchDevice(connector,device) && match(getPort(),port);
+		return matchDevice(connector,device) && match(getPortId(),port);
 	}
 
 	private boolean match(String a, String b) {

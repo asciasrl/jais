@@ -15,7 +15,7 @@ import java.security.InvalidParameterException;
  * 
  * Codice EDS 202.
  */
-public class ImpostaSetPointMessage extends PTPMessage {
+public class ImpostaSetPointMessage extends PTPCommand {
 
 	/**
 	 * Elenco giorni della settimana 

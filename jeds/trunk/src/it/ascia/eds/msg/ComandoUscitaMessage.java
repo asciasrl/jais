@@ -18,7 +18,7 @@ package it.ascia.eds.msg;
  * 
  * @author sergio, arrigo
  */
-public class ComandoUscitaMessage extends PTPMessage {
+public class ComandoUscitaMessage extends PTPCommand {
 
 	/**
 	 * Costruttore per messaggio per dimmer.

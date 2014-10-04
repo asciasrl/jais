@@ -1,6 +1,6 @@
 package it.ascia.ais;
 
-public abstract class Message implements Comparable {
+public abstract class Message {
 	
 	protected int priority = 0;
 	
@@ -53,29 +53,6 @@ public abstract class Message implements Comparable {
 		return s.reverse().toString();
 	}
 	
-	/**
-	 * 
-	 * @return
-	 * @deprecated Never used
-	 */
-	public int getPriority() {
-		return priority;
-	}
-
-	/**
-	 * 
-	 * @param priority
-	 * @deprecated Never used
-	 */
-	public void setPriority(int priority) {
-		this.priority = priority;
-	}
-
-	public int compareTo(Object o) {
-		Message m = (Message) o;
-		return this.priority - m.priority;
-	}
-
 	/**
 	 * Connector MUST call this method when sending the message
 	 * @param isSent is set to true

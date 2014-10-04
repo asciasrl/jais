@@ -12,7 +12,7 @@ import it.ascia.ais.Message;
  * @todo Spostare metodi Factory in classe separata
  * @author sergio, arrigo
  */
-public abstract class EDSMessage extends Message implements Comparable {
+public abstract class EDSMessage extends Message implements Comparable<EDSMessage>{
 	/**
 	 * Richiesta modello e revisione.
 	 */
@@ -323,12 +323,12 @@ public abstract class EDSMessage extends Message implements Comparable {
 		Byte2 = message[5];
 	}
 	
-	public int compareTo(java.lang.Object arg0) {
-		if (arg0.getClass() == getClass()) {
-			EDSMessage m = (EDSMessage) arg0;
-			if (m.toHexString().equals(toHexString())) {
-				return 0;
-			}
+	/**
+	 * Verifica se il messaggio e' lo stesso
+	 */
+	public int compareTo(EDSMessage m) {
+		if (m.toHexString().equals(toHexString())) {
+			return 0;
 		}
 		return 1;
 	}

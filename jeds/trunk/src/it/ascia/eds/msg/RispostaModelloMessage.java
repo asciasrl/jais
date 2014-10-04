@@ -1,5 +1,7 @@
 package it.ascia.eds.msg;
 
+import it.ascia.ais.RequestMessage;
+
 public class RispostaModelloMessage extends PTPResponse {
 
 	public RispostaModelloMessage(int d, int m, int Modello, int Revisione) {

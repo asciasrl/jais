@@ -451,7 +451,7 @@ public abstract class DevicePort {
 				return doubleValue.toString();
 			}
 		} else {
-			return super.toString();
+			return value.toString();
 		}
 	}
 	

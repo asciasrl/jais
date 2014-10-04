@@ -158,6 +158,8 @@ public class BMCDimmer extends BMC {
 			vmsg = (VariazioneIngressoMessage) m;
 			invalidate(getOutputPortId(vmsg.getOutputNumber()));
 			break;
+		default:
+			super.messageReceived(m);
 		}
 	}
 	
@@ -194,7 +196,7 @@ public class BMCDimmer extends BMC {
 			// messaggi ignorati
 			break;
 		default:
-			logger.error("Messaggio non gestito: "+m.toString());
+			super.messageSent(m);
 		} // switch(tipo del messaggio)
 	}
 	

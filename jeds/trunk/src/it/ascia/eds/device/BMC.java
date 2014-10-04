@@ -341,11 +341,12 @@ public abstract class BMC extends Device {
 			case EDSMessage.MSG_ACKNOWLEDGE:
 			case EDSMessage.MSG_RICHIESTA_USCITA:				
 			case EDSMessage.MSG_RICHIESTA_ASSOCIAZIONE_BROADCAST:
+			case EDSMessage.MSG_RICHIESTA_PARAMETRO:
 			case EDSMessage.MSG_RICHIESTA_STATO:				
 				// ignorato
 				break;
 			default:
-				logger.warn("Unhandled message: "+m);		
+				logger.warn("Unhandled received message: "+m);		
 		}
 	}
 	
@@ -363,10 +364,10 @@ public abstract class BMC extends Device {
 	public void messageSent(EDSMessage m) throws AISException {
 		switch (m.getMessageType()) {
 			case EDSMessage.MSG_RISPOSTA_MODELLO:
-				// ignorato
+				// ignorato silentemente
 				break;
 			default:
-				logger.warn("Unhandled message: "+m);		
+				logger.warn("Unhandled sent message: "+m);		
 		}
 	}
 		

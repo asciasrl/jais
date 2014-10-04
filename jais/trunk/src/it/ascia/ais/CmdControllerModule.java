@@ -150,7 +150,7 @@ public class CmdControllerModule extends ControllerModule {
 				if (devices.size() > 1 ){
 					System.out.println("Elenco devices:");
 					for (Device device : devices) {
-						System.out.println(device.getFullAddress());
+						System.out.println(device.getAddress());
 					}
 					continue;
 				} 
@@ -158,7 +158,7 @@ public class CmdControllerModule extends ControllerModule {
 				while (d != null) {
 		 			System.out.println(d.getInfo());
 		 			System.out.println(getStatus(d));
-					String portId = stdio.inputString("Porta di "+d.getFullAddress()+" (invio per cambiare device): ");
+					String portId = stdio.inputString("Porta di "+d.getAddress()+" (invio per cambiare device): ");
 		 			if (portId.equals("")) {
 		 				d = null;
 		 			} else {
@@ -168,7 +168,7 @@ public class CmdControllerModule extends ControllerModule {
 						} catch (AISException e) {								
 						}
 			 			if (p == null) {
-			 				System.out.println("Il device "+d.getFullAddress()+" hon ha la porta "+portId);
+			 				System.out.println("Il device "+d.getAddress()+" hon ha la porta "+portId);
 			 			} else {
 			 				String newValue = "";
 			 				newValue = stdio.inputString("Nuovo valore per "+p.getAddress()+" (invio per non variare): ");

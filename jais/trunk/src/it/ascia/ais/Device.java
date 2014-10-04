@@ -101,14 +101,6 @@ public abstract class Device {
 	}
 
 	/**
-	 * Ritorna l'indirizzo del Device completo del nome del connettore
-	 * @deprecated Use getAddress
-	 */
-	public String getFullAddress() {
-		return connector.getName() + "." + address;
-	}
-	
-	/**
 	 * 
 	 * @return Device address (port part of address is undefined)
 	 */
@@ -158,7 +150,7 @@ public abstract class Device {
 		if (ports.containsKey(portId)) {
 			return (DevicePort) ports.get(portId); 
 		} else {
-			throw(new AISException("Il device "+getFullAddress()+" non ha la porta "+portId));
+			throw(new AISException("Il device "+getAddress()+" non ha la porta "+portId));
 		}
 	}
 	

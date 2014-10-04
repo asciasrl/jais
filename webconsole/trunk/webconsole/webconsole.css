@@ -8,7 +8,6 @@ div.port {
         margin: 1px;
         padding: 2px;
         width: 100%;
-        height: 20px;
 }
 
 div.port:hover {
@@ -17,27 +16,27 @@ div.port:hover {
 
 div.address {
         float: left;
-        width: 10%;
+        padding: 2px;
 }
 
 div.type {
         float: left;
-        width: 15%;
+        padding: 2px;
 }
 
 div.description {
         float: left;
-        width: 30%;
+        padding: 2px;
 }
 
 div.value {
         float: left;
-        width: 15%;
+        padding: 2px;
 }
 
 div.buttons {
-        float: left;
-        width: 30%;
+        float: right;
+        padding: 2px;
 }
 
 button {

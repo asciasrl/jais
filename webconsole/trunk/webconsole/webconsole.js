@@ -54,6 +54,16 @@ var webconsole = {
 					var bottoneOff = new Element('button', {'class': 'azione', 'id': 'port-' + i + '-off', 'onclick': "webconsole.writePortValue('"+addr+"','off');"} );
 					bottoneOff.innerHTML = "OFF";
 					buttonsElement.grab(bottoneOff);
+				} else if (map.ClassName  == "it.ascia.ais.port.BlindPort") {
+					var bottoneOpen = new Element('button', {'class': 'azione', 'id': 'port-' + i + '-on', 'onclick': "webconsole.writePortValue('"+addr+"','open');"} );
+					bottoneOpen.innerHTML = "OPEN";
+					buttonsElement.grab(bottoneOpen);
+					var bottoneStop = new Element('button', {'class': 'azione', 'id': 'port-' + i + '-off', 'onclick': "webconsole.writePortValue('"+addr+"','stop');"} );
+					bottoneStop.innerHTML = "STOP";
+					buttonsElement.grab(bottoneStop);
+					var bottoneClose = new Element('button', {'class': 'azione', 'id': 'port-' + i + '-off', 'onclick': "webconsole.writePortValue('"+addr+"','close');"} );
+					bottoneClose.innerHTML = "CLOSE";
+					buttonsElement.grab(bottoneClose);
 				} else if (map.ClassName  == "it.ascia.ais.port.StatePort") {
 					var tags = map.Tags.split(";");
 					for (var j = 0; j < tags.length; j++) {

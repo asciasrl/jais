@@ -83,16 +83,6 @@ public abstract class Connector extends SimpleConnector implements ConnectorInte
 	public Device getDevice(String address) {
     	return getDevice(new Address(address));
     }
-
-    /**
-     * Invia un messaggio e attende una risposta dal destinatario, se il
-     * messaggio lo richiede.
-     * 
-     * @return true se il messaggio di risposta e' arrivato, o se l'invio e'
-     * andato a buon fine.
-     * @throws AISException 
-     */
-    public abstract boolean sendMessage(Message m);
     
     /**
      * Aggiunge un porta alla coda delle porte da aggiornare

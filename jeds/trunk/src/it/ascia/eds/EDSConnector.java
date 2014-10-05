@@ -37,18 +37,6 @@ public class EDSConnector extends Connector {
      */
     private int myAddress = 0;
 
-    /**
-	 * Quanto tempo aspettare la risposta dopo l'invio di un messaggio.
-	 * 
-	 * <p>Nel caso peggiore (1200 bps), la trasmissione di un messaggio richiede 
-	 * 8 / 120 = 660 msec. In quello migliore (9600 bps), la trasmissione 
-	 * richiede 82 msec. Questa costante deve tener conto del caso migliore.</p>
-	 * 
-	 * Questo valore si puo' modificare nel file di configurazione:
-	 * /jais/EDS/retrytimeout
-	 */
-	protected int RETRY_TIMEOUT = 300;
-
 	/**
 	 * Quante volte provare a reinviare un messaggio che richiede una risposta.
 	 * 
@@ -76,17 +64,25 @@ public class EDSConnector extends Connector {
 	 */
 	private long guardtimeEnd = 0;
 
+	private boolean discoverNew;
+
+	private int retryTimeout;
+
     /**
      * Connettore per il BUS EDS.
      * 
+     * @param autoupdate Tempo autoaggiornamento porte scadute (expired)
      * @param name il nome del Connector, che sara' la parte iniziale degli indirizzi
      * di tutti i Device collegati a questo Connector.
-     * @param address 
-     * @param edsControllerModule 
+     * @param address Indirizzo usato dal connettore per comunicare con i moduli
+     * @param discoverNew legge la configurazione dei nuovi moduli
+     * @param retryTimeout tempo di attesa prima di riprovare la trasmissione
      */
-    public EDSConnector(long autoupdate, String name, int myAddress) {
+    public EDSConnector(long autoupdate, String name, int address, boolean discoverNew, int retryTimeout) {
     	super(autoupdate, name);
-		this.myAddress = myAddress; 		
+		this.myAddress = address;
+		this.discoverNew = discoverNew;
+		this.retryTimeout = retryTimeout;
 		mp = new EDSMessageParser();
 		for (int i = 1; i <= 31; i++) {
 			addDevice(new EDSGroup("Group"+i));
@@ -176,12 +172,8 @@ public class EDSConnector extends Connector {
 	}
 
 
-	public int getRetryTimeout() {
-		return getModuleConfiguration().getInt("retrytimeout", RETRY_TIMEOUT);
-	}
-	
 	private double getRetryTimeout(PTPMessage m) {
-		return getRetryTimeout() + m.getRetryTimeout();
+		return retryTimeout + m.getRetryTimeout();
 	}
 
 
@@ -307,7 +299,7 @@ public class EDSConnector extends Connector {
 		// ripetizioni
 		for (int i = 1; i < tries; i++) {
 			try {			
-				Thread.sleep((long)(getRetryTimeout() * 2 * (1 + 2 * r.nextDouble())));
+				Thread.sleep((long)(retryTimeout * 2 * (1 + 2 * r.nextDouble())));
 			} catch (InterruptedException e) {
 			}
 			transport.write(m.getBytesMessage());
@@ -412,7 +404,7 @@ public class EDSConnector extends Connector {
 				addDevice(bmc);
 				if (bmc != null) {
 					logger.info("Creato BMC "+bmc+" Indirizzo:"+bmc.getAddress());
-					if (isDiscoverNew()) {
+					if (discoverNew) {
 						logger.debug("Discover new device: "+bmc.getAddress());
 						bmc.discover();
 				    	logger.debug("Fine discover dispositivo "+bmc.getAddress());
@@ -515,10 +507,6 @@ public class EDSConnector extends Connector {
 	    BMC bmc = BMC.createBMC(address, model, revision, name);
 	    addDevice(bmc);
 	    return bmc;
-	}
-
-	public boolean isDiscoverNew() {
-		return getModuleConfiguration().getBoolean("discovernew", true);
 	}
 	
 }

@@ -154,8 +154,4 @@ public abstract class SimpleConnector implements ConnectorInterface {
 		return module;
 	}
 
-	@Override
-	public void start() {
-		// controller semplice, niente di automatico	
-	}
 }

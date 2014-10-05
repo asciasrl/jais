@@ -297,29 +297,10 @@ public abstract class Connector extends SimpleConnector implements ConnectorInte
 	}
 
 	/**
-	 * 
-	 * @return La configurazione del modulo
-	 */
-	public HierarchicalConfiguration getModuleConfiguration() {		
-		return getModule().getConfiguration();
-	}
-
-	/**
-	 * 
-	 * @return La configurazione specifica del connettore
-	 */
-	public HierarchicalConfiguration getConfiguration() {		
-		HierarchicalConfiguration config = getModuleConfiguration();
-		config.setExpressionEngine(new XPathExpressionEngine());
-		return config.configurationAt("connectors/connector[name='" + getName() + "']");
-	}
-	
-	/**
 	 * Avvia il thread di aggiornamento
 	 */
 	@Override
 	public void start() {
-		super.start();
 		updatingThread = new UpdatingThread();
 		updatingThread.setName("Updating-"+getClass().getSimpleName()+"-"+getName());
 		updatingThread.setDaemon(true);

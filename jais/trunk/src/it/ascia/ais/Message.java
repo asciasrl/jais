@@ -1,9 +1,7 @@
 package it.ascia.ais;
 
 public abstract class Message {
-	
-	protected int priority = 0;
-	
+		
 	private boolean isSent = false;
 
 	public String getMessageDescription() {

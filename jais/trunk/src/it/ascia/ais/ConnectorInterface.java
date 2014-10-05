@@ -3,6 +3,19 @@ package it.ascia.ais;
 import java.util.Collection;
 import java.util.Vector;
 
+/**
+ * Connector domotico.
+ * 
+ * <p>Un Connector e' un'interfaccia per JAIS verso un sistema. Ad esempio un
+ * bus domotico o una centrale d'allarme.</p>
+ * 
+ * <p>Un Connector permette l'accesso a un insieme di {@link Device}.</p>
+ * 
+ * <p>A livello di protocollo, un connector e' identificato da un nome</p>
+ * 
+ * @author sergio@ascia.it
+ */
+
 public interface ConnectorInterface {
 
     /**

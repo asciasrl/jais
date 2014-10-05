@@ -11,6 +11,18 @@ import it.ascia.ais.Transport;
 import it.ascia.eds.device.BMC;
 
 public class EDSControllerModule extends ControllerModule {
+    
+	/**
+	 * Quanto tempo aspettare la risposta dopo l'invio di un messaggio.
+	 * 
+	 * <p>Nel caso peggiore (1200 bps), la trasmissione di un messaggio richiede 
+	 * 8 / 120 = 660 msec. In quello migliore (9600 bps), la trasmissione 
+	 * richiede 82 msec. Questa costante deve tener conto del caso migliore.</p>
+	 * 
+	 * Questo valore si puo' modificare nel file di configurazione:
+	 * /jais/EDS/retrytimeout
+	 */
+	protected int RETRY_TIMEOUT = 300;
 	
 	@SuppressWarnings("unchecked")
 	public void start() {
@@ -25,7 +37,11 @@ public class EDSControllerModule extends ControllerModule {
 		 	EDSConnector eds = null;
 		 	try {
 		 		// autoupdate sia per connettore che per modulo
-		 		eds = new EDSConnector(sub.getLong("autoupdate",getConfiguration().getLong("autoupdate",1000)),sub.getString("name"),sub.getInt("computer",250));
+		 		eds = new EDSConnector(sub.getLong("autoupdate",getConfiguration().getLong("autoupdate",1000)),
+		 				sub.getString("name"),
+		 				sub.getInt("computer",250),
+		 				sub.getBoolean("discovernew", true),
+		 				sub.getInt("retrytimeout", RETRY_TIMEOUT));
 			 	Transport transport = Transport.createTransport(sub);		 		
 		 		// associa transport e connector 
 		 		eds.addTransport(transport);

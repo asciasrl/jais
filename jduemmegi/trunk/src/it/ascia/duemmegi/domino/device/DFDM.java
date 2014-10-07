@@ -32,11 +32,13 @@ public class DFDM extends DominoDevice {
 	/* (non-Javadoc)
 	 * @see it.ascia.dxp.DominoDevice#messageSent(it.ascia.ais.Message)
 	 */
+	/**
+	 * FIXME recuperare DXP 
 	public void messageSent(FXPXTMessage m) {
 		switch (m.getMessageType()) {
 			case FXPXTMessage.RISPOSTA_STATO_USCITE:
 				RispostaStatoUsciteMessage r = (RispostaStatoUsciteMessage) m;
-				DevicePort p = getPort("o"+getSimpleAddress()+".1");
+				DevicePort p = getPort("o"+getDeviceAddress()+".1");
 				p.setCacheRetention(1000);
 				p.setValue(new Integer(r.getExitValue()));
 				break;
@@ -44,6 +46,7 @@ public class DFDM extends DominoDevice {
 				logger.warn("Messaggio da gestire:"+m.toString());
 		}
 	}
+	*/
 
 	public String getInfo() {
 		// TODO Auto-generated method stub
@@ -51,7 +54,7 @@ public class DFDM extends DominoDevice {
 	}
 
 	public boolean updatePort(String portId) throws AISException {
-		RichiestaStatoUsciteMessage m = new RichiestaStatoUsciteMessage(getSimpleAddress());
+		RichiestaStatoUsciteMessage m = new RichiestaStatoUsciteMessage(getDeviceAddress());
 		if (getConnector().sendMessage(m)) {
 			// FIXME gestire risposta qui invece che in dispatchmessage
 			return true;
@@ -77,7 +80,7 @@ public class DFDM extends DominoDevice {
 		} else if (Integer.class.isInstance(newValue)) {
 			valore = ((Integer)newValue).intValue();
 		}
-		ComandoUsciteMessage m = new ComandoUsciteMessage(getSimpleAddress(),valore);
+		ComandoUsciteMessage m = new ComandoUsciteMessage(getDeviceAddress(),valore);
 		return getConnector().sendMessage(m);
 	}
 

@@ -22,7 +22,7 @@ public class DFTA extends DominoDevice {
 	}
 
 	public boolean updatePort(String portId) throws AISException {
-		RichiestaStatoIngressiMessage m = new RichiestaStatoIngressiMessage(getSimpleAddress());
+		RichiestaStatoIngressiMessage m = new RichiestaStatoIngressiMessage(getDeviceAddress());
 		if (getConnector().sendMessage(m)) {
 			// FIXME gestire risposta qui invece che in dispatchmessage
 			return true;
@@ -42,6 +42,8 @@ public class DFTA extends DominoDevice {
 		
 	}
 
+	/**
+	 * FIXME recuperare DXP 
 	public void messageSent(FXPXTMessage m) {
 		switch (m.getMessageType()) {
 			case FXPXTMessage.RISPOSTA_STATO_INGRESSO:
@@ -55,5 +57,6 @@ public class DFTA extends DominoDevice {
 				logger.warn("Messaggio da gestire:"+m.toString());
 		}		
 	}
+	*/
 
 }

@@ -59,13 +59,15 @@ public class DF4R extends DominoDevice {
 		// TODO Auto-generated method stub
 		
 	}
+	/**
+	 * FIXME recuperare DXP 
 
 	public void messageSent(FXPXTMessage m) {
 		switch (m.getMessageType()) {
 			case FXPXTMessage.RISPOSTA_STATO_USCITE:
 				RispostaStatoUsciteMessage r = (RispostaStatoUsciteMessage) m;
 				for (int i = 1; i <= 4; i++) {
-					DevicePort p = getPort("o"+getSimpleAddress()+"."+i);
+					DevicePort p = getPort("o"+getDeviceAddress()+"."+i);
 					p.setCacheRetention(1000);
 					p.setValue(new Boolean(r.getExitStatus(i)));
 				}
@@ -74,5 +76,5 @@ public class DF4R extends DominoDevice {
 				logger.warn("Messaggio da gestire:"+m.toString());
 		}
 	}
-
+	*/
 }

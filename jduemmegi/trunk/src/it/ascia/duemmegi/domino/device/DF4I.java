@@ -21,7 +21,7 @@ public class DF4I extends DominoDevice {
 		super(address);		
 		int intAddress = new Integer(address).intValue();
 		for (int j = 0; j < getNumInputs(); j++) {
-			connector.addDeviceAlias((new Integer(intAddress + j)).toString(), this);
+			connector.addDevice((new Integer(intAddress + j)).toString(), this);
 			for (int i = 1; i <= 4; i++) {
 				addPort(new DigitalInputPort("i"+(intAddress+j)+"."+new Integer(i).toString()));
 			}
@@ -50,12 +50,9 @@ public class DF4I extends DominoDevice {
 		throw(new AISException("Gli ingressi non possono essere variati"));
 	}
 
-	public void messageReceived(FXPXTMessage m) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void messageSent(FXPXTMessage m) {
+	/**
+	 * FIXME recuperare DXP 
+	public void messageSent(DXPMessage m) {
 		switch (m.getMessageType()) {
 			case FXPXTMessage.RISPOSTA_STATO_INGRESSO:
 				RispostaStatoIngressiMessage r = (RispostaStatoIngressiMessage) m;
@@ -69,5 +66,6 @@ public class DF4I extends DominoDevice {
 				logger.warn("Messaggio da gestire:"+m.toString());
 		}
 	}
+	*/
 
 }

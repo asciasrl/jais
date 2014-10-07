@@ -2,14 +2,9 @@ package it.ascia.duemmegi.domino.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
-import it.ascia.ais.DevicePort;
-import it.ascia.ais.Message;
 import it.ascia.ais.port.DigitalVirtualPort;
-import it.ascia.duemmegi.fxpxt.FXPXTMessage;
-import it.ascia.duemmegi.fxpxt.FXPXTResponseMessage;
-import it.ascia.duemmegi.fxpxt.msg.ComandoUsciteMessage;
-import it.ascia.duemmegi.fxpxt.msg.RichiestaStatoUsciteMessage;
-import it.ascia.duemmegi.fxpxt.msg.RispostaStatoUsciteMessage;
+import it.ascia.duemmegi.dxp.msg.ComandoUsciteMessage;
+import it.ascia.duemmegi.dxp.msg.RichiestaStatoUsciteMessage;
 
 public class DF4IV extends DF4I {
 	
@@ -85,16 +80,16 @@ public class DF4IV extends DF4I {
 
 	public void messageSent(FXPXTMessage m) {
 		switch (m.getMessageType()) {
-			case FXPXTMessage.RISPOSTA_STATO_USCITE:
+			case DXPMessage.RISPOSTA_STATO_USCITE:
 				RispostaStatoUsciteMessage r = (RispostaStatoUsciteMessage) m;
 				for (int i = 1; i <= 4; i++) {
-					DevicePort p = getPort("v"+((FXPXTResponseMessage) m).getSource()+"."+i);
+					DevicePort p = getPort("v"+((DXPResponseMessage) m).getSource()+"."+i);
 					p.setCacheRetention(1000);
 					p.setValue(new Boolean(r.getExitStatus(i)));
 					logger.trace("messageSent setValue "+p.getAddress());
 				}
 				break;
-			case FXPXTMessage.RISPOSTA_STATO_INGRESSO:
+			case DXPMessage.RISPOSTA_STATO_INGRESSO:
 				super.messageSent(m);
 				break;
 			default:		

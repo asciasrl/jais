@@ -5,13 +5,11 @@ package it.ascia.duemmegi.domino.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.DevicePort;
-import it.ascia.ais.Message;
 import it.ascia.ais.port.DimmerPort;
 import it.ascia.duemmegi.domino.DominoDevice;
-import it.ascia.duemmegi.fxpxt.FXPXTMessage;
-import it.ascia.duemmegi.fxpxt.msg.ComandoUsciteMessage;
-import it.ascia.duemmegi.fxpxt.msg.RichiestaStatoUsciteMessage;
-import it.ascia.duemmegi.fxpxt.msg.RispostaStatoUsciteMessage;
+import it.ascia.duemmegi.dxp.DXPMessage;
+import it.ascia.duemmegi.dxp.msg.ComandoUsciteMessage;
+import it.ascia.duemmegi.dxp.msg.RichiestaStatoUsciteMessage;
 
 /**
  * @author sergio
@@ -24,7 +22,7 @@ public class DFDM extends DominoDevice {
 		addPort(new DimmerPort("o"+address+".1"));
 	}
 
-	public void messageReceived(FXPXTMessage m) {
+	public void messageReceived(DXPMessage m) {
 		// TODO Auto-generated method stub
 
 	}
@@ -36,7 +34,7 @@ public class DFDM extends DominoDevice {
 	 * FIXME recuperare DXP 
 	public void messageSent(FXPXTMessage m) {
 		switch (m.getMessageType()) {
-			case FXPXTMessage.RISPOSTA_STATO_USCITE:
+			case DXPMessage.RISPOSTA_STATO_USCITE:
 				RispostaStatoUsciteMessage r = (RispostaStatoUsciteMessage) m;
 				DevicePort p = getPort("o"+getDeviceAddress()+".1");
 				p.setCacheRetention(1000);

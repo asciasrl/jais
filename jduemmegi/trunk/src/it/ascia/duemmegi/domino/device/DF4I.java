@@ -3,13 +3,12 @@ package it.ascia.duemmegi.domino.device;
 import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.DevicePort;
-import it.ascia.ais.Message;
 import it.ascia.ais.port.DigitalInputPort;
 import it.ascia.duemmegi.domino.DominoDevice;
-import it.ascia.duemmegi.fxpxt.FXPXTMessage;
-import it.ascia.duemmegi.fxpxt.FXPXTResponseMessage;
-import it.ascia.duemmegi.fxpxt.msg.RichiestaStatoIngressiMessage;
-import it.ascia.duemmegi.fxpxt.msg.RispostaStatoIngressiMessage;
+import it.ascia.duemmegi.dxp.DXPMessage;
+import it.ascia.duemmegi.dxp.DXPResponseMessage;
+import it.ascia.duemmegi.dxp.msg.RichiestaStatoIngressiMessage;
+import it.ascia.duemmegi.dxp.msg.RispostaStatoIngressiMessage;
 
 public class DF4I extends DominoDevice {
 
@@ -50,14 +49,12 @@ public class DF4I extends DominoDevice {
 		throw(new AISException("Gli ingressi non possono essere variati"));
 	}
 
-	/**
-	 * FIXME recuperare DXP 
 	public void messageSent(DXPMessage m) {
 		switch (m.getMessageType()) {
-			case FXPXTMessage.RISPOSTA_STATO_INGRESSO:
+			case DXPMessage.RISPOSTA_STATO_INGRESSO:
 				RispostaStatoIngressiMessage r = (RispostaStatoIngressiMessage) m;
 				for (int i = 1; i <= 4; i++) {
-					DevicePort p = getPort("i"+((FXPXTResponseMessage)m).getSource()+"."+i);
+					DevicePort p = getPort("i"+((DXPResponseMessage)m).getSource()+"."+i);
 					p.setCacheRetention(1000);
 					p.setValue(new Boolean(r.getInputStatus(i)));
 				}
@@ -66,6 +63,5 @@ public class DF4I extends DominoDevice {
 				logger.warn("Messaggio da gestire:"+m.toString());
 		}
 	}
-	*/
 
 }

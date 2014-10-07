@@ -85,6 +85,8 @@ public class DFCPConnector extends Connector {
 	}
 
 	protected void dispatchMessage(Message m) throws AISException {
+		/**
+		 * Gia fatto in Connector
     	if (messageToBeAnswered != null 
     			&& FXPXTResponseMessage.class.isInstance(m) 
     			&& messageToBeAnswered.isAnsweredBy((FXPXTMessage) m)) {
@@ -94,6 +96,7 @@ public class DFCPConnector extends Connector {
 				messageToBeAnswered.notify(); 						
 			}
     	}
+    	*/
     	if (FXPXTResponseMessage.class.isInstance(m)) {
 			// Al mittente 
 			DominoDevice d = (DominoDevice)getDevice(((FXPXTResponseMessage)m).getSource());
@@ -144,7 +147,7 @@ public class DFCPConnector extends Connector {
 		}
 		if (d != null) {
 			super.addDevice(d);
-			logger.info("Aggiunto modulo "+model+" "+d.getFullAddress());
+			logger.info("Aggiunto modulo "+model+" "+d.getDeviceAddress());
 		}
 	}
 

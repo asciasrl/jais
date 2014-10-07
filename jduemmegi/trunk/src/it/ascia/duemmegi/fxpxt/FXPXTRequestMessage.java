@@ -1,9 +1,14 @@
 package it.ascia.duemmegi.fxpxt;
 
+import it.ascia.ais.RequestMessage;
+import it.ascia.ais.ResponseMessage;
 
-public abstract class FXPXTRequestMessage extends FXPXTMessage {
+
+public abstract class FXPXTRequestMessage extends FXPXTMessage implements RequestMessage {
 
 	private boolean isAnswered;
+	
+	private FXPXTResponseMessage responseMessage;
 	
 	/**
 	 * @param isAnswered the isAnswered to set
@@ -23,6 +28,22 @@ public abstract class FXPXTRequestMessage extends FXPXTMessage {
 		return (new Integer(indirizzo)).toString();
 	}
 
-	public abstract boolean isAnsweredBy(FXPXTMessage m);
+	@Override
+	public void setResponse(ResponseMessage res) {
+		responseMessage = (FXPXTResponseMessage) res;		
+	}
+
+	@Override
+	public ResponseMessage getResponse() {
+		return responseMessage;
+	}
+
+	@Override
+	public boolean isAnsweredBy(ResponseMessage m) {
+		return	FXPXTResponseMessage.class.isInstance(m) &&
+				((FXPXTResponseMessage)m).testChecksum() &&
+				((FXPXTResponseMessage)m).indirizzo == this.indirizzo &&
+				((FXPXTResponseMessage)m).codice == this.codice;				
+	}
 
 }

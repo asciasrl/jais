@@ -21,7 +21,7 @@ public class DF4IV extends DF4I {
 		super(connector,address);
 		int intAddress = new Integer(address).intValue();
 		for (int j = getNumInputs() ; j < getNumInputs() + getNumVirtuals(); j++) {
-			connector.addDeviceAlias((new Integer(intAddress + j)).toString(), this);
+			connector.addDevice((new Integer(intAddress + j)).toString(), this);
 			for (int i = 1; i <= 4; i++) {
 				addPort(new DigitalVirtualPort("v"+(intAddress+j)+"."+new Integer(i).toString()));
 			}
@@ -80,6 +80,9 @@ public class DF4IV extends DF4I {
 		
 	}
 	*/
+	/**
+	 * FIXME recuperare DXP 
+
 	public void messageSent(FXPXTMessage m) {
 		switch (m.getMessageType()) {
 			case FXPXTMessage.RISPOSTA_STATO_USCITE:
@@ -98,4 +101,5 @@ public class DF4IV extends DF4I {
 				logger.warn("Messaggio da gestire:"+m.toString());
 		}		
 	}
+	*/
 }

@@ -1,5 +1,8 @@
 package it.ascia.duemmegi.fxpxt;
 
+import java.util.Iterator;
+import java.util.List;
+
 import it.ascia.ais.Message;
 
 public abstract class FXPXTMessage extends Message {
@@ -30,6 +33,26 @@ public abstract class FXPXTMessage extends Message {
 	 */
 	protected int[] rawmessage;
 
+	/**
+	 * Set fields of the message
+	 * @param indirizzo 
+	 * @param codice
+	 * @param buff
+	 */
+	protected void set(int indirizzo, int codice, List<Integer> buff) {
+		this.indirizzo = indirizzo;
+		this.codice = codice;
+		this.bytes = buff.size();
+		int i = 0;
+		for (Iterator<Integer> iterator = buff.iterator(); iterator.hasNext();) {
+			dati[i] = (Integer) iterator.next();
+			i++;
+		}
+		int checksum = calculateChecksum();
+		checksumH = (checksum & 0xff00) >> 8;
+		checksumL = checksum & 0x00ff;		
+	}
+	
 	/**
 	 * Carica i dati da un'array di interi.
 	 * 
@@ -74,15 +97,6 @@ public abstract class FXPXTMessage extends Message {
 			tmp += dati[i];
 		}
 		return 0xffff - (tmp & 0xffff); 
-	}
-	
-	/**
-	 * Set the checksum bytes of the message
-	 */
-	protected void setChecksum() {
-		int checksum = calculateChecksum();
-		checksumH = (checksum & 0xff00) >> 8;
-		checksumL = checksum & 0x00ff;		
 	}
 	
 	/**

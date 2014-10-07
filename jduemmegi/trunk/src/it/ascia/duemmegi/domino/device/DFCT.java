@@ -17,7 +17,7 @@ public class DFCT extends DominoDevice {
 		super(address);
 		int intAddress = new Integer(address).intValue();
 		for (int i = intAddress; i < intAddress + 7; i++) {
-			connector.addDeviceAlias((new Integer(i)).toString(), this);
+			connector.addDevice((new Integer(i)).toString(), this);
 		}
 		addPort(new TemperaturePort("temp"));
 	}
@@ -29,7 +29,7 @@ public class DFCT extends DominoDevice {
 
 	public boolean updatePort(String portId) throws AISException {
 		if (portId.equals("temp")) {
-			int d = (new Integer(getSimpleAddress())).intValue() + 1;
+			int d = (new Integer(getDeviceAddress())).intValue() + 1;
 			RichiestaStatoIngressiMessage m = new RichiestaStatoIngressiMessage(d);
 			getConnector().sendMessage(m);			
 			// FIXME gestire risposta qui invece che in dispatchmessage
@@ -50,12 +50,14 @@ public class DFCT extends DominoDevice {
 		
 	}
 
+	/**
+	 * FIXME recuperare DXP 
 	public void messageSent(FXPXTMessage m) {
 		switch (m.getMessageType()) {
 			case FXPXTMessage.RISPOSTA_STATO_INGRESSO:
 				RispostaStatoIngressiMessage r = (RispostaStatoIngressiMessage) m;
 				int intAddress = (new Integer(((FXPXTResponseMessage) m).getSource())).intValue();
-				int myAddress = (new Integer(getSimpleAddress())).intValue();
+				int myAddress = (new Integer(getDeviceAddress())).intValue();
 				if (intAddress == (myAddress + 1)) {
 					DevicePort p = getPort("temp");
 					p.setCacheRetention(1000);
@@ -69,4 +71,5 @@ public class DFCT extends DominoDevice {
 				logger.warn("Messaggio da gestire:"+m.toString());
 		}		
 	}
+	*/
 }

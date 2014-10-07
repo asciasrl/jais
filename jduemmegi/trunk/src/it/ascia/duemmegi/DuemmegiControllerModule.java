@@ -33,7 +33,7 @@ public class DuemmegiControllerModule extends ControllerModule {
 				}
 		 	} catch (Exception e) {
 		 		logger.fatal("Errore durante inizializzazione:",e);
-		 		conn.close();
+		 		conn.stop();
 		 	}
 		}				
  		logger.info("Completato start");

@@ -1,6 +1,6 @@
 package it.ascia.duemmegi.fxpxt;
 
-public class ReadRamResponseMessage extends FXPXTMessage {
+public class ReadRamResponseMessage extends FXPXTResponseMessage {
 
 	public ReadRamResponseMessage(int[] message) {
 		load(message);

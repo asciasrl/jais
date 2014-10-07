@@ -19,7 +19,7 @@ public class BentelKyoControllerModule extends ControllerModule {
 		    BentelKyoConnector connector = null;
 		 	try {
 		 		connector = new BentelKyoConnector(sub.getString("name"));
-		 		if (connector.getName().equals("rw")) {
+		 		if (connector.getConnectorName().equals("rw")) {
 			 		//continue;
 			 	}
 			 	Transport transport = Transport.createTransport(sub);
@@ -32,7 +32,7 @@ public class BentelKyoControllerModule extends ControllerModule {
 		 	}
 		}				
 
-		controller.getConnector("rw").close();
+		controller.getConnector("rw").stop();
 		((BentelKyoConnector) controller.getConnector("ro")).log("inizio:");
 		JBisKyoUnit b = new JBisKyoUnit(6,4,"0001" + (char)0xff + (char)0xff, "jbis");			
 		JBisKyoDevice d = b.getDevice();

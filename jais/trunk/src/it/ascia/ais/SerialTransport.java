@@ -3,7 +3,6 @@ package it.ascia.ais;
 import it.ascia.ais.Transport;
 import it.ascia.ais.AISException;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -115,74 +114,9 @@ public class SerialTransport extends Transport {
     	this.receiveThreshold = receiveThreshold;
     	this.receiveFraming = receiveFraming;
     	this.receiveTimeout = receiveTimeout;
-    	//loadLibrary();
     	open();
     }
     
-    /**
-     * Carica la libreria nativa specifica del sistema in uso
-     */
-    /*
-	private void loadLibrary() {
-		
-		if (rxtxLoaded) {
-			return;
-		}
-		String oSName = System.getProperty("os.name");
-		String oSVersion = System.getProperty("os.version");
-		String oSArch = System.getProperty("os.arch");
-		String osLibPath = null;
-		if (oSName.startsWith("W")) {
-			if (oSArch.contains("64")) {
-				osLibPath = "win64";
-			} else {
-				osLibPath = "win32";
-			}
-		} else if (oSName.startsWith("L")) {
-			if (oSArch.contains("64")) {
-				osLibPath = "x86_64-unknown-linux-gnu";
-			} else {
-				osLibPath = "i686-pc-linux-gnu";
-			}			
-		} else if (oSName.startsWith("M")) {
-			osLibPath = "mac-10.5";
-		} else if (oSName.startsWith("S")) {
-			if (oSArch.contains("64")) {
-				osLibPath = "sparc-sun-solaris2.10-64";
-			} else {
-				osLibPath = "sparc-sun-solaris2.10-32";
-			}			
-		}
-		
-		if (osLibPath == null) {
-			throw(new AISException("Operating system unsupported by rxtx: "+oSName+" / " + oSVersion+" / " + oSArch));		
-		} else {
-			logger.debug("Loading rxtx for "+oSName+" / " + oSVersion+" / " + oSArch+" path="+osLibPath);
-		}
-		
-		// determinare combinazioni OSname / OSarch e di conseguenza il nomi della DLL
-		// modificare "java.library.path" NON funziona (viene letta all'avvio della JVM)
-		// terminare il path assoluto usando come base "java.library.path" ed aggiungere la subdir di rxtx
-		// modificare rxtx-2.2pre2.jar in modo che NON carichi la libreria in ogni classe
-		
-		String libPath = System.getProperty("java.library.path").split(System.getProperty("path.separator"))[0];
-		
-		String fs = System.getProperty("file.separator");
-		
-		File f = new File(libPath + fs + "rxtx-2.2pre2-bins"+fs+osLibPath+fs+System.mapLibraryName("rxtxSerial"));
-		
-		if (f.exists()) {
-			String path = f.getAbsolutePath();
-			logger.debug("Loading rxtx library from: "+path);			
-			System.load(path);
-		} else {
-			throw(new AISException("Library rxtx not found in:"+f.getPath()));
-		}
-		
-		rxtxLoaded = true;
-	}
-	*/
-
 	private void open() {
     	logger.debug("Opening serial port '" + portName + "' "+portSpeed+" "+databits+parityChar(parity)+stopbits);
     	if (portName.toLowerCase().equals("auto")) {						

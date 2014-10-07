@@ -245,7 +245,7 @@ public class EDSConnector extends Connector {
 	 */
 	public boolean sendMessage(EDSMessage m) {
 		if (transport == null) {
-			logger.error("Transport not available for connector "+getName()+", cannot send message.");
+			logger.error("Transport not available for connector "+getConnectorName()+", cannot send message.");
 			return false;
 		}
 		if (m.isSent()) {
@@ -421,7 +421,7 @@ public class EDSConnector extends Connector {
      * @param EDSConfigFileName
      * @return
      */
-	public boolean loadConfig(String EDSConfigFileName) {
+	boolean loadConfig(String EDSConfigFileName) {
 		XMLConfiguration EDSConfig;
 		try {
 			EDSConfig = new XMLConfiguration(EDSConfigFileName);

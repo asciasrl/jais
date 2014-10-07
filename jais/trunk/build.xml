@@ -25,7 +25,8 @@
 		<mkdir dir="${temp}"/>
 		<javac srcdir="src"
 			destdir="${temp}"
-			optimize="true"						
+			optimize="true"
+			debug="on"
 			classpathref="lib.path.ref"
 		/>
 		<jar destfile="${lib}${ant.project.name}-${v}.jar"

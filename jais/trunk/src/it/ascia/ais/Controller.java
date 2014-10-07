@@ -94,10 +94,10 @@ public class Controller {
 	 * @throws KeyAlreadyExistsException if a connector with the same name is already registered 
 	 */
 	public void addConnector(ConnectorInterface connector) throws KeyAlreadyExistsException {
-		if (connectors.containsKey(connector.getName())) {
-			throw(new KeyAlreadyExistsException("Connector name duplicated: "+connector.getName()));
+		if (connectors.containsKey(connector.getConnectorName())) {
+			throw(new KeyAlreadyExistsException("Connector name duplicated: "+connector.getConnectorName()));
 		}
-		connectors.put(connector.getName(), connector);
+		connectors.put(connector.getConnectorName(), connector);
 		connector.start();
 	}
 	
@@ -131,7 +131,7 @@ public class Controller {
 	public Vector<Device> getDevices(Address address) {
 		Vector<Device> res = new Vector<Device>();
 		for (ConnectorInterface connector : connectors.values()) {
-			if (address.matchConnector(connector.getName())) {
+			if (address.matchConnector(connector.getConnectorName())) {
 				res.addAll(connector.getDevices(address));			
 			}
 		}
@@ -342,15 +342,15 @@ public class Controller {
 		for (ConnectorInterface connector: connectors.values()) {
 			if (connector.isRunning()) {
 				// I connettori dovrebbero essere stati tutti chiusi dal modulo relativo
-				logger.error("Closing connettor "+connector.getName());
+				logger.error("Closing connettor "+connector.getConnectorName());
 				try {
-					connector.close();								
-					logger.debug("Closed connettore "+connector.getName());
+					connector.stop();								
+					logger.debug("Closed connettore "+connector.getConnectorName());
 				} catch (Exception e) {
 					logger.fatal("Stop exception:",e);					
 				}
 			} else {
-				logger.trace("Connector "+connector.getName()+" already closed.");
+				logger.trace("Connector "+connector.getConnectorName()+" already closed.");
 			}
 		}		
 		logger.info("Arresto completato.");
@@ -398,13 +398,13 @@ public class Controller {
 						if (connector.isRunning()) {
 							tot++;
 							if (connector.isAlive()) {
-								logger.trace("Connector "+connector.getName()+" is alive.");
+								logger.trace("Connector "+connector.getConnectorName()+" is alive.");
 								ok++;
 							} else {
-								logger.fatal("Connector "+connector.getName()+" is NOT alive!");
+								logger.fatal("Connector "+connector.getConnectorName()+" is NOT alive!");
 							}
 						} else {
-							logger.trace("Connector "+connector.getName()+" is not running.");
+							logger.trace("Connector "+connector.getConnectorName()+" is not running.");
 						}
 					}
 					Runtime.getRuntime().gc();

@@ -8,20 +8,20 @@ package it.ascia.ais;
 public interface ResponseMessage {
 
 	/**
-	 * @param messageToBeAnswered Request Message to this Response
+	 * @param requestMessage Request Message to this Response
 	 */
-	public void setRequest(RequestMessage messageToBeAnswered);
+	public void setRequest(RequestMessage requestMessage);
 	
 	/**
 	 * @return Request Message for this Response
 	 */
-	public Message getRequest();
+	public RequestMessage getRequest();
 
 	/**
 	 * 
-	 * @param m Request
+	 * @param requestMessage Request
 	 * @return true if this message is a response to given request message 
 	 */
-	public abstract boolean isResponseTo(RequestMessage m);
+	public abstract boolean isResponseTo(RequestMessage requestMessage);
 
 }

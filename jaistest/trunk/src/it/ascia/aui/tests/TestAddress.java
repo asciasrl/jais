@@ -26,17 +26,17 @@ public class TestAddress extends TestCase {
 
 	public void testConnector() {
 		Address a = new Address("a","b","c");
-		assertTrue(a.getConnector().equals("a"));		
+		assertTrue(a.getConnectorName().equals("a"));		
 	}
 
 	public void testDevice() {
 		Address a = new Address("a","b","c");
-		assertTrue(a.getDevice().equals("b"));		
+		assertTrue(a.getDeviceAddress().equals("b"));		
 	}
 
 	public void testPort() {
 		Address a = new Address("a","b","c");
-		assertTrue(a.getPort().equals("c"));		
+		assertTrue(a.getPortId().equals("c"));		
 	}
 
 	public void testPartial1() {
@@ -166,72 +166,72 @@ public class TestAddress extends TestCase {
 
 	public void testParseConnector1() {
 		Address a = new Address("a.b:c");
-		assertTrue(a.getConnector().equals("a"));		
+		assertTrue(a.getConnectorName().equals("a"));		
 	}
 
 	public void testParseConnector2() {
 		Address a = new Address("b:c");
-		assertTrue(a.getConnector() == null);		
+		assertTrue(a.getConnectorName() == null);		
 	}
 
 	public void testParseConnector2a() {
 		Address a = new Address("*.b:c");
-		assertTrue(a.getConnector() == null);		
+		assertTrue(a.getConnectorName() == null);		
 	}
 
 	public void testParseConnector2b() {
 		Address a = new Address("a.b:");
-		assertTrue(a.getConnector().equals("a"));		
+		assertTrue(a.getConnectorName().equals("a"));		
 	}
 
 	public void testParseConnector2c() {
 		Address a = new Address("a.:");
-		assertTrue(a.getConnector().equals("a"));		
+		assertTrue(a.getConnectorName().equals("a"));		
 	}
 
 	public void testParseConnector3() {
 		Address a = new Address("a.b:c");
-		assertTrue(a.getConnector().equals("a"));		
+		assertTrue(a.getConnectorName().equals("a"));		
 	}
 
 	public void testParseDevice1() {
 		Address a = new Address("a");
-		assertTrue(a.getDevice().equals("a"));		
+		assertTrue(a.getDeviceAddress().equals("a"));		
 	}
 
 	public void testParseDevice1a() {
 		Address a = new Address("*");
-		assertTrue(a.getDevice() == null);		
+		assertTrue(a.getDeviceAddress() == null);		
 	}
 
 	public void testParseDevice2() {
 		Address a = new Address("a.b");
-		assertTrue(a.getDevice().equals("b"));		
+		assertTrue(a.getDeviceAddress().equals("b"));		
 	}
 
 	public void testParseDevice3() {
 		Address a = new Address("a.b:c");
-		assertTrue(a.getDevice().equals("b"));		
+		assertTrue(a.getDeviceAddress().equals("b"));		
 	}
 
 	public void testParsePort1() {
 		Address a = new Address("a");
-		assertTrue(a.getPort() == null);		
+		assertTrue(a.getPortId() == null);		
 	}
 
 	public void testParsePort2() {
 		Address a = new Address("a.b");
-		assertTrue(a.getPort() == null);		
+		assertTrue(a.getPortId() == null);		
 	}
 
 	public void testParsePort3() {
 		Address a = new Address("a.b:c");
-		assertTrue(a.getPort().equals("c"));		
+		assertTrue(a.getPortId().equals("c"));		
 	}
 
 	public void testParsePort4() {
 		Address a = new Address("a.b:*");
-		assertTrue(a.getPort() == null);		
+		assertTrue(a.getPortId() == null);		
 	}
 	
 	public void testCompare1() {

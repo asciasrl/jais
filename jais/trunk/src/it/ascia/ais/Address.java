@@ -40,10 +40,10 @@ public class Address implements Comparable<Object> {
 
 	public Address(ConnectorInterface connector, Device device, DevicePort port) {
 		if (connector != null) {
-			setConnectorName(connector.getName());
+			setConnectorName(connector.getConnectorName());
 		}
 		if (device != null) {
-			setDeviceAddress(device.getSimpleAddress());
+			setDeviceAddress(device.getDeviceAddress());
 		}
 		if (port != null) {
 			setPortId(port.getPortId());

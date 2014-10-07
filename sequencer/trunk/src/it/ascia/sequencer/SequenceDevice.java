@@ -78,7 +78,7 @@ public class SequenceDevice extends Device {
 		private SequenceDevice device;
 		
 		public SequenceRunner(SequenceDevice device) {
-			setName(device.getSimpleAddress());
+			setName(device.getDeviceAddress());
 			this.device = device;
 		}
 		

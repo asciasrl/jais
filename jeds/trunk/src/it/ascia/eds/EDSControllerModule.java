@@ -85,7 +85,7 @@ public class EDSControllerModule extends ControllerModule {
 				}
 		 	} catch (Exception e) {
 		 		if (eds != null) {
-		 			eds.close();
+		 			eds.stop();
 		 		}
 		 		stop();
 				throw(new AISException("Errore avvio connettore: ",e));		 		

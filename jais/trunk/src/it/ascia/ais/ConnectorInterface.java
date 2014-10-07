@@ -1,6 +1,7 @@
 package it.ascia.ais;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.Vector;
 
 /**
@@ -22,33 +23,38 @@ public interface ConnectorInterface {
      * Restituisce il nome del connettore, come specificato alla creazione
      * @return Nome
      */
-	public String getName();
+	public String getConnectorName();
 	
 	/**
      * Aggiunge un dispositivo all'elenco di quelli gestiti
-     * Non sono ammessi duplicati
-     * @param device
+     * Non sono ammessi duplicati per gli indirizzi
+     * @param deviceAdrress indirizzo
+     * @param device il device
      * @throws AISException
      */
-    public void addDevice(Device device) throws AISException;
+    public void addDevice(String deviceAddress, Device device) throws AISException;
 
+    public void addDevice(Device device) throws AISException;
+    
+    /**
+     * 
+     * @param deviceAddress
+     * @return the device having the address or null
+     */
+    public Device getDevice(String deviceAddress);
+    
     /**
      * 
      * @param addr Indirizzo
      * @return Tutti i device che corrispondono all'indirizzo
      */
-    public Vector<Device> getDevices(Address addr);
+    public Set<Device> getDevices(Address addr);
 
 	/**
 	 * 
 	 * @return Tutti i devices del connettore
 	 */
-    public Collection<Device> getDevices();
-
-	/**
-	 * Chiude il connettore 
-	 */    
-	public void close();
+    public Set<Device> getDevices();
 
     /**
      * Invia un messaggio e attende una risposta dal destinatario, se il
@@ -58,7 +64,7 @@ public interface ConnectorInterface {
      * andato a buon fine.
      * @throws AISException 
      */
-    public boolean sendMessage(Message m);
+    //public boolean sendMessage(Message m);
 
     /**
      * 
@@ -80,9 +86,14 @@ public interface ConnectorInterface {
 	/**
 	 * Request to the connector to update the port.  This method return immediately.
 	 * @param devicePort Port to be updated
+	 * @deprecated Remove this method from general pourposes connector
 	 */
 	public void queueUpdate(DevicePort devicePort);
 
+	/**
+	 * 
+	 * @return true if connetor is alive (watchdog)
+	 */
 	public boolean isAlive();
 
 	/**
@@ -90,5 +101,16 @@ public interface ConnectorInterface {
 	 */
 	public void start();
 
+	/**
+	 * Ferma il connettore 
+	 */    
+	public void stop();
+
+	/**
+	 * Send a message to phisical device
+	 * @param m
+	 * @return
+	 */
+	public boolean sendMessage(Message m);
 
 }

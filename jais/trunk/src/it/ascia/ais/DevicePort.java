@@ -162,6 +162,7 @@ public abstract class DevicePort {
 		expiration = 0;
 	}
 
+	/*
 	public Map<String, Object> getStatus() throws AISException {
 		HashMap<String, Object> m = new HashMap<String, Object>();
 		m.put("A",getAddress().toString());
@@ -174,6 +175,7 @@ public abstract class DevicePort {
 		}
 		return m;
 	}
+	*/
 
 	/**
 	 * 

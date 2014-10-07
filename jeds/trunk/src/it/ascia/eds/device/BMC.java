@@ -125,7 +125,7 @@ public abstract class BMC extends Device {
 	 * Ritorna l'indirizzo (int) di questo BMC sul bus EDS.
 	 */
 	public int getIntAddress() {
-		return Integer.parseInt(getSimpleAddress());
+		return Integer.parseInt(getDeviceAddress());
 	}
 	
 	/**

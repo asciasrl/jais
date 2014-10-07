@@ -82,7 +82,7 @@ public abstract class Device {
 	 * - EDS: 12
 	 * Can be an empty String
 	 */
-	public String getSimpleAddress() {
+	public String getDeviceAddress() {
 		return address;
 	}
 	

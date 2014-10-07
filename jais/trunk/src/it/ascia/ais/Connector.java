@@ -6,9 +6,6 @@ package it.ascia.ais;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.configuration.HierarchicalConfiguration;
-import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
-
 /**
  * Connector domotico.
  * 
@@ -23,7 +20,7 @@ import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
  * @author arrigo, sergio
  * TODO Aggiungere gestione stato del trasport (connesso, disconnesso, passivo, ecc.) e riconnessione
  */
-public abstract class Connector extends SimpleConnector implements ConnectorInterface {
+public abstract class Connector extends ConnectorImpl implements ConnectorInterface {
 
 	public static final boolean DEGUG = false;
 	private static final long DEFAULT_DISPATCH_TIMEOUT = 60;
@@ -60,7 +57,7 @@ public abstract class Connector extends SimpleConnector implements ConnectorInte
 		updateQueue = new LinkedBlockingQueue<DevicePort>();
 		dispatchQueue = new LinkedBlockingQueue<Message>();
 		dispatchingThread = new DispatchingThread(getDispatchingTimeout());
-		dispatchingThread.setName("Dispatching-"+getClass().getSimpleName()+"-"+getName());
+		dispatchingThread.setName("Dispatching-"+getClass().getSimpleName()+"-"+getConnectorName());
 		dispatchingThread.setDaemon(true);
 		dispatchingThread.start();
 	}
@@ -72,18 +69,7 @@ public abstract class Connector extends SimpleConnector implements ConnectorInte
 	protected long getDispatchingTimeout() {
 		return DEFAULT_DISPATCH_TIMEOUT;
 	}
-
-    
-    /**
-     * Ottiene il device con l'indirizzo specificato, o null se non esiste
-     * Usa l'elenco degli indirizzi alias 
-     * @param address Indirizzo o alias del device
-     * @return null se nessun device ha l'indirizzo
-     */
-	public Device getDevice(String address) {
-    	return getDevice(new Address(address));
-    }
-    
+        
     /**
      * Aggiunge un porta alla coda delle porte da aggiornare
      * @param m
@@ -171,15 +157,14 @@ public abstract class Connector extends SimpleConnector implements ConnectorInte
      * 
      * @param m il messaggio da gestire
      * @throws AISException 
-     * @throws AISException 
      */
 	protected abstract void dispatchMessage(Message m) throws AISException;
     
 	/**
 	 * Chiude il Transport e le code di invio/ricezione 
 	 */
-	public void close() {
-		super.close();
+	public void stop() {
+		super.stop();
 		if (transport != null) {
 			transport.close();
 			transport = null;
@@ -197,6 +182,20 @@ public abstract class Connector extends SimpleConnector implements ConnectorInte
     		dispatchingThread.join();
 		} catch (InterruptedException e) {
 			logger.error("Interrupted:",e);
+		}
+	}
+
+    /**
+     * Variabile del watchdog
+     */
+	protected boolean isalive = true;
+	
+	public boolean isAlive() {
+		if (isalive) {
+			isalive = false;
+			return true;
+		} else {
+			return false;
 		}
 	}
 	
@@ -302,7 +301,7 @@ public abstract class Connector extends SimpleConnector implements ConnectorInte
 	@Override
 	public void start() {
 		updatingThread = new UpdatingThread();
-		updatingThread.setName("Updating-"+getClass().getSimpleName()+"-"+getName());
+		updatingThread.setName("Updating-"+getClass().getSimpleName()+"-"+getConnectorName());
 		updatingThread.setDaemon(true);
 		updatingThread.start();		
 	}

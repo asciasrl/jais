@@ -503,9 +503,9 @@ public class AUIConfigRPCServer implements Serializable {
 					p.put("Description",port.getDescription());						
 					ports.put(port.getPortId(),p);
 				}
-				devices.put(device.getSimpleAddress(),ports);
+				devices.put(device.getDeviceAddress(),ports);
 			}			
-			connectors.put(connector.getName(),devices);
+			connectors.put(connector.getConnectorName(),devices);
 		}	
 		return connectors;
 	}

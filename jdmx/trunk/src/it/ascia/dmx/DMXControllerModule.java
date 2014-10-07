@@ -38,7 +38,7 @@ public class DMXControllerModule extends ControllerModule {
 		 	} catch (Exception e) {
 		 		logger.fatal("Errore durante inizializzazione:",e);
 		 		if (dmx != null) {
-		 			dmx.close();
+		 			dmx.stop();
 		 		}
 		 	}
 		}				

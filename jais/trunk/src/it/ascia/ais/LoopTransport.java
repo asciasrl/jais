@@ -53,7 +53,7 @@ public class LoopTransport extends Transport {
 					int b = receiverQueue.take();
 					if (connector != null) {
 						if (nameMustBeSet) {
-							receiverThread.setName(connector.getName() + "-receiver");
+							receiverThread.setName(connector.getConnectorName() + "-receiver");
 							nameMustBeSet = false;
 						}
 						connector.received(b);

@@ -40,7 +40,7 @@ public class ModbusControllerModule extends ControllerModule {
 				}
 			} catch (Exception e) {
 		 		if (conn != null) {
-		 			conn.close();
+		 			conn.stop();
 		 		}
 		 		throw(new AISException("Unable to start: ",e));
 			}

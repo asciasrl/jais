@@ -1,7 +1,7 @@
 package it.ascia.duemmegi.domino.device;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Connector;
+import it.ascia.ais.ConnectorInterface;
 import it.ascia.ais.port.TemperaturePort;
 import it.ascia.duemmegi.domino.DominoDevice;
 import it.ascia.duemmegi.dxp.DXPMessage;
@@ -9,7 +9,7 @@ import it.ascia.duemmegi.dxp.msg.RichiestaStatoIngressiMessage;
 
 public class DFCT extends DominoDevice {
 
-	public DFCT(Connector connector, String address) throws AISException {
+	public DFCT(ConnectorInterface connector, String address) throws AISException {
 		super(address);
 		int intAddress = new Integer(address).intValue();
 		for (int i = intAddress; i < intAddress + 7; i++) {

@@ -3,7 +3,7 @@ package it.ascia.duemmegi.fxpxt;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReadInputsRequestMessage extends FXPXTMessage {
+public class ReadInputsRequestMessage extends FXPXTRequestMessage {
 
 	public ReadInputsRequestMessage(int addr, int num) {
 		if (num > 32) { 

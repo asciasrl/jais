@@ -1,27 +1,35 @@
 package it.ascia.duemmegi;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Connector;
 import it.ascia.ais.ConnectorInterface;
 import it.ascia.ais.ControllerModule;
 import it.ascia.ais.Message;
+import it.ascia.ais.PollingConnectorImpl;
+import it.ascia.ais.RequestMessage;
+import it.ascia.ais.ResponseMessage;
 import it.ascia.duemmegi.domino.DominoDevice;
 import it.ascia.duemmegi.domino.device.*;
+import it.ascia.duemmegi.fxpxt.FXPXTMessage;
 import it.ascia.duemmegi.fxpxt.FXPXTMessageParser;
 import it.ascia.duemmegi.fxpxt.FXPXTRequestMessage;
+import it.ascia.duemmegi.fxpxt.ReadIdRequestMessage;
 
-public class DFCPConnector extends Connector implements ConnectorInterface {
+public class DFCPConnector extends PollingConnectorImpl implements ConnectorInterface {
 
 	/**
 	 * MessageParser per la lettura dei messaggi in ingresso.
 	 */
 	protected FXPXTMessageParser mp;
-	
+
+	protected FXPXTRequestMessage request;
+
 	public DFCPConnector(long autoupdate, String name, ControllerModule module) {
 		super(autoupdate,name);
 		mp = new FXPXTMessageParser();
 	}
 
+
+	/*
 	public boolean sendMessage(Message m) {
 		if (FXPXTRequestMessage.class.isInstance(m)) {
 			return sendRequestMessage((FXPXTRequestMessage)m);
@@ -71,6 +79,7 @@ public class DFCPConnector extends Connector implements ConnectorInterface {
 		transport.release();
 		return received;
 	}
+	*/
 
 
 	public void addDevice(String model, String address) throws AISException {
@@ -110,10 +119,62 @@ public class DFCPConnector extends Connector implements ConnectorInterface {
 		}
 	}
 
+
 	@Override
-	protected void dispatchMessage(Message m) throws AISException {
+	public void doUpdate() {
 		// TODO Auto-generated method stub
-		
+		logger.debug("Polling");
+		try {
+			if (!transport.tryAcquire()) {
+				logger.trace("Start waiting for transport semaphore ...");
+				transport.acquire();
+				logger.trace("Done waiting for transport semaphore.");
+			}
+			request = new ReadIdRequestMessage(0);
+	    	synchronized (request) {
+				transport.write(request.getBytesMessage());
+				if (!request.isAnswered()) {
+	    			// si mette in attesa, ma se nel frattempo arriva la risposta viene avvisato
+	    	    	try {
+	    	    		request.wait(autoupdate);
+	    	    	} catch (InterruptedException e) {
+	    				logger.trace("interrupted!");
+	    	    	}
+				}
+				if (request.isAnswered()) {
+					logger.info("Response received:" + request.getResponse());
+				} else {
+					logger.error("Response not received to: "+request);
+				}
+	    	}
+		} catch (InterruptedException e) {
+			logger.debug("Interrupted:",e);
+		} catch (Exception e) {
+			logger.error("Exception:",e);
+		}
+		transport.release();
+	}
+
+	public void received(int b) {
+		if (mp == null) {
+			return;
+		}
+		mp.push(b);
+		if (mp.isValid()) {
+			Message m = mp.getMessage();
+			logger.debug("Ricevuto " + m);
+	    	if (request != null 
+	    			&& ResponseMessage.class.isInstance(m) 
+	    			&& request.isAnsweredBy((ResponseMessage)m)) {
+				// sveglia sendMessage
+				synchronized (request) {
+					request.setResponse((ResponseMessage)m);
+					((ResponseMessage)m).setRequest(request);
+		    		request.setAnswered(true);
+					request.notify(); 						
+				}
+	    	}
+		}
 	}
 
 }

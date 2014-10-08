@@ -49,7 +49,7 @@ public class FXPXTMessageParser extends MessageParser {
 	 * @return messaggio decodificato
 	 */
 	private FXPXTMessage createMessage(int[] message) {
-		switch (message[2]) {
+		switch (message[1]) {
 			case FXPXTMessage.READ_RAM : 
 				return new ReadRamResponseMessage(message);
 			case FXPXTMessage.WRITE_RAM : 

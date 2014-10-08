@@ -1,7 +1,7 @@
 package it.ascia.duemmegi.domino.device;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Connector;
+import it.ascia.ais.ConnectorInterface;
 import it.ascia.ais.port.DigitalVirtualPort;
 import it.ascia.duemmegi.dxp.msg.ComandoUsciteMessage;
 import it.ascia.duemmegi.dxp.msg.RichiestaStatoUsciteMessage;
@@ -12,7 +12,7 @@ public class DF4IV extends DF4I {
 		return 3;
 	}
 	
-	public DF4IV(Connector connector, String address) throws AISException {
+	public DF4IV(ConnectorInterface connector, String address) throws AISException {
 		super(connector,address);
 		int intAddress = new Integer(address).intValue();
 		for (int j = getNumInputs() ; j < getNumInputs() + getNumVirtuals(); j++) {

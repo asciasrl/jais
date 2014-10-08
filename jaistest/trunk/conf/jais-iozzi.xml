@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<jais:configuration version="1.5">
+	<logger file="conf/log4j.xml" configurator="DOMConfigurator" />
+	<locale language="it" country="IT" />
+	<watchdog interval="120" />
+	<modules>
+		<module name="Duemmegi" disabled="false">
+			<class>it.ascia.duemmegi.DuemmegiControllerModule</class>
+			<config>conf/duemmegi-Iozzi.xml</config>
+		</module>
+		<module name="Webconsole" disabled="false">
+			<class>it.ascia.webconsole.WebconsoleControllerModule</class>
+			<config>conf/Webconsole.xml</config>
+		</module>
+		<module name="HTTPServer" disabled="false">
+			<class>it.ascia.ais.HTTPServerControllerModule</class>
+			<config>conf/HTTPServer.xml</config>
+		</module>
+	</modules>
+</jais:configuration>

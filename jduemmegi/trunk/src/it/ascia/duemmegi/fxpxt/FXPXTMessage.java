@@ -91,7 +91,7 @@ public abstract class FXPXTMessage extends Message {
 	/**
 	 * Calcola il checksum.
 	 */
-	private int calculateChecksum() {
+	int calculateChecksum() {
 		int tmp = 0;
 		tmp = indirizzo + codice + bytes;
 		for (int i = 0; i < bytes; i++) {
@@ -113,12 +113,11 @@ public abstract class FXPXTMessage extends Message {
 	public String toString() {
 		StringBuffer s = new StringBuffer();
 		s.append("Indirizzo="+indirizzo);
-		s.append(" Codice=" + b2h(codice) + " " + getMessageDescription());
+		s.append(" Codice=" + b2h(codice));
 		s.append(" " + getMessageDescription());
 		s.append(" #Byte="+bytes);
-		s.append(" Dati");
-		for (int i = 0; i < bytes; i++) {
-			s.append(" " + b2h(dati[i]));			
+		if (bytes > 0) {
+			appendData(s);
 		}
 		s.append(" Checksum "+b2h(checksumH)+" "+b2h(checksumL));
 		if (testChecksum()) {
@@ -128,5 +127,13 @@ public abstract class FXPXTMessage extends Message {
 		}
 		return s.toString();
 	}
+	
+	protected void appendData(StringBuffer s) {
+		s.append(" Dati:");
+		for (int i = 0; i < bytes; i++) {
+			s.append(" " + b2h(dati[i]));			
+		}
+	}
+
 	
 }

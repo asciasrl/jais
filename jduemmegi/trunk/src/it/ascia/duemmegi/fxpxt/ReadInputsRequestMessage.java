@@ -5,14 +5,17 @@ import java.util.List;
 
 public class ReadInputsRequestMessage extends FXPXTRequestMessage {
 
-	public ReadInputsRequestMessage(int addr, int num) {
+	public ReadInputsRequestMessage(int indirizzo, int addr, int num) {
 		if (num > 32) { 
 			throw(new IndexOutOfBoundsException("Can read up to 32 modules ("+num+" > 32)"));
+		}
+		if ((addr+num) > 255) {
+			num = 255 - addr + 1;
 		}
 		List<Integer> buff = new ArrayList<Integer>();
 		buff.add((int)(addr & 0xFF));
 		buff.add(num);
-		set(0, READ_INPUTS, buff);				
+		set(indirizzo, READ_INPUTS, buff);				
 	}
 	
 	public int getAddr() {
@@ -21,6 +24,11 @@ public class ReadInputsRequestMessage extends FXPXTRequestMessage {
 
 	public int getNum() {
 		return dati[1];
+	}
+
+	protected void appendData(StringBuffer s) {
+		s.append(" From=" + getAddr());
+		s.append(" Num="+getNum());
 	}
 
 }

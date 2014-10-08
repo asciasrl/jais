@@ -2,7 +2,6 @@ package it.ascia.duemmegi.fxpxt;
 
 import it.ascia.ais.Message;
 import it.ascia.ais.MessageParser;
-import it.ascia.duemmegi.fxpxt.msg.*;
 
 public class FXPXTMessageParser extends MessageParser {
 
@@ -38,7 +37,7 @@ public class FXPXTMessageParser extends MessageParser {
 			s.append("DATA:0x"+Integer.toHexString(buff[i])+" ");			
 		}
 		s.append("CHKH:0x"+Integer.toHexString(buff[ibuff-2])+" ");
-		s.append("CHKH:0x"+Integer.toHexString(buff[ibuff-1])+" ");
+		s.append("CHKL:0x"+Integer.toHexString(buff[ibuff-1])+" ");
 		return s.toString();
 	}
 
@@ -99,13 +98,14 @@ public class FXPXTMessageParser extends MessageParser {
 			length = b + 5;
 		} else if (ibuff == length) {
 			message = createMessage(buff);
-			if (message.testChecksum()) {
-				valid = true;
-			} else {
-				logger.warn("Errore checksum");
-				logger.debug(dumpBuffer());
-				clear();
-			}			
+			if (message != null) {
+				if (message.testChecksum()) {
+					valid = true;
+				} else {
+					logger.warn("Errore checksum ("+message.calculateChecksum()+") "+dumpBuffer());
+					clear();
+				}
+			}
 		}
 	}
 

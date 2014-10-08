@@ -5,14 +5,14 @@ import it.ascia.ais.ConnectorInterface;
 import it.ascia.ais.ControllerModule;
 import it.ascia.ais.Message;
 import it.ascia.ais.PollingConnectorImpl;
-import it.ascia.ais.RequestMessage;
 import it.ascia.ais.ResponseMessage;
 import it.ascia.duemmegi.domino.DominoDevice;
 import it.ascia.duemmegi.domino.device.*;
-import it.ascia.duemmegi.fxpxt.FXPXTMessage;
 import it.ascia.duemmegi.fxpxt.FXPXTMessageParser;
 import it.ascia.duemmegi.fxpxt.FXPXTRequestMessage;
 import it.ascia.duemmegi.fxpxt.ReadIdRequestMessage;
+import it.ascia.duemmegi.fxpxt.ReadInputsRequestMessage;
+import it.ascia.duemmegi.fxpxt.ReadOutputsRequestMessage;
 
 public class DFCPConnector extends PollingConnectorImpl implements ConnectorInterface {
 
@@ -27,6 +27,8 @@ public class DFCPConnector extends PollingConnectorImpl implements ConnectorInte
 		super(autoupdate,name);
 		mp = new FXPXTMessageParser();
 	}
+	
+	private int indirizzo = 1;
 
 
 	/*
@@ -122,17 +124,34 @@ public class DFCPConnector extends PollingConnectorImpl implements ConnectorInte
 
 	@Override
 	public void doUpdate() {
-		// TODO Auto-generated method stub
-		logger.debug("Polling");
+		logger.debug("Start polling cycle");
+		long startTimeMillis = System.currentTimeMillis();
+		request = new ReadIdRequestMessage(indirizzo);
+		sendMessage();
+		int step = 31;
+		for (int i = 1; i < 256; i+=step) {
+			request = new ReadOutputsRequestMessage(indirizzo,i, step);
+			sendMessage();			
+		}
+		for (int i = 1; i < 256; i+=step) {
+			request = new ReadInputsRequestMessage(indirizzo,i, step);
+			sendMessage();			
+		}
+		logger.trace("Completed polling cycle in "+(System.currentTimeMillis() - startTimeMillis) + "mS");
+	}
+	
+	private boolean sendMessage() {
+		boolean res = false;
 		try {
 			if (!transport.tryAcquire()) {
 				logger.trace("Start waiting for transport semaphore ...");
 				transport.acquire();
 				logger.trace("Done waiting for transport semaphore.");
 			}
-			request = new ReadIdRequestMessage(0);
 	    	synchronized (request) {
+	    		long startTimeMillis = System.currentTimeMillis();
 				transport.write(request.getBytesMessage());
+				logger.trace("Request:" + request);
 				if (!request.isAnswered()) {
 	    			// si mette in attesa, ma se nel frattempo arriva la risposta viene avvisato
 	    	    	try {
@@ -142,7 +161,8 @@ public class DFCPConnector extends PollingConnectorImpl implements ConnectorInte
 	    	    	}
 				}
 				if (request.isAnswered()) {
-					logger.info("Response received:" + request.getResponse());
+					res=true;
+					logger.trace("Response received in "+(System.currentTimeMillis() - startTimeMillis) + "mS: " + request.getResponse());
 				} else {
 					logger.error("Response not received to: "+request);
 				}
@@ -153,6 +173,7 @@ public class DFCPConnector extends PollingConnectorImpl implements ConnectorInte
 			logger.error("Exception:",e);
 		}
 		transport.release();
+		return res;
 	}
 
 	public void received(int b) {
@@ -162,7 +183,7 @@ public class DFCPConnector extends PollingConnectorImpl implements ConnectorInte
 		mp.push(b);
 		if (mp.isValid()) {
 			Message m = mp.getMessage();
-			logger.debug("Ricevuto " + m);
+			//logger.debug("Ricevuto " + m);
 	    	if (request != null 
 	    			&& ResponseMessage.class.isInstance(m) 
 	    			&& request.isAnsweredBy((ResponseMessage)m)) {

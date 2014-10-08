@@ -86,9 +86,10 @@ public class TCPSerialTransport extends Transport {
 					}
 					keys.clear();
 				}
-			} catch (IOException e) {
+			} catch (Exception e) {
 				logger.error("Errore durante l'attesa di dati da rete: " +
 						e.getMessage());
+				reopen();
 			}
 		}
 	} // Classe TCPSerialBusReader
@@ -105,6 +106,8 @@ public class TCPSerialTransport extends Transport {
 	 * La porta TCP a cui connettersi di default.
 	 */
 	private int tcpPort;
+	private String hostName;
+	
 	/**
 	 * Il nostro socket.
 	 */
@@ -117,6 +120,7 @@ public class TCPSerialTransport extends Transport {
      * Il selector per la scrittura.
      */
     Selector writeSelector;
+	private Thread tcpSerialBusReaderThread;
 
     /**
      * Costruttore.
@@ -126,10 +130,15 @@ public class TCPSerialTransport extends Transport {
      * @throws un'Exception se incontra un errore
      */
     public TCPSerialTransport(String hostName, int port) throws AISException {
+    	this.hostName = hostName;
     	this.tcpPort = port;
-    	name = hostName + ":" + port;
+    	open();
+    }
+    
+    private void open() {
+    	name = hostName + ":" + tcpPort;
 		try {
-			logger.info("Connessione a " + hostName + ":" + port);
+			logger.info("Connessione a " + hostName + ":" + tcpPort);
 			sock = SocketChannel.open(new InetSocketAddress(hostName, tcpPort));
 			sock.configureBlocking(false);
 		} catch (UnresolvedAddressException e) {
@@ -154,7 +163,8 @@ public class TCPSerialTransport extends Transport {
 		}
 		tcpSerialBusReader = new TCPSerialBusReader(readSelector, this, sock);
 		logger.debug("Avvio listener");
-		new Thread(tcpSerialBusReader).start();
+		tcpSerialBusReaderThread = new Thread(tcpSerialBusReader);
+		tcpSerialBusReaderThread.start();
     }
     
     /**
@@ -179,19 +189,33 @@ public class TCPSerialTransport extends Transport {
     				sock.write(bb);
     				keys.clear();
     			} else if (channels == 0) {
-    				throw new IOException("la connessione e' caduta!");
+    				throw new IOException("la connessione e' caduta!");    				
     			} else {
     				// channels < 0: alquanto strano
     				throw new IOException("errore durante l'ascolto.");
     			}
     		}
-    	} catch (IOException e) {
+    	} catch (Exception e) {
     		logger.error("Errore durante l'invio di dati via rete: " +
 				e.getMessage());
+    		reopen();
     	}
     }
     
     /**
+     * close and open the same connection 
+     */
+    private void reopen() {
+    	logger.info("Trying to reopen connection");
+    	close();
+    	try {
+    		open();
+    	} catch (Exception e) {
+    		logger.fatal("Unable to reopen:",e);
+    	}
+	}
+
+	/**
      * Riceve il buffer con i dati da passare alla superclasse.
      */
     protected void setByteBuffer(ByteBuffer bb) {
@@ -218,6 +242,14 @@ public class TCPSerialTransport extends Transport {
      * Chiude la connessione.
      */
     public void close() {
+		if (tcpSerialBusReaderThread != null) {
+			tcpSerialBusReaderThread.interrupt();
+	    	try {
+	    		tcpSerialBusReaderThread.join();
+			} catch (InterruptedException e) {
+				logger.error("Interrupted:",e);
+			}
+		}
     	try {
     		readSelector.close();
     		writeSelector.close();
@@ -226,7 +258,7 @@ public class TCPSerialTransport extends Transport {
     		logger.error("Errore durante la chiusura della connessione: " +
     				e.getMessage());
     	}
-    	logger.debug("Chiuso.");
+    	logger.debug("Trasport closed");
     }
 
 	public String getInfo() {

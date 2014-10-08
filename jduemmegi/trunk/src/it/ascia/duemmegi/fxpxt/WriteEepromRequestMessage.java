@@ -3,7 +3,7 @@ package it.ascia.duemmegi.fxpxt;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WriteEepromRequestMessage extends FXPXTMessage {
+public class WriteEepromRequestMessage extends FXPXTRequestMessage {
 
 	public WriteEepromRequestMessage(long indirizzo, int n, int[] valori) {		
 		List<Integer> buff = new ArrayList<Integer>();

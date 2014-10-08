@@ -1,6 +1,6 @@
 package it.ascia.duemmegi.fxpxt;
 
-public class WriteRamResponseMessage extends FXPXTMessage {
+public class WriteRamResponseMessage extends FXPXTResponseMessage {
 
 	public WriteRamResponseMessage(int[] message) {
 		load(message);

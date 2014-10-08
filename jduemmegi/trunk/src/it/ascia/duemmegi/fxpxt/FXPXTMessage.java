@@ -44,6 +44,7 @@ public abstract class FXPXTMessage extends Message {
 		this.codice = codice;
 		this.bytes = buff.size();
 		int i = 0;
+		dati = new int[buff.size()];
 		for (Iterator<Integer> iterator = buff.iterator(); iterator.hasNext();) {
 			dati[i] = (Integer) iterator.next();
 			i++;
@@ -111,9 +112,19 @@ public abstract class FXPXTMessage extends Message {
 	
 	public String toString() {
 		StringBuffer s = new StringBuffer();
-		s.append(indirizzo + " " + getMessageDescription());
+		s.append("Indirizzo="+indirizzo);
+		s.append(" Codice=" + b2h(codice) + " " + getMessageDescription());
+		s.append(" " + getMessageDescription());
+		s.append(" #Byte="+bytes);
+		s.append(" Dati");
 		for (int i = 0; i < bytes; i++) {
-			s.append(b2h(dati[i]));			
+			s.append(" " + b2h(dati[i]));			
+		}
+		s.append(" Checksum "+b2h(checksumH)+" "+b2h(checksumL));
+		if (testChecksum()) {
+			s.append(" OK");			
+		} else {
+			s.append(" Invalid");			
 		}
 		return s.toString();
 	}

@@ -1,7 +1,7 @@
 package it.ascia.duemmegi.domino.device;
 
 import it.ascia.ais.AISException;
-import it.ascia.ais.Connector;
+import it.ascia.ais.ConnectorInterface;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.port.DigitalInputPort;
 import it.ascia.duemmegi.domino.DominoDevice;
@@ -16,7 +16,7 @@ public class DF4I extends DominoDevice {
 		return 1;
 	}
 
-	public DF4I(Connector connector, String address) throws AISException {
+	public DF4I(ConnectorInterface connector, String address) throws AISException {
 		super(address);		
 		int intAddress = new Integer(address).intValue();
 		for (int j = 0; j < getNumInputs(); j++) {

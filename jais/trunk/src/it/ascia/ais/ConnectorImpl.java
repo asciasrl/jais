@@ -148,7 +148,14 @@ public class ConnectorImpl implements ConnectorInterface {
 	@Override
 	public boolean sendMessage(Message m) {
 		// FIXME Auto-generated method stub
+		logger.error("FIXME Auto-generated method stub");
 		return false;
+	}
+
+	@Override
+	public void received(int i) {
+		// FIXME Auto-generated method stub
+		logger.error("FIXME Auto-generated method stub");
 	}
 
 }

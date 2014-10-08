@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<jais:configuration version="1.3">
+  <Duemmegi>
+		<autoupdate>200</autoupdate>
+		<connectors> 
+			<connector>
+			  <name>webs</name>
+			  <transport>
+			    <type>tcp</type>
+			    <host>192.168.1.51</host>
+			    <port>51</port>
+			  </transport>
+			</connector>
+		</connectors>
+  </Duemmegi>
+</jais:configuration>

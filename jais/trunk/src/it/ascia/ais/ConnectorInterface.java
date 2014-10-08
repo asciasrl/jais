@@ -113,4 +113,11 @@ public interface ConnectorInterface {
 	 */
 	public boolean sendMessage(Message m);
 
+	/**
+	 * Questo metodo viene chiamato dal Transport per ogni byte che viene ricevuto
+	 * Se il MessageParser ho ottenuto un messaggio valido, viene aggiunto alla coda di dispacciamento
+	 * @param b Dato ricevuto
+	 */
+	public void received(int i);
+
 }

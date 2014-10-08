@@ -43,7 +43,7 @@ public abstract class Transport {
     /**
      * Il connettore associato a questo Transport
      */
-    protected Connector connector;
+    protected ConnectorInterface connector;
     
     /**
      * Il semaforo associato al transport

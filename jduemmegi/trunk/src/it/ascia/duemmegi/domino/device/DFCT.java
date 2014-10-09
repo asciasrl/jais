@@ -1,5 +1,7 @@
 package it.ascia.duemmegi.domino.device;
 
+import org.apache.commons.configuration.HierarchicalConfiguration;
+
 import it.ascia.ais.AISException;
 import it.ascia.ais.ConnectorInterface;
 import it.ascia.ais.port.TemperaturePort;
@@ -9,18 +11,13 @@ import it.ascia.duemmegi.dxp.msg.RichiestaStatoIngressiMessage;
 
 public class DFCT extends DominoDevice {
 
-	public DFCT(ConnectorInterface connector, String address) throws AISException {
-		super(address);
-		int intAddress = new Integer(address).intValue();
+	public DFCT(ConnectorInterface connector, HierarchicalConfiguration config) throws AISException {
+		super(config);
+		int intAddress = new Integer(getDeviceAddress()).intValue();
 		for (int i = intAddress; i < intAddress + 7; i++) {
 			connector.addDevice((new Integer(i)).toString(), this);
 		}
 		addPort(new TemperaturePort("temp"));
-	}
-
-	public String getInfo() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public boolean updatePort(String portId) throws AISException {

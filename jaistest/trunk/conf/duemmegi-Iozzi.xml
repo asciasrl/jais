@@ -2,15 +2,24 @@
 <jais:configuration version="1.3">
   <Duemmegi>
 		<autoupdate>200</autoupdate>
-		<connectors> 
-			<connector>
-			  <name>webs</name>
-			  <transport>
-			    <type>tcp</type>
-			    <host>192.168.1.51</host>
-			    <port>51</port>
-			  </transport>
-			</connector>
-		</connectors>
+		<connector>
+			<name>iozzi</name>
+			<transport>
+			  <type>tcp</type>
+			  <host>192.168.1.51</host>
+			  <port>1002</port>
+			</transport>
+			<device model="DF4R" address="3" description="Ufficio Sala riunioni">
+				<port id="o3.1" room="3.U:Sala Riunioni" description="Neon 1" />
+				<port id="o3.2" room="3.U:Sala Riunioni" description="Neon 2" />
+				<port id="o3.3" room="3.U:Filtro Riunioni" description="Neon" />
+			</device>			
+			<device model="DF4R" address="4" description="Ufficio Open e Pietro">
+				<port id="o4.1" room="3.U:Open space" description="Neon 1" />
+				<port id="o4.2" room="3.U:Open space" description="Neon 2" />
+				<port id="o4.3" room="3.U:Ufficio Pietro" description="Neon 1" />
+				<port id="o4.4" room="3.U:Ufficio Pietro" description="Neon 2" />
+			</device>			
+		</connector>
   </Duemmegi>
 </jais:configuration>

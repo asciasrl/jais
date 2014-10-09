@@ -1,5 +1,7 @@
 package it.ascia.duemmegi;
 
+import org.apache.commons.configuration.HierarchicalConfiguration;
+
 import it.ascia.ais.AISException;
 import it.ascia.ais.ConnectorInterface;
 import it.ascia.ais.ControllerModule;
@@ -84,40 +86,41 @@ public class DFCPConnector extends PollingConnectorImpl implements ConnectorInte
 	*/
 
 
-	public void addDevice(String model, String address) throws AISException {
+	public void addDevice(HierarchicalConfiguration config) throws AISException {
 		DominoDevice d = null;
+		String model=config.getString("[@model]");
 		if (model.equals("DF4I")) {
-			d = new DF4I(this, address);
+			d = new DF4I(this, config);
 		} else if (model.equals("DF4IV")) {
-			d = new DF4IV(this, address);
+			d = new DF4IV(this, config);
 		} else if (model.equals("DF8IL")) {
-			d = new DF8IL(this, address);
+			d = new DF8IL(this, config);
 		} else if (model.equals("DFIR")) {
-			d = new DFIR(address);
+			d = new DFIR(config);
 		} else if (model.equals("DF4R")) {
-			d = new DF4R(address);
+			d = new DF4R(config);
 		} else if (model.equals("DFTA")) {
-			d = new DFTA(address);
+			d = new DFTA(config);
 		} else if (model.equals("DFTP")) {
-			d = new DFTP(address);
+			d = new DFTP(config);
 		} else if (model.equals("DFCT")) {
-			d = new DFCT(this, address);
+			d = new DFCT(this, config);
 		} else if (model.equals("DFGSM2")) {
-			d = new DFGSM2(address);
+			d = new DFGSM2(config);
 		} else if (model.equals("DFDM")) {
-			d = new DFDM(address);
+			d = new DFDM(config);
 		} else if (model.equals("DFDI")) {
-			d = new DFDI(address);
+			d = new DFDI(config);
 		} else if (model.equals("DFDV")) {
-			d = new DFDV(address);
+			d = new DFDV(config);
 		} else if (model.equals("DFTA")) {
-			d = new DFTA(address);
+			d = new DFTA(config);
 		} else {
-			logger.error("Modello sconosciuto: "+model);
+			logger.error("Unknow model: "+model);
 		}
 		if (d != null) {
 			super.addDevice(d);
-			logger.info("Aggiunto modulo "+model+" "+d.getDeviceAddress());
+			logger.info("Added module: "+d.toString());
 		}
 	}
 

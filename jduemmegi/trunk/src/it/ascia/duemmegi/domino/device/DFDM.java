@@ -3,6 +3,8 @@
  */
 package it.ascia.duemmegi.domino.device;
 
+import org.apache.commons.configuration.HierarchicalConfiguration;
+
 import it.ascia.ais.AISException;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.port.DimmerPort;
@@ -17,9 +19,9 @@ import it.ascia.duemmegi.dxp.msg.RichiestaStatoUsciteMessage;
  */
 public class DFDM extends DominoDevice {
 
-	public DFDM(String address) throws AISException {
-		super(address);
-		addPort(new DimmerPort("o"+address+".1"));
+	public DFDM(HierarchicalConfiguration config) throws AISException {
+		super(config);
+		addPort(new DimmerPort("o"+getDeviceAddress()+".1"));
 	}
 
 	public void messageReceived(DXPMessage m) {
@@ -45,11 +47,6 @@ public class DFDM extends DominoDevice {
 		}
 	}
 	*/
-
-	public String getInfo() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	public boolean updatePort(String portId) throws AISException {
 		RichiestaStatoUsciteMessage m = new RichiestaStatoUsciteMessage(getDeviceAddress());

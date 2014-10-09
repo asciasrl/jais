@@ -1,11 +1,13 @@
 package it.ascia.duemmegi.domino.device;
 
+import org.apache.commons.configuration.HierarchicalConfiguration;
+
 import it.ascia.ais.AISException;
 
 public class DFDI extends DFDM {
 
-	public DFDI(String address) throws AISException {
-		super(address);
+	public DFDI(HierarchicalConfiguration config) throws AISException {
+		super(config);
 	}
 
 }

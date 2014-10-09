@@ -5,8 +5,11 @@
 package it.ascia.ais;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 
+import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.log4j.Logger;
 
 /**
@@ -73,6 +76,39 @@ public abstract class Device {
 		this.address = address;
 		logger = Logger.getLogger(getClass());
 	}
+	
+	/**
+	 * 
+	 * @param config Read @address from the configuration
+	 */
+	public Device(HierarchicalConfiguration config) {
+		this(config.getString("[@address]"));
+	}
+	
+	/**
+	 * 
+	 * @param config Configure device with optional device configuration parameters
+	 */
+	public void configDevice(HierarchicalConfiguration config) {
+		setDescription(config.getString("[@description]"));
+		List portsConfig = config.configurationsAt("port");
+		for (Iterator portsConfigIterator = portsConfig.iterator(); portsConfigIterator.hasNext();)
+		{
+			HierarchicalConfiguration portConfig = (HierarchicalConfiguration) portsConfigIterator.next();
+			configPort(portConfig);
+		}
+	}
+
+	private void configPort(HierarchicalConfiguration portConfig) {
+		String portId = portConfig.getString("[@id]");
+		try {
+			DevicePort port = getPort(portId);
+			port.config(portConfig);
+		} catch (AISException e) {
+			logger.warn(e);
+		}
+		
+	}
 
 	/**
 	 * Ritorna l'indirizzo del Device, senza considerare il connettore.
@@ -119,7 +155,13 @@ public abstract class Device {
 	 * Ritorna una descrizione del dispositivo.
 	 */
 	public String getInfo() {
-		return getClass().getSimpleName() + " " + getAddress() + " " + getDescription();
+		StringBuffer s = new StringBuffer();
+		s.append("Device:" + getAddress() + " "+getClass().getName() + " Desc:" + getDescription());
+		for (Iterator iterator = getPorts().iterator(); iterator.hasNext();) {
+			DevicePort port = (DevicePort) iterator.next();
+			s.append("; "+port.getInfo());			
+		}
+		return s.toString();
 	}
 
 	/**

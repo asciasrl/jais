@@ -1,19 +1,16 @@
 package it.ascia.duemmegi.domino.device;
 
+import org.apache.commons.configuration.HierarchicalConfiguration;
+
 import it.ascia.ais.AISException;
 import it.ascia.duemmegi.domino.DominoDevice;
 import it.ascia.duemmegi.dxp.DXPMessage;
 
 public class DFIR extends DominoDevice {
 
-	public DFIR(String address) throws AISException {
-		super(address);
+	public DFIR(HierarchicalConfiguration config) throws AISException {
+		super(config);
 		// TODO Auto-generated constructor stub
-	}
-
-	public String getInfo() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public boolean updatePort(String portId) throws AISException {

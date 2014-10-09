@@ -123,6 +123,7 @@ public class DXPConnector extends Connector {
 
 	public void addDevice(String model, String address) throws AISException {
 		DominoDevice d = null;
+		/* FIXME modificare costruttori
 		if (model.equals("DF4I")) {
 			d = new DF4I(this, address);
 		} else if (model.equals("DF4IV")) {
@@ -148,6 +149,7 @@ public class DXPConnector extends Connector {
 		} else {
 			logger.error("Modello sconosciuto: "+model);
 		}
+		*/
 		if (d != null) {
 			super.addDevice(d);
 			logger.info("Aggiunto modulo "+model+" "+d.getAddress());

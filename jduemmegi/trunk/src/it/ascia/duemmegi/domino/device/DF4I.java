@@ -1,5 +1,7 @@
 package it.ascia.duemmegi.domino.device;
 
+import org.apache.commons.configuration.HierarchicalConfiguration;
+
 import it.ascia.ais.AISException;
 import it.ascia.ais.ConnectorInterface;
 import it.ascia.ais.DevicePort;
@@ -16,20 +18,15 @@ public class DF4I extends DominoDevice {
 		return 1;
 	}
 
-	public DF4I(ConnectorInterface connector, String address) throws AISException {
-		super(address);		
-		int intAddress = new Integer(address).intValue();
+	public DF4I(ConnectorInterface connector, HierarchicalConfiguration config) throws AISException {
+		super(config);		
+		int intAddress = new Integer(getDeviceAddress()).intValue();
 		for (int j = 0; j < getNumInputs(); j++) {
 			connector.addDevice((new Integer(intAddress + j)).toString(), this);
 			for (int i = 1; i <= 4; i++) {
 				addPort(new DigitalInputPort("i"+(intAddress+j)+"."+new Integer(i).toString()));
 			}
 		}		
-	}
-
-	public String getInfo() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public boolean updatePort(String portId) throws AISException {

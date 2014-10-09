@@ -12,7 +12,7 @@ public class DuemmegiControllerModule extends ControllerModule {
 	
 	public void start() {
 		HierarchicalConfiguration config = getConfiguration();
-		List connectors = config.configurationsAt("connectors.connector");
+		List connectors = config.configurationsAt("connector");
 		for (Iterator c = connectors.iterator(); c.hasNext();)
 		{
 		    HierarchicalConfiguration sub = (HierarchicalConfiguration) c.next();
@@ -26,11 +26,11 @@ public class DuemmegiControllerModule extends ControllerModule {
 				 	// registra il connector
 					controller.addConnector(conn);		
 					// aggiunta devices
-					List devices = sub.configurationsAt("devices.device");
+					List devices = sub.configurationsAt("device");
 					for (Iterator d = devices.iterator(); d.hasNext();)
 					{
 						HierarchicalConfiguration dev = (HierarchicalConfiguration) d.next();
-						conn.addDevice(dev.getString("model"),dev.getString("address"));
+						conn.addDevice(dev);
 					}
 			 	} catch (Exception e) {
 			 		logger.fatal("Errore durante inizializzazione:",e);

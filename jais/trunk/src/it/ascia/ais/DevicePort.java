@@ -6,6 +6,7 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.log4j.Logger;
 
 /**
@@ -51,6 +52,7 @@ public abstract class DevicePort {
 	 */
 	private Object previousValue;
 
+	private Address room;
 
 	/**
 	 * Momento di ultimo aggiornamento del valore in cache
@@ -77,14 +79,38 @@ public abstract class DevicePort {
 	 */
 	private double factor = 1;
 	
-	protected void setFactor(double factor) {
-		this.factor = factor;
-	}
-	
 	/**
 	 * Stringa formattazione numeri decimali
 	 */
 	private String decimalFormat = null;
+	
+	/**
+	 * Assign physical location of the port
+	 * @param room The Address of the room
+	 */
+	public void setRoom(Address room) {
+		this.room = room;
+	}
+
+	/**
+	 * Assign physical location of the port
+	 * @param room must conform to @Address syntax 
+	 */
+	public void setRoom(String room) {
+		this.room = new Address(room);
+	}
+
+	/**
+	 * 
+	 * @return Physical location of the port
+	 */
+	public Address getRoom() {
+		return room;
+	}
+
+	protected void setFactor(double factor) {
+		this.factor = factor;
+	}
 	
 	protected void setDecimalFormat(String decimalFormat) {
 		this.decimalFormat = decimalFormat;
@@ -237,7 +263,8 @@ public abstract class DevicePort {
 	public void setValue(Object newValue, long duration) {
 		Object oldValue = getCachedValue();
 		boolean changed = false; 
-		if (isDirty() || oldValue == null || !oldValue.equals(newValue)) {
+		//if (isDirty() || oldValue == null || !oldValue.equals(newValue)) {
+		if (oldValue == null || !oldValue.equals(newValue)) {
 			previousTimeStamp = timeStamp;
 			previousValue = oldValue;
 			timeStamp = System.currentTimeMillis();
@@ -483,6 +510,23 @@ public abstract class DevicePort {
 	 */
 	void setDevice(Device device) {
 		this.device = device;		
+	}
+
+	public void config(HierarchicalConfiguration portConfig) {
+		setDescription(portConfig.getString("[@description]"));
+		setRoom(portConfig.getString("[@room]"));		
+	}
+
+	public String getInfo() {
+		StringBuffer s = new StringBuffer();
+		s.append("Port:"+getPortId());
+		if (getDescription() != null) {
+			s.append(" Desc:"+getDescription());
+		}
+		if (getRoom() != null) {
+			s.append(" Room:"+getRoom());
+		}
+		return s.toString();
 	}
 
 }

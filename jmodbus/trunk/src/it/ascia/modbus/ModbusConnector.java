@@ -71,7 +71,9 @@ public class ModbusConnector extends Connector implements
 		trans.setRetries(3);
 		ModbusRequest req = m.getRequest();
 		trans.setRequest(req);
-
+		
+        // like trans.setTransDelayMS(50);
+		
 		long delay = lastWrite + 200 - System.currentTimeMillis();
 		if (delay > 0) {
 			synchronized (this) {

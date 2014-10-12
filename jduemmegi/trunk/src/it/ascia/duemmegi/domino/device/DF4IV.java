@@ -1,7 +1,5 @@
 package it.ascia.duemmegi.domino.device;
 
-import org.apache.commons.configuration.HierarchicalConfiguration;
-
 import it.ascia.ais.AISException;
 import it.ascia.ais.ConnectorInterface;
 import it.ascia.ais.port.DigitalVirtualPort;
@@ -14,8 +12,8 @@ public class DF4IV extends DF4I {
 		return 3;
 	}
 	
-	public DF4IV(ConnectorInterface connector, HierarchicalConfiguration config) throws AISException {
-		super(connector,config);
+	public DF4IV(String address, ConnectorInterface connector) throws AISException {
+		super(address,connector);
 		int intAddress = new Integer(getDeviceAddress()).intValue();
 		for (int j = getNumInputs() ; j < getNumInputs() + getNumVirtuals(); j++) {
 			connector.addDevice((new Integer(intAddress + j)).toString(), this);

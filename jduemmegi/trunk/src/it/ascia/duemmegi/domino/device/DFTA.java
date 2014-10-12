@@ -1,7 +1,5 @@
 package it.ascia.duemmegi.domino.device;
 
-import org.apache.commons.configuration.HierarchicalConfiguration;
-
 import it.ascia.ais.AISException;
 import it.ascia.ais.port.TemperaturePort;
 import it.ascia.duemmegi.domino.DominoDevice;
@@ -9,8 +7,8 @@ import it.ascia.duemmegi.dxp.msg.RichiestaStatoIngressiMessage;
 
 public class DFTA extends DominoDevice {
 
-	public DFTA(HierarchicalConfiguration config) throws AISException {
-		super(config);
+	public DFTA(String address) throws AISException {
+		super(address);
 		addPort(new TemperaturePort("temp"));
 	}
 

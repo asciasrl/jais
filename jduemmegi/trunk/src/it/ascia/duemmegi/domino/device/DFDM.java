@@ -19,8 +19,8 @@ import it.ascia.duemmegi.dxp.msg.RichiestaStatoUsciteMessage;
  */
 public class DFDM extends DominoDevice {
 
-	public DFDM(HierarchicalConfiguration config) throws AISException {
-		super(config);
+	public DFDM(String address) throws AISException {
+		super(address);
 		addPort(new DimmerPort("o"+getDeviceAddress()+".1"));
 	}
 

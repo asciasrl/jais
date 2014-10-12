@@ -24,7 +24,8 @@ public class DXPControllerModule extends ControllerModule {
 		 		// associa transport e connector 
 		 		conn.addTransport(transport);
 			 	// registra il connector
-				controller.addConnector(conn);		
+				controller.addConnector(conn);	
+				conn.start();
 				// aggiunta devices
 				List devices = sub.configurationsAt("devices.device");
 				for (Iterator d = devices.iterator(); d.hasNext();)

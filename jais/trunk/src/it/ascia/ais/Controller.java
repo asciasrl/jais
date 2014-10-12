@@ -88,7 +88,8 @@ public class Controller {
 	}
 	
 	/**
-	 * Aggiunge un Connector alla lista di quelli gestiti.
+	 * Aggiunge un Connector alla lista di quelli gestiti
+	 * Il metodo start() del connettore deve essere eseguito dopo averlo aggiunto
 	 * 
 	 * @param connector il connector da aggiungere.
 	 * @throws KeyAlreadyExistsException if a connector with the same name is already registered 
@@ -98,7 +99,6 @@ public class Controller {
 			throw(new KeyAlreadyExistsException("Connector name duplicated: "+connector.getConnectorName()));
 		}
 		connectors.put(connector.getConnectorName(), connector);
-		connector.start();
 	}
 	
 	/**

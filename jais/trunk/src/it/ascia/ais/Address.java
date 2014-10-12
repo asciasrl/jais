@@ -60,12 +60,7 @@ public class Address implements Comparable<Object> {
 			throw(new IllegalArgumentException("Connector already set"));
 		}
 		if (connector != null) {
-			if (connector.contains(".")) {
-				throw(new IllegalArgumentException("Connector name can't contians dots (.)"));
-			}
-			if (connector.contains(":")) {
-				throw(new IllegalArgumentException("Connector name can't contians colons (:)"));
-			}
+			testConnectorName(connector);
 			if (connector.equals("*")) {
 				connector = null;
 			}
@@ -74,23 +69,48 @@ public class Address implements Comparable<Object> {
 	}
 	
 	/**
+	 * Test connector name syntax
+	 * @param connectorName
+	 * @throws IllegalArgumentException
+	 */
+	public static void testConnectorName(String connectorName)
+		throws IllegalArgumentException {
+		if (connectorName.contains(".")) {
+			throw(new IllegalArgumentException("Connector name can't contians dots (.)"));
+		}
+		if (connectorName.contains(":")) {
+			throw(new IllegalArgumentException("Connector name can't contians colons (:)"));
+		}
+	}
+
+	/**
 	 * Set device part of the address 
-	 * @param device Address of device
+	 * @param deviceAddress Address of device
 	 * @throws IllegalArgumentException if device is already set or contains illegal chars
 	 */
-	public void setDeviceAddress(String device) {
+	public void setDeviceAddress(String deviceAddress) {
 		if (this.deviceAddress != null) {
 			throw(new IllegalArgumentException("Device already set"));
 		}
-		if (device != null) {
-			if (device.contains(":")) {
-				throw(new IllegalArgumentException("Device name can't contians colons (:)"));
-			}
-			if (device.equals("*")) {
-				device = null;
+		if (deviceAddress != null) {
+			testDeviceAddress(deviceAddress);
+			if (deviceAddress.equals("*")) {
+				deviceAddress = null;
 			}
 		}
-		this.deviceAddress = device;		
+		this.deviceAddress = deviceAddress;		
+	}
+	
+	/**
+	 * Test device address syntax
+	 * @param device
+	 * @throws IllegalArgumentException
+	 */
+	public static void testDeviceAddress(String device)
+			throws IllegalArgumentException {
+		if (device.contains(":")) {
+			throw(new IllegalArgumentException("Device name can't contians colons (:)"));
+		}		
 	}
 	
 	/**

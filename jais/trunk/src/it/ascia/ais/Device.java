@@ -73,43 +73,11 @@ public abstract class Device {
 	 * @throws AISException
 	 */
 	public Device(String address) throws AISException {
+		Address.testDeviceAddress(address);
 		this.address = address;
 		logger = Logger.getLogger(getClass());
 	}
 	
-	/**
-	 * 
-	 * @param config Read @address from the configuration
-	 */
-	public Device(HierarchicalConfiguration config) {
-		this(config.getString("[@address]"));
-	}
-	
-	/**
-	 * 
-	 * @param config Configure device with optional device configuration parameters
-	 */
-	public void configDevice(HierarchicalConfiguration config) {
-		setDescription(config.getString("[@description]"));
-		List portsConfig = config.configurationsAt("port");
-		for (Iterator portsConfigIterator = portsConfig.iterator(); portsConfigIterator.hasNext();)
-		{
-			HierarchicalConfiguration portConfig = (HierarchicalConfiguration) portsConfigIterator.next();
-			configPort(portConfig);
-		}
-	}
-
-	private void configPort(HierarchicalConfiguration portConfig) {
-		String portId = portConfig.getString("[@id]");
-		try {
-			DevicePort port = getPort(portId);
-			port.config(portConfig);
-		} catch (AISException e) {
-			logger.warn(e);
-		}
-		
-	}
-
 	/**
 	 * Ritorna l'indirizzo del Device, senza considerare il connettore.
 	 * La sintassi dell'indirizzo dipende dal tipo di connettore, cioe' della tecnologia
@@ -157,7 +125,7 @@ public abstract class Device {
 	public String getInfo() {
 		StringBuffer s = new StringBuffer();
 		s.append("Device:" + getAddress() + " "+getClass().getName() + " Desc:" + getDescription());
-		for (Iterator iterator = getPorts().iterator(); iterator.hasNext();) {
+		for (Iterator<?> iterator = getPorts().iterator(); iterator.hasNext();) {
 			DevicePort port = (DevicePort) iterator.next();
 			s.append("; "+port.getInfo());			
 		}
@@ -264,6 +232,21 @@ public abstract class Device {
 	 * @throws AISException
 	 */
 	public abstract boolean updatePort(String portId) throws AISException;
+	
+	/**
+	 * Update the device
+	 * This implementation call method update() of all ports
+	 * @return true if all ports has updated
+	 */
+	public boolean update() {
+		for (Iterator<?> iterator = getPorts().iterator(); iterator.hasNext();) {
+			DevicePort port = (DevicePort) iterator.next();
+			if (!port.update()) {
+				logger.error("Port "+port+" not updated!");
+			}
+		}
+		return true;		
+	}
 	
 	/**
 	 * Aggiorna il valore della porta memorizzato localmente.

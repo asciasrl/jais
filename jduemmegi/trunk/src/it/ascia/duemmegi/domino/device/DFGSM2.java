@@ -1,7 +1,5 @@
 package it.ascia.duemmegi.domino.device;
 
-import org.apache.commons.configuration.HierarchicalConfiguration;
-
 import it.ascia.ais.AISException;
 import it.ascia.ais.port.DigitalInputPort;
 import it.ascia.duemmegi.domino.DominoDevice;
@@ -9,8 +7,8 @@ import it.ascia.duemmegi.dxp.DXPMessage;
 
 public class DFGSM2 extends DominoDevice {
 
-	public DFGSM2(HierarchicalConfiguration config) throws AISException {
-		super(config);
+	public DFGSM2(String address) throws AISException {
+		super(address);
 		int intAddress = new Integer(getDeviceAddress()).intValue();		
 		for (int j = 0; j <= 3; j++) {
 			for (int i = 1; i <= 4; i++) {

@@ -1,7 +1,5 @@
 package it.ascia.duemmegi;
 
-import org.apache.commons.configuration.HierarchicalConfiguration;
-
 import it.ascia.ais.AISException;
 import it.ascia.ais.ConnectorInterface;
 import it.ascia.ais.ControllerModule;
@@ -86,35 +84,34 @@ public class DFCPConnector extends PollingConnectorImpl implements ConnectorInte
 	*/
 
 
-	public void addDevice(HierarchicalConfiguration config) throws AISException {
+	public DominoDevice addDevice(String model, String address) throws AISException {
 		DominoDevice d = null;
-		String model=config.getString("[@model]");
 		if (model.equals("DF4I")) {
-			d = new DF4I(this, config);
+			d = new DF4I(address, this);
 		} else if (model.equals("DF4IV")) {
-			d = new DF4IV(this, config);
+			d = new DF4IV(address, this);
 		} else if (model.equals("DF8IL")) {
-			d = new DF8IL(this, config);
+			d = new DF8IL(address, this);
 		} else if (model.equals("DFIR")) {
-			d = new DFIR(config);
+			d = new DFIR(address);
 		} else if (model.equals("DF4R")) {
-			d = new DF4R(config);
+			d = new DF4R(address);
 		} else if (model.equals("DFTA")) {
-			d = new DFTA(config);
+			d = new DFTA(address);
 		} else if (model.equals("DFTP")) {
-			d = new DFTP(config);
+			d = new DFTP(address);
 		} else if (model.equals("DFCT")) {
-			d = new DFCT(this, config);
+			d = new DFCT(address,this);
 		} else if (model.equals("DFGSM2")) {
-			d = new DFGSM2(config);
+			d = new DFGSM2(address);
 		} else if (model.equals("DFDM")) {
-			d = new DFDM(config);
+			d = new DFDM(address);
 		} else if (model.equals("DFDI")) {
-			d = new DFDI(config);
+			d = new DFDI(address);
 		} else if (model.equals("DFDV")) {
-			d = new DFDV(config);
+			d = new DFDV(address);
 		} else if (model.equals("DFTA")) {
-			d = new DFTA(config);
+			d = new DFTA(address);
 		} else {
 			logger.error("Unknow model: "+model);
 		}
@@ -122,6 +119,7 @@ public class DFCPConnector extends PollingConnectorImpl implements ConnectorInte
 			super.addDevice(d);
 			logger.info("Added module: "+d.toString());
 		}
+		return d;
 	}
 
 

@@ -1,16 +1,14 @@
 package it.ascia.duemmegi.domino;
 
-import org.apache.commons.configuration.HierarchicalConfiguration;
-
 import it.ascia.ais.AISException;
 import it.ascia.ais.Device;
 
 public abstract class DominoDevice extends Device {
 
-	public DominoDevice(HierarchicalConfiguration config)
-			throws AISException {
-		super(config);
+	public DominoDevice(String address) throws AISException {
+		super(address);
 	}
+
 
 	//public abstract void messageReceived(DXPMessage m);
 

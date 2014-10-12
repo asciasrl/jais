@@ -11,8 +11,8 @@ import it.ascia.duemmegi.dxp.msg.RichiestaStatoIngressiMessage;
 
 public class DFCT extends DominoDevice {
 
-	public DFCT(ConnectorInterface connector, HierarchicalConfiguration config) throws AISException {
-		super(config);
+	public DFCT(String address, ConnectorInterface connector) throws AISException {
+		super(address);
 		int intAddress = new Integer(getDeviceAddress()).intValue();
 		for (int i = intAddress; i < intAddress + 7; i++) {
 			connector.addDevice((new Integer(i)).toString(), this);

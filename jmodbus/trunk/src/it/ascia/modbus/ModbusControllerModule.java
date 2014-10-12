@@ -25,6 +25,7 @@ public class ModbusControllerModule extends ControllerModule {
 				conn = new ModbusConnector(sub.getInt("master"),sub.getString("name"), sub.getString("portname"), sub.getString("encoding"));
 				conn.setModule(this);
 				controller.addConnector(conn);
+				conn.start();
 	
 				List<HierarchicalConfiguration> slaves = sub.configurationsAt("slave");
 				if (slaves == null || slaves.size() == 0) {

@@ -60,7 +60,8 @@ public class EDSControllerModule extends ControllerModule {
 					}
 			 	}
 			 	// registra il connector
-				controller.addConnector(eds);		
+				controller.addConnector(eds);
+				eds.start();
 				// carica il file di configurazione
 			 	String configFileName = sub.getString("config",null);
 			 	if (configFileName != null) {

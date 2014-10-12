@@ -47,10 +47,13 @@ public class ConnectorImpl implements ConnectorInterface {
 	 * @param name Nome del connettore
 	 */
 	public ConnectorImpl(String name) {
+		if (name == null) {
+			throw(new AISException("Name of connector cannot be null"));
+		}
+		Address.testConnectorName(name);
 		this.name = name;
         devices = new LinkedHashMap<String, Device>();
 		logger = Logger.getLogger(getClass());
-		running = true;
 	}
 
 	@Override
@@ -142,7 +145,7 @@ public class ConnectorImpl implements ConnectorInterface {
 	@Override	
 	public void queueUpdate(DevicePort devicePort) {
 		// FIXME Auto-generated method stub
-		
+		logger.error("FIXME Auto-generated method stub");
 	}
 
 	@Override

@@ -3,10 +3,6 @@ package it.ascia.ais;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.log4j.Logger;
 
 /**
@@ -510,11 +506,6 @@ public abstract class DevicePort {
 	 */
 	void setDevice(Device device) {
 		this.device = device;		
-	}
-
-	public void config(HierarchicalConfiguration portConfig) {
-		setDescription(portConfig.getString("[@description]"));
-		setRoom(portConfig.getString("[@room]"));		
 	}
 
 	public String getInfo() {

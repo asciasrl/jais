@@ -35,6 +35,8 @@ public class IntegerPort extends DevicePort {
 				throw(new IllegalArgumentException("Value of "+getAddress()+"("+integerValue+") cannot be more than "+maxValue));
 			}
 			return integerValue;
+		} else if (Long.class.isInstance(newValue)) {
+			return normalize(((Long)newValue).intValue());
 		} else if (Double.class.isInstance(newValue)) {
 			return normalize(((Double)newValue).intValue());
 		} else {

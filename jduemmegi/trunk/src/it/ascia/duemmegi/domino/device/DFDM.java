@@ -67,7 +67,7 @@ public class DFDM extends DominoDevice {
 				if (((Integer)p.getCachedValue()).intValue() > 0) {
 					valore = 0;
 				} else {
-					valore = 124; // Accende all’ultimo livello memorizzato
+					valore = 124; // Accende all'ultimo livello memorizzato
 				}
 			} else {
 				valore = (new Integer((String)newValue)).intValue();

@@ -4,7 +4,7 @@
 
 	<property name="ant.build.javac.target" value="6"/>
 
-	<target name="zip" depends="base,jais,webconsole,jeds,jbis,jalarm,jmodbus,aui,JaisTest,i18n">
+	<target name="zip" depends="base,jais,webconsole,jduemmegi,jcalendar,jdmx,jeds,jbis,jalarm,jmodbus,aui,JaisTest,i18n">
 		<mkdir dir="${dst}logs/"/>
 		<zip file="${dst}../jaisframework-${v}.zip" duplicate="fail" >
 			<fileset dir="${dst}">
@@ -42,6 +42,18 @@
 
 	<target name="jais" depends="base">
 		<ant dir="../jais"/>
+	</target>
+
+	<target name="jcalendar" depends="jais">
+		<ant dir="../jcalendar"/>
+	</target>
+
+	<target name="jduemmegi" depends="jais">
+		<ant dir="../jduemmegi"/>
+	</target>
+
+	<target name="jdmx" depends="jais">
+		<ant dir="../jdmx"/>
 	</target>
 	
 	<target name="jeds" depends="jais">

@@ -34,7 +34,7 @@ public class ComandoUsciteMessage extends DXPRequestMessage {
 	 *  - stati[1] = uscita 2 
 	 *  - stati[2] = uscita 3 
 	 *  - stati[3] = uscita 4
-	 *  Se il valore è null l'uscita non viene variata 
+	 *  Se il valore e' null l'uscita non viene variata 
 	 * @param d
 	 * @param stati
 	 */

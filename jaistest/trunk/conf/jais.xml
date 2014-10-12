@@ -4,11 +4,15 @@
 	<locale language="it" country="IT" />
 	<watchdog interval="120" />
 	<modules>
-		<module name="EmailNotifier" disabled="false">
+		<module name="Calendar" disabled="false">
+			<class>it.ascia.calendar.CalendarControllerModule</class>
+			<config>conf/Calendar.xml</config>
+		</module>
+		<module name="EmailNotifier" disabled="true">
 			<class>it.ascia.ais.EmailNotifierControllerModule</class>
 			<config>conf/EmailNotifier.xml</config>
 		</module>
-		<module name="SQLite" disabled="false">
+		<module name="SQLite" disabled="true">
 			<class>it.ascia.ais.SQLiteControllerModule</class>
 			<config>conf/SQLite.xml</config>
 		</module>
@@ -24,7 +28,7 @@
 			<class>it.ascia.modbus.ModbusControllerModule</class>
 			<config>conf/modbus.xml</config>
 		</module>
-		<module name="EDS" disabled="false">
+		<module name="EDS" disabled="true">
 			<class>it.ascia.eds.EDSControllerModule</class>
 			<config>conf/EDS.xml</config>
 		</module>
@@ -44,7 +48,7 @@
 			<class>it.ascia.avs.AVSControllerModule</class>
 			<config>conf/AVS.xml</config>
 		</module>
-		<module name="AUI" disabled="false">
+		<module name="AUI" disabled="true">
 			<class>it.ascia.aui.AUIControllerModule</class>
 			<config>conf/AUI.xml</config>
 		</module>

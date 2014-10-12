@@ -300,6 +300,7 @@ public abstract class Connector extends ConnectorImpl implements ConnectorInterf
 	 */
 	@Override
 	public void start() {
+		super.start();
 		updatingThread = new UpdatingThread();
 		updatingThread.setName("Updating-"+getClass().getSimpleName()+"-"+getConnectorName());
 		updatingThread.setDaemon(true);

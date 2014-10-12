@@ -29,6 +29,7 @@ public class DMXControllerModule extends ControllerModule {
 		 		dmx.setModule(this);
 			 	// registra il connector
 				controller.addConnector(dmx);
+				dmx.start();
 				for (int i = 1; i <= 512 ; i++) {
 					dmx.addDevice(new DMXChannel(i));
 				}

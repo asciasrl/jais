@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 
 import it.ascia.ais.ControllerModule;
-import it.ascia.ais.Transport;
 
 public class SequencerControllerModule extends ControllerModule {
 
@@ -15,6 +14,7 @@ public class SequencerControllerModule extends ControllerModule {
 		SequenceConnector conn = new SequenceConnector("sequencer");
  		conn.setModule(this);
 		controller.addConnector(conn);
+		conn.start();
 		/*
 		for (int i = 0; i < 256; i++) {
 			conn.addDevice(new SequenceDevice("sequence"+i));

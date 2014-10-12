@@ -27,6 +27,7 @@ public class BentelKyoControllerModule extends ControllerModule {
 			 	connector.discoverPanel();
 			 	// prima ?
 			 	controller.addConnector(connector);
+			 	connector.start();
 		 	} catch (Exception e) {
 		 		logger.fatal("Errore durante inizializzazione:",e);
 		 	}

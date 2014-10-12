@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<jais:configuration version="2">
+	<Calendar>
+		<Connector name="calendarRome">
+			<Location latitude="41.879087" longitude="12.439896" />
+			<TimeZone>Europe/Rome</TimeZone>
+			<Locale>IT</Locale>		
+		</Connector>
+	</Calendar>
+</jais:configuration>

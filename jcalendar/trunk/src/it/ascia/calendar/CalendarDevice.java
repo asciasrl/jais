@@ -22,9 +22,9 @@ public class CalendarDevice extends Device {
 	static final String LATITUDE_PORT = "latitude";
 	static final String LONGITUDE_PORT = "longitude";
 	
-	private final String ASTRONOMICAL_SUNRISE = "AstronomicalSunrise";
-	private final String ASTRONOMICAL_SUNSET = "AstronomicalSunset";
-	private final String ASTRONOMICAL_DAYTIME = "AstronomicalDaytime";
+	private final String CIVIL_SUNRISE = "CivilSunrise";
+	private final String CIVIL_SUNSET = "CivilSunset";
+	private final String CIVIL_DAYTIME = "CivilDaytime";
 
 	private SunriseSunsetCalculator sun;
 
@@ -35,9 +35,9 @@ public class CalendarDevice extends Device {
 		addPort(new StringPort(LOCALE_IDENTIFIER_PORT));
 		addPort(new StringPort(LATITUDE_PORT));
 		addPort(new StringPort(LONGITUDE_PORT));
-		addPort(new CalendarPort(ASTRONOMICAL_SUNRISE));
-		addPort(new CalendarPort(ASTRONOMICAL_SUNSET));
-		addPort(new BooleanPort(ASTRONOMICAL_DAYTIME));
+		addPort(new CalendarPort(CIVIL_SUNRISE));
+		addPort(new CalendarPort(CIVIL_SUNSET));
+		addPort(new BooleanPort(CIVIL_DAYTIME));
 	}
 
 	@Override
@@ -56,14 +56,14 @@ public class CalendarDevice extends Device {
 		}
 		if (portId.equals(CURRENT_TIME_PORT)) {
 			setPortValue(portId, getCalendar());
-		} else if (portId.equals(ASTRONOMICAL_SUNRISE)) {
-			setPortValue(portId, getAstronomicalSunrise()); 					
+		} else if (portId.equals(CIVIL_SUNRISE)) {
+			setPortValue(portId, getCivilSunrise()); 					
 			return true;
-		} else if (portId.equals(ASTRONOMICAL_SUNSET)){
-			setPortValue(portId, getAstronomicalSunset());
+		} else if (portId.equals(CIVIL_SUNSET)){
+			setPortValue(portId, getCivilSunset());
 			return true;
-		} else if (portId.equals(ASTRONOMICAL_DAYTIME)){
-			setPortValue(portId, isAstronomicalDaytime());
+		} else if (portId.equals(CIVIL_DAYTIME)){
+			setPortValue(portId, isCivilDaytime());
 			return true;
 		}
 		DevicePort p = getPort(portId);
@@ -129,18 +129,18 @@ public class CalendarDevice extends Device {
 		return (String) getPortCachedValue(LONGITUDE_PORT);
 	}
 
-	private Calendar getAstronomicalSunset() {
-		return sun.getAstronomicalSunsetCalendarForDate(getCalendar());
+	private Calendar getCivilSunset() {
+		return sun.getCivilSunsetCalendarForDate(getCalendar());
 	}
 
-	private Calendar getAstronomicalSunrise() {
-		return sun.getAstronomicalSunriseCalendarForDate(getCalendar());
+	private Calendar getCivilSunrise() {
+		return sun.getCivilSunriseCalendarForDate(getCalendar());
 	}
 
-	private boolean isAstronomicalDaytime() {
+	private boolean isCivilDaytime() {
 		Date date = getDate(); 
-		Date dateStart = getAstronomicalSunrise().getTime();
-		Date dateEnd = getAstronomicalSunset().getTime();
+		Date dateStart = getCivilSunrise().getTime();
+		Date dateEnd = getCivilSunset().getTime();
 	    if (date != null && dateStart != null && dateEnd != null) {
 	        if (date.after(dateStart) && date.before(dateEnd)) {
 	            return true;

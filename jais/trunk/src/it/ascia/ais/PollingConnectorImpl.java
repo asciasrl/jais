@@ -17,8 +17,9 @@ public abstract class PollingConnectorImpl extends ConnectorImpl {
 	protected Transport transport;
 
 
-	public PollingConnectorImpl(long autoupdate, String name) {
+	public PollingConnectorImpl(String name, long autoupdate) {
 		super(name);
+		this.autoupdate = autoupdate;
 	}
 
 	/**
@@ -80,6 +81,7 @@ public abstract class PollingConnectorImpl extends ConnectorImpl {
 	 */
 	@Override
 	public void start() {
+		super.start();
 		updatingThread = new UpdatingThread();
 		updatingThread.setName("Updating-"+getClass().getSimpleName()+"-"+getConnectorName());
 		updatingThread.setDaemon(true);

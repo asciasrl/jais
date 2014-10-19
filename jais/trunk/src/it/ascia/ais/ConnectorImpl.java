@@ -65,12 +65,17 @@ public class ConnectorImpl implements ConnectorInterface {
 	@Override
     public void addDevice(String deviceAddress, Device device) throws AISException {
     	if (devices.containsKey(deviceAddress)) {
-    		throw(new AISException("Dispositivo con indirizzo duplicato "+deviceAddress+" connettore "+getConnectorName()));
+    		if (devices.get(deviceAddress).equals(device)) {
+    			logger.trace("Already added device "+device);
+    		} else {
+    			throw(new AISException("Address "+deviceAddress + " already used by " + devices.get(deviceAddress)));
+    		}
+    	} else {
+	    	devices.put(deviceAddress, device);
+			if (device.getConnector() == null) {
+				device.setConnector(this);
+			}
     	}
-    	devices.put(deviceAddress, device);
-		if (device.getConnector() == null) {
-			device.setConnector(this);
-		}
     }
 
 	@Override

@@ -1,8 +1,6 @@
 package it.ascia.ais;
 
-import java.util.Collection;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * Connector domotico.

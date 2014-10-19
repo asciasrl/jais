@@ -14,9 +14,13 @@ public class DF4IV extends DF4I {
 	
 	public DF4IV(String address, ConnectorInterface connector) throws AISException {
 		super(address,connector);
-		int intAddress = new Integer(getDeviceAddress()).intValue();
-		for (int j = getNumInputs() ; j < getNumInputs() + getNumVirtuals(); j++) {
-			connector.addDevice((new Integer(intAddress + j)).toString(), this);
+		int intAddress = new Integer(getDeviceAddress().substring(1)).intValue();
+		for (int j = getNumInputs() ; j < (getNumInputs() + getNumVirtuals()); j++) {
+			connector.addDevice("i" + (intAddress + j), this);
+			for (int i = 1; i <= 4; i++) {
+				addPort(new DigitalVirtualPort("i"+(intAddress+j)+"."+new Integer(i).toString()));
+			}
+			connector.addDevice("v" + (intAddress + j), this);
 			for (int i = 1; i <= 4; i++) {
 				addPort(new DigitalVirtualPort("v"+(intAddress+j)+"."+new Integer(i).toString()));
 			}

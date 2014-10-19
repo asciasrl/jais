@@ -12,7 +12,7 @@ public class DF4R extends DominoDevice {
 	public DF4R(String address) throws AISException {
 		super(address);
 		for (int i = 1; i <= 4; i++) {
-			addPort(new DigitalOutputPort("o"+address+"."+new Integer(i).toString()));			
+			addPort(new DigitalOutputPort(address+"."+new Integer(i).toString()));			
 		}
 	}
 

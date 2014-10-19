@@ -18,9 +18,10 @@ public class DF4I extends DominoDevice {
 
 	public DF4I(String address, ConnectorInterface connector) throws AISException {
 		super(address);
-		int intAddress = new Integer(getDeviceAddress()).intValue();
 		for (int j = 0; j < getNumInputs(); j++) {
-			connector.addDevice((new Integer(intAddress + j)).toString(), this);
+			if (j > 0) {
+				connector.addDevice("i" + (intAddress + j), this);
+			}
 			for (int i = 1; i <= 4; i++) {
 				addPort(new DigitalInputPort("i"+(intAddress+j)+"."+new Integer(i).toString()));
 			}

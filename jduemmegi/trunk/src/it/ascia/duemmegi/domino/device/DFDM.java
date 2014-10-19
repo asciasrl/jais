@@ -3,8 +3,6 @@
  */
 package it.ascia.duemmegi.domino.device;
 
-import org.apache.commons.configuration.HierarchicalConfiguration;
-
 import it.ascia.ais.AISException;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.port.DimmerPort;
@@ -21,7 +19,7 @@ public class DFDM extends DominoDevice {
 
 	public DFDM(String address) throws AISException {
 		super(address);
-		addPort(new DimmerPort("o"+getDeviceAddress()+".1"));
+		addPort(new DimmerPort("o"+intAddress+".1"));
 	}
 
 	public void messageReceived(DXPMessage m) {

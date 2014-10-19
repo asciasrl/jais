@@ -4,22 +4,58 @@
 		<autoupdate>200</autoupdate>
 		<connector>
 			<name>iozzi</name>
+			<indirizzo>1</indirizzo>
 			<transport>
 			  <type>tcp</type>
 			  <host>192.168.1.51</host>
 			  <port>1002</port>
 			</transport>
-			<device model="DF4R" address="3" description="Ufficio Sala riunioni">
+			<device model="DF4RP" address="o1" />
+			<device model="DF4RP" address="o2" />
+			<device model="DF4RP" address="o3" description="Ufficio Sala riunioni">
 				<port id="o3.1" room="3.U:Sala Riunioni" description="Neon 1" />
 				<port id="o3.2" room="3.U:Sala Riunioni" description="Neon 2" />
 				<port id="o3.3" room="3.U:Filtro Riunioni" description="Neon" />
 			</device>			
-			<device model="DF4R" address="4" description="Ufficio Open e Pietro">
+			<device model="DF4RP" address="o4" description="Ufficio Open e Pietro">
 				<port id="o4.1" room="3.U:Open space" description="Neon 1" />
 				<port id="o4.2" room="3.U:Open space" description="Neon 2" />
 				<port id="o4.3" room="3.U:Ufficio Pietro" description="Neon 1" />
 				<port id="o4.4" room="3.U:Ufficio Pietro" description="Neon 2" />
 			</device>			
+			<device model="DF4RP" address="o5" />
+			<device model="DF4RP" address="o6" />
+			<device model="DF4RP" address="o8" description="Garage">
+				<port id="o8.3" room="Interrato:Garage" description="Condizionatore 2" />
+			</device>			
+			<device model="DF4RP" address="o9" />
+			<device model="DF4RP" address="o11" />
+			<device model="DF4RP" address="o12" />
+			<device model="DF4RP" address="o13" />
+			<device model="DF4RP" address="o15" />
+			<device model="DF4RP" address="o16" />
+			<device model="DF4RP" address="o17" />
+
+			<device model="DFDI" address="o18" />
+			<device model="DFDI" address="o20" />
+			<device model="DFDI" address="o21" />
+			<device model="DFDI" address="o22" />
+			<device model="DFDI" address="o23" />
+			<device model="DFDI" address="o24" />
+			<device model="DFDI" address="o25" />
+			<device model="DFDI" address="o26" />
+			<device model="DFDI" address="o27" />
+			<device model="DFDI" address="o28" />
+			<device model="DFDI" address="o29" />
+			<device model="DFDI" address="o30" />
+			<device model="DFDI" address="o31" />
+
+			<device model="DFDV" address="o33" />
+			<device model="DFDV" address="o34" />
+			<device model="DFDV" address="o35" />
+
+			<device model="DFTP/I" address="i48" />
+
 		</connector>
   </Duemmegi>
 </jais:configuration>

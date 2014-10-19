@@ -11,7 +11,8 @@ public class ReadIdResponseMessage extends FXPXTResponseMessage {
 	}
 
 	protected void appendData(StringBuffer s) {
-		s.append(" Firmware=" + ((dati[0] << 8) + dati[1]) + "." + ((dati[2] << 8) + dati[3]));
+		//s.append(" Firmware=" + ((dati[0] << 8) + dati[1]) + "." + ((dati[2] << 8) + dati[3]));
+		s.append(" Firmware=" + dati[2] + "."  + dati[3] + ":" + dati[0] + "." + dati[1]);
 		s.append(" Identificativo=");
 		int size = 0;
 		for (int i=0; i<64; i++) {

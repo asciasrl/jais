@@ -22,23 +22,31 @@ public class DuemmegiControllerModule extends ControllerModule {
 		    if (sub.getString("model","DFCP") == "DFCP") {
 			 	DFCPConnector conn = null;
 			 	try {
-			 		conn = new DFCPConnector(config.getLong("autoupdate",1000),sub.getString("name"),this);
+			 		conn = new DFCPConnector(sub.getString("name"),config.getInt("address",1),config.getLong("autoupdate",1000));
 				 	Transport transport = Transport.createTransport(sub);		 		
 			 		// associa transport e connector 
 			 		conn.addTransport(transport);
 				 	// registra il connector
 					controller.addConnector(conn);
-					conn.start();
+					// ricerca automatica
+					conn.discover();				
 					// aggiunta devices
 					List devices = sub.configurationsAt("device");
+					DominoDevice device;
 					for (Iterator d = devices.iterator(); d.hasNext();)
 					{
 						HierarchicalConfiguration dev = (HierarchicalConfiguration) d.next();
-						String model=config.getString("[@model]");
-						String address = config.getString("[@address]");
-						DominoDevice device = conn.addDevice(model, address);
-						device.setDescription(config.getString("[@description]"));
-						List<?> portsConfig = config.configurationsAt("port");
+						String model=dev.getString("[@model]");
+						String address = dev.getString("[@address]");
+						device = (DominoDevice) conn.getDevice(address);
+						if (device == null) {
+							device = conn.addDevice(model, address);
+						}
+						if (device == null) {
+							continue;
+						}
+						device.setDescription(dev.getString("[@description]"));
+						List<?> portsConfig = dev.configurationsAt("port");
 						for (Iterator<?> portsConfigIterator = portsConfig.iterator(); portsConfigIterator.hasNext();)
 						{
 							HierarchicalConfiguration portConfig = (HierarchicalConfiguration) portsConfigIterator.next();
@@ -52,9 +60,11 @@ public class DuemmegiControllerModule extends ControllerModule {
 							}
 						}
 					}
+					conn.start();
 			 	} catch (Exception e) {
 			 		logger.fatal("Errore durante inizializzazione:",e);
 			 		conn.stop();
+			 		throw(e);
 			 	}
 		    } else if (sub.getString("model") == "DFRS") {
 			 	DXPConnector conn = null;

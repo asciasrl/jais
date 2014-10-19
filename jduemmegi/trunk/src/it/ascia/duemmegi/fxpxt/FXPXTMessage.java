@@ -128,6 +128,10 @@ public abstract class FXPXTMessage extends Message {
 		return s.toString();
 	}
 	
+	/**
+	 * Append text representation of information data to given string buffer
+	 * @param s
+	 */
 	protected void appendData(StringBuffer s) {
 		s.append(" Dati:");
 		for (int i = 0; i < bytes; i++) {

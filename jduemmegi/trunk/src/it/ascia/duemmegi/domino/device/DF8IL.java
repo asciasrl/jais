@@ -2,6 +2,7 @@ package it.ascia.duemmegi.domino.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.ConnectorInterface;
+import it.ascia.ais.port.DigitalVirtualPort;
 
 public class DF8IL extends DF4IV {
 
@@ -15,6 +16,15 @@ public class DF8IL extends DF4IV {
 
 	public DF8IL(String address, ConnectorInterface connector) throws AISException {
 		super(address,connector);
+		/*
+		for (int j = getNumInputs() ; j < (getNumInputs() + getNumVirtuals()); j++) {
+			connector.addDevice("i" + (intAddress + j), this);
+			for (int i = 1; i <= 4; i++) {
+				addPort(new DigitalVirtualPort("i"+(intAddress+j)+"."+new Integer(i).toString()));
+			}
+		}
+		*/
+
 	}
 
 }

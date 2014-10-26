@@ -124,7 +124,10 @@ public abstract class Device {
 	 */
 	public String getInfo() {
 		StringBuffer s = new StringBuffer();
-		s.append("Device:" + getAddress() + " "+getClass().getName() + " Desc:" + getDescription());
+		s.append("Device:" + getAddress() + " "+getClass().getName());
+		if (description != null) {
+			s.append(" Desc:" + getDescription());
+		}
 		for (Iterator<?> iterator = getPorts().iterator(); iterator.hasNext();) {
 			DevicePort port = (DevicePort) iterator.next();
 			s.append("; "+port.getInfo());			

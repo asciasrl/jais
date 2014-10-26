@@ -291,6 +291,25 @@ public abstract class DevicePort {
 	public void setValue(Object newValue) {
 		setValue(newValue,getCacheRetention());
 	}
+	
+	
+	/**
+	 * 
+	 * @param otherValue
+	 * @return true if otherValue equals actual value 
+	 */
+	public boolean equalsValue(Object otherValue) {
+		Object otherValueNomalized = normalize(otherValue);
+		if (cachedValue == null) {
+			if (otherValue == null) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return cachedValue.equals(otherValueNomalized);
+		}
+	}
 
 	/**
 	 * Scrive un nuovo valore sulla porta del device cui appartiene Questa
@@ -511,10 +530,10 @@ public abstract class DevicePort {
 	public String getInfo() {
 		StringBuffer s = new StringBuffer();
 		s.append("Port:"+getPortId());
-		if (getDescription() != null) {
+		if (description != null) {
 			s.append(" Desc:"+getDescription());
 		}
-		if (getRoom() != null) {
+		if (room != null) {
 			s.append(" Room:"+getRoom());
 		}
 		return s.toString();

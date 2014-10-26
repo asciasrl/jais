@@ -4,7 +4,6 @@ import it.ascia.ais.AISException;
 import it.ascia.ais.Connector;
 import it.ascia.ais.ControllerModule;
 import it.ascia.ais.Message;
-import it.ascia.duemmegi.domino.DominoDevice;
 import it.ascia.duemmegi.domino.device.*;
 import it.ascia.duemmegi.dxp.DXPMessage;
 import it.ascia.duemmegi.dxp.DXPMessageParser;

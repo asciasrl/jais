@@ -3,7 +3,7 @@ package it.ascia.duemmegi.domino.device;
 import it.ascia.ais.AISException;
 import it.ascia.ais.ConnectorInterface;
 import it.ascia.ais.port.DigitalVirtualPort;
-import it.ascia.duemmegi.domino.DominoDevice;
+import it.ascia.duemmegi.DominoDevice;
 
 public class DFTPI extends DFTP {
 

@@ -16,15 +16,12 @@ public class DF8IL extends DF4IV {
 
 	public DF8IL(String address, ConnectorInterface connector) throws AISException {
 		super(address,connector);
-		/*
 		for (int j = getNumInputs() ; j < (getNumInputs() + getNumVirtuals()); j++) {
 			connector.addDevice("i" + (intAddress + j), this);
 			for (int i = 1; i <= 4; i++) {
-				addPort(new DigitalVirtualPort("i"+(intAddress+j)+"."+new Integer(i).toString()));
+				addPort(new DigitalVirtualPort("o"+(intAddress+j)+"."+new Integer(i).toString()));
 			}
 		}
-		*/
-
 	}
 
 }

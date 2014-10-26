@@ -5,7 +5,7 @@ import org.apache.commons.configuration.HierarchicalConfiguration;
 import it.ascia.ais.AISException;
 import it.ascia.ais.ConnectorInterface;
 import it.ascia.ais.port.TemperaturePort;
-import it.ascia.duemmegi.domino.DominoDevice;
+import it.ascia.duemmegi.DominoDevice;
 import it.ascia.duemmegi.dxp.DXPMessage;
 import it.ascia.duemmegi.dxp.msg.RichiestaStatoIngressiMessage;
 

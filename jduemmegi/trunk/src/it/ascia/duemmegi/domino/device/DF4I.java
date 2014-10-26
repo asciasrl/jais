@@ -4,7 +4,7 @@ import it.ascia.ais.AISException;
 import it.ascia.ais.ConnectorInterface;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.port.DigitalInputPort;
-import it.ascia.duemmegi.domino.DominoDevice;
+import it.ascia.duemmegi.DominoDevice;
 import it.ascia.duemmegi.dxp.DXPMessage;
 import it.ascia.duemmegi.dxp.DXPResponseMessage;
 import it.ascia.duemmegi.dxp.msg.RichiestaStatoIngressiMessage;

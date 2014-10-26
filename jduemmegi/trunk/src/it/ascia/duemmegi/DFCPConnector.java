@@ -11,8 +11,6 @@ import it.ascia.ais.Message;
 import it.ascia.ais.PollingConnectorImpl;
 import it.ascia.ais.ResponseMessage;
 import it.ascia.ais.port.BooleanPort;
-import it.ascia.duemmegi.domino.DominoDevice;
-import it.ascia.duemmegi.domino.device.DF8IL;
 import it.ascia.duemmegi.fxpxt.FXPXTMessageParser;
 import it.ascia.duemmegi.fxpxt.FXPXTRequestMessage;
 import it.ascia.duemmegi.fxpxt.ReadInputsRequestMessage;
@@ -102,13 +100,13 @@ public class DFCPConnector extends PollingConnectorImpl implements ConnectorInte
 	}
 	*/
 	public void discover() {
+		DominoDevice newDevice;
 		for (int address = 1; address <= 255; address++) {
 			request = new ReadRamRequestMessage(indirizzo, 0xE800 + address*4, 4);
 			if (sendMessage()) {
 				ReadRamResponseMessage response = (ReadRamResponseMessage)request.getResponse();
 				int modelId = response.getData()[0];
-				addDevice(modelId, "i" + address);
-				
+				newDevice = addDevice(modelId, "i" + address);				
 			}
 			
 		}
@@ -117,7 +115,7 @@ public class DFCPConnector extends PollingConnectorImpl implements ConnectorInte
 			if (sendMessage()) {
 				ReadRamResponseMessage response = (ReadRamResponseMessage)request.getResponse();
 				int modelId = response.getData()[0];
-				addDevice(modelId, "o" + address);				
+				newDevice = addDevice(modelId, "o" + address);				
 			}
 			
 		}
@@ -125,38 +123,40 @@ public class DFCPConnector extends PollingConnectorImpl implements ConnectorInte
 	}
 
 
-	private void addDevice(int modelId, String address) {
+	private DominoDevice addDevice(int modelId, String address) {
 		if (getDevice(address) != null) {
-			logger.info("Skip already existing device "+address);
-			return;
+			logger.debug("Skip already existing device "+address);
+			return null;
 		}
 		switch (modelId) {
 		case 0:
 			// no device
-			break;
+			return null;
 		case 51:
-			addDevice("DFDI",address);
-			break;		
+			return addDevice("DFDI",address);
 		case 65:
-			addDevice("DF4I",address);
-			break;
-		case 69:
-			addDevice("DF4I/V",address);
-			break;
+			return addDevice("DF4I",address);
+		case 69:			
+			if (getDevice("i"+DominoDevice.getIntAddress(address)) != null) {
+				logger.debug("Skip already existing device "+address);
+				return null;
+			}
+			return addDevice("DF4I/V",address);
 		case 68:
-			addDevice("DFTP/I",address);
-			break;
+			return addDevice("DFTP/I",address);
 		case 82:
-			addDevice("DF4RP",address);
-			break;						
+			return addDevice("DF4RP",address);
 		case 133:
-			addDevice("DF8IL",address);
-			break;
+			if (getDevice("i"+DominoDevice.getIntAddress(address)) != null) {
+				logger.debug("Skip already existing device "+address);
+				return null;
+			}
+			return addDevice("DF8IL",address);
 		case 243:
-			addDevice("DFDV",address);
-			break;		
+			return addDevice("DFDV",address);
 		default:
 			logger.error("Unknow device: modelId="+modelId+" address="+address);
+			return null;
 		}
 	}
 

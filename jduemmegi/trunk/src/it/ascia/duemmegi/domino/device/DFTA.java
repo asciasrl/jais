@@ -2,7 +2,7 @@ package it.ascia.duemmegi.domino.device;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.port.TemperaturePort;
-import it.ascia.duemmegi.domino.DominoDevice;
+import it.ascia.duemmegi.DominoDevice;
 import it.ascia.duemmegi.dxp.msg.RichiestaStatoIngressiMessage;
 
 public class DFTA extends DominoDevice {

@@ -9,7 +9,6 @@ import it.ascia.ais.AISException;
 import it.ascia.ais.ControllerModule;
 import it.ascia.ais.DevicePort;
 import it.ascia.ais.Transport;
-import it.ascia.duemmegi.domino.DominoDevice;
 
 public class DuemmegiControllerModule extends ControllerModule {
 	

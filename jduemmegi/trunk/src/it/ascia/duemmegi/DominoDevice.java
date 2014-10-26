@@ -1,8 +1,7 @@
-package it.ascia.duemmegi.domino;
+package it.ascia.duemmegi;
 
 import it.ascia.ais.AISException;
 import it.ascia.ais.Device;
-import it.ascia.duemmegi.DFCPConnector;
 import it.ascia.duemmegi.domino.device.DF4I;
 import it.ascia.duemmegi.domino.device.DF4IV;
 import it.ascia.duemmegi.domino.device.DF4R;
@@ -27,7 +26,7 @@ public abstract class DominoDevice extends Device {
 		intAddress = DominoDevice.getIntAddress(getDeviceAddress());
 	}
 	
-	protected static int getIntAddress(String address) {
+	public static int getIntAddress(String address) {
 		return new Integer(address.substring(1)).intValue();
 	}
 

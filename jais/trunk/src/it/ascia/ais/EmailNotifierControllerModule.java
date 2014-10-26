@@ -7,7 +7,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -31,9 +33,14 @@ public class EmailNotifierControllerModule extends ControllerModule implements N
 	private String from;
 	private String to;
 	private String subject;
-	
+		
 	protected LinkedBlockingQueue<DevicePortChangeEvent> notifierQueue;
 	private NotifierThread notifierThread;
+	
+	/**
+	 * For each device port address, lists conditions expressed as {value,description}
+	 */
+	private HashMap<String,HashMap<String,String>> conditions;
 
 	@Override
 	public void start() {		
@@ -44,6 +51,7 @@ public class EmailNotifierControllerModule extends ControllerModule implements N
 		subject = config.getString("Subject","JAIS Email Notifier");
 		logger.info("Hostname: "+hostname + " From:" + from + " To:" + to + " Subject:"+subject);
 				
+		conditions = new LinkedHashMap<>();
 		Controller.getController().addNewDevicePortListener(this);
 		notifierQueue = new LinkedBlockingQueue<DevicePortChangeEvent>();
 		notifierThread = new NotifierThread();
@@ -79,7 +87,7 @@ public class EmailNotifierControllerModule extends ControllerModule implements N
 				} catch (InterruptedException e) {
 					logger.debug("Interrotto.");
 				} catch (Exception e) {
-					logger.fatal("Errore:",e);
+					logger.fatal("Fatal error:",e);
 				}
     		}
 			logger.debug("Stop.");
@@ -91,19 +99,27 @@ public class EmailNotifierControllerModule extends ControllerModule implements N
 	public void propertyChange(PropertyChangeEvent evt) {
 		if (DevicePortChangeEvent.class.isInstance(evt)) {
 			notifierQueue.add((DevicePortChangeEvent) evt);
-			logger.trace("Event added to the queue: "+ evt);
+			logger.trace("propertyChangeEvent added to the queue: "+ evt);
 		}		
 	}
 
 	public void devicePortChange(DevicePortChangeEvent evt) {		
+		logger.trace("devicePortChange "+evt);
 		notifyPortChange((DevicePort) evt.getSource(), evt.getTimeStamp(), evt.getOldValue(), evt.getNewValue());
 	}
 
 	public void notifyPortChange(DevicePort p,long ts, Object oldValue, Object newValue) {
-		GregorianCalendar cal = new GregorianCalendar();
-		cal.setTimeInMillis(ts);
-		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
-		sendEmail("Port "+p+" changed from '"+oldValue+"' to '"+newValue+"' at "+df.format(cal.getTime()));
+		HashMap<String, String> portConditions = conditions.get(p.getAddress().getFullAddress());
+		for (Iterator<String> iterator = portConditions.keySet().iterator(); iterator.hasNext();) {
+			String value = (String) iterator.next();
+			if (value.equals("*") || p.equalsValue(value)) {
+				String description = portConditions.get(value);
+				GregorianCalendar cal = new GregorianCalendar();
+				cal.setTimeInMillis(ts);
+				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
+				sendEmail(description + " Port "+p+" changed from '"+oldValue+"' to '"+newValue+"' at "+df.format(cal.getTime()));				
+			}
+		}
 	}
 	
 	private void sendEmail(String msg) {
@@ -136,13 +152,17 @@ public class EmailNotifierControllerModule extends ControllerModule implements N
 		    	throw(new AISException("Syntax error in configuration file: address must be specified"));		    	
 		    }
 		    String description = (String) notifyConfig.getString("description");
+		    String value = (String) notifyConfig.getString("value","*");
 			if (p.getAddress().matches(address)) {
-				if (p.getDescription().equals(p.getAddress().toString()) && description != null) {
-					logger.debug("Descrizione porta "+p+" : "+description);
-					p.setDescription(description);
+				if (conditions.containsKey(p.getAddress().getFullAddress())) {
+					conditions.get(p.getAddress().getFullAddress()).put(value, description);
+				} else {
+					LinkedHashMap<String, String> portConditions = new LinkedHashMap<>();
+					portConditions.put(value, description);
+					conditions.put(p.getAddress().getFullAddress(),portConditions);
+					p.addPropertyChangeListener(this);
 				}
-				logger.debug("Attivate notifiche per "+p);
-				p.addPropertyChangeListener(this);
+				logger.debug("Attivate notifiche per "+p);				
 			}
 		}
 		

@@ -56,10 +56,6 @@ public abstract class Connector extends ConnectorImpl implements ConnectorInterf
 		this.autoupdate = autoupdate;
 		updateQueue = new LinkedBlockingQueue<DevicePort>();
 		dispatchQueue = new LinkedBlockingQueue<Message>();
-		dispatchingThread = new DispatchingThread(getDispatchingTimeout());
-		dispatchingThread.setName("Dispatching-"+getClass().getSimpleName()+"-"+getConnectorName());
-		dispatchingThread.setDaemon(true);
-		dispatchingThread.start();
 	}
 
     /**
@@ -301,6 +297,12 @@ public abstract class Connector extends ConnectorImpl implements ConnectorInterf
 	@Override
 	public void start() {
 		super.start();
+
+		dispatchingThread = new DispatchingThread(getDispatchingTimeout());
+		dispatchingThread.setName("Dispatching-"+getClass().getSimpleName()+"-"+getConnectorName());
+		dispatchingThread.setDaemon(true);
+		dispatchingThread.start();
+
 		updatingThread = new UpdatingThread();
 		updatingThread.setName("Updating-"+getClass().getSimpleName()+"-"+getConnectorName());
 		updatingThread.setDaemon(true);

@@ -5,16 +5,27 @@
      <From>sergio@ascia.net</From>
      <To>sergio@ascia.net</To>
      <notify>
-     	<description>Luce Studio</description>
-     	<address>strvfb.8:Out3</address>
-     </notify>
-     <notify>
         <description>Tapparelle Apri Tutte</description>
      	<address>*.Group6:Attivazione</address>
      </notify>
      <notify>
         <description>Tapparelle Chiudi Tutte</description>
      	<address>*.Group6:Disattivazione</address>
+     </notify>
+     <notify>
+        <description>Campanello Porta</description>
+        <address>strvfb.4:Inp8</address>
+        <value>true</value>
+     </notify>
+     <notify>
+        <description>Luce studio accesa</description>
+        <address>strvfb.8:Out3</address>
+        <value>true</value>
+     </notify>
+     <notify>
+        <description>Luce studio spenta</description>
+        <address>strvfb.8:Out3</address>
+        <value>0</value>
      </notify>
   </EmailNotifier>
 </jais:configuration>

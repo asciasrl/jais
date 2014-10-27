@@ -255,7 +255,7 @@ public class EDSConnector extends Connector {
 		try {
 			long guardtime = getGuardtime();
 			while (guardtime > 0) {
-				logger.debug("BUS is in guard time, waiting "+guardtime+"mS");
+				logger.trace("BUS is in guard time, waiting "+guardtime+"mS");
 				long start = System.currentTimeMillis();
 				synchronized (this) {
 					wait(guardtime);							

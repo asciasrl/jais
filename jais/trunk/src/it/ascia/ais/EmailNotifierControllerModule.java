@@ -29,7 +29,7 @@ import it.ascia.ais.NewDevicePortListener;
  */
 public class EmailNotifierControllerModule extends ControllerModule implements NewDevicePortListener, PropertyChangeListener  {
 	
-	private String hostname;
+	private String smtp;
 	private String from;
 	private String to;
 	private String subject;
@@ -45,11 +45,11 @@ public class EmailNotifierControllerModule extends ControllerModule implements N
 	@Override
 	public void start() {		
 		HierarchicalConfiguration config = getConfiguration();
-		hostname = config.getString("Hostname","smtp.ascia.net");
+		smtp = config.getString("Smtp","smtp.ascia.net");
 		from = config.getString("From","JAIS <sergio@ascia.net>");
 		to = config.getString("To","Me <sergio@ascia.net>");
 		subject = config.getString("Subject","JAIS Email Notifier");
-		logger.info("Hostname: "+hostname + " From:" + from + " To:" + to + " Subject:"+subject);
+		logger.info("Smtp: "+smtp + " From:" + from + " To:" + to + " Subject:"+subject);
 				
 		conditions = new LinkedHashMap<String,HashMap<String,String>>();		
 		Controller.getController().addNewDevicePortListener(this);
@@ -114,6 +114,7 @@ public class EmailNotifierControllerModule extends ControllerModule implements N
 			String value = (String) iterator.next();
 			if (value.equals("*") || p.equalsValue(value)) {
 				String description = portConditions.get(value);
+				logger.debug("Triggered notification '"+description+"' value '"+value+"' port '"+p+"'");				
 				GregorianCalendar cal = new GregorianCalendar();
 				cal.setTimeInMillis(ts);
 				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
@@ -125,7 +126,7 @@ public class EmailNotifierControllerModule extends ControllerModule implements N
 	private void sendEmail(String msg) {
 		SimpleEmail email = new SimpleEmail();
 		try {
-			email.setHostName(hostname);
+			email.setHostName(smtp);
 			email.setFrom(from);
 			email.addTo(to);
 			email.setSubject(subject);
@@ -162,7 +163,7 @@ public class EmailNotifierControllerModule extends ControllerModule implements N
 					conditions.put(p.getAddress().getFullAddress(),portConditions);
 					p.addPropertyChangeListener(this);
 				}
-				logger.debug("Attivate notifiche per "+p);				
+				logger.debug("Added notification '"+description+"' value '"+value+"' port '"+p+"'");				
 			}
 		}
 		

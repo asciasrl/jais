@@ -1,8 +1,8 @@
 <project name="JAIS Framework Package Builder" default="zip">
 
-	<property name="ant.build.javac.source" value="6"/>
+	<property name="ant.build.javac.source" value="7"/>
 
-	<property name="ant.build.javac.target" value="6"/>
+	<property name="ant.build.javac.target" value="7"/>
 
 	<target name="zip" depends="base,jais,webconsole,jduemmegi,jcalendar,jdmx,jeds,jbis,jalarm,jmodbus,aui,JaisTest,i18n">
 		<mkdir dir="${dst}logs/"/>

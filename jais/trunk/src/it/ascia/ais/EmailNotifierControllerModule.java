@@ -51,7 +51,7 @@ public class EmailNotifierControllerModule extends ControllerModule implements N
 		subject = config.getString("Subject","JAIS Email Notifier");
 		logger.info("Hostname: "+hostname + " From:" + from + " To:" + to + " Subject:"+subject);
 				
-		conditions = new LinkedHashMap<>();
+		conditions = new LinkedHashMap<String,HashMap<String,String>>();		
 		Controller.getController().addNewDevicePortListener(this);
 		notifierQueue = new LinkedBlockingQueue<DevicePortChangeEvent>();
 		notifierThread = new NotifierThread();
@@ -157,7 +157,7 @@ public class EmailNotifierControllerModule extends ControllerModule implements N
 				if (conditions.containsKey(p.getAddress().getFullAddress())) {
 					conditions.get(p.getAddress().getFullAddress()).put(value, description);
 				} else {
-					LinkedHashMap<String, String> portConditions = new LinkedHashMap<>();
+					HashMap<String, String> portConditions = new LinkedHashMap<String, String>();
 					portConditions.put(value, description);
 					conditions.put(p.getAddress().getFullAddress(),portConditions);
 					p.addPropertyChangeListener(this);

@@ -258,16 +258,17 @@ public abstract class DevicePort {
 	 */
 	public void setValue(Object newValue, long duration) {
 		Object oldValue = getCachedValue();
+		Object normalizeNewValue = normalize(newValue);
 		boolean changed = false; 
 		//if (isDirty() || oldValue == null || !oldValue.equals(newValue)) {
-		if (oldValue == null || !oldValue.equals(newValue)) {
+		if (oldValue == null || !oldValue.equals(normalizeNewValue)) {
 			previousTimeStamp = timeStamp;
 			previousValue = oldValue;
 			timeStamp = System.currentTimeMillis();
 			changed = true;
 		}
 		synchronized (this) {
-			cachedValue = normalize(newValue);
+			cachedValue = normalizeNewValue;
 			cacheTimeStamp = System.currentTimeMillis();
 			dirty = false;
 			setExpiration(System.currentTimeMillis() + duration);

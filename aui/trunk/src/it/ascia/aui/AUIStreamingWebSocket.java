@@ -69,6 +69,7 @@ public class AUIStreamingWebSocket {
 					JSONObject obj=new JSONObject();
 					obj.put("V",cachedValue.toString());
 					obj.put("A",devicePort.getAddress().toString());
+					obj.put("S",devicePort.getStringValue());
 			        session.getRemote().sendString(obj.toJSONString());
 				}				
 			}		
@@ -158,6 +159,7 @@ public class AUIStreamingWebSocket {
 							obj.put("V",evt.getNewValue().toString());
 							obj.put("A",((DevicePortChangeEvent) evt).getFullAddress());
 							obj.put("T",((DevicePortChangeEvent) evt).getTimeStamp());
+							obj.put("S",((DevicePort)evt.getSource()).getStringValue());
 						}
 					} else {
 						obj.put("T",System.currentTimeMillis());

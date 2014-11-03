@@ -20,15 +20,17 @@
 	<classpathentry exported="true" kind="lib" path="lib/commons-fileupload-1.2.1.jar" sourcepath="P:/Dev/sources/commons-fileupload-1.2.1-src.zip"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-io-1.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/sqlite-jdbc-3.6.20.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/servlet-api-3.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jetty-server-9.2.3.v20140905.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jetty-io-9.2.3.v20140905.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jetty-servlet-9.2.3.v20140905.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jetty-util-9.2.3.v20140905.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jetty-servlets-9.2.3.v20140905.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jetty-security-9.2.3.v20140905.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jetty-http-9.2.3.v20140905.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/servlet-api-3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/slf4j-api-1.7.2.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-log4j12-1.7.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jetty-all-8.1.7.v20120910.jar" sourcepath="D:/Dev/jetty-distribution-8.1.7.v20120910/jetty-all-8.1.7.v20120910-sources.jar"/>
 	<classpathentry kind="lib" path="lib/com.sun.el-2.2.0.v201108011116.jar"/>
-	<classpathentry kind="lib" path="lib/javax.el-2.2.0.v201108011116.jar"/>
-	<classpathentry kind="lib" path="lib/javax.servlet.jsp-2.2.0.v201112011158.jar"/>
-	<classpathentry kind="lib" path="lib/javax.servlet.jsp.jstl-1.2.0.v201105211821.jar"/>
-	<classpathentry kind="lib" path="lib/org.apache.jasper.glassfish-2.2.2.v201112011158.jar"/>
 	<classpathentry kind="lib" path="lib/org.apache.taglibs.standard.glassfish-1.2.0.v201112081803.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.jdt.core-3.7.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-email-1.2.jar"/>
@@ -40,5 +42,17 @@
 	<classpathentry exported="true" kind="lib" path="lib/mysql-connector-java-5.1.18-bin.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/purejavacomm-0.0.22.jar"/>
 	<classpathentry kind="lib" path="lib/jna-4.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/javax.servlet.jsp-2.3.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/javax.servlet.jsp-api-2.3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/javax.el-3.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/javax-websocket-client-impl-9.2.3.v20140905.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/javax-websocket-server-impl-9.2.3.v20140905.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/javax.websocket-api-1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/websocket-api-9.2.3.v20140905.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/websocket-client-9.2.3.v20140905.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/websocket-common-9.2.3.v20140905.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/websocket-server-9.2.3.v20140905.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/websocket-servlet-9.2.3.v20140905.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jetty-continuation-9.2.3.v20140905.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

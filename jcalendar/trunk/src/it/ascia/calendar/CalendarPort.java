@@ -24,7 +24,9 @@ public class CalendarPort extends DevicePort {
 	public String getStringValue() {
 		Calendar calendar = (Calendar) getCachedValue();
 		logger.trace(calendar);
-		
+		if (calendar == null) {
+			return null;
+		}
 		return DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL, getLocale()).format(calendar.getTime());
 	}
 	

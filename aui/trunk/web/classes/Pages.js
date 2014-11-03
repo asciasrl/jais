@@ -43,13 +43,19 @@ if (!AUI.Pages) {
 		this.currentPageId = toPageId;
 		AUI.Logger.info("Cambiata pagina:"+toPageId);
 		if (AUI.Pages.pageHaveLayers(toPageId)) {
-			if (AUI.StreamRequest) {
+			if (AUI.StreamWebSocket) {
+				AUI.Logger.info("Start StreamWebSocket");
+				AUI.StreamWebSocket.start();				
+			} else if (AUI.StreamRequest) {
 				AUI.Logger.info("Start StreamRequest");
 				AUI.StreamRequest.start();
 			}
 			AUI.Layers.show();
 		} else {
-			if (AUI.StreamRequest) {
+			if (AUI.StreamWebSocket) {
+				AUI.Logger.info("Stop StreamWebSocket");
+				AUI.StreamWebSocket.stop();				
+			} else if (AUI.StreamRequest) {
 				AUI.Logger.info("Stop StreamRequest");
 				AUI.StreamRequest.stop();
 			}

@@ -34,9 +34,6 @@ if (!AUI.StreamWebSocket) {
 				    ws_uri = "ws:";
 				}
 				ws_uri += "//" + loc.host;
-				if (loc.port != '') {
-					ws_uri += ":" + loc.port;					
-				}
 				ws_uri += "/ws";
 				AUI.Logger.info("Start: WebSocket "+ws_uri);		
 				this.ws = new WebSocket(ws_uri);

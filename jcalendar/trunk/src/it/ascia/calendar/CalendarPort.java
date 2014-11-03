@@ -3,6 +3,7 @@ package it.ascia.calendar;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import it.ascia.ais.DevicePort;
 
@@ -14,22 +15,30 @@ public class CalendarPort extends DevicePort {
 
 	@Override
 	protected Object normalize(Object newValue) throws IllegalArgumentException {
-		if (Calendar.class.isInstance(newValue)) {
+		if (Long.class.isInstance(newValue)) {
 			return newValue;
+		} else if (Calendar.class.isInstance(newValue)) {
+			return (Long)((Calendar)newValue).getTimeInMillis();
 		} else {
 			throw(new IllegalArgumentException());
 		}
 	}
 	
+	@Override
 	public String getStringValue() {
-		Calendar calendar = (Calendar) getCachedValue();
-		logger.trace(calendar);
-		if (calendar == null) {
+		Calendar calendar = Calendar.getInstance(getTimeZone(),getLocale());
+		Long timeInMillis = (Long) getCachedValue();
+		if (timeInMillis == null) {
 			return null;
 		}
+		calendar.setTimeInMillis(timeInMillis);
 		return DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL, getLocale()).format(calendar.getTime());
 	}
 	
+	private TimeZone getTimeZone() {
+		return ((CalendarDevice)getDevice()).getTimeZone();
+	}
+
 	Locale getLocale() {
 		return ((CalendarDevice)getDevice()).getLocale();
 	}

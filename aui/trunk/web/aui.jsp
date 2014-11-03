@@ -201,7 +201,7 @@ for (int iLayer = 0;  iLayer < (5 + nLayers); iLayer++) {
 <!-- Maschera e cursore del dimmer  -->
 <div id="mask"></div>
 <div id="slider">
-	<img id="slider-cursor" src="<%= skin %>/images/slider-cursor.png" width="128" height="130" />
+	<img id="slider-cursor" src="<%= skin %>images/slider-cursor.png" width="128" height="130" />
 </div>
 
 <script type="text/javascript" language="javascript" src="classes/mootools-1.2.3-core-nc.js"></script>
@@ -215,6 +215,7 @@ for (int iLayer = 0;  iLayer < (5 + nLayers); iLayer++) {
 <script type="text/javascript" language="javascript" src="classes/Pages.js"></script>
 <script type="text/javascript" language="javascript" src="classes/Http.js"></script>
 <script type="text/javascript" language="javascript" src="classes/SetRequest.js"></script>
+<script type="text/javascript" language="javascript" src="classes/StreamWebSocket.js"></script>
 <script type="text/javascript" language="javascript" src="classes/StreamRequest.js"></script>
 <script type="text/javascript" language="javascript" src="classes/Controls.js"></script>
 <script type="text/javascript" language="javascript" src="classes/Layers.js"></script>

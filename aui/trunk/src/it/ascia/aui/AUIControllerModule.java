@@ -95,6 +95,8 @@ public class AUIControllerModule extends ControllerModule {
 
 		root.addServlet(new ServletHolder("STREAMING",new AUIStreamingServlet()), "/stream/*");
 		
+		root.addServlet(new ServletHolder("WS",new AUIWebSocketServlet()), "/ws/*");
+		
 		JSONRPCBridge.getGlobalBridge().registerObject("AUI", new AUIRPCServer(this));
 	}
 	

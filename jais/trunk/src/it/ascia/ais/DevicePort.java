@@ -428,7 +428,7 @@ public abstract class DevicePort {
 	public void setExpiration(long i) {
 		if (i > 0) {
 			expiration = i;
-			logger.trace(getAddress() + " will expire in "+ (expiration - System.currentTimeMillis())/1000 +  " Sec");
+			//logger.trace(getAddress() + " will expire in "+ (expiration - System.currentTimeMillis())/1000 +  " Sec");
 		} else {
 			expiration = 0;
 		}		

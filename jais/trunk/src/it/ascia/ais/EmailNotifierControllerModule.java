@@ -6,11 +6,13 @@ package it.ascia.ais;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
+import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Vector;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
@@ -51,7 +53,8 @@ public class EmailNotifierControllerModule extends ControllerModule implements N
 		subject = config.getString("Subject","JAIS Email Notifier");
 		logger.info("Smtp: "+smtp + " From:" + from + " To:" + to + " Subject:"+subject);
 				
-		conditions = new LinkedHashMap<String,HashMap<String,String>>();		
+		conditions = new LinkedHashMap<String,HashMap<String,String>>();	
+		allDevicePort();
 		Controller.getController().addNewDevicePortListener(this);
 		notifierQueue = new LinkedBlockingQueue<DevicePortChangeEvent>();
 		notifierThread = new NotifierThread();
@@ -71,9 +74,7 @@ public class EmailNotifierControllerModule extends ControllerModule implements N
 		} catch (InterruptedException e) {
 			logger.error("Interrupted:",e);
 		}
-	}
-	
-	
+	}	
 
     private class NotifierThread extends Thread {
         
@@ -141,8 +142,23 @@ public class EmailNotifierControllerModule extends ControllerModule implements N
 
 	@Override
 	public void newDevicePort(NewDevicePortEvent evt) {
-		DevicePort p = evt.getDevicePort();
-		
+		newDevicePort(evt.getDevicePort());
+	}
+	
+	/**
+	 * 
+	 */
+	private void allDevicePort() {
+        Vector<Device> devices = Controller.getController().getDevices(new Address());
+        for (Device device : devices) {
+			Collection<DevicePort> ports = device.getPorts();
+			for (DevicePort devicePort : ports) {
+				newDevicePort(devicePort);
+			}
+		}
+	}
+	
+	private void newDevicePort(DevicePort p) {
 		HierarchicalConfiguration config = getConfiguration();
 		List notifyList = config.configurationsAt("notify");
 		for (Iterator notify = notifyList.iterator(); notify.hasNext();)

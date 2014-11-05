@@ -18,7 +18,7 @@ public class MySQLControllerModule extends ControllerModule implements NewDevice
 
 	private Connection conn = null;
 	
-	protected BlockingQueue<DevicePortChangeEvent> eventsQueue;
+	protected BlockingQueue<DevicePortChangeEvent> eventsQueue = new LinkedBlockingDeque<DevicePortChangeEvent>();
 
 	private String url;
 
@@ -26,7 +26,7 @@ public class MySQLControllerModule extends ControllerModule implements NewDevice
 
 	private String password;
 
-	private RecordPortChangeThread recordPortChangeThread;
+	private RecordPortChangeThread recordPortChangeThread = new RecordPortChangeThread();
 	
 	public MySQLControllerModule() {
 		Controller.getController().addNewDevicePortListener(this);
@@ -44,10 +44,7 @@ public class MySQLControllerModule extends ControllerModule implements NewDevice
 		}
 		connect();
 		initDb();
-		eventsQueue = new LinkedBlockingDeque<DevicePortChangeEvent>();
-		recordPortChangeThread = new RecordPortChangeThread();
 		recordPortChangeThread.setName("Record-"+getClass().getSimpleName()+"-"+getName());
-		//recordPortChangeThread.setDaemon(true);
 		recordPortChangeThread.start();
 		super.start();
 	}

@@ -4,8 +4,10 @@
  */
 package it.ascia.ais;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import org.apache.log4j.Logger;
 
@@ -23,9 +25,8 @@ public class ConnectorImpl implements ConnectorInterface {
 	/**
 	 * I dispositivi presenti nel sistema gestiti da questo connettore.
 	 * Se un device corrisponde a piu' indirizzi va aggiunto piu' volte
-	 * @TODO Wrap in Collections.synchronizedMap
 	 */
-    private LinkedHashMap<String,Device> devices;
+    Map<String,Device> devices = Collections.synchronizedMap(new LinkedHashMap<String, Device>());
 
 	/**
      * Il nostro logger.
@@ -52,7 +53,6 @@ public class ConnectorImpl implements ConnectorInterface {
 		}
 		Address.testConnectorName(name);
 		this.name = name;
-        devices = new LinkedHashMap<String, Device>();
 		logger = Logger.getLogger(getClass());
 	}
 

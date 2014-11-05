@@ -5,11 +5,11 @@
 package it.ascia.ais;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.log4j.Logger;
 
 /**
@@ -37,9 +37,8 @@ public abstract class Device {
 
 	/**
 	 * le porte del dispositivo.
-	 * @TODO Wrap in Collections.synchronizedMap
 	 */
-	private LinkedHashMap<String, DevicePort> ports = new LinkedHashMap<String, DevicePort>();
+	Map<String, DevicePort> ports = Collections.synchronizedMap(new LinkedHashMap<String, DevicePort>());
 
 	/**
 	 * How much (mS) wait for each unanswered message

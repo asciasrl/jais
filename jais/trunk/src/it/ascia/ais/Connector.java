@@ -281,13 +281,17 @@ public abstract class Connector extends ConnectorImpl implements ConnectorInterf
 
 	
 	protected void queueExpiredPorts() {
-		for (Device device : getDevices()) {
-			for (DevicePort devicePort : device.getPorts()) {
-				if (devicePort.isExpired() && !devicePort.isQueuedForUpdate()) {
-					logger.trace("Queuing for update expired port "+devicePort.getAddress());
-					queueUpdate(devicePort);
+		synchronized (devices) {
+			for (Device device : getDevices()) {
+				synchronized (device.ports) {
+					for (DevicePort devicePort : device.getPorts()) {
+						if (devicePort.isExpired() && !devicePort.isQueuedForUpdate()) {
+							logger.trace("Queuing for update expired port "+devicePort.getAddress());
+							queueUpdate(devicePort);
+						}
+					}
 				}
-			}
+			}		
 		}
 	}
 

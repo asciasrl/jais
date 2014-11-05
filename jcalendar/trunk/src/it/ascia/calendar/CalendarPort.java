@@ -15,12 +15,14 @@ public class CalendarPort extends DevicePort {
 
 	@Override
 	protected Object normalize(Object newValue) throws IllegalArgumentException {
-		if (Long.class.isInstance(newValue)) {
+		if (newValue == null) {
+			return newValue;
+		} else if (Long.class.isInstance(newValue)) {
 			return newValue;
 		} else if (Calendar.class.isInstance(newValue)) {
 			return (Long)((Calendar)newValue).getTimeInMillis();
 		} else {
-			throw(new IllegalArgumentException());
+			throw(new IllegalArgumentException("Cannot set to "+newValue));
 		}
 	}
 	

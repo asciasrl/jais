@@ -60,7 +60,7 @@ public abstract class Transport {
 
     public String toString()
     {
-    	return name;
+    	return getInfo();
     }
     
     /**

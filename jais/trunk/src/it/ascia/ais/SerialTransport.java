@@ -118,6 +118,7 @@ public class SerialTransport extends Transport {
     }
     
 	private void open() {
+        closed = false;
     	logger.debug("Opening serial port '" + portName + "' "+portSpeed+" "+databits+parityChar(parity)+stopbits);
     	if (portName.toLowerCase().equals("auto")) {						
 	    	Enumeration portList = CommPortIdentifier.getPortIdentifiers();
@@ -203,7 +204,6 @@ public class SerialTransport extends Transport {
         serialPort.notifyOnDataAvailable(true);
         serialPort.notifyOnOverrunError(true);
         logger.debug("Opened serial transport "+this);
-        closed = false;
     }
 
 	/**
@@ -241,6 +241,9 @@ public class SerialTransport extends Transport {
 		} catch (IOException e) {
 			logger.fatal("Write error: ",e);
 			reopen();
+		} catch (Exception e) {
+			logger.fatal("Exception: ",e);
+			reopen();
 		}
     }
         
@@ -261,11 +264,24 @@ public class SerialTransport extends Transport {
 				outputStream = null;
     		}
 		} catch (Exception e) {
-			logger.error("Exception in close():",e);
+			logger.error("Exception closing streams:",e);
 		}
-    	serialPort.removeEventListener();
-    	logger.trace("About to close() serialPort");
-    	serialPort.close();
+    	try {
+    		if (serialPort != null) {
+	        	logger.trace("Removing listener.");
+    			serialPort.removeEventListener();
+    		}
+    	} catch (Exception e) {
+			logger.error("Exception removing listener:",e);
+    	}
+    	try {
+    		if (serialPort != null) {
+	        	logger.trace("Closing serialPort");
+	        	serialPort.close();
+    		}
+    	} catch (Exception e) {
+    		logger.error("Exception closing serialport:",e);
+    	}
     	logger.debug("SerialTransport closed.");
     	serialPort = null;
     }
